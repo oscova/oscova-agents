@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<LocalNuGetRepository>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../../../LocalNuGetRepository'))</LocalNuGetRepository>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<WarningsAsErrors>$(WarningsAsErrors);1591</WarningsAsErrors>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<IncrementVersionOnBuild>0.MM.dd.Hmm</IncrementVersionOnBuild>
+		<Version>0.9.20.1990</Version>
+		<Description>Oscova Agents is a reusable .NET agent framework for building local-first AI agents and tools on top of the Microsoft Agent Framework.</Description>
+		<PackageTags>oscova;oscova-agents;ai;agents;agent-framework;llm;local-first;dotnet</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Cronos" Version="0.13.0" />
+		<PackageReference Include="Microsoft.Agents.AI" Version="1.20.0" />
+		<PackageReference Include="Microsoft.Agents.AI.Tools.Shell" Version="1.20.0-preview.260831.1" />
+		<PackageReference Include="Microsoft.Bcl.Memory" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
+		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+		<PackageReference Include="Microsoft.Extensions.VectorData.Abstractions" Version="10.9.0" />
+		<PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="2.0.0" />
+		<PackageReference Include="CommunityToolkit.VectorData.SqliteVec" Version="1.0.1-preview" />
+		<PackageReference Include="PdfPig" Version="0.1.16" />
+		<PackageReference Include="Scriban" Version="7.2.7" />
+		<PackageReference Include="Syn.Utilities" Version="1.7.7" />
+		<PackageReference Include="TimeZoneConverter" Version="7.2.0" />
+		<PackageReference Include="YamlDotNet" Version="18.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />
+	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
+	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+	</ItemGroup>
+
+	<Target Name="CopyPackageToLocalFeed" AfterTargets="Pack" Condition="Exists('$(LocalNuGetRepository)')">
+		<ItemGroup>
+			<LocalFeedPackage Include="@(NuGetPackOutput)" Condition="'%(Extension)' == '.nupkg'" />
+			<SupersededLocalPackage Include="$(LocalNuGetRepository)/*.nupkg" Exclude="@(LocalFeedPackage->'$(LocalNuGetRepository)/%(Filename)%(Extension)')" />
+		</ItemGroup>
+		<Copy SourceFiles="@(LocalFeedPackage)" DestinationFolder="$(LocalNuGetRepository)" />
+		<Delete Files="@(SupersededLocalPackage)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Filename)', '^Oscova[.]Agents[.][0-9]+(?:[.][0-9]+){1,3}(?:-[0-9A-Za-z.-]+)?$'))" />
+	</Target>
+
+</Project>

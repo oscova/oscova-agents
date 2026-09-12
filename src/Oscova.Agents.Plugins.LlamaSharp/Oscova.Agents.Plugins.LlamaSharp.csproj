@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.LlamaSharp</PackageId>
+    <Version>1.0.2</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Oscova Agents plugin providing local GGUF inference through LLamaSharp.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;llamasharp;gguf;local-models</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <!-- Keep the full closure available to the offline package-install acceptance. -->
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Oscova.Agents" Version="[0.9.20.1990]" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="LLamaSharp" Version="[0.27.0]" />
+    <!-- Use the backend package only as the binary source for standard runtime assets. -->
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="[0.27.0]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="licenses\*.txt" Pack="true" PackagePath="licenses\" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\**\*" Pack="true" PackagePath="runtimes\win-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\linux-x64\**\*" Pack="true" PackagePath="runtimes\linux-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-x64\**\*" Pack="true" PackagePath="runtimes\osx-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-arm64\**\*" Pack="true" PackagePath="runtimes\osx-arm64\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
+    <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

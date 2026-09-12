@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.LocalSpeech</PackageId>
+    <Version>1.0.2</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Oscova Agents plugin providing local Whisper recognition and Kokoro synthesis.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;speech;whisper;kokoro</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Oscova.Agents" Version="[0.9.20.1990]" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Whisper.net" Version="[1.9.1]" />
+    <PackageReference Include="KokoroSharp" Version="[0.8.4]" />
+    <PackageReference Include="NAudio" Version="[3.0.1]" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="[1.29.0]" />
+    <!-- Use the runtime package only as the binary source for standard runtime assets. -->
+    <PackageReference Include="Whisper.net.Runtime" Version="[1.9.1]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="licenses\*.txt" Pack="true" PackagePath="licenses\" />
+    <None Include="$(PkgWhisper_net_Runtime)\build\win-x64\**\*" Pack="true" PackagePath="runtimes\win-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgWhisper_net_Runtime)\build\linux-x64\**\*" Pack="true" PackagePath="runtimes\linux-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgWhisper_net_Runtime)\build\macos-x64\**\*" Pack="true" PackagePath="runtimes\osx-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgWhisper_net_Runtime)\build\macos-arm64\**\*" Pack="true" PackagePath="runtimes\osx-arm64\native\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
+    <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

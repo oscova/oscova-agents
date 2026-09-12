@@ -1,0 +1,7 @@
+{
+  "id": "oscova.agents.plugins.echo",
+  "name": "Oscova Echo Plugin",
+  "version": "0.2.0",
+  "assembly": "Oscova.Agents.Plugins.Echo.dll",
+  "entryType": "Oscova.Agents.Plugins.Echo.EchoAgentPlugin"
+}

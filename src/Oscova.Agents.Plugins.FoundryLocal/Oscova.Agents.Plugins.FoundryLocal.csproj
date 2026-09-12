@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-arm64</RuntimeIdentifiers>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.FoundryLocal</PackageId>
+    <Version>1.0.2</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Oscova Agents plugin providing local model discovery, download, and inference through Microsoft Foundry Local.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;foundry-local;local-models</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Oscova.Agents" Version="[0.9.20.1990]" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AI.Foundry.Local" Version="[1.2.4]" />
+    <!-- The Host already supplies these contract-facing assemblies; duplicate ALC copies break type identity. -->
+    <PackageReference Include="OpenAI" Version="2.13.0" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.9.0" IncludeAssets="compile" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="licenses\*.txt" Pack="true" PackagePath="licenses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
+    <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>
