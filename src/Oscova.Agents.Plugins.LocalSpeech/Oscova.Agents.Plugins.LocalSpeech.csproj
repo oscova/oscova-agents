@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,8 +7,17 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
 
     <IsPackable>true</IsPackable>
+    <LocalSpeechEdition Condition="'$(LocalSpeechEdition)' == ''">Cpu</LocalSpeechEdition>
     <PackageId>Oscova.Agents.Plugins.LocalSpeech</PackageId>
-    <Version>1.0.2</Version>
+    <PackageId Condition="'$(LocalSpeechEdition)' == 'Cuda'">Oscova.Agents.Plugins.LocalSpeech.Cuda</PackageId>
+    <Version>1.0.3</Version>
+    <WhisperRuntimeVersion>1.9.1</WhisperRuntimeVersion>
+    <KokoroVersion>0.8.4</KokoroVersion>
+    <NAudioVersion>3.0.1</NAudioVersion>
+    <OnnxRuntimeVersion>1.29.0</OnnxRuntimeVersion>
+    <DefineConstants Condition="'$(LocalSpeechEdition)' == 'Cuda'">$(DefineConstants);LOCAL_SPEECH_CUDA</DefineConstants>
+    <NuspecFile Condition="'$(LocalSpeechEdition)' == 'Cuda' and '$(NuspecFile)' == ''">$(MSBuildProjectDirectory)/packaging/LocalSpeech.Cuda.nuspec</NuspecFile>
+    <NuspecBasePath>$(MSBuildProjectDirectory)</NuspecBasePath>
     <PackageType>OscovaPlugin</PackageType>
     <Description>Oscova Agents plugin providing local Whisper recognition and Kokoro synthesis.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -23,26 +32,50 @@
   <ItemGroup>
     <PackageReference Include="Oscova.Agents" Version="[0.9.20.1990]" IncludeAssets="compile" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" IncludeAssets="compile" PrivateAssets="all" />
-    <PackageReference Include="Whisper.net" Version="[1.9.1]" />
-    <PackageReference Include="KokoroSharp" Version="[0.8.4]" />
-    <PackageReference Include="NAudio" Version="[3.0.1]" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="[1.29.0]" />
+    <PackageReference Include="Whisper.net" Version="[$(WhisperRuntimeVersion)]" />
+    <PackageReference Include="KokoroSharp" Version="[$(KokoroVersion)]" />
+    <PackageReference Include="NAudio" Version="[$(NAudioVersion)]" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(LocalSpeechEdition)' == 'Cpu'">
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="[$(OnnxRuntimeVersion)]" />
     <!-- Use the runtime package only as the binary source for standard runtime assets. -->
-    <PackageReference Include="Whisper.net.Runtime" Version="[1.9.1]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+    <PackageReference Include="Whisper.net.Runtime" Version="[$(WhisperRuntimeVersion)]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(LocalSpeechEdition)' == 'Cuda'">
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="[$(OnnxRuntimeVersion)]" />
+    <PackageReference Include="Whisper.net.Runtime.Cuda.Windows" Version="[$(WhisperRuntimeVersion)]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+    <PackageReference Include="Whisper.net.Runtime.Cuda.Linux" Version="[$(WhisperRuntimeVersion)]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\" Condition="'$(LocalSpeechEdition)' == 'Cpu'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
+    <None Update="oscova-plugin.cuda.json" Condition="'$(LocalSpeechEdition)' == 'Cuda'" TargetPath="oscova-plugin.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="README.md" Pack="true" PackagePath="\" />
     <None Include="licenses\*.txt" Pack="true" PackagePath="licenses\" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(LocalSpeechEdition)' == 'Cpu'">
     <None Include="$(PkgWhisper_net_Runtime)\build\win-x64\**\*" Pack="true" PackagePath="runtimes\win-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgWhisper_net_Runtime)\build\linux-x64\**\*" Pack="true" PackagePath="runtimes\linux-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgWhisper_net_Runtime)\build\macos-x64\**\*" Pack="true" PackagePath="runtimes\osx-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgWhisper_net_Runtime)\build\macos-arm64\**\*" Pack="true" PackagePath="runtimes\osx-arm64\native\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+
+  <Target Name="ValidateLocalSpeechEdition" BeforeTargets="PrepareForBuild;GenerateNuspec">
+    <Error Condition="'$(LocalSpeechEdition)' != 'Cpu' and '$(LocalSpeechEdition)' != 'Cuda'" Text="LocalSpeechEdition must be Cpu or Cuda." />
+  </Target>
+
+  <!-- Evaluate restored binary roots and the compiled assembly before packing custom manifests. -->
+  <Target Name="SetLocalSpeechNuspecProperties" BeforeTargets="GenerateNuspec" Condition="'$(LocalSpeechEdition)' == 'Cuda'">
+    <PropertyGroup>
+      <NuspecProperties>rootVersion=$(Version);whisperVersion=$(WhisperRuntimeVersion);kokoroVersion=$(KokoroVersion);naudioVersion=$(NAudioVersion);onnxVersion=$(OnnxRuntimeVersion);assembly=$(TargetPath);cudaManifest=$(MSBuildProjectDirectory)/oscova-plugin.cuda.json;readme=$(MSBuildProjectDirectory)/README.md;licenses=$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', 'licenses', '*.txt'));icon=$(MSBuildProjectDirectory)/../../assets/branding/oscova-package-icon.png;windows=$([System.IO.Path]::Combine('$(PkgWhisper_net_Runtime_Cuda_Windows)', 'build', 'win-x64', '*.dll'));linux=$([System.IO.Path]::Combine('$(PkgWhisper_net_Runtime_Cuda_Linux)', 'build', 'linux-x64', '*.so'))</NuspecProperties>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Oscova.Agents.Plugins.LocalSpeech.Cuda</id>
+    <version>$rootVersion$</version>
+    <authors>Oscova</authors>
+    <description>NVIDIA CUDA local speech recognition and synthesis for Windows x64 and Linux x64. Requires an NVIDIA GPU, CUDA 13.0.1 or later in the CUDA 13 family, and cuDNN 9. Replaces Oscova Local Speech after restarting Oscova. GPU prerequisites are installed separately.</description>
+    <license type="expression">Apache-2.0</license>
+    <readme>README.md</readme>
+    <icon>oscova-package-icon.png</icon>
+    <projectUrl>https://oscova.ai</projectUrl>
+    <repository type="git" url="https://github.com/oscova/oscova-agents" />
+    <tags>oscova oscova-agents plugin speech whisper kokoro nvidia cuda gpu</tags>
+    <packageTypes><packageType name="OscovaPlugin" /></packageTypes>
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Whisper.net" version="[$whisperVersion$]" />
+        <dependency id="KokoroSharp" version="[$kokoroVersion$]" />
+        <dependency id="NAudio" version="[$naudioVersion$]" />
+        <dependency id="Microsoft.ML.OnnxRuntime.Gpu" version="[$onnxVersion$]" />
+        <dependency id="Oscova.Agents.Native.Whisper.Cuda.Windows" version="[$whisperVersion$]" />
+        <dependency id="Oscova.Agents.Native.Whisper.Cuda.Linux" version="[$whisperVersion$]" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="$assembly$" target="runtimes/win-x64/lib/net10.0/Oscova.Agents.Plugins.LocalSpeech.dll" />
+    <file src="$assembly$" target="runtimes/linux-x64/lib/net10.0/Oscova.Agents.Plugins.LocalSpeech.dll" />
+    <file src="$cudaManifest$" target="oscova-plugin.json" />
+    <file src="$readme$" target="README.md" />
+    <file src="$icon$" target="oscova-package-icon.png" />
+    <file src="$licenses$" target="licenses" />
+  </files>
+</package>

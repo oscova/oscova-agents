@@ -8,7 +8,7 @@ namespace Oscova.Agents.Plugins.Tests.LocalSpeech;
 public sealed class LocalSpeechPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.LocalSpeech";
-    private const string PackageVersion = "1.0.2";
+    private const string PackageVersion = "1.0.3";
     private const string PluginId = "oscova.local-speech";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -39,6 +39,8 @@ public sealed class LocalSpeechPluginPackageTests
         AssertExactDependency(dependencies, "NAudio", "3.0.1");
         AssertExactDependency(dependencies, "Microsoft.ML.OnnxRuntime", "1.29.0");
         Assert.DoesNotContain(dependencies, dependency => dependency.Id == "Whisper.net.Runtime");
+        Assert.DoesNotContain(dependencies, dependency => dependency.Id.Contains("Cuda", StringComparison.OrdinalIgnoreCase) ||
+            dependency.Id == "Microsoft.ML.OnnxRuntime.Gpu");
 
         Assert.Contains("licenses/Whisper.net-LICENSE.txt", files);
         Assert.Contains("licenses/whisper.cpp-LICENSE.txt", files);
@@ -65,15 +67,55 @@ public sealed class LocalSpeechPluginPackageTests
         Assert.True(dependency.VersionRange.IsMaxInclusive);
     }
 
-    private static string GetPackagePath()
+    [Fact]
+    public void CudaPackages_ContainRidOnlyPluginAndOrdinaryNativeDependencies()
+    {
+        var path = GetPackagePath(PackageId + ".Cuda");
+        using var archive = new PackageArchiveReader(path);
+        var files = archive.GetFiles().Select(NormalizePath).ToHashSet(StringComparer.Ordinal);
+        Assert.True(new FileInfo(path).Length <= MaxPackageBytes);
+        Assert.Contains(archive.GetPackageTypes(), type => type.Name == "OscovaPlugin");
+        Assert.DoesNotContain(files, file => file.StartsWith("lib/", StringComparison.Ordinal));
+        Assert.Equal(
+            ["runtimes/linux-x64/lib/net10.0/Oscova.Agents.Plugins.LocalSpeech.dll", "runtimes/win-x64/lib/net10.0/Oscova.Agents.Plugins.LocalSpeech.dll"],
+            files.Where(file => file.EndsWith(".dll", StringComparison.Ordinal)).Order(StringComparer.Ordinal));
+        using var manifestStream = archive.GetStream(AgentPluginLoader.ManifestFileName);
+        var manifest = JsonSerializer.Deserialize<AgentPluginManifest>(manifestStream, JsonOptions);
+        Assert.Equal(PluginId, manifest!.Id);
+        Assert.Equal(PackageVersion, manifest.Version);
+        Assert.Equal("Oscova Local Speech NVIDIA CUDA", manifest.Name);
+        using var nuspec = archive.GetNuspec();
+        var dependencies = new NuspecReader(nuspec).GetDependencyGroups().SelectMany(group => group.Packages).ToList();
+        Assert.Equal(6, dependencies.Count);
+        AssertExactDependency(dependencies, "Whisper.net", "1.9.1");
+        AssertExactDependency(dependencies, "KokoroSharp", "0.8.4");
+        AssertExactDependency(dependencies, "NAudio", "3.0.1");
+        AssertExactDependency(dependencies, "Microsoft.ML.OnnxRuntime.Gpu", "1.29.0");
+
+        foreach (var (platform, rid, extension) in new[] { ("Windows", "win-x64", ".dll"), ("Linux", "linux-x64", ".so") })
+        {
+            var id = "Oscova.Agents.Native.Whisper.Cuda." + platform;
+            AssertExactDependency(dependencies, id, "1.9.1");
+            using var payload = new PackageArchiveReader(GetPackagePath(id, "1.9.1"));
+            Assert.Equal(NuGetVersion.Parse("1.9.1"), payload.GetIdentity().Version);
+            Assert.DoesNotContain(payload.GetPackageTypes(), type => type.Name == "OscovaPlugin");
+            var payloadFiles = payload.GetFiles().Select(NormalizePath).ToArray();
+            Assert.DoesNotContain(AgentPluginLoader.ManifestFileName, payloadFiles);
+            Assert.DoesNotContain(payloadFiles, file => file.Contains("/lib/", StringComparison.Ordinal));
+            var native = payloadFiles.Where(file => file.EndsWith(extension, StringComparison.Ordinal)).ToArray();
+            Assert.NotEmpty(native);
+            Assert.All(native, file => Assert.StartsWith($"runtimes/{rid}/native/runtimes/cuda/{rid}/", file, StringComparison.Ordinal));
+            Assert.Contains(native, file => file.Contains("ggml-cuda-whisper", StringComparison.Ordinal));
+            Assert.Contains("licenses/whisper.cpp-LICENSE.txt", payloadFiles);
+        }
+    }
+
+    private static string GetPackagePath(string id = PackageId, string version = PackageVersion)
     {
         var path = Path.Combine(
-            FindRepositoryRoot(),
-            "src",
-            PackageId,
-            "bin",
-            "Release",
-            $"{PackageId}.{PackageVersion}.nupkg");
+            Environment.GetEnvironmentVariable("OSCOVA_SPEECH_PACKAGE_DIRECTORY")
+                ?? Path.Combine(FindRepositoryRoot(), "artifacts", "local-speech", "packages"),
+            $"{id}.{version}.nupkg");
         return File.Exists(path) ? path : throw new FileNotFoundException($"Release plugin package was not found: {path}.");
     }
 

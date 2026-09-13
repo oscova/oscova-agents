@@ -6,6 +6,9 @@ using System.Text;
 using KokoroSharp;
 using KokoroSharp.Core;
 using Microsoft.Extensions.Logging;
+#if LOCAL_SPEECH_CUDA
+using Microsoft.ML.OnnxRuntime;
+#endif
 using Oscova.Agents.Speech;
 using Oscova.Agents.Speech.Contracts;
 
@@ -173,8 +176,9 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
         var audioBytes = request.IncludeWavHeader ? wavBytes : BuildRawPcm(pcm16);
         stopwatch.Stop();
         _logger.LogDebug(
-            "TTS completed in {ElapsedMs} ms | Mode=CPU | UserId={UserId} | Voice={Voice} | TextLen={TextLen} | Samples={Samples} | WavHeader={WavHeader}",
+            "TTS completed in {ElapsedMs} ms | Mode={Backend} | UserId={UserId} | Voice={Voice} | TextLen={TextLen} | Samples={Samples} | WavHeader={WavHeader}",
             stopwatch.ElapsedMilliseconds,
+            LocalSpeechAgentPlugin.Backend,
             userId,
             voiceId,
             request.Text.Length,
@@ -249,8 +253,38 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
     {
         public UserEntry(string modelPath, string voiceId)
         {
+#if LOCAL_SPEECH_CUDA
+            try
+            {
+                // Preserve Kokoro's session defaults while explicitly selecting CUDA device zero.
+                using var options = new SessionOptions
+                {
+                    EnableMemoryPattern = true,
+                    InterOpNumThreads = 8,
+                    IntraOpNumThreads = 8
+                };
+                options.AppendExecutionProvider_CUDA(0);
+                Synthesizer = new KokoroWavSynthesizer(modelPath, options);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                Gate.Dispose();
+                throw new InvalidOperationException(
+                    "NVIDIA speech synthesis could not initialize CUDA. Check the NVIDIA driver, CUDA 13 and cuDNN 9 installations, or install the CPU speech edition and restart.",
+                    exception);
+            }
+#else
             Synthesizer = new KokoroWavSynthesizer(modelPath);
-            SetVoice(voiceId);
+#endif
+            try
+            {
+                SetVoice(voiceId);
+            }
+            catch
+            {
+                Dispose();
+                throw;
+            }
         }
 
         public KokoroWavSynthesizer Synthesizer { get; }
