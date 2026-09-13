@@ -4,10 +4,13 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Oscova.Agents.Speech;
 using Whisper.net;
+#if LOCAL_SPEECH_CUDA
+using Whisper.net.LibraryLoader;
+#endif
 
 namespace Oscova.Agents.Plugins.LocalSpeech;
 
-/// <summary>Runs local speech recognition through the packaged CPU Whisper runtime.</summary>
+/// <summary>Runs local speech recognition through the packaged Whisper runtime.</summary>
 internal sealed class WhisperSpeechRecognitionProvider : ISpeechRecognitionProvider, IDisposable
 {
     private const string DefaultModelUrl = "https://huggingface.co/sandrohanea/whisper.net/resolve/v3/classic/ggml-base.bin";
@@ -98,8 +101,9 @@ internal sealed class WhisperSpeechRecognitionProvider : ISpeechRecognitionProvi
 
             stopwatch.Stop();
             _logger.LogDebug(
-                "ASR completed in {ElapsedMs} ms | Mode=CPU | Lang={Lang} | Segments={Segments} | TextLen={Length}",
+                "ASR completed in {ElapsedMs} ms | Mode={Backend} | Lang={Lang} | Segments={Segments} | TextLen={Length}",
                 stopwatch.ElapsedMilliseconds,
+                LocalSpeechAgentPlugin.Backend,
                 language,
                 transcription.Segments.Count,
                 transcription.Text.Length);
@@ -147,7 +151,26 @@ internal sealed class WhisperSpeechRecognitionProvider : ISpeechRecognitionProvi
                 throw new SpeechModelUnavailableException("Speech recognition model is not available.");
             }
 
+#if LOCAL_SPEECH_CUDA
+            try
+            {
+                var runtimeInfo = WhisperFactory.GetRuntimeInfo();
+                // The selected distribution alone does not prove that the CUDA backend registered.
+                if (RuntimeOptions.LoadedLibrary != RuntimeLibrary.Cuda ||
+                    runtimeInfo?.Contains("CUDA : ", StringComparison.Ordinal) != true)
+                    throw new InvalidOperationException("Whisper did not register its CUDA backend.");
+
+                _factory = WhisperFactory.FromPath(ModelPath);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                throw new InvalidOperationException(
+                    "NVIDIA speech recognition could not initialize CUDA. Check the NVIDIA driver and CUDA 13 installation, or install the CPU speech edition and restart.",
+                    exception);
+            }
+#else
             _factory = WhisperFactory.FromPath(ModelPath);
+#endif
         }
         finally
         {
