@@ -195,35 +195,20 @@ public abstract class TextFileToolsetBase
                 "Use a path inside the selected base directory.");
         }
 
-        var allowedDirectories = workspaceResolver();
-        if (allowedDirectories.Count == 0)
+        try
         {
-            return resolvedPath;
+            // Patch paths are inside patch text, so invocation middleware cannot authorize them.
+            return PathHelper.ResolveAuthorizedHostPath(
+                resolvedPath,
+                workspaceResolver(),
+                WorkspacePathAccess.Write);
         }
-
-        if (!PathHelper.TryGetContainingDirectory(resolvedPath, allowedDirectories, out var containingDirectory) ||
-            containingDirectory is null)
-        {
-            throw new ToolFailureException(
-                "The patch path is outside the allowed workspace.",
-                "Use a path from Workspace Access.");
-        }
-
-        if (PathHelper.HasSymlinkInPath(resolvedPath, containingDirectory.Value))
+        catch (UnauthorizedAccessException)
         {
             throw new ToolFailureException(
-                "The patch path contains a link that cannot be followed.",
-                "Use a direct path inside the workspace.");
+                "The patch path is not writable within Workspace Access.",
+                "Use a writable path from Workspace Access.");
         }
-
-        if (containingDirectory.AccessMode != WorkspaceAccessMode.ReadWrite)
-        {
-            throw new ToolFailureException(
-                "The patch path is read-only.",
-                "Choose a writable workspace path.");
-        }
-
-        return resolvedPath;
     }
 
     private void ApplyUpdateFile(UpdateFileOperation operation, string baseDirectory, ref int moved)

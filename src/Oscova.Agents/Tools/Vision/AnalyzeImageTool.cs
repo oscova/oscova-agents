@@ -1,4 +1,9 @@
 using Microsoft.Extensions.AI;
+using Oscova.Agents.Toolsets;
+using Oscova.Agents.Utils;
+using Oscova.Agents.Workspace;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -11,7 +16,9 @@ namespace Oscova.Agents.Tools.Vision;
 /// <see cref="IChatClient"/> the chat agent is using, so the tool always routes image
 /// analysis through the currently selected (vision-capable) provider.
 /// </summary>
-public sealed class AnalyzeImageTool(IChatClient chatClient)
+public sealed class AnalyzeImageTool(
+    IChatClient chatClient,
+    Func<IReadOnlyList<AllowedDirectory>> workspaceResolver)
 {
     /// <summary>
     /// Gets the stable function name used when exposing the image analysis tool.
@@ -36,33 +43,31 @@ public sealed class AnalyzeImageTool(IChatClient chatClient)
 
     [Description("Analyzes one image on disk and returns a text answer.")]
     private async Task<string> AnalyzeAsync(
-        [Description("Absolute local path to the image file.")] string path,
+        [Description("File path: relative to your working directory, or an absolute path listed under Workspace Access")]
+        [WorkspacePath(Access = WorkspacePathAccess.Read)] string path,
         [Description("The question to answer about the image.")] string question,
         CancellationToken ct)
     {
-        if (!Path.IsPathFullyQualified(path))
-        {
-            return $"Path must be absolute: '{path}'.";
-        }
-
-        if (!File.Exists(path))
+        // Invocation middleware authorizes the requested path, then this maps it for host IO.
+        var hostPath = PathHelper.ResolveToHostPath(path, workspaceResolver);
+        if (!File.Exists(hostPath))
         {
             return $"Image not found at '{path}'.";
         }
 
-        var mediaType = MediaTypeFromExtension(Path.GetExtension(path));
+        var mediaType = MediaTypeFromExtension(Path.GetExtension(hostPath));
         if (mediaType is null)
         {
             return $"Unsupported image type for '{path}'.";
         }
 
-        var size = new FileInfo(path).Length;
+        var size = new FileInfo(hostPath).Length;
         if (size > MaxImageBytes)
         {
             return $"Image '{path}' exceeds the {MaxImageBytes / (1024 * 1024)} MB size limit.";
         }
 
-        var bytes = await File.ReadAllBytesAsync(path, ct).ConfigureAwait(false);
+        var bytes = await File.ReadAllBytesAsync(hostPath, ct).ConfigureAwait(false);
         var message = new ChatMessage(ChatRole.User,
         [
             new TextContent(question),

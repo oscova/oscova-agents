@@ -7,7 +7,7 @@ namespace Oscova.Agents.Tests.Framework.Toolsets;
 public sealed class CodingToolsetTests : IDisposable
 {
     private readonly string _workspacePath;
-    private readonly CodingToolset _toolset = new();
+    private readonly CodingToolset _toolset;
 
     public CodingToolsetTests()
     {
@@ -16,6 +16,10 @@ public sealed class CodingToolsetTests : IDisposable
             "apply-patch-tests",
             Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(_workspacePath);
+        _toolset = new CodingToolset(() =>
+        [
+            new(_workspacePath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite)
+        ]);
     }
 
     /// <summary>A successful case-only move must preserve destination content on Windows.</summary>
@@ -144,9 +148,27 @@ public sealed class CodingToolsetTests : IDisposable
             """;
 
         var exception = Assert.Throws<ToolFailureException>(() => toolset.ApplyPatch(patch, _workspacePath));
-        Assert.Equal("The patch path is read-only.", exception.Message);
+        Assert.Equal("The patch path is not writable within Workspace Access.", exception.Message);
         Assert.DoesNotContain(filePath, exception.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Equal("original", File.ReadAllText(filePath));
+    }
+
+    [Fact]
+    public void ApplyPatch_WhenNoWorkspaceDirectoriesAreAllowed_ThrowsBeforeCreatingFile()
+    {
+        var targetPath = GetWorkspaceFile("denied.txt");
+        var toolset = new CodingToolset(() => []);
+        const string patch = """
+            *** Begin Patch
+            *** Add File: denied.txt
+            +blocked
+            *** End Patch
+            """;
+
+        var exception = Assert.Throws<ToolFailureException>(() => toolset.ApplyPatch(patch, _workspacePath));
+
+        Assert.Equal("The patch path is not writable within Workspace Access.", exception.Message);
+        Assert.False(File.Exists(targetPath));
     }
 
     [Theory]
