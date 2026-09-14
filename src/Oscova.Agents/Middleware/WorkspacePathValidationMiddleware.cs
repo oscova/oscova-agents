@@ -40,11 +40,6 @@ public static class WorkspacePathValidationMiddleware
         FunctionInvocationContext context,
         IReadOnlyList<AllowedDirectory> allowedDirectories)
     {
-        if (allowedDirectories.Count == 0)
-        {
-            return;
-        }
-
         MethodInfo? method = context.Function.UnderlyingMethod;
         if (method is null)
         {

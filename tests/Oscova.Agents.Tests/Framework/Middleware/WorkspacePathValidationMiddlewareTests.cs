@@ -34,6 +34,23 @@ public sealed class WorkspacePathValidationMiddlewareTests : IDisposable
     }
 
     [Fact]
+    public void ValidateWorkspaceArguments_Rejects_AnnotatedPath_When_NoDirectoriesAreAllowed()
+    {
+        var context = CreateInvocationContext(nameof(CodingToolset.ReadFile), "file_path", _workspacePath);
+
+        Assert.Throws<UnauthorizedAccessException>(
+            () => WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(context, []));
+    }
+
+    [Fact]
+    public void ValidateWorkspaceArguments_Allows_UnannotatedArgument_When_NoDirectoriesAreAllowed()
+    {
+        var context = CreateInvocationContext(nameof(CodingToolset.ApplyPatch), "patch", _workspacePath);
+
+        WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(context, []);
+    }
+
+    [Fact]
     public void ValidateWorkspaceArguments_Rejects_Path_Outside_Allowed_Directory()
     {
         string outsidePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "notes.txt");
