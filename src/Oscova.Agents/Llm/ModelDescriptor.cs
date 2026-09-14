@@ -18,6 +18,16 @@ public sealed class ModelDescriptor
     public int? ContextWindowSize { get; init; }
 
     /// <summary>
+    /// Gets the model artifact size in bytes, or null when unknown.
+    /// </summary>
+    public long? SizeBytes { get; init; }
+
+    /// <summary>
+    /// Gets the estimated F16 cache bytes per context token, or null when unknown.
+    /// </summary>
+    public long? KvCacheBytesPerToken { get; init; }
+
+    /// <summary>
     /// Gets whether the model reports image input support, or null when unknown.
     /// </summary>
     public bool? SupportsImages { get; init; }
