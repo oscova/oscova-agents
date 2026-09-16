@@ -84,6 +84,22 @@ public sealed class WorkspacePathValidationMiddlewareTests : IDisposable
         Assert.Contains("read-only", exception.Message);
     }
 
+    [Fact]
+    public void ValidateWorkspaceArguments_EnforcesReadOnlyAccessThroughLogicalAlias()
+    {
+        var context = CreateInvocationContext(nameof(CodingToolset.WriteFile), "file_path", "mnt/reference/notes.txt");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new(_workspacePath, "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, AgentPath: "/mnt/reference")
+        ];
+
+        UnauthorizedAccessException exception = Assert.Throws<UnauthorizedAccessException>(
+            () => WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(context, allowedDirectories));
+
+        Assert.Contains("read-only", exception.Message);
+        Assert.False(File.Exists(Path.Combine(_workspacePath, "notes.txt")));
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_workspacePath))

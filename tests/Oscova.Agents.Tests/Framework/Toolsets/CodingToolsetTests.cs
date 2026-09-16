@@ -201,6 +201,43 @@ public sealed class CodingToolsetTests : IDisposable
     }
 
     [Fact]
+    public void WriteAndRead_RouteEveryLogicalRootToItsGrantedFolder()
+    {
+        string defaultPath = Path.Combine(_workspacePath, "default");
+        string researchPath = Path.Combine(_workspacePath, "research");
+        string dataPath = Path.Combine(_workspacePath, "data");
+        string referencePath = Path.Combine(_workspacePath, "reference");
+        var toolset = new CodingToolset(() =>
+        [
+            new(defaultPath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
+            new(researchPath, "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/research"),
+            new(dataPath, "data", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/data"),
+            new(referencePath, "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/reference")
+        ]);
+
+        toolset.WriteFile("workspace/default/poem.txt", "default");
+        toolset.WriteFile("workspace/research/report.txt", "research");
+        toolset.WriteFile("data/drafts/note.txt", "private");
+        toolset.WriteFile("mnt/reference/result.txt", "reference");
+        toolset.ApplyPatch("""
+            *** Begin Patch
+            *** Add File: patched.txt
+            +patched
+            *** End Patch
+            """, "workspace/research");
+
+        Assert.Contains("default", toolset.ReadFile("workspace/default/poem.txt"), StringComparison.Ordinal);
+        Assert.Equal("default", File.ReadAllText(Path.Combine(defaultPath, "poem.txt")));
+        Assert.Equal("research", File.ReadAllText(Path.Combine(researchPath, "report.txt")));
+        Assert.Equal("patched", File.ReadAllText(Path.Combine(researchPath, "patched.txt")).Trim());
+        Assert.Equal("private", File.ReadAllText(Path.Combine(dataPath, "drafts", "note.txt")));
+        Assert.Equal("reference", File.ReadAllText(Path.Combine(referencePath, "result.txt")));
+        Assert.False(Directory.Exists(Path.Combine(defaultPath, "workspace")));
+        Assert.False(Directory.Exists(Path.Combine(defaultPath, "data")));
+        Assert.False(Directory.Exists(Path.Combine(defaultPath, "mnt")));
+    }
+
+    [Fact]
     public void ReadFile_CapsAnOverLongLine_AndReportsSize()
     {
         var path = WriteWorkspaceFile("read/oneline.txt", new string('a', 5000));
