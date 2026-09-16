@@ -182,15 +182,11 @@ public static class PathHelper
         return FindWorkingDirectory(allowedDirectories)?.Value;
     }
 
-    /// <summary>
-    /// Returns the agent-facing path of the working directory (e.g. <c>/workspace/default</c> or a
-    /// named workspace in sandbox mode). Use this wherever the shell or system prompt must advertise
-    /// a working directory — it matches what the shell is actually mounted at.
-    /// </summary>
+    /// <summary>Returns the canonical working-directory path, falling back to its native path for grants without an alias.</summary>
     public static string? ResolveWorkingDirectoryAgentPath(IReadOnlyList<AllowedDirectory> allowedDirectories)
     {
         AllowedDirectory? dir = FindWorkingDirectory(allowedDirectories);
-        return dir?.EffectiveAgentPath;
+        return dir is null ? null : ResolveToAgentPath(dir.Value, [dir]);
     }
 
     private static AllowedDirectory? FindWorkingDirectory(IReadOnlyList<AllowedDirectory> allowedDirectories)
@@ -216,10 +212,10 @@ public static class PathHelper
     /// <summary>
     /// THE PATH CONTRACT. Every filesystem-facing tool (read, write, list, PDF, and any future or
     /// plugin tool) resolves an agent-supplied path to a host path through this one method, then does
-    /// its IO on the host. The agent is only ever shown agent-facing paths:
+    /// its IO on the host. The agent is only ever shown paths that resolve through this contract:
     /// <list type="bullet">
     ///   <item>sandbox mode: <c>/workspace/&lt;name&gt;</c>, <c>/data</c>, <c>/mnt/&lt;label&gt;</c>;</item>
-    ///   <item>host / disabled mode: the real host paths of the OS the app runs on.</item>
+    ///   <item>host / disabled mode: the real host paths plus stable file-tool aliases.</item>
     /// </list>
     /// In sandbox mode those agent-facing roots are bind-mounted into the container at exactly these
     /// paths, so a file tool (host IO) and the sandboxed shell see the <b>same bytes</b>. Relative paths
@@ -245,44 +241,68 @@ public static class PathHelper
             return false;
         }
 
-        string normalized = ToSlashSeparatedRelativePath(requestedPath);
+        string normalized = NormalizeAgentPath(requestedPath);
+        string logicalPath = normalized.TrimStart('/');
+        var aliases = allowedDirectories
+            .Where(static directory => directory.Kind == DirectorySourceKind.LocalPath &&
+                !string.IsNullOrWhiteSpace(directory.AgentPath))
+            .Select(directory => (Directory: directory, Alias: NormalizeAgentPath(directory.AgentPath!).Trim('/')))
+            .OrderByDescending(static route => route.Alias.Length);
 
-        foreach (AllowedDirectory directory in allowedDirectories)
+        string? matchedHostPath = null;
+        int matchedRootLength = -1;
+        foreach (var route in aliases)
         {
-            if (directory.Kind != DirectorySourceKind.LocalPath)
+            if (matchedRootLength >= 0 && route.Alias.Length < matchedRootLength)
+            {
+                break;
+            }
+
+            if (!string.Equals(logicalPath, route.Alias, StringComparison.Ordinal) &&
+                !logicalPath.StartsWith(route.Alias + "/", StringComparison.Ordinal))
             {
                 continue;
             }
 
-            string agentPath = ToSlashSeparatedRelativePath(directory.EffectiveAgentPath).TrimEnd('/');
-            if (string.IsNullOrWhiteSpace(agentPath))
+            string? suffix = GetRelativePathUnderRoot(logicalPath, route.Alias, StringComparison.Ordinal);
+            if (suffix is null)
             {
-                continue;
+                return false;
             }
 
-            if (string.Equals(normalized, agentPath, StringComparison.Ordinal) ||
-                normalized.StartsWith(agentPath + "/", StringComparison.Ordinal))
+            string candidate = Path.GetFullPath(Path.Combine(route.Directory.Value, ToPlatformRelativePath(suffix)));
+            if (matchedHostPath is not null && !ArePathsEqual(matchedHostPath, candidate))
             {
-                string suffix = normalized.Length == agentPath.Length ? string.Empty : normalized[(agentPath.Length + 1)..];
-                hostFullPath = Path.GetFullPath(Path.Combine(directory.Value, ToPlatformRelativePath(suffix)));
-                return true;
+                return false;
             }
+
+            matchedHostPath = candidate;
+            matchedRootLength = route.Alias.Length;
         }
 
-        if (!string.IsNullOrWhiteSpace(workingDirectoryHostPath) &&
-            (string.Equals(normalized, "/workspace", StringComparison.Ordinal) ||
-             normalized.StartsWith("/workspace/", StringComparison.Ordinal)))
+        if (matchedHostPath is not null)
         {
-            // Treat bare /workspace paths as shorthand for the resolved shell working directory.
-            string suffix = normalized.Length == "/workspace".Length ? string.Empty : normalized["/workspace/".Length..];
-            hostFullPath = Path.GetFullPath(Path.Combine(workingDirectoryHostPath, ToPlatformRelativePath(suffix)));
+            hostFullPath = matchedHostPath;
             return true;
         }
 
         if (Path.IsPathFullyQualified(requestedPath))
         {
-            hostFullPath = Path.GetFullPath(requestedPath);
+            string nativePath = Path.GetFullPath(requestedPath);
+            // A granted native folder can sit under a reserved name without overlapping an alias.
+            if (IsReservedLogicalPath(logicalPath) &&
+                !TryGetContainingDirectory(nativePath, allowedDirectories, out _))
+            {
+                return false;
+            }
+
+            hostFullPath = nativePath;
             return true;
+        }
+
+        if (IsReservedLogicalPath(logicalPath) || Path.IsPathRooted(requestedPath))
+        {
+            return false;
         }
 
         if (!string.IsNullOrWhiteSpace(workingDirectoryHostPath))
@@ -292,6 +312,26 @@ public static class PathHelper
         }
 
         return false;
+    }
+
+    /// <summary>Normalizes separators and no-op segments without resolving parent traversal.</summary>
+    private static string NormalizeAgentPath(string path)
+    {
+        string slashPath = ToSlashSeparatedRelativePath(path);
+        string prefix = slashPath.StartsWith("/", StringComparison.Ordinal) ? "/" : string.Empty;
+        string[] segments = slashPath.Split('/', StringSplitOptions.RemoveEmptyEntries)
+            .Where(static segment => segment != ".")
+            .ToArray();
+        return prefix + string.Join('/', segments);
+    }
+
+    /// <summary>Returns whether an unmatched path claims one of the logical file-tool roots.</summary>
+    private static bool IsReservedLogicalPath(string path)
+    {
+        return path is "workspace" or "data" or "mnt" ||
+               path.StartsWith("workspace/", StringComparison.Ordinal) ||
+               path.StartsWith("data/", StringComparison.Ordinal) ||
+               path.StartsWith("mnt/", StringComparison.Ordinal);
     }
 
     /// <summary>

@@ -51,13 +51,65 @@ public sealed class EnvironmentContextProviderTests
 
         var context = await InvokeProviderAsync(provider);
 
-        Assert.Contains("- docs (`ro`): /repo/docs", context.Instructions);
+        Assert.Contains($"- docs (`ro`): {Path.GetFullPath("/repo/docs")}", context.Instructions);
+    }
+
+    [Fact]
+    public async Task ProvideAIContextAsync_RendersFileToolAliasSeparatelyFromHostPath()
+    {
+        var provider = new EnvironmentContextProvider(
+        [
+            new AllowedDirectory(
+                "/host/research",
+                "Research Notes",
+                DirectorySourceKind.LocalPath,
+                WorkspaceAccessMode.ReadWrite,
+                AgentPath: "/workspace/research-notes")
+        ]);
+
+        var context = await InvokeProviderAsync(provider);
+
+        Assert.Contains(
+            "- Research Notes (`rw`): /workspace/research-notes (host shell: /host/research)",
+            context.Instructions);
+        Assert.Contains("working_directory: /host/research", context.Instructions);
+        Assert.Contains(
+            "Aliases without a leading slash are accepted by file tools only.",
+            context.Instructions);
+    }
+
+    [Fact]
+    public async Task ProvideAIContextAsync_RendersSandboxPathWithoutHostPath()
+    {
+        var provider = new EnvironmentContextProvider(
+        [
+            new AllowedDirectory(
+                "C:\\private\\research",
+                "research",
+                DirectorySourceKind.LocalPath,
+                WorkspaceAccessMode.ReadWrite,
+                AgentPath: "/workspace/research")
+        ])
+        {
+            RuntimeEnvironment = new RuntimeEnvironmentInfo(
+                "Linux", "X64", "bash", "/", "/workspace/research", "/root", "/tmp", UsesHostPaths: false)
+        };
+
+        var context = await InvokeProviderAsync(provider);
+
+        Assert.Contains("- research (`rw`): /workspace/research", context.Instructions!.Split(Environment.NewLine));
+        Assert.DoesNotContain("C:\\private", context.Instructions, StringComparison.Ordinal);
+        Assert.Contains("Shell commands use the mounted absolute addresses", context.Instructions);
     }
 
     [Fact]
     public async Task ProvideAIContextAsync_UsesCustomSystemPrompt()
     {
-        var provider = new EnvironmentContextProvider
+        var workspacePath = Path.Combine(Path.GetTempPath(), "custom-workspace");
+        var provider = new EnvironmentContextProvider(
+        [
+            new(workspacePath, "custom", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/custom")
+        ])
         {
             SystemPrompt = "cwd={{ working_directory }} os={{ os }} workspaces={{ workspace_directories }} host={{ host_os }}|{{ host_architecture }}|{{ host_shell }}|{{ host_path_separator }}",
             HostEnvironment = new RuntimeEnvironmentInfo(
@@ -74,7 +126,8 @@ public sealed class EnvironmentContextProviderTests
 
         Assert.Contains("cwd=", context.Instructions);
         Assert.Contains("os=", context.Instructions);
-        Assert.Contains("- none configured", context.Instructions);
+        Assert.Contains($"- custom (`rw`): /workspace/custom (host shell: {workspacePath})", context.Instructions);
+        Assert.Contains("File tools also accept granted native paths.", context.Instructions);
         Assert.Contains("host=Host OS|Arm64|host-shell|\\", context.Instructions);
         Assert.DoesNotContain("{{ working_directory }}", context.Instructions);
     }
@@ -88,7 +141,8 @@ public sealed class EnvironmentContextProviderTests
                 "C:\\Repo",
                 "host repo",
                 DirectorySourceKind.LocalPath,
-                WorkspaceAccessMode.ReadWrite)
+                WorkspaceAccessMode.ReadWrite,
+                AgentPath: "/workspace")
         ])
         {
             RuntimeEnvironment = new RuntimeEnvironmentInfo(
@@ -98,7 +152,8 @@ public sealed class EnvironmentContextProviderTests
                 "/",
                 "/workspace",
                 "/root",
-                "/tmp")
+                "/tmp",
+                UsesHostPaths: false)
         };
 
         var context = await InvokeProviderAsync(provider);
@@ -110,7 +165,8 @@ public sealed class EnvironmentContextProviderTests
         Assert.Contains("path_separator: /", context.Instructions);
         Assert.Contains("home_directory: /root", context.Instructions);
         Assert.Contains("temp_directory: /tmp", context.Instructions);
-        Assert.Contains("- host repo (`rw`): C:\\Repo", context.Instructions);
+        Assert.Contains("- host repo (`rw`): /workspace", context.Instructions);
+        Assert.DoesNotContain("C:\\Repo", context.Instructions);
     }
 
     [Fact]
@@ -137,9 +193,9 @@ public sealed class EnvironmentContextProviderTests
         ];
         var second = await InvokeProviderAsync(provider);
 
-        Assert.Contains("/repo/one", first.Instructions);
-        Assert.Contains("/repo/two", second.Instructions);
-        Assert.DoesNotContain("/repo/one", second.Instructions);
+        Assert.Contains(Path.GetFullPath("/repo/one"), first.Instructions);
+        Assert.Contains(Path.GetFullPath("/repo/two"), second.Instructions);
+        Assert.DoesNotContain(Path.GetFullPath("/repo/one"), second.Instructions);
     }
 
     [Fact]
@@ -163,7 +219,7 @@ public sealed class EnvironmentContextProviderTests
 
         Assert.Equal(1, callCount);
         Assert.Contains("working_directory: /repo/1", context.Instructions);
-        Assert.Contains("- repo (`rw`): /repo/1", context.Instructions);
+        Assert.Contains($"- repo (`rw`): {Path.GetFullPath("/repo/1")}", context.Instructions);
     }
 
     [Fact]

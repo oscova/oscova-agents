@@ -195,7 +195,7 @@ public sealed class PathHelperTests
     }
 
     [Fact]
-    public void TryResolveToHostPath_MapsBareWorkspacePathAgainstWorkingDirectory()
+    public void TryResolveToHostPath_RejectsUnknownWorkspaceRoot()
     {
         string workspacePath = Path.Combine(Path.GetTempPath(), "workspace-default");
 
@@ -205,8 +205,149 @@ public sealed class PathHelperTests
             workspacePath,
             out string hostPath);
 
+        Assert.False(resolved);
+        Assert.Empty(hostPath);
+    }
+
+    [Theory]
+    [InlineData("workspace/research/out.txt", "research", "out.txt")]
+    [InlineData("./workspace/research/out.txt", "research", "out.txt")]
+    [InlineData("/workspace//research/./drafts/out.txt", "research", "drafts/out.txt")]
+    [InlineData("data/notes/out.txt", "data", "notes/out.txt")]
+    [InlineData("/mnt/reference/out.txt", "reference", "out.txt")]
+    public void TryResolveToHostPath_MapsLogicalAliasesInEveryMode(
+        string requestedPath,
+        string expectedLabel,
+        string expectedRelativePath)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "logical-routes");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new(Path.Combine(root, "default"), "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
+            new(Path.Combine(root, "research"), "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/research"),
+            new(Path.Combine(root, "data"), "data", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/data"),
+            new(Path.Combine(root, "reference"), "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, AgentPath: "/mnt/reference")
+        ];
+
+        bool resolved = PathHelper.TryResolveToHostPath(
+            requestedPath,
+            allowedDirectories,
+            allowedDirectories[0].Value,
+            out string hostPath);
+
         Assert.True(resolved);
-        Assert.Equal(Path.GetFullPath(Path.Combine(workspacePath, "out.txt")), hostPath);
+        AllowedDirectory expectedDirectory = Assert.Single(allowedDirectories, directory => directory.Label == expectedLabel);
+        Assert.Equal(
+            Path.GetFullPath(Path.Combine(expectedDirectory.Value, PathHelper.ToPlatformRelativePath(expectedRelativePath))),
+            hostPath);
+    }
+
+    [Theory]
+    [InlineData("workspace/missing/out.txt")]
+    [InlineData("workspace/research-copy/out.txt")]
+    [InlineData("/data/../workspace/default/out.txt")]
+    [InlineData("mnt/reference/../../out.txt")]
+    public void TryResolveToHostPath_RejectsUnknownOrEscapingLogicalAliases(string requestedPath)
+    {
+        string workspacePath = Path.Combine(Path.GetTempPath(), "workspace-default");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new(workspacePath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
+            new(Path.Combine(Path.GetTempPath(), "reference"), "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, AgentPath: "/mnt/reference")
+        ];
+
+        bool resolved = PathHelper.TryResolveToHostPath(
+            requestedPath,
+            allowedDirectories,
+            workspacePath,
+            out string hostPath);
+
+        Assert.False(resolved);
+        Assert.Empty(hostPath);
+    }
+
+    [SkippableTheory]
+    [InlineData("/mnt/disk/out.txt", true)]
+    [InlineData("/mnt/missing/out.txt", false)]
+    public void TryResolveToHostPath_OnLinuxPreservesGrantedNativePathsUnderReservedRoots(string requestedPath, bool expected)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux(), "Rooted logical aliases require native Linux path semantics.");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new("/mnt/disk", "archive", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/archive")
+        ];
+
+        bool resolved = PathHelper.TryResolveToHostPath(
+            requestedPath,
+            allowedDirectories,
+            allowedDirectories[0].Value,
+            out string hostPath);
+
+        Assert.Equal(expected, resolved);
+        Assert.Equal(expected ? requestedPath : string.Empty, hostPath);
+        if (expected)
+        {
+            Assert.Equal(hostPath, PathHelper.ResolveAuthorizedHostPath(
+                "mnt/archive/out.txt", allowedDirectories, WorkspacePathAccess.Read));
+        }
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public void TryResolveToHostPath_RejectsAmbiguousAliasesRegardlessOfOrder(bool reverse, bool sameRoot)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "alias-conflict");
+        string first = Path.Combine(root, "first");
+        AllowedDirectory[] directories =
+        [
+            new(first, "first", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/reference"),
+            new(sameRoot ? first : Path.Combine(root, "second"), "second", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, AgentPath: "/mnt/reference")
+        ];
+        if (reverse) Array.Reverse(directories);
+
+        bool resolved = PathHelper.TryResolveToHostPath("mnt/reference/out.txt", directories, first, out string hostPath);
+
+        Assert.Equal(sameRoot, resolved);
+        Assert.Equal(sameRoot ? Path.Combine(first, "out.txt") : string.Empty, hostPath);
+        if (sameRoot)
+        {
+            Assert.Throws<UnauthorizedAccessException>(() => PathHelper.ResolveAuthorizedHostPath(
+                "mnt/reference/out.txt", directories, WorkspacePathAccess.Write));
+        }
+    }
+
+    [Fact]
+    public void TryResolveToHostPath_UsesTheMostSpecificLogicalAlias()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "logical-routes");
+        string reportsPath = Path.Combine(root, "reports");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new(Path.Combine(root, "archive"), "archive", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/archive"),
+            new(reportsPath, "reports", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/archive/reports")
+        ];
+
+        bool resolved = PathHelper.TryResolveToHostPath(
+            "mnt/archive/reports/summary.txt",
+            allowedDirectories,
+            allowedDirectories[0].Value,
+            out string hostPath);
+
+        Assert.True(resolved);
+        Assert.Equal(Path.GetFullPath(Path.Combine(reportsPath, "summary.txt")), hostPath);
+    }
+
+    [Fact]
+    public void ResolveWorkingDirectoryHostPath_UsesFirstWritableGrantOrReturnsNull()
+    {
+        AllowedDirectory readOnly = new("readonly", "library", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly);
+        AllowedDirectory writable = new("writable", "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite);
+
+        Assert.Equal(writable.Value, PathHelper.ResolveWorkingDirectoryHostPath([readOnly, writable]));
+        Assert.Null(PathHelper.ResolveWorkingDirectoryHostPath([readOnly]));
     }
 
     [Fact]
@@ -225,7 +366,7 @@ public sealed class PathHelperTests
     }
 
     [Fact]
-    public void TryResolveToAgentPath_MapsHostPathToSandboxWorkspacePath()
+    public void TryResolveToAgentPath_CanonicalAndNativePathsReachTheSameFile()
     {
         string workspacePath = Path.Combine(Path.GetTempPath(), "workspace-default");
         string hostPath = Path.Combine(workspacePath, "releases", "app.zip");
@@ -238,10 +379,12 @@ public sealed class PathHelperTests
 
         Assert.True(resolved);
         Assert.Equal("/workspace/default/releases/app.zip", agentPath);
+        Assert.Equal(hostPath, PathHelper.ResolveAuthorizedHostPath(agentPath, allowedDirectories, WorkspacePathAccess.Read));
+        Assert.Equal(hostPath, PathHelper.ResolveAuthorizedHostPath(hostPath, allowedDirectories, WorkspacePathAccess.Read));
     }
 
     [Fact]
-    public void TryResolveToAgentPath_LocalModePreservesHostPath()
+    public void TryResolveToAgentPath_NativeOnlyGrantPreservesHostPath()
     {
         string workspacePath = Path.Combine(Path.GetTempPath(), "workspace-default");
         string hostPath = Path.Combine(workspacePath, "out.txt");

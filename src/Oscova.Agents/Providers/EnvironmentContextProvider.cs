@@ -5,6 +5,7 @@ using Oscova.Agents.Workspace;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Oscova.Agents.Providers;
 /// <summary>
 /// Describes the shell execution target the agent should assume when it reasons about commands.
 /// </summary>
+/// <remarks>UsesHostPaths selects physical host addresses for shell commands instead of mounted agent addresses.</remarks>
 public sealed record RuntimeEnvironmentInfo(
     string Os,
     string Architecture,
@@ -21,7 +23,8 @@ public sealed record RuntimeEnvironmentInfo(
     string PathSeparator,
     string WorkingDirectory,
     string HomeDirectory,
-    string TempDirectory);
+    string TempDirectory,
+    bool UsesHostPaths = true);
 
 /// <summary>
 /// Publishes the current OS environment and any resolved workspace directories to the agent prompt.
@@ -143,7 +146,7 @@ public sealed class EnvironmentContextProvider : AIContextProvider
             host_architecture = hostEnvironment.Architecture,
             host_shell = hostEnvironment.Shell,
             host_path_separator = hostEnvironment.PathSeparator,
-            workspace_directories = BuildWorkspaceDirectoryList(workspaceDirectories)
+            workspace_directories = BuildWorkspaceDirectoryList(workspaceDirectories, runtimeEnvironment.UsesHostPaths)
         });
 
         return ValueTask.FromResult(new AIContext { Instructions = instructions });
@@ -174,7 +177,7 @@ public sealed class EnvironmentContextProvider : AIContextProvider
         return PathHelper.ResolveWorkingDirectoryHostPath(workspaceDirectories) ?? workspaceDirectories[0].Value;
     }
 
-    private static string BuildWorkspaceDirectoryList(IReadOnlyList<AllowedDirectory> workspaceDirectories)
+    private static string BuildWorkspaceDirectoryList(IReadOnlyList<AllowedDirectory> workspaceDirectories, bool usesHostPaths)
     {
         if (workspaceDirectories.Count == 0)
         {
@@ -184,13 +187,31 @@ public sealed class EnvironmentContextProvider : AIContextProvider
         var builder = new StringBuilder();
         foreach (AllowedDirectory directory in workspaceDirectories)
         {
+            string agentPath = PathHelper.ResolveToAgentPath(directory.Value, [directory]);
             string access = directory.AccessMode == WorkspaceAccessMode.ReadWrite ? "rw" : "ro";
             builder.Append("- ")
                 .Append(NormalizeMarkdownValue(directory.Label))
                 .Append(" (`")
                 .Append(access)
                 .Append("`): ")
-                .AppendLine(NormalizeMarkdownPath(directory.EffectiveAgentPath));
+                .Append(NormalizeMarkdownPath(agentPath));
+            if (usesHostPaths && !string.IsNullOrWhiteSpace(directory.AgentPath) &&
+                !string.Equals(agentPath, directory.Value, StringComparison.Ordinal))
+            {
+                builder.Append(" (host shell: ")
+                    .Append(NormalizeMarkdownPath(directory.Value))
+                    .Append(')');
+            }
+            builder.AppendLine();
+        }
+
+        if (workspaceDirectories.Any(static directory => !string.IsNullOrWhiteSpace(directory.AgentPath)))
+        {
+            builder.Append("The listed aliases are file-tool addresses. File tools also accept granted native paths. ")
+                .Append("Aliases without a leading slash are accepted by file tools only. ")
+                .Append(usesHostPaths
+                    ? "Shell commands use the host addresses or paths relative to the physical working_directory."
+                    : "Shell commands use the mounted absolute addresses or paths relative to the container working_directory.");
         }
 
         return builder.ToString().TrimEnd();

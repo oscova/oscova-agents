@@ -1,20 +1,12 @@
 namespace Oscova.Agents.Workspace;
 
-/// <summary>
-/// Describes one resolved directory the agent may access through workspace-aware tools.
-/// </summary>
+/// <summary>Describes a granted directory and its optional canonical agent-facing root.</summary>
 public sealed record AllowedDirectory(
     string Value,
     string Label,
     DirectorySourceKind Kind,
     WorkspaceAccessMode AccessMode,
-    string? AgentPath = null)
-{
-    /// <summary>
-    /// Path the agent uses to address this directory; host path is the local-mode fallback.
-    /// </summary>
-    public string EffectiveAgentPath => string.IsNullOrWhiteSpace(AgentPath) ? Value : AgentPath;
-}
+    string? AgentPath = null);
 
 /// <summary>
 /// Identifies how an allowed directory is sourced by workspace and external-directory providers.
