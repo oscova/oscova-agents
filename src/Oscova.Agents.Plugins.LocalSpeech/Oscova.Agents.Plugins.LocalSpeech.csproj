@@ -10,7 +10,7 @@
     <LocalSpeechEdition Condition="'$(LocalSpeechEdition)' == ''">Cpu</LocalSpeechEdition>
     <PackageId>Oscova.Agents.Plugins.LocalSpeech</PackageId>
     <PackageId Condition="'$(LocalSpeechEdition)' == 'Cuda'">Oscova.Agents.Plugins.LocalSpeech.Cuda</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <WhisperRuntimeVersion>1.9.1</WhisperRuntimeVersion>
     <KokoroVersion>0.8.4</KokoroVersion>
     <NAudioVersion>3.0.1</NAudioVersion>
@@ -62,7 +62,6 @@
   <ItemGroup Condition="'$(LocalSpeechEdition)' == 'Cpu'">
     <None Include="$(PkgWhisper_net_Runtime)\build\win-x64\**\*" Pack="true" PackagePath="runtimes\win-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgWhisper_net_Runtime)\build\linux-x64\**\*" Pack="true" PackagePath="runtimes\linux-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="$(PkgWhisper_net_Runtime)\build\macos-x64\**\*" Pack="true" PackagePath="runtimes\osx-x64\native\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgWhisper_net_Runtime)\build\macos-arm64\**\*" Pack="true" PackagePath="runtimes\osx-arm64\native\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
