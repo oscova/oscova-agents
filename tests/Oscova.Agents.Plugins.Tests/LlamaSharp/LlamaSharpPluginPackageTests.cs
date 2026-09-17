@@ -7,7 +7,7 @@ namespace Oscova.Agents.Plugins.Tests.LlamaSharp;
 public sealed class LlamaSharpPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.LlamaSharp";
-    private const string PackageVersion = "1.0.2";
+    private const string PackageVersion = "1.0.3";
     private const string PluginId = "oscova.llamasharp";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -52,11 +52,10 @@ public sealed class LlamaSharpPluginPackageTests
             .Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal)
             .ToList();
-        Assert.Equal(["linux-x64", "osx-arm64", "osx-x64", "win-x64"], runtimeRoots);
+        Assert.Equal(["linux-x64", "osx-arm64", "win-x64"], runtimeRoots);
         Assert.Contains("runtimes/win-x64/native/avx2/llama.dll", files);
         Assert.Contains("runtimes/win-x64/native/noavx/llama.dll", files);
         Assert.Contains("runtimes/linux-x64/native/avx2/libllama.so", files);
-        Assert.Contains("runtimes/osx-x64/native/rosetta2/libllama.dylib", files);
         Assert.Contains("runtimes/osx-arm64/native/libllama.dylib", files);
         Assert.True(new FileInfo(packagePath).Length <= MaxPackageBytes);
     }

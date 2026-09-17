@@ -8,7 +8,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>Oscova.Agents.Plugins.LlamaSharp</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <PackageType>OscovaPlugin</PackageType>
     <Description>Oscova Agents plugin providing local GGUF inference through LLamaSharp.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -38,7 +38,6 @@
     <None Include="licenses\*.txt" Pack="true" PackagePath="licenses\" />
     <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\**\*" Pack="true" PackagePath="runtimes\win-x64\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\linux-x64\**\*" Pack="true" PackagePath="runtimes\linux-x64\%(RecursiveDir)%(Filename)%(Extension)" />
-    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-x64\**\*" Pack="true" PackagePath="runtimes\osx-x64\%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-arm64\**\*" Pack="true" PackagePath="runtimes\osx-arm64\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 

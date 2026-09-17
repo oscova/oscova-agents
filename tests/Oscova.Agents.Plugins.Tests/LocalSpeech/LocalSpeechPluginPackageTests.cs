@@ -8,7 +8,7 @@ namespace Oscova.Agents.Plugins.Tests.LocalSpeech;
 public sealed class LocalSpeechPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.LocalSpeech";
-    private const string PackageVersion = "1.0.3";
+    private const string PackageVersion = "1.0.4";
     private const string PluginId = "oscova.local-speech";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -50,7 +50,7 @@ public sealed class LocalSpeechPluginPackageTests
             .Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal)
             .ToList();
-        Assert.Equal(["linux-x64", "osx-arm64", "osx-x64", "win-x64"], runtimeRoots);
+        Assert.Equal(["linux-x64", "osx-arm64", "win-x64"], runtimeRoots);
         Assert.DoesNotContain(files, path =>
             path.Contains("cuda", StringComparison.OrdinalIgnoreCase) ||
             path.Contains("vulkan", StringComparison.OrdinalIgnoreCase));
