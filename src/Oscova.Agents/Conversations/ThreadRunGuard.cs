@@ -91,8 +91,11 @@ public sealed class ThreadRunGuard
         }
     }
 
-    /// <summary>Cancels and drains every active run for one exact user while blocking new admissions.</summary>
-    public async Task<UserRunLease> CancelAndAcquireUserAsync(string userId, CancellationToken ct = default)
+    /// <summary>Cancels selected runs, drains every active run for one exact user, and blocks new admissions.</summary>
+    public async Task<UserRunLease> CancelAndAcquireUserAsync(
+        string userId,
+        CancellationToken ct = default,
+        IReadOnlyCollection<string>? threadIdsToCancel = null)
     {
         var userState = GetUserState(userId);
         while (true)
@@ -100,7 +103,7 @@ public sealed class ThreadRunGuard
             ct.ThrowIfCancellationRequested();
             Task? existingBlock;
             TaskCompletionSource? ownedBlock = null;
-            RunEntry[] activeRuns = [];
+            KeyValuePair<RunKey, RunEntry>[] activeRuns = [];
 
             lock (userState.SyncRoot)
             {
@@ -111,7 +114,6 @@ public sealed class ThreadRunGuard
                     userState.BlockReleased = ownedBlock;
                     activeRuns = _runs
                         .Where(pair => string.Equals(pair.Key.UserId, userId, StringComparison.Ordinal))
-                        .Select(static pair => pair.Value)
                         .ToArray();
                 }
             }
@@ -126,10 +128,15 @@ public sealed class ThreadRunGuard
             {
                 foreach (var activeRun in activeRuns)
                 {
-                    TryCancel(activeRun);
+                    if (threadIdsToCancel?.Contains(
+                            activeRun.Key.ThreadId,
+                            StringComparer.OrdinalIgnoreCase) is not false)
+                    {
+                        TryCancel(activeRun.Value);
+                    }
                 }
 
-                await Task.WhenAll(activeRuns.Select(static entry => entry.Released.Task))
+                await Task.WhenAll(activeRuns.Select(static pair => pair.Value.Released.Task))
                     .WaitAsync(ct)
                     .ConfigureAwait(false);
                 return new UserRunLease(userState, ownedBlock);

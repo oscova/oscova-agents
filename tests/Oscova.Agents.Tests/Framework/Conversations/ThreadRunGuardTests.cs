@@ -178,4 +178,33 @@ public sealed class ThreadRunGuardTests
         using var replacementLease = guard.Acquire("user-1", "thread-3", "run-6");
         Assert.NotNull(replacementLease);
     }
+
+    [Fact]
+    public async Task CancelAndAcquireUserAsync_WithThreadSelection_CancelsSelectedAndDrainsAll()
+    {
+        var guard = new ThreadRunGuard();
+        var selectedLease = guard.Acquire("user-1", "thread-1", "run-1");
+        var unselectedLease = guard.Acquire("user-1", "thread-2", "run-2");
+        Assert.NotNull(selectedLease);
+        Assert.NotNull(unselectedLease);
+
+        var userLeaseTask = guard.CancelAndAcquireUserAsync(
+            "user-1",
+            threadIdsToCancel: ["THREAD-1"]);
+
+        Assert.True(selectedLease!.CancellationToken.IsCancellationRequested);
+        Assert.False(unselectedLease!.CancellationToken.IsCancellationRequested);
+        Assert.False(userLeaseTask.IsCompleted);
+
+        selectedLease.Dispose();
+        Assert.False(userLeaseTask.IsCompleted);
+
+        unselectedLease.Dispose();
+        using var userLease = await userLeaseTask.WaitAsync(TimeSpan.FromSeconds(1));
+        Assert.Null(guard.Acquire("user-1", "thread-3", "run-3"));
+
+        userLease.Dispose();
+        using var replacementLease = guard.Acquire("user-1", "thread-3", "run-4");
+        Assert.NotNull(replacementLease);
+    }
 }
