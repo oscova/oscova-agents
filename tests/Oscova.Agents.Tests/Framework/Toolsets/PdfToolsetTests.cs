@@ -1,5 +1,6 @@
 using Oscova.Agents.Harness;
 using Oscova.Agents.Toolsets;
+using Oscova.Agents.Workspace;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Fonts.Standard14Fonts;
 using UglyToad.PdfPig.Writer;
@@ -13,7 +14,7 @@ namespace Oscova.Agents.Tests.Framework.Toolsets;
 public sealed class PdfToolsetTests : IDisposable
 {
     private readonly string _workspaceDirectory;
-    private readonly PdfToolset _toolset = new();
+    private readonly PdfToolset _toolset;
 
     public PdfToolsetTests()
     {
@@ -22,6 +23,10 @@ public sealed class PdfToolsetTests : IDisposable
             "pdf-toolset-tests",
             Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(_workspaceDirectory);
+        _toolset = new PdfToolset(() =>
+        [
+            new(_workspaceDirectory, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite)
+        ]);
     }
 
     public void Dispose()

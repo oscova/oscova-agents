@@ -64,6 +64,62 @@ public sealed class SearchToolsetTests : IDisposable
     }
 
     [Fact]
+    public void FilteredSearch_PrunesExcludedDirectoriesButStillTraversesMatchingSubtrees()
+    {
+        string excluded = Path.Combine(_workspacePath, "excluded");
+        string included = Path.Combine(_workspacePath, "included", "nested");
+        Directory.CreateDirectory(excluded);
+        Directory.CreateDirectory(included);
+        File.WriteAllText(Path.Combine(_workspacePath, "wanted.txt"), "needle");
+        File.WriteAllText(Path.Combine(included, "wanted.cs"), "needle");
+        IReadOnlyList<AllowedDirectory> grants =
+        [
+            new(_workspacePath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite)
+        ];
+        var files = new DeniedDirectoryAccess(new WorkspaceFileAccess(() => grants), excluded);
+        var toolset = new SearchToolset(() => grants, files);
+
+        Assert.Contains("wanted.txt", toolset.Glob("*.txt", _workspacePath), StringComparison.Ordinal);
+        Assert.Contains("wanted.txt", toolset.Grep("needle", _workspacePath, include: "*.txt"), StringComparison.Ordinal);
+        Assert.Contains("wanted.cs", toolset.Glob("included/**/*.cs", _workspacePath), StringComparison.Ordinal);
+        Assert.Contains("wanted.cs", toolset.Grep("needle", _workspacePath, include: "included/**/*.cs"), StringComparison.Ordinal);
+        Assert.Throws<ToolFailureException>(() => toolset.Glob("**/*.txt", _workspacePath));
+    }
+
+    [SkippableFact]
+    public void FilteredSearch_ReportsLinkNamesWithoutReadingTheirTargets()
+    {
+        string target = Path.Combine(_workspacePath, "target.txt");
+        File.WriteAllText(target, "needle");
+        try
+        {
+            File.CreateSymbolicLink(Path.Combine(_workspacePath, "alias.txt"), target);
+        }
+        catch (Exception exception) when (exception is UnauthorizedAccessException or PlatformNotSupportedException)
+        {
+            Skip.If(true, $"File links are unavailable: {exception.Message}");
+        }
+
+        var toolset = CreateSandboxToolset();
+        Assert.Contains("alias.txt", toolset.Glob("*.txt"), StringComparison.Ordinal);
+        string matches = toolset.Grep("needle", include: "*.txt");
+        Assert.Contains("target.txt", matches, StringComparison.Ordinal);
+        Assert.DoesNotContain("alias.txt", matches, StringComparison.Ordinal);
+    }
+
+    /// <summary>Injects only denied enumeration while retaining real file access and metadata.</summary>
+    private sealed class DeniedDirectoryAccess(IWorkspaceFileAccess inner, string denied) : IWorkspaceFileAccess
+    {
+        public Stream OpenRead(string path) => inner.OpenRead(path);
+        public void Write(string path, Action<Stream> write, bool append = false) => inner.Write(path, write, append);
+        public void Delete(string path) => inner.Delete(path);
+        public WorkspaceFileEntry? GetEntry(string path) => inner.GetEntry(path);
+        public IEnumerable<WorkspaceFileEntry> Enumerate(string directory) => directory == denied
+            ? throw new UnauthorizedAccessException("Directory enumeration denied.")
+            : inner.Enumerate(directory);
+    }
+
+    [Fact]
     public void Glob_WithMissingDefaultWorkspaceReportsAgentFacingPath()
     {
         var missingWorkspacePath = Path.Combine(_workspacePath, "missing-glob");

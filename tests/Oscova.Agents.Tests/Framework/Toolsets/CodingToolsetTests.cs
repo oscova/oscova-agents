@@ -207,6 +207,10 @@ public sealed class CodingToolsetTests : IDisposable
         string researchPath = Path.Combine(_workspacePath, "research");
         string dataPath = Path.Combine(_workspacePath, "data");
         string referencePath = Path.Combine(_workspacePath, "reference");
+        Directory.CreateDirectory(defaultPath);
+        Directory.CreateDirectory(researchPath);
+        Directory.CreateDirectory(dataPath);
+        Directory.CreateDirectory(referencePath);
         var toolset = new CodingToolset(() =>
         [
             new(defaultPath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),

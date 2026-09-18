@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Oscova.Agents.Harness;
-using Oscova.Agents.Utils;
 using Oscova.Agents.Workspace;
 
 namespace Oscova.Agents.Toolsets;
@@ -14,14 +13,17 @@ namespace Oscova.Agents.Toolsets;
 /// </summary>
 public sealed class DirectoryToolset : ICrewToolset
 {
-    private readonly Func<IReadOnlyList<AllowedDirectory>> _workspaceResolver;
+    private readonly IWorkspaceFileAccess _files;
 
     /// <summary>
     /// Creates directory tools that resolve agent-facing paths against the active run's allowed directories.
     /// </summary>
-    public DirectoryToolset(Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null)
+    public DirectoryToolset(
+        Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null,
+        IWorkspaceFileAccess? fileAccess = null)
     {
-        _workspaceResolver = workspaceResolver ?? (() => []);
+        Func<IReadOnlyList<AllowedDirectory>> resolver = workspaceResolver ?? (() => []);
+        _files = fileAccess ?? new WorkspaceFileAccess(resolver);
     }
 
     /// <summary>
@@ -50,9 +52,8 @@ public sealed class DirectoryToolset : ICrewToolset
             throw new ToolFailureException("A directory path is required.");
         }
 
-        string hostPath = PathHelper.ResolveToHostPath(path, _workspaceResolver);
-
-        if (!Directory.Exists(hostPath))
+        WorkspaceFileEntry? root = _files.GetEntry(path);
+        if (root?.Attributes.HasFlag(FileAttributes.Directory) != true)
         {
             throw new ToolFailureException("The requested directory was not found.", "Check the path and try again.");
         }
@@ -73,7 +74,7 @@ public sealed class DirectoryToolset : ICrewToolset
         }
 
         var entries = new List<string>();
-        AppendEntries(entries, hostPath, 0, depth);
+        AppendEntries(entries, root.Path, 0, depth);
 
         if (entries.Count < offset)
         {
@@ -100,7 +101,7 @@ public sealed class DirectoryToolset : ICrewToolset
         }
     }
 
-    private static void AppendEntries(List<string> entries, string directoryPath, int currentDepth, int maxDepth)
+    private void AppendEntries(List<string> entries, string directoryPath, int currentDepth, int maxDepth)
     {
         if (currentDepth > maxDepth)
         {
@@ -108,30 +109,29 @@ public sealed class DirectoryToolset : ICrewToolset
         }
 
         var indent = new string(' ', currentDepth * 2);
-        var directoryInfo = new DirectoryInfo(directoryPath);
-
-        var directories = directoryInfo
-            .EnumerateDirectories()
-            .OrderBy(static directory => directory.Name, GetComparer())
+        var children = _files.Enumerate(directoryPath).ToList();
+        var directories = children
+            .Where(static entry => entry.Attributes.HasFlag(FileAttributes.Directory))
+            .OrderBy(static entry => Path.GetFileName(entry.Path), GetComparer())
             .ToList();
 
         foreach (var directory in directories)
         {
-            entries.Add($"{indent}[DIR] {directory.Name}");
+            entries.Add($"{indent}[DIR] {Path.GetFileName(directory.Path)}");
             // List links themselves without letting recursion escape the approved root.
             if (!directory.Attributes.HasFlag(FileAttributes.ReparsePoint))
             {
-                AppendEntries(entries, directory.FullName, currentDepth + 1, maxDepth);
+                AppendEntries(entries, directory.Path, currentDepth + 1, maxDepth);
             }
         }
 
-        var files = directoryInfo
-            .EnumerateFiles()
-            .OrderBy(static file => file.Name, GetComparer());
+        var files = children
+            .Where(static entry => !entry.Attributes.HasFlag(FileAttributes.Directory))
+            .OrderBy(static entry => Path.GetFileName(entry.Path), GetComparer());
 
         foreach (var file in files)
         {
-            entries.Add($"{indent}[FILE] {file.Name} ({file.Length} bytes)");
+            entries.Add($"{indent}[FILE] {Path.GetFileName(file.Path)} ({file.Length} bytes)");
         }
     }
 

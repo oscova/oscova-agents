@@ -210,9 +210,10 @@ public static class PathHelper
     }
 
     /// <summary>
-    /// THE PATH CONTRACT. Every filesystem-facing tool (read, write, list, PDF, and any future or
-    /// plugin tool) resolves an agent-supplied path to a host path through this one method, then does
-    /// its IO on the host. The agent is only ever shown paths that resolve through this contract:
+    /// THE PATH CONTRACT. This method translates agent-facing paths and checks logical workspace
+    /// authorization. Physical workspace IO must use <see cref="Workspace.IWorkspaceFileAccess"/>
+    /// so authorization and filesystem access stay bound to held handles. The agent is only ever
+    /// shown paths that resolve through this contract:
     /// <list type="bullet">
     ///   <item>sandbox mode: <c>/workspace/&lt;name&gt;</c>, <c>/data</c>, <c>/mnt/&lt;label&gt;</c>;</item>
     ///   <item>host / disabled mode: the real host paths plus stable file-tool aliases.</item>
@@ -223,8 +224,8 @@ public static class PathHelper
     /// output keeps showing the agent the path it passed.
     /// <para>
     /// The invariant that keeps both surfaces consistent: <b>never present the agent a path that does
-    /// not resolve here / is not mounted into the sandbox.</b> Any new tool must resolve through this
-    /// method (or <see cref="ResolveToHostPath"/>) rather than calling <c>System.IO</c> on a raw argument.
+    /// not resolve here / is not mounted into the sandbox.</b> Tools may use this method for translation
+    /// or validation, but must use <see cref="Workspace.IWorkspaceFileAccess"/> for physical file access.
     /// </para>
     /// </summary>
     public static bool TryResolveToHostPath(
@@ -417,7 +418,21 @@ public static class PathHelper
         IReadOnlyList<AllowedDirectory> allowedDirectories,
         WorkspacePathAccess requiredAccess)
     {
+        return ResolveAuthorizedHostPath(requestedPath, allowedDirectories, requiredAccess, out _, out _);
+    }
+
+    /// <summary>Resolves and authorizes a path and returns the roots needed for physical traversal.</summary>
+    internal static string ResolveAuthorizedHostPath(
+        string requestedPath,
+        IReadOnlyList<AllowedDirectory> allowedDirectories,
+        WorkspacePathAccess requiredAccess,
+        out string traversalRoot,
+        out string authorizedRoot)
+    {
         ArgumentNullException.ThrowIfNull(allowedDirectories);
+
+        traversalRoot = string.Empty;
+        authorizedRoot = string.Empty;
 
         if (!TryResolveToHostPath(
                 requestedPath,
@@ -440,6 +455,14 @@ public static class PathHelper
         {
             throw new UnauthorizedAccessException($"Path is read-only for this agent: {requestedPath}");
         }
+
+        authorizedRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(containingDirectory.Value));
+
+        traversalRoot = allowedDirectories
+            .Where(directory => IsPathWithinDirectory(fullPath, directory.Value))
+            .Select(directory => Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory.Value)))
+            .OrderBy(static root => root.Length)
+            .First();
 
         return fullPath;
     }

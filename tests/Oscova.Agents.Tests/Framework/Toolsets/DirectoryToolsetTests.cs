@@ -10,7 +10,10 @@ public sealed class DirectoryToolsetTests
     public void ListDirectory_WhenDirectoryIsMissing_ThrowsSafeToolFailure()
     {
         var missingPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-        var toolset = new DirectoryToolset(() => []);
+        var toolset = new DirectoryToolset(() =>
+        [
+            new(Path.GetTempPath(), "temp", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly)
+        ]);
 
         var failure = Assert.Throws<ToolFailureException>(() => toolset.ListDirectory(missingPath));
 
