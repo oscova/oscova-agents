@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Utils;
 using Oscova.Agents.Workspace;
@@ -18,13 +19,17 @@ namespace Oscova.Agents.Toolsets;
 public sealed class SearchToolset : ICrewToolset
 {
     private readonly Func<IReadOnlyList<AllowedDirectory>> _workspaceResolver;
+    private readonly IWorkspaceFileAccess _files;
 
     /// <summary>
     /// Creates search tools that resolve agent-facing paths against the active run's allowed directories.
     /// </summary>
-    public SearchToolset(Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null)
+    public SearchToolset(
+        Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null,
+        IWorkspaceFileAccess? fileAccess = null)
     {
         _workspaceResolver = workspaceResolver ?? (() => []);
+        _files = fileAccess ?? new WorkspaceFileAccess(_workspaceResolver);
     }
 
     /// <summary>
@@ -88,31 +93,38 @@ public sealed class SearchToolset : ICrewToolset
         var mode = outputMode?.Trim().ToLowerInvariant() ?? string.Empty;
         var results = new List<string>();
 
-        foreach (var filePath in EnumerateTargetFiles(searchPath, include))
+        foreach (WorkspaceFileEntry file in EnumerateTargetFiles(searchPath, include))
         {
-            if (IsBinaryFile(filePath))
+            if (file.Attributes.HasFlag(FileAttributes.ReparsePoint))
             {
                 continue;
             }
 
-            string agentPath = PathHelper.ResolveToAgentPath(filePath, allowedDirectories);
+            using Stream stream = _files.OpenRead(file.Path);
+            if (IsBinaryFile(stream))
+            {
+                continue;
+            }
+
+            using var reader = new StreamReader(stream);
+            string agentPath = PathHelper.ResolveToAgentPath(file.Path, allowedDirectories);
             switch (mode)
             {
                 case "files_with_matches":
-                    if (FileHasMatches(filePath, regex))
+                    if (FileHasMatches(reader, regex))
                     {
                         results.Add(agentPath);
                     }
                     break;
                 case "count":
-                    var matchCount = CountMatches(filePath, regex);
+                    var matchCount = CountMatches(reader, regex);
                     if (matchCount > 0)
                     {
                         results.Add($"{agentPath}: {matchCount}");
                     }
                     break;
                 case "content":
-                    foreach (var entry in BuildContentResults(filePath, agentPath, regex, contextLines))
+                    foreach (var entry in BuildContentResults(reader, agentPath, regex, contextLines))
                     {
                         results.Add(entry);
                         if (results.Count >= limit)
@@ -165,21 +177,17 @@ public sealed class SearchToolset : ICrewToolset
         IReadOnlyList<AllowedDirectory> allowedDirectories = _workspaceResolver();
         var searchPath = ResolveSearchRoot(path, allowedDirectories);
 
-        if (!Directory.Exists(searchPath))
+        WorkspaceFileEntry? root = _files.GetEntry(searchPath);
+        if (root?.Attributes.HasFlag(FileAttributes.Directory) != true)
         {
             throw new ToolFailureException("The search directory was not found.", "Check the path and try again.");
         }
 
-        var matcher = CreateMatcher();
-        matcher.AddInclude(pattern);
-
-        var matches = matcher.GetResultsInFullPath(searchPath)
-            .Select(static fullPath => new FileInfo(fullPath))
-            .Where(static file => file.Exists)
+        var matches = MatchFiles(root.Path, pattern)
             .OrderByDescending(static file => file.LastWriteTimeUtc)
-            .ThenBy(static file => file.FullName, GetPathComparer())
+            .ThenBy(static file => file.Path, GetPathComparer())
             .Take(200)
-            .Select(file => $"{PathHelper.ResolveToAgentPath(file.FullName, allowedDirectories)} ({file.Length} bytes)")
+            .Select(file => $"{PathHelper.ResolveToAgentPath(file.Path, allowedDirectories)} ({file.Length} bytes)")
             .ToList();
 
         if (matches.Count == 0)
@@ -204,21 +212,24 @@ public sealed class SearchToolset : ICrewToolset
         }
     }
 
-    // Resolve the agent-facing path to a host path so search honors the workspace, like the file tools.
     private static string ResolveSearchRoot(string? path, IReadOnlyList<AllowedDirectory> allowedDirectories)
     {
         if (!string.IsNullOrWhiteSpace(path))
         {
-            return PathHelper.ResolveToHostPath(path, () => allowedDirectories);
+            return PathHelper.ResolveAuthorizedHostPath(path, allowedDirectories, WorkspacePathAccess.Read);
         }
 
         var workingDirectory = PathHelper.ResolveWorkingDirectoryHostPath(allowedDirectories);
-        return string.IsNullOrWhiteSpace(workingDirectory) ? Environment.CurrentDirectory : workingDirectory;
+        return string.IsNullOrWhiteSpace(workingDirectory)
+            ? throw new ToolFailureException(
+                "No default workspace is available.",
+                "Grant a readable workspace directory and try again.")
+            : PathHelper.ResolveAuthorizedHostPath(workingDirectory, allowedDirectories, WorkspacePathAccess.Read);
     }
 
-    private static bool FileHasMatches(string filePath, Regex regex)
+    private static bool FileHasMatches(TextReader reader, Regex regex)
     {
-        foreach (var line in File.ReadLines(filePath))
+        while (reader.ReadLine() is { } line)
         {
             if (regex.IsMatch(line))
             {
@@ -229,11 +240,11 @@ public sealed class SearchToolset : ICrewToolset
         return false;
     }
 
-    private static int CountMatches(string filePath, Regex regex)
+    private static int CountMatches(TextReader reader, Regex regex)
     {
         var matchCount = 0;
 
-        foreach (var line in File.ReadLines(filePath))
+        while (reader.ReadLine() is { } line)
         {
             if (regex.IsMatch(line))
             {
@@ -245,7 +256,7 @@ public sealed class SearchToolset : ICrewToolset
     }
 
     private static IEnumerable<string> BuildContentResults(
-        string filePath,
+        TextReader reader,
         string agentPath,
         Regex regex,
         int contextLines)
@@ -253,7 +264,7 @@ public sealed class SearchToolset : ICrewToolset
         if (contextLines == 0)
         {
             var currentLineNumber = 0;
-            foreach (var line in File.ReadLines(filePath))
+            while (reader.ReadLine() is { } line)
             {
                 currentLineNumber++;
                 if (regex.IsMatch(line))
@@ -272,7 +283,7 @@ public sealed class SearchToolset : ICrewToolset
         var lastAppendedLineNumber = 0;
         var lineNumber = 0;
 
-        foreach (var line in File.ReadLines(filePath))
+        while (reader.ReadLine() is { } line)
         {
             lineNumber++;
             var isMatch = regex.IsMatch(line);
@@ -329,24 +340,26 @@ public sealed class SearchToolset : ICrewToolset
         }
     }
 
-    private static IEnumerable<string> EnumerateTargetFiles(
+    private IEnumerable<WorkspaceFileEntry> EnumerateTargetFiles(
         string searchPath,
         string? include)
     {
-        if (File.Exists(searchPath))
-        {
-            yield return searchPath;
-            yield break;
-        }
-
-        if (!Directory.Exists(searchPath))
+        WorkspaceFileEntry? root = _files.GetEntry(searchPath);
+        if (root is null)
         {
             throw new ToolFailureException("The search path was not found.", "Check the path and try again.");
         }
 
+        if (!root.Attributes.HasFlag(FileAttributes.Directory))
+        {
+            yield return root;
+            yield break;
+        }
+
+        IEnumerable<WorkspaceFileEntry> files = EnumerateFiles(root.Path);
         if (string.IsNullOrWhiteSpace(include))
         {
-            foreach (var file in Directory.EnumerateFiles(searchPath, "*", SearchOption.AllDirectories))
+            foreach (WorkspaceFileEntry file in files)
             {
                 yield return file;
             }
@@ -354,11 +367,85 @@ public sealed class SearchToolset : ICrewToolset
             yield break;
         }
 
-        var matcher = CreateMatcher();
-        matcher.AddInclude(include);
-        foreach (var file in matcher.GetResultsInFullPath(searchPath))
+        foreach (WorkspaceFileEntry file in MatchFiles(root.Path, include))
         {
             yield return file;
+        }
+    }
+
+    private IEnumerable<WorkspaceFileEntry> MatchFiles(string directory, string pattern)
+    {
+        var matcher = CreateMatcher();
+        matcher.AddInclude(pattern);
+        var entries = new Dictionary<string, WorkspaceFileEntry>(GetPathComparer());
+        // Let the matcher prune excluded subtrees before any contained directory enumeration.
+        foreach (FilePatternMatch match in matcher.Execute(new WorkspaceDirectory(_files, directory, entries)).Files)
+        {
+            string path = Path.GetFullPath(Path.Combine(directory, PathHelper.ToPlatformRelativePath(match.Path)));
+            yield return entries[path];
+        }
+    }
+
+    /// <summary>Lets the glob matcher traverse directories through the workspace boundary.</summary>
+    private sealed class WorkspaceDirectory(
+        IWorkspaceFileAccess files, string path, Dictionary<string, WorkspaceFileEntry> entries, bool isParentPath = false) : DirectoryInfoBase
+    {
+        public override string FullName => path;
+        public override string Name => isParentPath ? ".." : Path.GetFileName(path);
+        public override DirectoryInfoBase? ParentDirectory => Path.GetDirectoryName(path) is { } parent
+            ? new WorkspaceDirectory(files, parent, entries)
+            : null;
+
+        public override DirectoryInfoBase GetDirectory(string name) =>
+            new WorkspaceDirectory(files, Path.GetFullPath(Path.Combine(path, name)), entries, name == "..");
+
+        public override FileInfoBase GetFile(string name) =>
+            new WorkspaceFile(Path.GetFullPath(Path.Combine(path, name)), this);
+
+        public override IEnumerable<FileSystemInfoBase> EnumerateFileSystemInfos()
+        {
+            foreach (WorkspaceFileEntry entry in files.Enumerate(path))
+            {
+                if (entry.Attributes.HasFlag(FileAttributes.Directory))
+                {
+                    if (!entry.Attributes.HasFlag(FileAttributes.ReparsePoint))
+                    {
+                        yield return new WorkspaceDirectory(files, entry.Path, entries);
+                    }
+                }
+                else
+                {
+                    // Reuse no-follow metadata so glob can report link names without opening their targets.
+                    entries[entry.Path] = entry;
+                    yield return new WorkspaceFile(entry.Path, this);
+                }
+            }
+        }
+    }
+
+    /// <summary>Supplies logical file names to the glob matcher without reopening host paths.</summary>
+    private sealed class WorkspaceFile(string path, DirectoryInfoBase parent) : FileInfoBase
+    {
+        public override string FullName => path;
+        public override string Name => Path.GetFileName(path);
+        public override DirectoryInfoBase ParentDirectory => parent;
+    }
+
+    private IEnumerable<WorkspaceFileEntry> EnumerateFiles(string directory)
+    {
+        foreach (WorkspaceFileEntry entry in _files.Enumerate(directory))
+        {
+            if (entry.Attributes.HasFlag(FileAttributes.Directory))
+            {
+                if (!entry.Attributes.HasFlag(FileAttributes.ReparsePoint))
+                {
+                    foreach (WorkspaceFileEntry child in EnumerateFiles(entry.Path)) yield return child;
+                }
+
+                continue;
+            }
+
+            yield return entry;
         }
     }
 
@@ -369,18 +456,18 @@ public sealed class SearchToolset : ICrewToolset
             : new Matcher(StringComparison.Ordinal);
     }
 
-    private static IComparer<string> GetPathComparer()
+    private static StringComparer GetPathComparer()
     {
         return OperatingSystem.IsWindows()
             ? StringComparer.OrdinalIgnoreCase
             : StringComparer.Ordinal;
     }
 
-    private static bool IsBinaryFile(string filePath)
+    private static bool IsBinaryFile(Stream stream)
     {
         var buffer = new byte[8192];
-        using var stream = File.OpenRead(filePath);
         var read = stream.Read(buffer, 0, buffer.Length);
+        stream.Position = 0;
         for (var index = 0; index < read; index++)
         {
             if (buffer[index] == 0)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Policies;
 using Oscova.Agents.Utils;
@@ -18,11 +19,15 @@ namespace Oscova.Agents.Toolsets;
 public sealed class CodingToolset : TextFileToolsetBase, ICrewToolset
 {
     private readonly Func<IReadOnlyList<AllowedDirectory>> _workspaceResolver;
+    private readonly IWorkspaceFileAccess _files;
 
     /// <summary>Creates file tools that resolve agent-facing paths against the active run's allowed directories.</summary>
-    public CodingToolset(Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null)
+    public CodingToolset(
+        Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null,
+        IWorkspaceFileAccess? fileAccess = null)
     {
         _workspaceResolver = workspaceResolver ?? (() => []);
+        _files = fileAccess ?? new WorkspaceFileAccess(_workspaceResolver);
     }
 
     /// <summary>Reads a page of text from a workspace-approved file path using one-based line numbers.</summary>
@@ -71,69 +76,40 @@ public sealed class CodingToolset : TextFileToolsetBase, ICrewToolset
     /// <inheritdoc />
     protected override TextReader OpenText(string path, out long sizeBytes)
     {
-        var hostPath = ResolveHostPath(path);
-        if (!File.Exists(hostPath))
-        {
-            throw new FileNotFoundException("File not found.", path);
-        }
-
-        sizeBytes = new FileInfo(hostPath).Length;
-        return new StreamReader(hostPath);
+        Stream stream = _files.OpenRead(path);
+        sizeBytes = stream.Length;
+        return new StreamReader(stream);
     }
 
     /// <inheritdoc />
     protected override void WriteText(string path, string content, bool append)
     {
-        var hostPath = ResolveHostPath(path);
-        var directory = Path.GetDirectoryName(hostPath);
-        if (!string.IsNullOrWhiteSpace(directory))
+        _files.Write(path, stream =>
         {
-            Directory.CreateDirectory(directory);
-        }
-
-        if (append)
-        {
-            File.AppendAllText(hostPath, content);
-        }
-        else
-        {
-            FileUtil.WriteAllTextAtomic(hostPath, content);
-        }
+            using var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true);
+            writer.Write(content);
+        }, append);
     }
 
     /// <inheritdoc />
     protected override void DeleteText(string path)
     {
-        var hostPath = ResolveHostPath(path);
-        if (File.Exists(hostPath))
-        {
-            File.Delete(hostPath);
-        }
+        _files.Delete(path);
     }
 
     /// <inheritdoc />
     protected override void MoveText(string sourcePath, string targetPath, string content, bool contentChanged)
     {
-        var sourceHostPath = ResolveHostPath(sourcePath);
-        var targetHostPath = ResolveHostPath(targetPath);
-        var targetDirectory = Path.GetDirectoryName(targetHostPath);
-        if (!string.IsNullOrWhiteSpace(targetDirectory))
+        WriteText(targetPath, content, append: false);
+        if (!PathHelper.ArePathsEqual(sourcePath, targetPath))
         {
-            Directory.CreateDirectory(targetDirectory);
-        }
-
-        FileUtil.WriteAllTextAtomic(targetHostPath, content);
-        if (!string.Equals(sourceHostPath, targetHostPath, StringComparison.Ordinal))
-        {
-            File.Delete(sourceHostPath);
+            _files.Delete(sourcePath);
         }
     }
 
     /// <inheritdoc />
     protected override string ResolvePatchPath(string path, string baseDirectory) =>
         ResolveWorkspacePatchPath(path, baseDirectory, _workspaceResolver);
-
-    private string ResolveHostPath(string path) => PathHelper.ResolveToHostPath(path, _workspaceResolver);
 
     private static string Execute(Func<string> operation, string failureReason)
     {

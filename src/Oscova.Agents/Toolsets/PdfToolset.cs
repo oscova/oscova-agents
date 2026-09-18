@@ -8,7 +8,6 @@ using UglyToad.PdfPig;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 using UglyToad.PdfPig.Exceptions;
 using Oscova.Agents.Harness;
-using Oscova.Agents.Utils;
 using Oscova.Agents.Workspace;
 
 namespace Oscova.Agents.Toolsets;
@@ -28,14 +27,17 @@ public sealed class PdfToolset : ICrewToolset
 
     private const int SearchSnippetContextChars = 180;
 
-    private readonly Func<IReadOnlyList<AllowedDirectory>> _workspaceResolver;
+    private readonly IWorkspaceFileAccess _files;
 
     /// <summary>
     /// Creates PDF tools that resolve agent-facing paths against the active run's allowed directories.
     /// </summary>
-    public PdfToolset(Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null)
+    public PdfToolset(
+        Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null,
+        IWorkspaceFileAccess? fileAccess = null)
     {
-        _workspaceResolver = workspaceResolver ?? (() => []);
+        Func<IReadOnlyList<AllowedDirectory>> resolver = workspaceResolver ?? (() => []);
+        _files = fileAccess ?? new WorkspaceFileAccess(resolver);
     }
 
     /// <summary>
@@ -58,7 +60,8 @@ public sealed class PdfToolset : ICrewToolset
             throw new ToolFailureException("A PDF path is required.");
         }
 
-        using var document = OpenPdf(path);
+        using Stream stream = OpenPdfStream(path);
+        using var document = OpenPdf(stream);
         if (document?.IsEncrypted != false)
         {
             throw new ToolFailureException("The PDF is encrypted and cannot be read.");
@@ -167,7 +170,8 @@ public sealed class PdfToolset : ICrewToolset
 
         limit = Math.Clamp(limit, 1, MaxSearchResults);
 
-        using var document = OpenPdf(path);
+        using Stream stream = OpenPdfStream(path);
+        using var document = OpenPdf(stream);
         if (document?.IsEncrypted != false)
         {
             throw new ToolFailureException("The PDF is encrypted and cannot be searched.");
@@ -236,12 +240,21 @@ public sealed class PdfToolset : ICrewToolset
         return builder.ToString().TrimEnd();
     }
 
-    private PdfDocument? OpenPdf(string path)
+    private Stream OpenPdfStream(string path)
     {
-        string hostPath;
+        var extension = Path.GetExtension(path);
+        if (!string.Equals(extension, ".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ToolFailureException("The requested file is not a PDF.", "Choose a file ending in .pdf.");
+        }
+
         try
         {
-            hostPath = PathHelper.ResolveToHostPath(path, _workspaceResolver);
+            return _files.OpenRead(path);
+        }
+        catch (FileNotFoundException)
+        {
+            throw new ToolFailureException("The requested PDF was not found.", "Check the path and try again.");
         }
         catch (Exception exception) when (exception is ArgumentException or IOException or UnauthorizedAccessException)
         {
@@ -250,21 +263,14 @@ public sealed class PdfToolset : ICrewToolset
                 "Check the path and workspace access, then try again.");
         }
 
-        if (!File.Exists(hostPath))
-        {
-            throw new ToolFailureException("The requested PDF was not found.", "Check the path and try again.");
-        }
+    }
 
-        var extension = Path.GetExtension(hostPath);
-        if (!string.Equals(extension, ".pdf", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ToolFailureException("The requested file is not a PDF.", "Choose a file ending in .pdf.");
-        }
-
+    private static PdfDocument? OpenPdf(Stream stream)
+    {
         // Normalize parser failures so malformed bytes do not leak dependency exception details to the agent.
         try
         {
-            return PdfDocument.Open(hostPath);
+            return PdfDocument.Open(stream);
         }
         catch (PdfDocumentEncryptedException)
         {
