@@ -203,17 +203,34 @@ public class AgentTaskSchedulerService(
 
                 _runningTasks[taskKey] = run;
 
-                await repository.SaveRunAsync(run, ct).ConfigureAwait(false);
+                var runPersisted = true;
+                try
+                {
+                    await repository.SaveRunAsync(run, ct).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (!ct.IsCancellationRequested)
+                {
+                    // Recover history before continuing successful-run actions that depend on it.
+                    logger.LogWarning(ex, "Retrying run persistence for task '{TaskId}'.", task.Id);
+                    runPersisted = await PersistRunAsync(run).ConfigureAwait(false);
+                }
                 await taskStatusNotifications.NotifyAsync(
                     task.UserId,
                     new TaskStatusUpdate(task.Id, task.Name, run.Status, StatusMessageFor(run))).ConfigureAwait(false);
                 statusNotificationSent = true;
+                if (!runPersisted) return;
 
                 logger.LogDebug(
                     "Task '{TaskName}' (ID: {TaskId}) finished with status {Status}",
                     task.Name,
                     task.Id,
                     run.Status);
+
+                // Queue successors before automatic deletion closes this completed task's admission.
+                if (run.Status == AgentTaskStatus.Completed && !IsTaskAdmissionClosed(taskKey))
+                {
+                    await TriggerDependentTasksAsync(repository, task, ct).ConfigureAwait(false);
+                }
 
                 // Failed one-shots stay enabled for manual retry; successful runs retain their finalization policy.
                 if (task.Schedule.Kind == TaskScheduleKind.OneShot && run.Status == AgentTaskStatus.Completed)
@@ -265,11 +282,6 @@ public class AgentTaskSchedulerService(
                             }
                         },
                         ct).ConfigureAwait(false);
-                }
-
-                if (run.Status == AgentTaskStatus.Completed && !IsTaskAdmissionClosed(taskKey))
-                {
-                    await TriggerDependentTasksAsync(repository, task, ct).ConfigureAwait(false);
                 }
             }
         }
@@ -754,7 +766,7 @@ public class AgentTaskSchedulerService(
     private static string? StatusMessageFor(AgentTaskRun run) =>
         run.IsEncrypted ? null : run.Error;
 
-    private async Task PersistRunAsync(AgentTaskRun run)
+    private async Task<bool> PersistRunAsync(AgentTaskRun run)
     {
         try
         {
@@ -764,10 +776,12 @@ public class AgentTaskSchedulerService(
                 var repository = scope.ServiceProvider.GetRequiredService<IAgentTaskRepository>();
                 await repository.SaveRunAsync(run, CancellationToken.None).ConfigureAwait(false);
             }
+            return true;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to persist run record for task '{TaskId}'.", run.TaskId);
+            return false;
         }
     }
 

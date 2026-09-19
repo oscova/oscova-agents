@@ -182,6 +182,29 @@ public sealed class AgentTaskRepository(
     }
 
     /// <inheritdoc />
+    public Task<JsonElement?> GetLatestSessionAsync(string userId, string taskId, CancellationToken ct = default)
+    {
+        var taskDirectory = catalog.TryGetTaskDirectory(taskId);
+        var ownerUserId = catalog.TryGetOwnerUserId(taskId);
+        if (taskDirectory is null || !IsOwnedBy(ownerUserId, userId))
+        {
+            return Task.FromResult<JsonElement?>(null);
+        }
+
+        var runsDirectory = GetRunsDirectory(taskDirectory);
+        var indexPath = GetRunsIndexPath(runsDirectory);
+        if (!File.Exists(indexPath)) return Task.FromResult<JsonElement?>(null);
+
+        // A skipped occurrence with no session must not erase the last execution's context.
+        var row = ReadRunIndexRows(indexPath, taskId)
+            .OrderByDescending(run => string.IsNullOrWhiteSpace(run.StartedAt)
+                ? DateTimeOffset.MinValue : IsoTimestamp.Parse(run.StartedAt))
+            .FirstOrDefault(run => ParseEnum(run.Status, AgentTaskStatus.Pending) != AgentTaskStatus.Skipped ||
+                File.Exists(GetRunSessionPath(runsDirectory, run.Id)));
+        return Task.FromResult(row is null ? null : ReadRunSession(runsDirectory, row.Id, taskId, ownerUserId!));
+    }
+
+    /// <inheritdoc />
     public Task<AgentTaskRun?> GetLatestRunMetadataAsync(
         string userId,
         string taskId,

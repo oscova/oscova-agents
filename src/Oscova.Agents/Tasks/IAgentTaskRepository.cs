@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,6 +45,9 @@ namespace Oscova.Agents.Tasks
         /// Returns the most recent run for the given task, or <see langword="null"/> if the task has never run.
         /// </summary>
         Task<AgentTaskRun?> GetLatestRunAsync(string userId, string taskId, CancellationToken ct = default);
+
+        /// <summary>Returns the latest resume session across skipped runs that saved no session.</summary>
+        Task<JsonElement?> GetLatestSessionAsync(string userId, string taskId, CancellationToken ct = default);
 
         /// <summary>Returns the most recent run without opening confidential content.</summary>
         Task<AgentTaskRun?> GetLatestRunMetadataAsync(string userId, string taskId, CancellationToken ct = default) =>
