@@ -243,6 +243,7 @@ public class AgentTaskSchedulerService(
                                     await repository
                                         .DeleteTaskAsync(task.UserId, task.Id, finalizeCt)
                                         .ConfigureAwait(false);
+                                    _lastRunPerTask.TryRemove(taskKey, out _);
                                 }
                                 catch
                                 {
@@ -489,7 +490,12 @@ public class AgentTaskSchedulerService(
             }
             finally
             {
-                if (!deleted)
+                if (deleted)
+                {
+                    // A deleted definition cannot own a cached last run because a later task may reuse its ID.
+                    _lastRunPerTask.TryRemove(taskKey, out _);
+                }
+                else
                 {
                     ReopenTaskAdmission(taskKey);
                 }

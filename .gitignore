@@ -11,6 +11,7 @@ artifacts/
 /AGENTS.md
 /CLAUDE.md
 /internal/
+/.github/copilot-instructions.md
 AGENTS.md
 CLAUDE.md
 .codex/

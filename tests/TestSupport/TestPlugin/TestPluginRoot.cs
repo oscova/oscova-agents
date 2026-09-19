@@ -167,10 +167,10 @@ public sealed class TestPluginRoot : IDisposable
                 return directory.FullName;
             }
 
-            var sibling = Path.Combine(directory.FullName, "Oscova.Agents");
-            if (Directory.Exists(Path.Combine(sibling, "src", "Oscova.Agents")))
+            var embedded = Path.Combine(directory.FullName, "src", "oscova-agents");
+            if (Directory.Exists(Path.Combine(embedded, "src", "Oscova.Agents")))
             {
-                return sibling;
+                return embedded;
             }
 
             directory = directory.Parent;

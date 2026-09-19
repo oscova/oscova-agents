@@ -19,6 +19,8 @@ public interface IChatThreadRepository
     Task<IReadOnlyList<ChatThread>> GetIncognitoThreadsAsync(string userId, CancellationToken ct = default);
     /// <summary>Persists a chat thread and optionally marks it current.</summary>
     Task SaveThreadAsync(string userId, ChatThread thread, bool setCurrent = true, CancellationToken ct = default);
+    /// <summary>Marks an existing conversation read without rewriting its contents.</summary>
+    Task<bool> TryMarkThreadReadAsync(string userId, string threadId, CancellationToken ct = default);
     /// <summary>Renames an existing chat thread without creating missing state.</summary>
     Task<bool> TryRenameThreadAsync(string userId, string threadId, string title, CancellationToken ct = default);
     /// <summary>Returns the serialized framework session state for a thread.</summary>

@@ -1,4 +1,5 @@
 using Oscova.Agents.Avatar.Contracts;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Oscova.Agents.Avatar
@@ -231,7 +232,8 @@ namespace Oscova.Agents.Avatar
         /// The response is sent before the engine terminates.
         /// </summary>
         /// <param name="forceShutdown">If true, immediately terminates the engine. If false, allows graceful cleanup before shutdown.</param>
+        /// <param name="ct">Cancellation token for the active run.</param>
         /// <returns>Response indicating success, description, and whether shutdown was initiated.</returns>
-        Task<AvatarShutdownResponse> ShutdownAsync(bool forceShutdown = false);
+        Task<AvatarShutdownResponse> ShutdownAsync(bool forceShutdown = false, CancellationToken ct = default);
     }
 }
