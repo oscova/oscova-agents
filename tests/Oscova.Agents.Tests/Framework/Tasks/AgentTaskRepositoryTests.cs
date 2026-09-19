@@ -298,6 +298,58 @@ public sealed class AgentTaskRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task GetLatestSessionAsync_SkipsOnlySessionlessSkippedRunsAndReadsOnlyOwnedSession()
+    {
+        var protector = new PassThroughContentProtector();
+        var (repository, _) = CreateRepository(contentProtector: protector);
+        var task = CreateTask("Persistent Conversation");
+        await repository.SaveTaskAsync(task);
+        var startedAt = DateTimeOffset.UtcNow;
+        var completed = CreateRun("completed", task, "private summary", "private response", "earlier-session");
+        completed.IsEncrypted = true;
+        completed.StartedAt = startedAt;
+        await repository.SaveRunAsync(completed);
+        for (var occurrence = 1; occurrence <= 2; occurrence++)
+        {
+            await repository.SaveRunAsync(new AgentTaskRun
+            {
+                Id = "skipped-" + occurrence,
+                TaskId = task.Id,
+                UserId = task.UserId,
+                Status = AgentTaskStatus.Skipped,
+                StartedAt = startedAt.AddMinutes(occurrence)
+            });
+        }
+
+        Assert.Equal(AgentTaskStatus.Skipped, (await repository.GetLatestRunAsync(task.UserId, task.Id))?.Status);
+        Assert.Null(await repository.GetLatestSessionAsync("another-user", task.Id));
+        Assert.Empty(protector.UnprotectCalls);
+        var session = await repository.GetLatestSessionAsync(task.UserId, task.Id);
+        Assert.Equal("earlier-session", session?.GetProperty("value").GetString());
+        var opened = Assert.Single(protector.UnprotectCalls);
+        Assert.Equal(task.UserId, opened.UserId);
+        Assert.Equal($"task\0{task.Id}\0{completed.Id}\0session", opened.Purpose);
+
+        var skippedWithSession = CreateRun("skipped-with-session", task, "", "", "newer-session");
+        skippedWithSession.Status = AgentTaskStatus.Skipped;
+        skippedWithSession.StartedAt = startedAt.AddMinutes(3);
+        await repository.SaveRunAsync(skippedWithSession);
+        session = await repository.GetLatestSessionAsync(task.UserId, task.Id);
+        Assert.Equal("newer-session", session?.GetProperty("value").GetString());
+
+        await repository.SaveRunAsync(new AgentTaskRun
+        {
+            Id = "sessionless-execution",
+            TaskId = task.Id,
+            UserId = task.UserId,
+            Status = AgentTaskStatus.Failed,
+            StartedAt = startedAt.AddMinutes(4)
+        });
+        Assert.Null(await repository.GetLatestSessionAsync(task.UserId, task.Id));
+        Assert.Single(protector.UnprotectCalls);
+    }
+
+    [Fact]
     public async Task GetRunMetadataAsync_WhenConfidential_DoesNotOpenProtectedContent()
     {
         var protector = new PassThroughContentProtector();

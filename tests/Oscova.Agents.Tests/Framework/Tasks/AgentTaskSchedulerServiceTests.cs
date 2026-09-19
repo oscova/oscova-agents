@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Tests.Framework.Logging;
@@ -222,10 +223,47 @@ public class AgentTaskSchedulerServiceTests
         testContext.Executor.Release();
 
         var dependentRun = await WaitForLastRunAsync(testContext.Scheduler, dependent.UserId, dependent.Id);
+        await WaitForTaskToStopAsync(testContext.Scheduler, dependent);
 
         Assert.Equal(TaskTriggerSource.AfterTask, dependentRun.TriggerSource);
         Assert.Equal(AgentTaskStatus.Completed, dependentRun.Status);
         Assert.False(testContext.Scheduler.TryGetLastRun(otherUserDependent.UserId, otherUserDependent.Id, out _));
+    }
+
+    [Fact]
+    public async Task TriggerTaskAsync_WhenDeleteAfterRunPredecessorCompletes_DeletesTaskAndRunsDependent()
+    {
+        using var testContext = new SchedulerTestContext();
+        var predecessor = SchedulerTestContext.CreateTask();
+        predecessor.Instruction = "Prepare the report.";
+        predecessor.Schedule = new TaskSchedule
+        {
+            Kind = TaskScheduleKind.OneShot,
+            RunAt = DateTimeOffset.UtcNow.AddMinutes(5),
+            DeleteAfterRun = true
+        };
+        var dependent = SchedulerTestContext.CreateTask("Dependent Task", predecessor.UserId);
+        dependent.Instruction = "Review the report.";
+        dependent.Schedule = new TaskSchedule
+        {
+            Kind = TaskScheduleKind.AfterTask,
+            PredecessorTaskId = predecessor.Id
+        };
+        await testContext.Repository.SaveTaskAsync(predecessor);
+        testContext.Repository.EnabledTasks.Add(dependent);
+
+        var outcome = await testContext.Scheduler.TriggerTaskAsync(predecessor);
+        Assert.True(outcome.Started);
+        testContext.Executor.Release();
+        await testContext.Repository.DeleteCompleted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Null(await testContext.Repository.GetTaskAsync(predecessor.UserId, predecessor.Id));
+        await WaitForExecutionCountAsync(testContext.Executor, dependent.Id, 1);
+        await WaitForTaskToStopAsync(testContext.Scheduler, dependent);
+        var dependentRun = await WaitForLastRunAsync(testContext.Scheduler, dependent.UserId, dependent.Id);
+        Assert.Equal(TaskTriggerSource.AfterTask, dependentRun.TriggerSource);
+        Assert.Equal(AgentTaskStatus.Completed, dependentRun.Status);
+        Assert.Equal(1, testContext.Executor.GetExecutionCount(dependent.Id));
     }
 
     [Fact]
@@ -324,7 +362,7 @@ public class AgentTaskSchedulerServiceTests
             DeleteAfterRun = false
         };
         testContext.Repository.EnabledTasks.Add(task);
-        testContext.Repository.FailNextSaveRun = true;
+        testContext.Repository.SaveRunFailuresRemaining = 1;
         var observedStatuses = new ConcurrentQueue<AgentTaskStatus>();
         using var subscription = testContext.TaskStatusNotifications.Subscribe(task.UserId, update =>
         {
@@ -347,6 +385,73 @@ public class AgentTaskSchedulerServiceTests
         await Task.Delay(100);
 
         Assert.Equal(1, testContext.Executor.ExecutionCount);
+    }
+
+    [Fact]
+    public async Task TriggerTaskAsync_WhenCompletedRunSaveFailsOnce_StillQueuesDependent()
+    {
+        using var testContext = new SchedulerTestContext();
+        var predecessor = SchedulerTestContext.CreateTask();
+        predecessor.Schedule = new TaskSchedule
+        {
+            Kind = TaskScheduleKind.OneShot,
+            RunAt = DateTimeOffset.UtcNow.AddMinutes(-1)
+        };
+        await testContext.Repository.SaveTaskAsync(predecessor);
+        var dependent = SchedulerTestContext.CreateTask("Dependent Task", predecessor.UserId);
+        dependent.Schedule = new TaskSchedule
+        {
+            Kind = TaskScheduleKind.AfterTask,
+            PredecessorTaskId = predecessor.Id
+        };
+        testContext.Repository.EnabledTasks.Add(dependent);
+        testContext.Repository.SaveRunFailuresRemaining = 1;
+
+        var outcome = await testContext.Scheduler.TriggerTaskAsync(predecessor);
+        Assert.True(outcome.Started);
+        testContext.Executor.Release();
+        await WaitForSavedRunCountAsync(testContext.Repository, 2);
+
+        var predecessorRun = await testContext.Repository.GetLatestRunAsync(predecessor.UserId, predecessor.Id);
+        Assert.Equal(AgentTaskStatus.Completed, predecessorRun?.Status);
+        var dependentRun = await WaitForLastRunAsync(testContext.Scheduler, dependent.UserId, dependent.Id);
+        await WaitForTaskToStopAsync(testContext.Scheduler, dependent);
+        Assert.Equal(TaskTriggerSource.AfterTask, dependentRun.TriggerSource);
+        Assert.Equal(AgentTaskStatus.Completed, dependentRun.Status);
+        Assert.Equal(1, testContext.Executor.GetExecutionCount(predecessor.Id));
+        Assert.Equal(1, testContext.Executor.GetExecutionCount(dependent.Id));
+    }
+
+    [Fact]
+    public async Task TriggerTaskAsync_WhenCompletedRunSaveFailsTwice_DoesNotQueueDependent()
+    {
+        using var testContext = new SchedulerTestContext();
+        var predecessor = SchedulerTestContext.CreateTask();
+        var dependent = SchedulerTestContext.CreateTask("Dependent Task", predecessor.UserId);
+        dependent.Schedule = new TaskSchedule
+        {
+            Kind = TaskScheduleKind.AfterTask,
+            PredecessorTaskId = predecessor.Id
+        };
+        testContext.Repository.EnabledTasks.Add(dependent);
+        testContext.Repository.SaveRunFailuresRemaining = 2;
+        var observedStatuses = new ConcurrentQueue<AgentTaskStatus>();
+        using var subscription = testContext.TaskStatusNotifications.Subscribe(predecessor.UserId, update =>
+        {
+            observedStatuses.Enqueue(update.Status);
+            return Task.CompletedTask;
+        });
+
+        testContext.Executor.Release();
+        var outcome = await testContext.Scheduler.TriggerTaskAsync(predecessor);
+
+        Assert.True(outcome.Started);
+        Assert.Equal(2, testContext.Repository.SavedRunStatuses.Count);
+        Assert.Null(await testContext.Repository.GetLatestRunAsync(predecessor.UserId, predecessor.Id));
+        Assert.Equal([AgentTaskStatus.Running, AgentTaskStatus.Completed], observedStatuses.ToArray());
+        Assert.False(testContext.Scheduler.TryGetLastRun(dependent.UserId, dependent.Id, out _));
+        Assert.Equal(1, testContext.Executor.GetExecutionCount(predecessor.Id));
+        Assert.Equal(0, testContext.Executor.GetExecutionCount(dependent.Id));
     }
 
     [Fact]
@@ -668,7 +773,7 @@ public class AgentTaskSchedulerServiceTests
     {
         public List<AgentTaskDefinition> EnabledTasks { get; } = [];
         public ConcurrentQueue<AgentTaskStatus> SavedRunStatuses { get; } = [];
-        public bool FailNextSaveRun { get; set; }
+        public int SaveRunFailuresRemaining { get; set; }
         public bool FailNextSaveTask { get; set; }
         public Func<CancellationToken, Task>? BeforeDeleteAsync { get; set; }
         public TaskCompletionSource DeleteCompleted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -698,6 +803,9 @@ public class AgentTaskSchedulerServiceTests
 
             return Task.FromResult<IReadOnlyList<AgentTaskDefinition>>(EnabledTasks);
         }
+        public Task<JsonElement?> GetLatestSessionAsync(string userId, string taskId, CancellationToken ct = default) =>
+            Task.FromResult<JsonElement?>(null);
+
         public Task<AgentTaskRun?> GetLatestRunAsync(string userId, string taskId, CancellationToken ct = default) =>
             Task.FromResult(_latestRunStatus is null
                 ? null
@@ -716,9 +824,9 @@ public class AgentTaskSchedulerServiceTests
         public Task SaveRunAsync(AgentTaskRun run, CancellationToken ct = default)
         {
             SavedRunStatuses.Enqueue(run.Status);
-            if (FailNextSaveRun)
+            if (SaveRunFailuresRemaining > 0)
             {
-                FailNextSaveRun = false;
+                SaveRunFailuresRemaining--;
                 throw new IOException("Transient run persistence failure.");
             }
 
