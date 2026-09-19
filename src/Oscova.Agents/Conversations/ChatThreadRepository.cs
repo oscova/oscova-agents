@@ -164,6 +164,39 @@ public sealed class ChatThreadRepository(
     }
 
     /// <inheritdoc />
+    public async Task<bool> TryMarkThreadReadAsync(
+        string userId,
+        string threadId,
+        CancellationToken ct = default)
+    {
+        ValidateThreadId(userId, threadId);
+        if (_incognitoThreads.TryGetValue((userId, threadId), out var incognitoThread))
+        {
+            incognitoThread.IsUnread = false;
+            return true;
+        }
+
+        var marked = false;
+        await indexCoordinator.RunForUserAsync(userId, async cancellationToken =>
+        {
+            var rows = ReadIndex(userId);
+            var row = rows.FirstOrDefault(entry =>
+                string.Equals(entry.SessionId, threadId, StringComparison.OrdinalIgnoreCase));
+            if (row is null)
+            {
+                // Read receipts may update existing metadata, but must not restore deleted conversations.
+                return;
+            }
+
+            row.IsUnread = false;
+            await WriteIndexAsync(userId, rows, cancellationToken).ConfigureAwait(false);
+            marked = true;
+        }, ct).ConfigureAwait(false);
+
+        return marked;
+    }
+
+    /// <inheritdoc />
     public async Task<bool> TryRenameThreadAsync(
         string userId,
         string threadId,
