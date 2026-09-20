@@ -7,7 +7,7 @@ namespace Oscova.Agents.Plugins.Tests.LlamaSharp;
 public sealed class LlamaSharpPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.LlamaSharp";
-    private const string PackageVersion = "1.0.3";
+    private const string PackageVersion = "2.0.0";
     private const string PluginId = "oscova.llamasharp";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -63,23 +63,21 @@ public sealed class LlamaSharpPluginPackageTests
     private static string GetPackagePath()
     {
         var packagePath = Path.Combine(
-            FindRepositoryRoot(),
-            "src",
-            PackageId,
-            "bin",
-            "Release",
+            FindAssistantRoot(),
+            "artifacts",
+            "nuget",
             $"{PackageId}.{PackageVersion}.nupkg");
         return File.Exists(packagePath)
             ? packagePath
             : throw new FileNotFoundException($"Release plugin package was not found: {packagePath}.");
     }
 
-    private static string FindRepositoryRoot()
+    private static string FindAssistantRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, "Oscova.Agents.sln")))
+            if (File.Exists(Path.Combine(directory.FullName, "Oscova.Assistant.sln")))
             {
                 return directory.FullName;
             }
@@ -87,7 +85,7 @@ public sealed class LlamaSharpPluginPackageTests
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException("Could not locate the Oscova.Agents repository root.");
+        throw new DirectoryNotFoundException("Could not locate the Oscova.Assistant repository root.");
     }
 
     private static string NormalizePath(string path) => path.Replace('\\', '/');

@@ -235,6 +235,36 @@ public sealed class ChatThreadRepository(
     }
 
     /// <inheritdoc />
+    public async Task<bool> TryReplaceDisplayMessageAsync(string userId, string threadId,
+        ChatDisplayMessage message, CancellationToken ct = default)
+    {
+        ValidateThreadId(userId, threadId);
+        if (_incognitoThreads.TryGetValue((userId, threadId), out var incognitoThread))
+        {
+            lock (incognitoThread.DisplayMessages)
+            {
+                var existing = incognitoThread.DisplayMessages.FirstOrDefault(item => item.MessageId == message.MessageId);
+                if (existing is null) return false;
+                incognitoThread.DisplayMessages[incognitoThread.DisplayMessages.IndexOf(existing)] = message;
+                return true;
+            }
+        }
+
+        var replaced = false;
+        await indexCoordinator.RunForUserAsync(userId, async cancellationToken =>
+        {
+            // Reload under the persistence gate so a deleted thread cannot be restored.
+            var thread = await GetThreadAsync(userId, threadId, cancellationToken).ConfigureAwait(false);
+            var existing = thread?.DisplayMessages.FirstOrDefault(item => item.MessageId == message.MessageId);
+            if (thread is null || existing is null) return;
+            thread.DisplayMessages[thread.DisplayMessages.IndexOf(existing)] = message;
+            await RewriteTranscriptAsync(userId, thread, TryReadIndexEntry(userId, threadId), cancellationToken).ConfigureAwait(false);
+            replaced = true;
+        }, ct).ConfigureAwait(false);
+        return replaced;
+    }
+
+    /// <inheritdoc />
     public Task<IReadOnlyList<ChatThread>> GetIncognitoThreadsAsync(string userId, CancellationToken ct = default)
     {
         IReadOnlyList<ChatThread> threads =

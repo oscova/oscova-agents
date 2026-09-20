@@ -8,6 +8,10 @@ namespace Oscova.Agents.Conversations;
 /// <summary>Persists and retrieves user-owned chat threads and framework session state.</summary>
 public interface IChatThreadRepository
 {
+    /// <summary>Replaces one existing display message without changing its model session.</summary>
+    Task<bool> TryReplaceDisplayMessageAsync(string userId, string threadId,
+        ChatDisplayMessage message, CancellationToken ct = default);
+
     /// <summary>Returns the user's persisted chat-thread summaries. Incognito threads are excluded.</summary>
     Task<IReadOnlyList<ChatThread>> GetThreadsAsync(
         string userId,

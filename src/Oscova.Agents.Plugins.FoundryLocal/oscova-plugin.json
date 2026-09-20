@@ -1,7 +1,7 @@
 {
   "id": "oscova.foundry-local",
   "name": "Oscova Foundry Local Provider",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "assembly": "Oscova.Agents.Plugins.FoundryLocal.dll",
   "entryType": "Oscova.Agents.Plugins.FoundryLocal.FoundryLocalAgentPlugin"
 }

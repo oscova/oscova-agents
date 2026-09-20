@@ -10,7 +10,7 @@ Whisper detects the spoken language automatically. Kokoro voice choices show the
 
 ## NVIDIA CUDA edition
 
-`Oscova.Agents.Plugins.LocalSpeech.Cuda` is a separate 1.0.4 package built from the same project. It targets Windows x64 and Linux x64. End-to-end GPU inference has been validated on Windows x64. Linux x64 validation is pending. macOS is excluded. The operator needs an NVIDIA GPU and driver, [CUDA 13 compatible with Whisper's 13.0.1 requirement](https://github.com/sandrohanea/whisper.net/tree/1.9.1#cuda-support), and [cuDNN 9 for ONNX Runtime 1.29](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html#requirements). Prerequisite libraries must be discoverable by the host process. Oscova does not install them.
+`Oscova.Agents.Plugins.LocalSpeech.Cuda` is a separate 2.0.3 package built from the same project. It targets Windows x64 and Linux x64. End-to-end GPU inference has been validated on Windows x64. Linux x64 validation is pending. macOS is excluded. The operator needs an NVIDIA GPU and driver, [CUDA 13 compatible with Whisper's 13.0.1 requirement](https://github.com/sandrohanea/whisper.net/tree/1.9.1#cuda-support), and [cuDNN 9 for ONNX Runtime 1.29](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html#requirements). Prerequisite libraries must be discoverable by the host process. Oscova does not install them.
 
 Startup keeps installing CPU by default, without a GPU prompt. To switch, use **Settings > Plugins > Find plugins online**, install the CUDA package, and restart the host process. Both editions use plugin ID `oscova.local-speech` and provider key `local`. The pending name appears under **After restart**. Models, activation, and voice settings are preserved. An existing CUDA installation satisfies the startup default check.
 
@@ -18,13 +18,13 @@ Only one replacement can wait for restart. Finish it before selecting another ed
 
 CUDA initializes explicitly and failures retain prerequisite guidance in application logs. Plugin **Active** and model **Ready** indicators do not certify GPU readiness. Device zero is used. Some ONNX operators can still run on CPU. Existing per-user Kokoro sessions each consume GPU memory.
 
-Whisper CUDA binaries ship as ordinary dependencies `Oscova.Agents.Native.Whisper.Cuda.Windows` and `.Linux`, both version 1.9.1. Restore downloads both platforms' archives and the ONNX GPU dependencies, then installs only current-platform native assets. The small plugin archive alone does not represent the complete download.
+Whisper CUDA binaries ship as ordinary dependencies `Oscova.Agents.Native.Whisper.Cuda.Windows` and `.Linux`, both version 2.0.0. Restore downloads both platforms' archives and the ONNX GPU dependencies, then installs only current-platform native assets. The small plugin archive alone does not represent the complete download.
 
 Measured with version 1.0.3 on Windows x64, the complete package graph is about 286 MiB downloaded and 167 MiB installed for CPU, or 726 MiB downloaded and 482 MiB installed for CUDA. These figures exclude speech models, separately installed NVIDIA prerequisites, and temporary extraction space.
 
 ## Build both editions locally
 
-Run `pwsh -File ./src/Oscova.Agents.Plugins.LocalSpeech/packaging/Pack.ps1` from the repository root. It produces CPU and CUDA 1.0.4 archives plus both native 1.9.1 dependencies under `artifacts/local-speech/packages`. `-OutputDirectory` selects another destination. The CPU package is also retained under the project's `bin/Release` directory. CUDA restore and compilation use separate SDK artifacts. This script does not publish packages.
+Run `internal/tools/build-nuget-packages.ps1` from the Oscova.Assistant repository root. It produces CPU and CUDA 2.0.3 archives plus both native 2.0.0 dependencies under `artifacts/nuget`. CUDA restore and compilation use separate SDK intermediates. The workflow does not copy packages into project output directories.
 
 ## Third-party notices
 

@@ -1,7 +1,7 @@
 {
   "id": "oscova.local-speech",
   "name": "Oscova Local Speech",
-  "version": "1.0.4",
+  "version": "2.0.3",
   "assembly": "Oscova.Agents.Plugins.LocalSpeech.dll",
   "entryType": "Oscova.Agents.Plugins.LocalSpeech.LocalSpeechAgentPlugin"
 }

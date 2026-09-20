@@ -8,7 +8,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>Oscova.Agents.Plugins.LlamaSharp</PackageId>
-    <Version>1.0.3</Version>
+    <Version>2.0.0</Version>
     <PackageType>OscovaPlugin</PackageType>
     <Description>Oscova Agents plugin providing local GGUF inference through LLamaSharp.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -16,13 +16,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <!-- Keep the full closure available to the offline package-install acceptance. -->
     <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Oscova.Agents" Version="[0.9.20.1990]" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Oscova.Agents" Version="[2.0.0]" IncludeAssets="compile" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" IncludeAssets="compile" PrivateAssets="all" />
     <PackageReference Include="LLamaSharp" Version="[0.27.0]" />
     <!-- Use the backend package only as the binary source for standard runtime assets. -->

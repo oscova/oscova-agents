@@ -51,7 +51,7 @@ public sealed class CodingToolsetTests : IDisposable
         var existingPath = WriteWorkspaceFile("src/Existing.cs", "namespace Example;\npublic class Existing\n{\n    public int Count;\n}");
         var obsoletePath = WriteWorkspaceFile("src/Obsolete.cs", "old");
 
-        var patch = $$"""
+        var patch = """
             *** Begin Patch
             *** Add File: src/NewFile.cs
             +namespace Example;
@@ -90,7 +90,7 @@ public sealed class CodingToolsetTests : IDisposable
         var filePath = WriteWorkspaceFile("src/Missing.cs", "alpha\nbeta\ngamma\n");
         var originalContent = File.ReadAllText(filePath);
 
-        var patch = $$"""
+        var patch = """
             *** Begin Patch
             *** Update File: src/Missing.cs
             @@ missing
@@ -111,7 +111,7 @@ public sealed class CodingToolsetTests : IDisposable
         var filePath = WriteWorkspaceFile("src/Ambiguous.cs", "start\nrepeat\nvalue\nend\nrepeat\nvalue\n");
         var originalContent = File.ReadAllText(filePath);
 
-        var patch = $$"""
+        var patch = """
             *** Begin Patch
             *** Update File: src/Ambiguous.cs
             @@ duplicate

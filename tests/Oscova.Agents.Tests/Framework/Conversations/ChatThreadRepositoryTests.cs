@@ -24,6 +24,58 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             NullLogger<ChatThreadRepository>.Instance);
     }
 
+    /// <summary>Display replacement preserves the session and other messages and never restores a deleted thread.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task UserQuestion_DisplayReplacement_PreservesConversation(bool incognito)
+    {
+        var thread = new ChatThread
+        {
+            Id = "question-replacement", IsIncognito = incognito, Title = "Questions",
+            SessionElement = JsonSerializer.SerializeToElement(new { receipt = "original" }),
+            DisplayMessages = [new() { MessageId = "first", Text = "Original" }, new() { MessageId = "second", Text = "Unchanged" }]
+        };
+        await _repository.SaveThreadAsync("user-1", thread);
+        var replacement = new ChatDisplayMessage { MessageId = "first", Text = "Replaced" };
+        Assert.False(await _repository.TryReplaceDisplayMessageAsync("other-user", thread.Id, replacement));
+        Assert.True(await _repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
+        var stored = (await _repository.GetThreadAsync("user-1", thread.Id))!;
+        Assert.Equal(["Replaced", "Unchanged"], stored.DisplayMessages.Select(message => message.Text));
+        Assert.Equal("original", stored.SessionElement!.Value.GetProperty("receipt").GetString());
+        Assert.Equal("Questions", stored.Title);
+        await _repository.DeleteThreadAsync("user-1", thread.Id);
+        Assert.False(await _repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
+        Assert.Null(await _repository.GetThreadAsync("user-1", thread.Id));
+    }
+
+    /// <summary>Encrypted display updates preserve protected storage and refuse a locked vault.</summary>
+    [Fact]
+    public async Task UserQuestion_DisplayReplacement_PreservesEncryptedStorage()
+    {
+        var protector = new PassThroughContentProtector();
+        var agents = new InMemoryAgentDefinitionRepository();
+        await agents.SaveAgentAsync("user-1", new AgentDefinition { Id = "private", IsConfidential = true });
+        var repository = CreateRepository(protector, agents);
+        var thread = new ChatThread
+        {
+            AgentId = "private", DisplayMessages = [new() { MessageId = "card", Text = "Question" }],
+            SessionElement = JsonSerializer.SerializeToElement(new { receipt = "original" })
+        };
+        await repository.SaveThreadAsync("user-1", thread);
+        var replacement = new ChatDisplayMessage { MessageId = "card", Text = "Closed question" };
+        protector.Available = false;
+        Assert.False(await repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
+        protector.Available = true;
+        Assert.True(await repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
+        var saved = (await repository.GetThreadAsync("user-1", thread.Id))!;
+        Assert.True(saved.IsEncrypted);
+        Assert.Equal("Closed question", Assert.Single(saved.DisplayMessages).Text);
+        Assert.Equal("original", saved.SessionElement!.Value.GetProperty("receipt").GetString());
+        var lines = await File.ReadAllLinesAsync(Path.Combine(_usersRoot, "user-1", "chat", thread.Id + ".jsonl"));
+        Assert.All(lines, line => Assert.Contains("\"IsEncrypted\":true", line, StringComparison.Ordinal));
+    }
+
     [Fact]
     public void Constructor_WhenUsersRootResolverIsNull_Throws()
     {

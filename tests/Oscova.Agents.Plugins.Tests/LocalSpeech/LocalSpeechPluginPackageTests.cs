@@ -8,7 +8,8 @@ namespace Oscova.Agents.Plugins.Tests.LocalSpeech;
 public sealed class LocalSpeechPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.LocalSpeech";
-    private const string PackageVersion = "1.0.4";
+    private const string PackageVersion = "2.0.3";
+    private const string NativePackageVersion = "2.0.0";
     private const string PluginId = "oscova.local-speech";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
@@ -51,6 +52,20 @@ public sealed class LocalSpeechPluginPackageTests
             .Order(StringComparer.Ordinal)
             .ToList();
         Assert.Equal(["linux-x64", "osx-arm64", "win-x64"], runtimeRoots);
+        foreach (var (outerRid, innerRuntime, entryLibrary) in new[]
+                 {
+                     ("win-x64", "win-x64", "whisper.dll"),
+                     ("linux-x64", "linux-x64", "libwhisper.so"),
+                     ("osx-arm64", "macos-arm64", "libwhisper.dylib")
+                 })
+        {
+            var prefix = $"runtimes/{outerRid}/native/runtimes/{innerRuntime}/";
+            var nativeFiles = files.Where(path => path.StartsWith(prefix, StringComparison.Ordinal)).ToArray();
+            Assert.NotEmpty(nativeFiles);
+            Assert.Contains(prefix + entryLibrary, nativeFiles);
+        }
+        Assert.DoesNotContain(files, path =>
+            path.StartsWith("runtimes/osx-arm64/native/runtimes/osx-arm64/", StringComparison.Ordinal));
         Assert.DoesNotContain(files, path =>
             path.Contains("cuda", StringComparison.OrdinalIgnoreCase) ||
             path.Contains("vulkan", StringComparison.OrdinalIgnoreCase));
@@ -95,9 +110,9 @@ public sealed class LocalSpeechPluginPackageTests
         foreach (var (platform, rid, extension) in new[] { ("Windows", "win-x64", ".dll"), ("Linux", "linux-x64", ".so") })
         {
             var id = "Oscova.Agents.Native.Whisper.Cuda." + platform;
-            AssertExactDependency(dependencies, id, "1.9.1");
-            using var payload = new PackageArchiveReader(GetPackagePath(id, "1.9.1"));
-            Assert.Equal(NuGetVersion.Parse("1.9.1"), payload.GetIdentity().Version);
+            AssertExactDependency(dependencies, id, NativePackageVersion);
+            using var payload = new PackageArchiveReader(GetPackagePath(id, NativePackageVersion));
+            Assert.Equal(NuGetVersion.Parse(NativePackageVersion), payload.GetIdentity().Version);
             Assert.DoesNotContain(payload.GetPackageTypes(), type => type.Name == "OscovaPlugin");
             var payloadFiles = payload.GetFiles().Select(NormalizePath).ToArray();
             Assert.DoesNotContain(AgentPluginLoader.ManifestFileName, payloadFiles);
@@ -113,18 +128,18 @@ public sealed class LocalSpeechPluginPackageTests
     private static string GetPackagePath(string id = PackageId, string version = PackageVersion)
     {
         var path = Path.Combine(
-            Environment.GetEnvironmentVariable("OSCOVA_SPEECH_PACKAGE_DIRECTORY")
-                ?? Path.Combine(FindRepositoryRoot(), "artifacts", "local-speech", "packages"),
+            Environment.GetEnvironmentVariable("OSCOVA_NUGET_PACKAGE_DIRECTORY")
+                ?? Path.Combine(FindAssistantRoot(), "artifacts", "nuget"),
             $"{id}.{version}.nupkg");
         return File.Exists(path) ? path : throw new FileNotFoundException($"Release plugin package was not found: {path}.");
     }
 
-    private static string FindRepositoryRoot()
+    private static string FindAssistantRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, "Oscova.Agents.sln")))
+            if (File.Exists(Path.Combine(directory.FullName, "Oscova.Assistant.sln")))
             {
                 return directory.FullName;
             }
@@ -132,7 +147,7 @@ public sealed class LocalSpeechPluginPackageTests
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException("Could not locate the Oscova.Agents repository root.");
+        throw new DirectoryNotFoundException("Could not locate the Oscova.Assistant repository root.");
     }
 
     private static string NormalizePath(string path) => path.Replace('\\', '/');

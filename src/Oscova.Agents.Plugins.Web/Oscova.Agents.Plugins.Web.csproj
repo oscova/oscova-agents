@@ -8,7 +8,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>Oscova.Agents.Plugins.Web</PackageId>
-    <Version>1.1.1</Version>
+    <Version>2.0.0</Version>
     <PackageType>OscovaPlugin</PackageType>
     <Description>Oscova Agents plugin providing web search (web_search) and news (news_search) toolsets for agents. Requires user-supplied API keys.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -16,12 +16,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" IncludeAssets="compile" PrivateAssets="all" />
-    <PackageReference Include="Oscova.Agents" Version="[0.9.20.1990]" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Oscova.Agents" Version="[2.0.0]" IncludeAssets="compile" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

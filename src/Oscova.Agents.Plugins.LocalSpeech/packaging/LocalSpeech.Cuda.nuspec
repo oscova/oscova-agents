@@ -18,8 +18,8 @@
         <dependency id="KokoroSharp" version="[$kokoroVersion$]" />
         <dependency id="NAudio" version="[$naudioVersion$]" />
         <dependency id="Microsoft.ML.OnnxRuntime.Gpu" version="[$onnxVersion$]" />
-        <dependency id="Oscova.Agents.Native.Whisper.Cuda.Windows" version="[$whisperVersion$]" />
-        <dependency id="Oscova.Agents.Native.Whisper.Cuda.Linux" version="[$whisperVersion$]" />
+        <dependency id="Oscova.Agents.Native.Whisper.Cuda.Windows" version="[$whisperNativePackageVersion$]" />
+        <dependency id="Oscova.Agents.Native.Whisper.Cuda.Linux" version="[$whisperNativePackageVersion$]" />
       </group>
     </dependencies>
   </metadata>

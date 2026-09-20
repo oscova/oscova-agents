@@ -2,14 +2,13 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0</TargetFrameworks>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<LocalNuGetRepository>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../../../LocalNuGetRepository'))</LocalNuGetRepository>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<WarningsAsErrors>$(WarningsAsErrors);1591</WarningsAsErrors>
+		<!-- Shell and SqliteVec are intentionally preview dependencies until stable packages are available. -->
+		<NoWarn>$(NoWarn);NU5104</NoWarn>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
-		<IncrementVersionOnBuild>0.MM.dd.Hmm</IncrementVersionOnBuild>
-		<Version>0.9.20.1990</Version>
+		<Version>2.0.0</Version>
 		<Description>Oscova Agents is a reusable .NET agent framework for building local-first AI agents and tools on top of the Microsoft Agent Framework.</Description>
 		<PackageTags>oscova;oscova-agents;ai;agents;agent-framework;llm;local-first;dotnet</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -46,14 +45,5 @@
 	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
 	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
 	</ItemGroup>
-
-	<Target Name="CopyPackageToLocalFeed" AfterTargets="Pack" Condition="Exists('$(LocalNuGetRepository)')">
-		<ItemGroup>
-			<LocalFeedPackage Include="@(NuGetPackOutput)" Condition="'%(Extension)' == '.nupkg'" />
-			<SupersededLocalPackage Include="$(LocalNuGetRepository)/*.nupkg" Exclude="@(LocalFeedPackage->'$(LocalNuGetRepository)/%(Filename)%(Extension)')" />
-		</ItemGroup>
-		<Copy SourceFiles="@(LocalFeedPackage)" DestinationFolder="$(LocalNuGetRepository)" />
-		<Delete Files="@(SupersededLocalPackage)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Filename)', '^Oscova[.]Agents[.][0-9]+(?:[.][0-9]+){1,3}(?:-[0-9A-Za-z.-]+)?$'))" />
-	</Target>
 
 </Project>
