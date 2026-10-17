@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -17,11 +18,26 @@ public sealed class AgentPluginLoader
     /// Manifest file name searched under each plugin directory.
     /// </summary>
     public const string ManifestFileName = "oscova-plugin.json";
+
+    /// <summary>Gets the portable release RID, since distro .NET builds report names such as ubuntu.26.04-x64.</summary>
+    public static string SupportedRuntimeIdentifier =>
+        OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "win-x64" :
+        OperatingSystem.IsLinux() && RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "linux-x64" :
+        OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "osx-arm64" :
+        OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "osx-x64" :
+        throw new PlatformNotSupportedException("Oscova supports win-x64, linux-x64, osx-x64, and osx-arm64.");
+
     internal static IReadOnlySet<string> SharedAssemblyNames { get; } = new HashSet<string>(StringComparer.Ordinal)
     {
         typeof(IAgentPlugin).Assembly.GetName().Name!,
         typeof(IChatClient).Assembly.GetName().Name!,
-        typeof(ILoggerFactory).Assembly.GetName().Name!
+        typeof(ILoggerFactory).Assembly.GetName().Name!,
+        // Runtime HTTP JSON APIs require the same serializer type identity as plugin dependencies.
+        typeof(JsonSerializer).Assembly.GetName().Name!,
+        typeof(Microsoft.Agents.AI.Tools.Shell.ShellExecutor).Assembly.GetName().Name!,
+        "Microsoft.AspNetCore.Components",
+        "Microsoft.AspNetCore.Components.Web",
+        "Microsoft.Extensions.Localization.Abstractions"
     };
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -213,6 +229,7 @@ public sealed class AgentPluginLoader
 
             var loadContext = new AgentPluginLoadContext(assemblyPath);
             var assembly = loadContext.LoadPluginAssembly();
+            // The harness admits inspected manifests using their declared framework range before loading.
             var entryType = assembly.GetType(manifest.EntryType, throwOnError: false);
             if (entryType is null)
             {
@@ -243,15 +260,17 @@ public sealed class AgentPluginLoader
 
             var builder = new AgentPluginBuilder();
             entry.Configure(builder);
+            foreach (var message in builder.Diagnostics)
+            {
+                diagnostics.Add(new AgentPluginLoadDiagnostic(AgentPluginLoadDiagnosticLevel.Warning,
+                    manifestPath, message));
+            }
+            if (builder.ResourceType is { } resourceType && resourceType.Assembly != assembly)
+            {
+                throw new InvalidOperationException("Plugin display resources must be declared by the plugin assembly.");
+            }
 
-            return new LoadedAgentPlugin(
-                manifest,
-                assembly,
-                manifestDirectory,
-                [.. builder.Toolsets],
-                [.. builder.ModelProviders],
-                [.. builder.SpeechRecognitionProviders],
-                [.. builder.SpeechSynthesisProviders]);
+            return new LoadedAgentPlugin(manifest, assembly, manifestDirectory, builder);
         }
         catch (Exception ex)
         {
@@ -313,6 +332,11 @@ public sealed class AgentPluginLoader
         if (HasSurroundingWhitespace(manifest.Id))
         {
             return "Plugin manifest Id must not contain leading or trailing whitespace.";
+        }
+
+        if (manifest.Id.Contains(':'))
+        {
+            return "Plugin manifest Id must not contain ':' because it separates credential namespaces.";
         }
 
         if (string.IsNullOrWhiteSpace(manifest.Name))

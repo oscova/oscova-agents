@@ -6,7 +6,9 @@ public sealed record AllowedDirectory(
     string Label,
     DirectorySourceKind Kind,
     WorkspaceAccessMode AccessMode,
-    string? AgentPath = null);
+    string? AgentPath = null,
+    [property: System.Text.Json.Serialization.JsonIgnore, YamlDotNet.Serialization.YamlIgnore]
+    bool IsWorkingDirectory = false);
 
 /// <summary>
 /// Identifies how an allowed directory is sourced by workspace and external-directory providers.

@@ -1,7 +1,8 @@
 {
   "id": "oscova.web",
   "name": "Oscova Web Tools",
-  "version": "2.0.0",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
   "assembly": "Oscova.Agents.Plugins.Web.dll",
   "entryType": "Oscova.Agents.Plugins.Web.WebAgentPlugin"
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Discord.Label"><value>Discord</value></data>
+  <data name="Settings.Section.Discord.Description"><value>设置 Discord 机器人集成与频道绑定。</value></data>
+  <data name="Settings.Discord.GetTokenLink"><value>从 Discord Developer Portal 获取机器人令牌</value></data>
+  <data name="Settings.Discord.FindUserIdLink"><value>如何查找你的 Discord 用户 ID</value></data>
+  <data name="Settings.Discord.UserIdPlaceholder"><value>输入 Discord 用户 ID（例如 123456789012345678）</value></data>
+  <data name="Settings.Discord.UserIdLabel"><value>授权用户 ID</value></data>
+  <data name="Settings.Discord.UserIdHint"><value>仅此用户可以使用机器人发送和接收消息。</value></data>
+  <data name="Credential.Label"><value>Discord 机器人</value></data>
+  <data name="Credential.Description"><value>用于连接 Discord 机器人的令牌。</value></data>
+  <data name="Credential.BotToken.Label"><value>机器人令牌</value></data>
+  <data name="Validation.AuthorizedUserId"><value>授权用户 ID 必须是 1 到 18446744073709551615 之间的整数。</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>启动时连接</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>启用后，机器人将在应用程序启动时自动连接</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>机器人令牌在“凭据”选项卡中统一集中管理。</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>管理凭据</value></data>
+  <data name="Settings.Section.Agent.Label"><value>主智能体</value></data>
+  <data name="Settings.Channels.AgentHint"><value>选择在此频道中回复的智能体。</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>保存设置</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>机器人状态</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>启动频道前请保存更改。</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>停止机器人</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>启动机器人</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>设置已成功保存。</value></data>
+  <data name="Common.Connected">
+		<value>已连接</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>已断开</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>正在加载...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

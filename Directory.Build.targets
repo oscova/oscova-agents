@@ -1,0 +1,67 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)../../Directory.Build.targets" Condition="Exists('$(MSBuildThisFileDirectory)../../Directory.Build.targets')" />
+
+  <!-- The author-owned JSON declaration replaces the SDK's private compile dependency in publication metadata. -->
+  <UsingTask TaskName="ExportPluginFrameworkRange" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <NuspecPath ParameterType="System.String" Required="true" />
+      <FrameworkRange ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Xml" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var document = new XmlDocument();
+        document.Load(NuspecPath);
+        var ns = document.DocumentElement.NamespaceURI;
+        var manager = new XmlNamespaceManager(document.NameTable);
+        manager.AddNamespace("p", ns);
+        var metadata = document.SelectSingleNode("/p:package/p:metadata", manager);
+        var dependencies = metadata.SelectSingleNode("p:dependencies", manager);
+        if (dependencies == null)
+        {
+            dependencies = document.CreateElement("dependencies", ns);
+            metadata.AppendChild(dependencies);
+        }
+        var groups = dependencies.SelectNodes("p:group", manager);
+        if (groups.Count == 0)
+        {
+            var group = document.CreateElement("group", ns);
+            group.SetAttribute("targetFramework", "net10.0");
+            dependencies.AppendChild(group);
+            groups = dependencies.SelectNodes("p:group", manager);
+        }
+        foreach (XmlElement group in groups)
+        {
+            var dependency = (XmlElement)group.SelectSingleNode("p:dependency[@id='Oscova.Agents']", manager);
+            if (dependency == null)
+            {
+                dependency = document.CreateElement("dependency", ns);
+                dependency.SetAttribute("id", "Oscova.Agents");
+                group.AppendChild(dependency);
+            }
+            dependency.SetAttribute("version", FrameworkRange);
+        }
+        document.Save(NuspecPath);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="ReadPluginFrameworkRange" BeforeTargets="GenerateNuspec;SetLocalSpeechNuspecProperties" Condition="'$(PackageType)' == 'OscovaPlugin'">
+    <PropertyGroup>
+      <_PluginManifestName Condition="'$(LocalSpeechEdition)' != 'Cuda'">oscova-plugin.json</_PluginManifestName>
+      <_PluginManifestName Condition="'$(LocalSpeechEdition)' == 'Cuda'">oscova-plugin.cuda.json</_PluginManifestName>
+      <PluginFrameworkVersionRange>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/$(_PluginManifestName)')), '&quot;frameworkVersionRange&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value.Replace('$frameworkVersion$', '$(OscovaAgentsVersion)'))</PluginFrameworkVersionRange>
+      <ContinuePackingAfterGeneratingNuspec Condition="'$(NuspecFile)' == ''">false</ContinuePackingAfterGeneratingNuspec>
+      <_ExportGeneratedManifest Condition="'$(NuspecFile)' == ''">true</_ExportGeneratedManifest>
+    </PropertyGroup>
+    <Error Condition="'$(PluginFrameworkVersionRange)' == ''" Text="Plugin manifest must declare frameworkVersionRange before packaging." />
+  </Target>
+
+  <Target Name="PackPluginFrameworkDeclaration" AfterTargets="GenerateNuspec" Condition="'$(_ExportGeneratedManifest)' == 'true'">
+    <PropertyGroup>
+      <_PluginNuspec>$(NuspecOutputAbsolutePath)$(PackageId).$(PackageVersion).nuspec</_PluginNuspec>
+    </PropertyGroup>
+    <ExportPluginFrameworkRange NuspecPath="$(_PluginNuspec)" FrameworkRange="$(PluginFrameworkVersionRange)" />
+    <PackTask PackItem="$(PackProjectInputFile)" NuspecFile="$(_PluginNuspec)" NuspecBasePath="$(MSBuildProjectDirectory)" PackageOutputPath="$(PackageOutputAbsolutePath)" NuspecOutputPath="$(NuspecOutputAbsolutePath)" RestoreOutputPath="$(RestoreOutputAbsolutePath)" PackageId="$(PackageId)" PackageVersion="$(PackageVersion)" SymbolPackageFormat="$(SymbolPackageFormat)" ContinuePackingAfterGeneratingNuspec="true" />
+  </Target>
+</Project>

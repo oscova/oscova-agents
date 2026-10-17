@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings>
+    <EnableDynamicLoading>true</EnableDynamicLoading><IsPackable>true</IsPackable>
+    <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
+    <PackageId>Oscova.Agents.Plugins.Docker</PackageId><Version>$(DockerPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType><Description>Optional Docker execution and shared image management.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression><PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BuildContext/**/*" /><EmbeddedResource Include="Help/**/*.md" />
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

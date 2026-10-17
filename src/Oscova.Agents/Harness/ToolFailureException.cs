@@ -6,6 +6,9 @@ namespace Oscova.Agents.Harness;
 /// <remarks>Reason and fix text must not contain paths, host names, connection strings, credentials, or raw exception text.</remarks>
 public sealed class ToolFailureException : Exception
 {
+    /// <summary>Identifies an agent-readable failure result after exception details are removed.</summary>
+    public const string ResultPrefix = "Failed: ";
+
     /// <summary>Creates a failure with an agent-readable reason and optional next step.</summary>
     /// <param name="reason">The safe reason for the failure.</param>
     /// <param name="fix">The safe next step, when one is available.</param>

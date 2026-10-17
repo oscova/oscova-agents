@@ -27,7 +27,10 @@ public interface IAgentDefinitionRepository
     /// <summary>
     /// Persists an agent definition for the user.
     /// </summary>
-    Task SaveAgentAsync(string userId, AgentDefinition agent, CancellationToken ct = default);
+    Task SaveAgentAsync(string userId, AgentDefinition agent, CancellationToken ct = default, string? creationDirectoryName = null);
+
+    /// <summary>Persists a source/default update supplied by a trusted host contribution path.</summary>
+    Task SaveInstructionSourceAsync(string userId, AgentDefinition agent, CancellationToken ct = default);
 
     /// <summary>
     /// Ensures the user has a main agent definition.

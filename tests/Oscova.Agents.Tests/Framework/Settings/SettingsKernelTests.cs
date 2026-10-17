@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging.Abstractions;
+using Oscova.Agents.Persistence;
 using Oscova.Agents.Settings;
 
 namespace Oscova.Agents.Tests.Framework.Settings;
@@ -93,7 +94,7 @@ public sealed class SettingsKernelTests : IDisposable
     [Fact]
     public async Task SettingsBase_LoadsOnceReloadsAndSuppressesLoadNotifications()
     {
-        var repository = new TestSettingsRepository { Content = "first" };
+        var repository = new TestSettingsRepository { Content = "value: first" };
         var settings = new TestSettings(repository);
         var changedCount = 0;
         var propertyChangedCount = 0;
@@ -107,7 +108,7 @@ public sealed class SettingsKernelTests : IDisposable
         Assert.Equal(0, changedCount);
         Assert.Equal(0, propertyChangedCount);
 
-        repository.Content = "second";
+        repository.Content = "value: second";
         await settings.LoadAsync();
 
         Assert.Equal("first", settings.Value);
@@ -142,9 +143,9 @@ public sealed class SettingsKernelTests : IDisposable
         var secondLoad = settings.LoadAsync();
         Assert.Equal(2, repository.ReadCount);
 
-        firstRead.SetResult("same");
+        firstRead.SetResult("value: same");
         await firstLoad;
-        secondRead.SetResult("same");
+        secondRead.SetResult("value: same");
         await secondLoad;
         settings.Value = "changed";
 
@@ -166,7 +167,7 @@ public sealed class SettingsKernelTests : IDisposable
     {
         var repository = new TestSettingsRepository
         {
-            Content = "persisted",
+            Content = "value: persisted",
             SaveException = new IOException("Write failed.")
         };
         var settings = new TestSettings(repository);
@@ -186,12 +187,56 @@ public sealed class SettingsKernelTests : IDisposable
         }
     }
 
-    private sealed class TestSettings(IAppSettingsRepository repository)
+    [Fact]
+    public async Task SettingsBase_ConvertedLoad_RetriesFailedWriteAndPreservesConvertedValue()
+    {
+        var repository = new TestSettingsRepository { Content = "minutes: 27", SaveException = new IOException("Write failed.") };
+        var yaml = new YamlConverter();
+        var settings = new TestSettings(repository, 2, content =>
+        {
+            if (yaml.ReadSchemaVersion(content) != 1) { return content; }
+            var fields = yaml.Deserialize<Dictionary<string, int>>(content);
+            return YamlConverter.WithSchemaVersion($"value: {fields["minutes"] * 60}", 2);
+        });
+
+        await Assert.ThrowsAsync<IOException>(() => settings.LoadAsync());
+        Assert.False(settings.IsLoaded);
+        Assert.Equal("minutes: 27", repository.Content);
+        repository.SaveException = null;
+        await settings.LoadAsync();
+        Assert.True(settings.IsLoaded);
+        Assert.Equal("1620", settings.Value);
+        Assert.Equal(2, yaml.ReadSchemaVersion(repository.Content!));
+        var restarted = new TestSettings(repository, 2);
+        await restarted.LoadAsync();
+        Assert.Equal("1620", restarted.Value);
+        await restarted.SaveAsync();
+        Assert.Equal(2, yaml.ReadSchemaVersion(repository.Content!));
+    }
+
+    [Theory]
+    [InlineData("99")]
+    [InlineData("0")]
+    [InlineData("invalid")]
+    public async Task SettingsBase_UnsupportedMarker_PreservesOriginalDocument(string marker)
+    {
+        var content = $"schema_version: {marker}\nvalue: original";
+        var repository = new TestSettingsRepository { Content = content };
+        var settings = new TestSettings(repository);
+        await Assert.ThrowsAsync<InvalidDataException>(() => settings.LoadAsync());
+        Assert.False(settings.IsLoaded);
+        Assert.Equal(content, repository.Content);
+        Assert.Equal(string.Empty, settings.Value);
+    }
+
+    private sealed class TestSettings(IAppSettingsRepository repository, int schemaVersion = 1, Func<string, string>? prepare = null)
         : SettingsBase(repository, "scope-1", NullLoggerFactory.Instance)
     {
         private string _value = string.Empty;
 
         public override string SettingsKey => "test";
+        protected override int SchemaVersion => schemaVersion;
+        protected override string PreparePersistedYaml(string yaml) => prepare?.Invoke(yaml) ?? yaml;
 
         public string Value
         {
@@ -199,9 +244,9 @@ public sealed class SettingsKernelTests : IDisposable
             set => SetProperty(ref _value, value);
         }
 
-        public override string ToYaml() => Value;
+        public override string ToYaml() => Yaml.Serialize(new Dictionary<string, string> { ["value"] = Value });
 
-        public override void FromYaml(string yaml) => Value = yaml;
+        public override void FromYaml(string yaml) => Value = Yaml.Deserialize<Dictionary<string, string>>(yaml)["value"];
     }
 
     private sealed class TestSettingsRepository : IAppSettingsRepository
@@ -210,7 +255,7 @@ public sealed class SettingsKernelTests : IDisposable
 
         public int ReadCount { get; private set; }
 
-        public Exception? SaveException { get; init; }
+        public Exception? SaveException { get; set; }
 
         public Func<int, Task<string?>>? ReadAsync { get; init; }
 
@@ -222,7 +267,9 @@ public sealed class SettingsKernelTests : IDisposable
 
         public Task SaveSettingsAsync(string scopeId, string settingsKey, string content, CancellationToken ct = default)
         {
-            return SaveException is null ? Task.CompletedTask : Task.FromException(SaveException);
+            if (SaveException is not null) { return Task.FromException(SaveException); }
+            Content = content;
+            return Task.CompletedTask;
         }
     }
 }

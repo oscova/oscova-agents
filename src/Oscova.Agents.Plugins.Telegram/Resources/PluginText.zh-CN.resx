@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Telegram.Label"><value>Telegram</value></data>
+  <data name="Settings.Section.Telegram.Description"><value>设置 Telegram 机器人集成与私聊访问权限。</value></data>
+  <data name="Settings.Telegram.GetTokenLink"><value>从 BotFather 获取机器人令牌</value></data>
+  <data name="Settings.Telegram.UserIdPlaceholder"><value>输入 Telegram 用户 ID</value></data>
+  <data name="Settings.Telegram.UserIdLabel"><value>授权 Telegram 用户 ID</value></data>
+  <data name="Settings.Telegram.UserIdHint"><value>只有此数字 Telegram 用户 ID 可以私聊。请勿输入用户名。请先与机器人开始对话。</value></data>
+  <data name="Credential.Label"><value>Telegram 机器人</value></data>
+  <data name="Credential.Description"><value>用于连接 Telegram 机器人的令牌。</value></data>
+  <data name="Credential.BotToken.Label"><value>机器人令牌</value></data>
+  <data name="Validation.AuthorizedUserId"><value>授权用户 ID 必须是 1 到 9223372036854775807 之间的整数。</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>启动时连接</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>启用后，机器人将在应用程序启动时自动连接</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>机器人令牌在“凭据”选项卡中统一集中管理。</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>管理凭据</value></data>
+  <data name="Settings.Section.Agent.Label"><value>主智能体</value></data>
+  <data name="Settings.Channels.AgentHint"><value>选择在此频道中回复的智能体。</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>保存设置</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>机器人状态</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>启动频道前请保存更改。</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>停止机器人</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>启动机器人</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>设置已成功保存。</value></data>
+  <data name="Common.Connected">
+		<value>已连接</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>已断开</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>正在加载...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

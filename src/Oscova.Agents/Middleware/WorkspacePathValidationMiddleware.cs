@@ -38,24 +38,23 @@ public static class WorkspacePathValidationMiddleware
 
     internal static void ValidateWorkspaceArguments(
         FunctionInvocationContext context,
+        IReadOnlyList<AllowedDirectory> allowedDirectories) =>
+        ValidateWorkspaceArguments(context.Function, context.Arguments, allowedDirectories);
+
+    /// <summary>Validates a registered function's path arguments against the executing environment's grants.</summary>
+    public static void ValidateWorkspaceArguments(
+        AIFunction function,
+        AIFunctionArguments arguments,
         IReadOnlyList<AllowedDirectory> allowedDirectories)
     {
-        MethodInfo? method = context.Function.UnderlyingMethod;
-        if (method is null)
-        {
-            return;
-        }
+        MethodInfo? method = function.UnderlyingMethod;
+        if (method is null) { return; }
 
         foreach (ParameterInfo parameter in method.GetParameters())
         {
             WorkspacePathAttribute? workspaceAttribute = parameter.GetCustomAttribute<WorkspacePathAttribute>();
-            if (workspaceAttribute is null || string.IsNullOrWhiteSpace(parameter.Name))
-            {
-                continue;
-            }
-
-            string? path = GetPathArgument(parameter.Name, context.Arguments);
-            ValidatePath(path, workspaceAttribute.Access, allowedDirectories);
+            if (workspaceAttribute is null || string.IsNullOrWhiteSpace(parameter.Name)) { continue; }
+            ValidatePath(GetPathArgument(parameter.Name, arguments), workspaceAttribute.Access, allowedDirectories);
         }
     }
 

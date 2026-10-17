@@ -31,5 +31,9 @@ namespace Oscova.Agents.Avatar.Contracts
         /// </summary>
         [JsonPropertyName("BlendSpeed")]
         public float BlendSpeed { get; set; }
+
+        /// <summary>Accepted strength from 0 to 1 on success, or 0 on failure without reporting scene state.</summary>
+        [JsonPropertyName("Intensity")]
+        public float Intensity { get; set; }
     }
 }

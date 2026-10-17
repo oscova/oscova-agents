@@ -22,7 +22,7 @@ public sealed class ChatSegmentSerializationTests
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
             text: null,
-            new FunctionCallContent("call_1", "web_search", new Dictionary<string, object?>()),
+            new FunctionCallContent("call_1", "web__search", new Dictionary<string, object?>()),
             result)
         {
             ExecutionState = executionState

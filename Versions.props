@@ -1,0 +1,45 @@
+<Project>
+  <!-- The only owner of first-party package versions. Change them only with the package version bump script. -->
+  <PropertyGroup>
+    <OscovaAgentsVersion>4.27.0</OscovaAgentsVersion>
+    <AgentTemplatesPluginVersion>4.4.6</AgentTemplatesPluginVersion>
+    <DiscordPluginVersion>4.4.4</DiscordPluginVersion>
+    <FoundryLocalPluginVersion>4.3.29</FoundryLocalPluginVersion>
+    <GoogleWorkspacePluginVersion>4.4.6</GoogleWorkspacePluginVersion>
+    <LlamaSharpPluginVersion>4.4.17</LlamaSharpPluginVersion>
+    <MicrosoftGraphPluginVersion>4.4.6</MicrosoftGraphPluginVersion>
+    <SlackPluginVersion>4.4.4</SlackPluginVersion>
+    <TelegramPluginVersion>4.4.4</TelegramPluginVersion>
+    <BrowserPluginVersion>4.6.8</BrowserPluginVersion>
+    <WebPluginVersion>4.4.6</WebPluginVersion>
+    <DockerPluginVersion>2.0.27</DockerPluginVersion>
+    <EchoPluginVersion>0.3.21</EchoPluginVersion>
+    <LocalSpeechRecognitionPluginVersion>2.1.3</LocalSpeechRecognitionPluginVersion>
+    <LocalSpeechSynthesisPluginVersion>2.2.0</LocalSpeechSynthesisPluginVersion>
+    <MxcPluginVersion>2.0.20</MxcPluginVersion>
+    <OpenAIPluginVersion>2.2.2</OpenAIPluginVersion>
+    <ElevenLabsPluginVersion>2.1.0</ElevenLabsPluginVersion>
+  </PropertyGroup>
+
+  <!-- Projects that set EmbedOscovaPackageVersions read these versions at runtime, keyed by package ID. -->
+  <ItemGroup Condition="'$(EmbedOscovaPackageVersions)' == 'true'">
+    <AssemblyMetadata Include="Oscova.Agents" Value="$(OscovaAgentsVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.AgentTemplates" Value="$(AgentTemplatesPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Discord" Value="$(DiscordPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.FoundryLocal" Value="$(FoundryLocalPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.GoogleWorkspace" Value="$(GoogleWorkspacePluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.LlamaSharp" Value="$(LlamaSharpPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.MicrosoftGraph" Value="$(MicrosoftGraphPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Slack" Value="$(SlackPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Telegram" Value="$(TelegramPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Browser" Value="$(BrowserPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Web" Value="$(WebPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Docker" Value="$(DockerPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Echo" Value="$(EchoPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.LocalSpeechRecognition" Value="$(LocalSpeechRecognitionPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.LocalSpeechSynthesis" Value="$(LocalSpeechSynthesisPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.Mxc" Value="$(MxcPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.OpenAI" Value="$(OpenAIPluginVersion)" />
+    <AssemblyMetadata Include="Oscova.Agents.Plugins.ElevenLabs" Value="$(ElevenLabsPluginVersion)" />
+  </ItemGroup>
+</Project>

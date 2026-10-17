@@ -15,6 +15,12 @@ public interface ISpeechSynthesisProvider
     /// </summary>
     string Type { get; }
 
+    /// <summary>Gets the model used when configuration supplies no model.</summary>
+    string? DefaultModel { get; }
+
+    /// <summary>Gets the voice used when configuration supplies no voice.</summary>
+    string? DefaultVoiceId { get; }
+
     /// <summary>
     /// Gets the default API endpoint, or null for in-process providers.
     /// </summary>

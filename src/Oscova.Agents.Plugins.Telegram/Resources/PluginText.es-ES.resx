@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Telegram.Label"><value>Telegram</value></data>
+  <data name="Settings.Section.Telegram.Description"><value>Configura la integración del bot de Telegram y el acceso al chat privado.</value></data>
+  <data name="Settings.Telegram.GetTokenLink"><value>Obtén tu token de bot desde BotFather</value></data>
+  <data name="Settings.Telegram.UserIdPlaceholder"><value>Introduce el ID de usuario de Telegram</value></data>
+  <data name="Settings.Telegram.UserIdLabel"><value>ID de usuario autorizado de Telegram</value></data>
+  <data name="Settings.Telegram.UserIdHint"><value>Solo este ID numérico de usuario de Telegram puede chatear en privado. No introduzcas un nombre de usuario. Inicia primero una conversación con el bot.</value></data>
+  <data name="Credential.Label"><value>Bot de Telegram</value></data>
+  <data name="Credential.Description"><value>Token del bot utilizado para conectar el bot de Telegram.</value></data>
+  <data name="Credential.BotToken.Label"><value>Token del bot</value></data>
+  <data name="Validation.AuthorizedUserId"><value>El ID de usuario autorizado debe ser un entero entre 1 y 9223372036854775807.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Conectar al iniciar</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>Cuando está activado, el bot se conectará automáticamente al iniciar la aplicación</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>Los tokens de bot se administran de forma centralizada en la pestaña Credenciales.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>Administrar credenciales</value></data>
+  <data name="Settings.Section.Agent.Label"><value>Agente principal</value></data>
+  <data name="Settings.Channels.AgentHint"><value>Elige el agente que responde en este canal.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>Guardar configuración</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>Estado del bot</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Guarda los cambios antes de iniciar el canal.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>Detener bot</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>Iniciar bot</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>Configuración guardada correctamente.</value></data>
+  <data name="Common.Connected">
+		<value>Conectado</value>
+	</data>
+  <data name="Common.Disconnected">
+		<value>Desconectado</value>
+	</data>
+  <data name="Common.Loading">
+		<value>Cargando...</value>
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

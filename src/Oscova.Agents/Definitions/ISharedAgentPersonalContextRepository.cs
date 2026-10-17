@@ -19,4 +19,6 @@ public interface ISharedAgentPersonalContextRepository
 
     /// <summary>Deletes saved personal context; cancellation is honored before each mutation, then that delete completes.</summary>
     Task<int> DeleteForUsersAsync(IEnumerable<string> userIds, AgentDefinition agent, CancellationToken ct = default);
+    /// <summary>Deletes existing context when the caller confirms that access has ended.</summary>
+    Task<int> DeleteWhereAsync(string userId, System.Func<string, string, Task<bool>> shouldDelete, CancellationToken ct = default);
 }

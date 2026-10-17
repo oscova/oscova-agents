@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using YamlDotNet.Serialization;
 
 namespace Oscova.Agents.Persistence;
 
@@ -7,6 +8,11 @@ namespace Oscova.Agents.Persistence;
 /// </summary>
 public sealed class AgentDefinitionFile
 {
+    /// <summary>Identifies the agent definition shape understood by this release.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <summary>Gets or sets the persisted definition shape identifier.</summary>
+    public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     /// <summary>
     /// Gets or sets the persisted agent identifier.
     /// </summary>
@@ -16,6 +22,18 @@ public sealed class AgentDefinitionFile
     /// Gets or sets the persisted display name.
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the opaque source of a managed instruction.</summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? InstructionSource { get; set; }
+
+    /// <summary>Gets or sets the saved instruction composition mode.</summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? InstructionMode { get; set; }
+
+    /// <summary>Gets or sets the retained default supplied by an agent contribution.</summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? DefaultInstruction { get; set; }
 
     /// <summary>
     /// Gets or sets the persisted agent description.
@@ -52,10 +70,6 @@ public sealed class AgentDefinitionFile
     /// </summary>
     public bool IsLocalOnly { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether this agent stores its chats and task runs encrypted at rest.
-    /// </summary>
-    public bool IsConfidential { get; set; }
 
     /// <summary>
     /// Gets or sets whether this agent may be exposed as a tool.
@@ -66,6 +80,9 @@ public sealed class AgentDefinitionFile
     /// Gets or sets the optional chat model provider override for this agent.
     /// </summary>
     public string? ModelOverrideId { get; set; }
+
+    /// <summary>Gets or sets whether consultations may use the caller-selected model provider.</summary>
+    public bool UseCallerModelForConsultations { get; set; }
 
     /// <summary>
     /// Gets or sets the persisted owner user identifier.

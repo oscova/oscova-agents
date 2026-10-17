@@ -1,7 +1,6 @@
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Templating;
-using Oscova.Agents.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,12 +17,10 @@ namespace Oscova.Agents.Memory;
 /// </remarks>
 /// <param name="memoryService">The memory service used to read memory files.</param>
 /// <param name="userId">The user whose memory to load.</param>
-/// <param name="maxTokenBudget">Maximum token budget for the combined memory content.</param>
 /// <param name="memoryTools">Memory tools exposed when the memory provider is enabled for an agent.</param>
 public sealed class MemoryContextProvider(
     IAgentMemoryService memoryService,
     string userId,
-    int maxTokenBudget = 2000,
     IReadOnlyList<AITool>? memoryTools = null) : AIContextProvider
 {
     private readonly IReadOnlyList<AITool> _memoryTools = memoryTools ?? [];
@@ -33,11 +30,16 @@ public sealed class MemoryContextProvider(
     /// </summary>
     // Must stay identical to the seeded prompts/memory-system.md; SeedContentProviderTests pins the pair.
     public const string DefaultMemoryPrompt = """
-        You have a persistent memory system. Your memories from previous sessions are shown below.
+        You have persistent user memory. Your entry index and recent daily logs are below.
 
-        Use memory tools to save user facts, decisions, and preferences so they are accessible in future sessions. Save useful information proactively, especially anything the user would expect you to remember later.
-
-        Use `memory_read` with target `longterm` to read the long-term index. Use `memory_read` with target `today`, `yesterday`, `yyyy-MM-dd`, or a lowercase topic slug to read daily logs or topic files. Use `memory_save` with target `longterm` to update the index, and include a `topic` only for durable facts that clearly belong in a focused topic file.
+        - Save new durable user facts, preferences and decisions with memory__save.
+        - Save temporary or short-term information only with memory__save_daily.
+        - Find/read existing concepts before updating. Skip unchanged information.
+        - Reuse discovered IDs. New concepts need a relative ID and frontmatter.type.
+        - Save detail first, then link its returned reference from the summary.
+        - Use memory__search/get for past conversations.
+        - Skip routine progress and details recoverable from project files.
+        - Do not infer verification from requests or assistant claims.
 
         {{ agent_memory }}
         """;
@@ -58,14 +60,9 @@ public sealed class MemoryContextProvider(
 
         var longTermSection = string.IsNullOrWhiteSpace(longTermMemory)
             ? "Empty - no long-term memories saved yet."
-            : ContextTextBudget.Truncate(longTermMemory, maxTokenBudget);
+            : longTermMemory;
 
-        var remainingBudget = maxTokenBudget - AgentTokenCounter.CountTokens(longTermSection);
-
-        var todaySection = BuildDailySection(todayLog.Content, ref remainingBudget);
-        var yesterdaySection = BuildDailySection(yesterdayLog.Content, ref remainingBudget);
-
-        var agentMemoryXml = BuildAgentMemoryXml(longTermSection, todaySection, yesterdaySection, todayLog.Date, yesterdayLog.Date);
+        var agentMemoryXml = BuildAgentMemoryXml(longTermSection, todayLog.Content, yesterdayLog.Content, todayLog.Date, yesterdayLog.Date);
         var rendered = PromptTemplateRenderer.Render(SystemPrompt, new { agent_memory = agentMemoryXml });
         var instructions = rendered.Contains(agentMemoryXml) ? rendered : $"{rendered}\n\n{agentMemoryXml}";
 
@@ -102,15 +99,4 @@ public sealed class MemoryContextProvider(
         return sb.ToString();
     }
 
-    private static string? BuildDailySection(string? content, ref int remainingBudget)
-    {
-        if (string.IsNullOrWhiteSpace(content) || remainingBudget <= 0)
-        {
-            return null;
-        }
-
-        var truncated = ContextTextBudget.Truncate(content, remainingBudget);
-        remainingBudget -= AgentTokenCounter.CountTokens(truncated);
-        return truncated;
-    }
 }

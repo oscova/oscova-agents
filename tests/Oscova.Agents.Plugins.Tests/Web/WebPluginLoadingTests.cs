@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging.Abstractions;
 using Oscova.Agents.Tests.TestSupport.TestPlugin;
 
 namespace Oscova.Agents.Plugins.Tests.Web;
@@ -23,18 +22,12 @@ public sealed class WebPluginLoadingTests
         Assert.Contains(plugin.Toolsets, contribution => contribution.ToolsetType.Name == "NewsToolset");
 
         using var httpClient = new HttpClient();
-        var context = new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            _ => httpClient,
-            NullLoggerFactory.Instance,
-            () => TimeZoneInfo.Utc,
-            plugin.PluginDirectory,
-            Path.Combine(pluginRoot.RootPath, "models"),
-            static (_, _, _, _) => throw new NotSupportedException());
+        var context = PluginTestContext.Create(new NullToolCredentialResolver(), plugin.PluginDirectory,
+            Path.Combine(pluginRoot.RootPath, "models"));
 
         foreach (var contribution in plugin.Toolsets)
         {
-            Assert.IsAssignableFrom<ICrewToolset>(contribution.Factory(context));
+            Assert.IsAssignableFrom<IAgentToolset>(contribution.Factory(context));
         }
     }
 

@@ -1,3 +1,4 @@
+using Oscova.Agents.Execution;
 using Microsoft.Agents.AI.Tools.Shell;
 using Oscova.Agents.Collections;
 using Oscova.Agents.Harness;
@@ -11,6 +12,45 @@ namespace Oscova.Agents.Tests.Framework.Toolsets;
 
 public sealed class ShellToolsetTests
 {
+    [Fact]
+    public async Task ExecCommand_TrimsLongStdoutAndSavesIt()
+    {
+        string stdout = new string('h', 10_000) + new string('t', 10_000);
+        var store = new RecordingToolOutputStore();
+        var toolset = new ShellToolset(
+            new FakeShellExecutorProvider(new FakeShellExecutor(new ShellResult(stdout, string.Empty, 0, TimeSpan.Zero))),
+            new FakeShellBackgroundJobProvider(), store);
+
+        object result = await toolset.ExecCommandAsync("echo long");
+        string inline = GetProperty<string>(result, "stdout");
+
+        Assert.StartsWith(new string('h', 8_000), inline);
+        Assert.EndsWith(new string('t', 8_000), inline);
+        Assert.Contains("Full output saved", inline);
+        Assert.Equal(stdout, store.Saved);
+    }
+
+    [Fact]
+    public async Task ExecCommand_WhenExecutorTruncated_SavesCapturedOutputOnly()
+    {
+        string captured = new string('h', 500_000) + "[... truncated 5000000 bytes ...]" + new string('t', 500_000);
+        var store = new RecordingToolOutputStore();
+        var toolset = new ShellToolset(
+            new FakeShellExecutorProvider(new FakeShellExecutor(new ShellResult(captured, string.Empty, 0, TimeSpan.Zero, Truncated: true))),
+            new FakeShellBackgroundJobProvider(), store);
+
+        object result = await toolset.ExecCommandAsync("echo huge");
+        string inline = GetProperty<string>(result, "stdout");
+
+        Assert.StartsWith(new string('h', 8_000), inline);
+        Assert.EndsWith(new string('t', 8_000), inline);
+        Assert.Contains("captured characters", inline);
+        Assert.Contains("The shell may have dropped part of the original output", inline);
+        Assert.DoesNotContain("Full output saved", inline);
+        Assert.Equal(captured, store.Saved);
+        Assert.True(System.Text.Encoding.UTF8.GetByteCount(store.Saved!) <= BoundedOutputBuffer.DefaultCapacityBytes);
+    }
+
     [Fact]
     public async Task ExecCommandAsync_DelegatesToConfiguredExecutor()
     {
@@ -75,7 +115,7 @@ public sealed class ShellToolsetTests
         var toolset = new ShellToolset(provider, new FakeShellBackgroundJobProvider());
         using var cancellation = new CancellationTokenSource();
 
-        Task<object> running = toolset.ExecCommandAsync("sleep forever", timeoutSeconds: 600, cancellation.Token);
+        Task<object> running = toolset.ExecCommandAsync("sleep forever", timeoutSeconds: 600, cancellationToken: cancellation.Token);
         await executor.Started;
         cancellation.Cancel();
 
@@ -261,19 +301,19 @@ public sealed class ShellToolsetTests
         MethodInfo read = GetMethod(nameof(ShellToolset.ReadCommandOutputAsync));
         MethodInfo kill = GetMethod(nameof(ShellToolset.KillCommandAsync));
 
-        Assert.Equal("exec_command", exec.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
+        Assert.Equal("exec", exec.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
         Assert.Equal(ToolApprovalMode.RequireApproval, exec.GetCustomAttribute<ToolPolicyAttribute>()?.ApprovalMode);
         Assert.Equal(NetworkScope.Incidental, exec.GetCustomAttribute<ToolNetworkScopeAttribute>()?.Scope);
 
-        Assert.Equal("start_command", start.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
+        Assert.Equal("start", start.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
         Assert.Equal(ToolApprovalMode.RequireApproval, start.GetCustomAttribute<ToolPolicyAttribute>()?.ApprovalMode);
         Assert.Equal(NetworkScope.Incidental, start.GetCustomAttribute<ToolNetworkScopeAttribute>()?.Scope);
 
-        Assert.Equal("read_command_output", read.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
+        Assert.Equal("read_output", read.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
         Assert.Null(read.GetCustomAttribute<ToolPolicyAttribute>());
         Assert.Null(read.GetCustomAttribute<ToolNetworkScopeAttribute>());
 
-        Assert.Equal("kill_command", kill.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
+        Assert.Equal("kill", kill.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
         Assert.Equal(ToolApprovalMode.RequireApproval, kill.GetCustomAttribute<ToolPolicyAttribute>()?.ApprovalMode);
         Assert.Null(kill.GetCustomAttribute<ToolNetworkScopeAttribute>());
     }
@@ -281,16 +321,16 @@ public sealed class ShellToolsetTests
     [Fact]
     public void ToolMethods_AreReflectedUnderShellOwner()
     {
-        var collection = new CrewToolCollection();
+        var collection = new AgentToolCollection();
         var toolset = new ShellToolset(CreateUnusedExecutorProvider(), new FakeShellBackgroundJobProvider());
 
         collection.Add(toolset);
 
-        Assert.NotNull(collection.Find("shell__exec_command"));
-        Assert.NotNull(collection.Find("shell__start_command"));
-        Assert.NotNull(collection.Find("shell__read_command_output"));
-        Assert.NotNull(collection.Find("shell__kill_command"));
-        Assert.Null(collection.Find("background_shell__start_command"));
+        Assert.NotNull(collection.Find("shell__exec"));
+        Assert.NotNull(collection.Find("shell__start"));
+        Assert.NotNull(collection.Find("shell__read_output"));
+        Assert.NotNull(collection.Find("shell__kill"));
+        Assert.Null(collection.Find("background_shell__start"));
     }
 
     [Fact]
@@ -299,17 +339,17 @@ public sealed class ShellToolsetTests
         MethodInfo method = typeof(HostShellToolset).GetMethod(nameof(HostShellToolset.ExecHostCommandAsync))
             ?? throw new InvalidOperationException("Missing host command method.");
         var description = method.GetCustomAttribute<DescriptionAttribute>()?.Description;
-        var collection = new CrewToolCollection();
+        var collection = new AgentToolCollection();
 
         collection.Add(new HostShellToolset(_ => throw new NotSupportedException()));
 
-        Assert.Equal("host_shell__exec_host_command", HostShellToolset.QualifiedToolName);
+        Assert.Equal("host_shell__exec", HostShellToolset.QualifiedToolName);
         Assert.Single(collection);
         Assert.NotNull(collection.Find(HostShellToolset.QualifiedToolName));
         Assert.Equal(HostShellToolset.ToolName, method.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName);
         Assert.Equal(ToolApprovalMode.RequireApproval, method.GetCustomAttribute<ToolPolicyAttribute>()?.ApprovalMode);
         Assert.Equal(NetworkScope.Incidental, method.GetCustomAttribute<ToolNetworkScopeAttribute>()?.Scope);
-        Assert.Contains("exec_command", description, StringComparison.Ordinal);
+        Assert.Contains("shell__exec", description, StringComparison.Ordinal);
         Assert.DoesNotContain("background", description, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(method.GetParameters(), parameter =>
             parameter.Name?.Contains("path", StringComparison.OrdinalIgnoreCase) == true);
@@ -334,8 +374,10 @@ public sealed class ShellToolsetTests
 
         public Task<ShellExecutor> GetOrCreateAsync(CancellationToken cancellationToken = default) => Task.FromResult(executor);
 
-        public Task<ShellExecutionTarget> GetExecutionTargetAsync(CancellationToken cancellationToken = default) =>
+        public Task<IExecutionSession> GetSessionAsync(CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
+
+        public Task<string> PrepareCommandAsync(string command, string? workdir, CancellationToken cancellationToken = default) => Task.FromResult(command);
 
         public Task EvictAsync(string executionId) => Task.CompletedTask;
 

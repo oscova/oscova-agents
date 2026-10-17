@@ -37,8 +37,12 @@ public sealed class AnalyzeImageTool(
             new AIFunctionFactoryOptions
             {
                 Name = ToolName,
-                Description = "Analyzes a single image at the given local file path and " +
-                              "answers the provided question about it. Returns a text description."
+                Description = """
+                    Analyzes one image on disk and returns a text answer.
+                    path must identify an existing file within Workspace Access.
+                    Supported extensions: .png, .jpg, .jpeg, .gif, .webp.
+                    Maximum image size: 10485760 bytes (10 MiB).
+                    """
             });
 
     [Description("Analyzes one image on disk and returns a text answer.")]

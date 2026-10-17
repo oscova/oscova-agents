@@ -1,6 +1,8 @@
 using System.Reflection;
 using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using Oscova.Agents.Collections;
+using Oscova.Agents.Policies;
 using Oscova.Agents.Providers;
 using Oscova.Agents.Tests.Framework.TestTools;
 
@@ -8,6 +10,39 @@ namespace Oscova.Agents.Tests.Framework.Providers;
 
 public sealed class ToolSearchProviderTests
 {
+
+    /// <summary>Empty discovery instructions remain exact while the search tool stays available.</summary>
+    [Theory]
+    [InlineData("")]
+    [InlineData(" \t\n")]
+    public async Task ProvideAIContextAsync_WithEmptyInstructions_KeepsEmptyInstructions(string instructions)
+    {
+        var tools = new AgentToolCollection();
+        var provider = new ToolSearchProvider([], [], tools, new AgentToolResolver(tools), new LexicalToolSearchStrategy(), instructions);
+        var context = await InvokeProviderAsync(provider);
+        Assert.Equal(instructions, context.Instructions);
+        Assert.Equal("search_tools", Assert.Single(context.Tools!).Name);
+    }
+
+    /// <summary>Inspection exposes only unpinned functions permitted by policy and offline mode.</summary>
+    [Fact]
+    public void GetSearchableTools_RespectsPinsPoliciesAndEgress()
+    {
+        var pinned = AIFunctionFactory.Create(() => true, "pinned");
+        var unpinned = AIFunctionFactory.Create(() => true, "unpinned");
+        var denied = AIFunctionFactory.Create(() => true, "denied");
+        var egress = AIFunctionFactory.Create(() => true, "egress");
+        var tools = new AgentToolCollection { pinned, unpinned, denied };
+        tools.Add(egress, "external", egress.Name, NetworkScope.Egress);
+        var resolver = new AgentToolResolver(tools,
+            [new AgentToolPolicy { ToolName = denied.Name, ApprovalMode = ToolApprovalMode.Deny }],
+            airGapped: true);
+        var provider = new ToolSearchProvider(
+            tools.Select(tool => tool.Name), [pinned.Name], tools, resolver, new LexicalToolSearchStrategy());
+
+        Assert.Same(unpinned, Assert.Single(provider.GetSearchableTools()));
+    }
+
     [Fact]
     public async Task ProvideAIContextAsync_ReturnsOnlySearchToolBeforeUnlock()
     {
@@ -60,7 +95,7 @@ public sealed class ToolSearchProviderTests
         out string turnOnMusicName,
         string? pinnedToolName = null)
     {
-        var collection = new CrewToolCollection
+        var collection = new AgentToolCollection
         {
             new SimpleTestTool()
         };

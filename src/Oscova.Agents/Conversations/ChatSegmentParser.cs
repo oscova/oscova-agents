@@ -1,6 +1,7 @@
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Middleware;
+using Oscova.Agents.Harness;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -258,11 +259,35 @@ public class ChatSegmentParser : IToolTrackingObserver
         seg.FunctionResult = funcResult;
         if (seg.ExecutionState != ToolExecutionState.Failed)
         {
-            seg.ExecutionState = funcResult.Exception is null
-                ? ToolExecutionState.Completed
-                : ToolExecutionState.Failed;
+            seg.ExecutionState = IsFailedResult(funcResult)
+                ? ToolExecutionState.Failed
+                : ToolExecutionState.Completed;
             seg.ProcessedAt ??= DateTimeOffset.UtcNow;
         }
+    }
+
+    /// <summary>Recognizes failure envelopes that survive streaming and session serialization.</summary>
+    private static bool IsFailedResult(FunctionResultContent result)
+    {
+        if (result.Exception is not null) { return true; }
+
+        var text = result.Result switch
+        {
+            string value => value,
+            JsonElement { ValueKind: JsonValueKind.String } value => value.GetString(),
+            _ => null
+        };
+
+        // Exception is excluded from serialized results. Recognize the framework's error
+        // envelopes without treating arbitrary tool data beginning with "Error:" as failure.
+        return text is not null &&
+            (text.StartsWith(ToolFailureException.ResultPrefix, StringComparison.Ordinal) ||
+             string.Equals(text, "Error: Function failed.", StringComparison.Ordinal) ||
+             (text.StartsWith("Error: Requested function \"", StringComparison.Ordinal) &&
+              text.EndsWith("\" not found.", StringComparison.Ordinal)) ||
+             (text.StartsWith("Error: Skill '", StringComparison.Ordinal) &&
+              text.EndsWith("' not found.", StringComparison.Ordinal)) ||
+             text.StartsWith("Tool call invocation rejected.", StringComparison.Ordinal));
     }
 
     private void HandleReasoningContent(AgentResponseUpdate update, string text)

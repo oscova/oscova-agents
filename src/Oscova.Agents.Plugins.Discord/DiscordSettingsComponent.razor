@@ -1,0 +1,28 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
+@using Oscova.Agents.Plugins.Discord.Settings
+@inject IStringLocalizer<PluginText> Loc
+
+<OfficialChannelSettingsPanel TSettings="DiscordSettings" Context="@Context" ChannelId="@_channelId" Text="@(key => Loc[key].Value)"
+    Load="@DiscordSettings.LoadAsync" Capture="@Capture" Initialize="@Initialize"
+    Validate="@((settings, complete) => settings.Validate(complete))" Persist="@((settings, context, ct) => settings.SaveAsync(context, ct))">
+    <div class="form-control w-full">
+        <label class="label" for="discord-authorizeduserid"><span class="label-text">@Loc[PluginTextKeys.SettingsDiscordUserIdLabel] <span class="text-error">*</span></span></label>
+        <label class="input w-full"><input id="discord-authorizeduserid" class="grow focus:outline-0" type="text" @bind="_userId" placeholder="@Loc[PluginTextKeys.SettingsDiscordUserIdPlaceholder]" aria-describedby="discord-authorizeduserid-help" /></label>
+        <p id="discord-authorizeduserid-help" class="text-xs opacity-70">@Loc[PluginTextKeys.SettingsDiscordUserIdHint]</p>
+    </div>
+    <p class="text-xs"><a href="https://discord.com/developers/applications" target="_blank" rel="noopener noreferrer" class="link link-primary">@Loc[PluginTextKeys.SettingsDiscordGetTokenLink]</a></p>
+    <p class="text-xs"><a href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-" target="_blank" rel="noopener noreferrer" class="link link-primary">@Loc[PluginTextKeys.SettingsDiscordFindUserIdLink]</a></p>
+</OfficialChannelSettingsPanel>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    private readonly string _channelId = new DiscordChannel().Definition.Id;
+    private string _userId = string.Empty;
+    private void Initialize(DiscordSettings settings)
+    {
+        _userId = settings.AuthorizedUserId ?? string.Empty;
+    }
+    private DiscordSettings Capture(bool startup, string? agentId) => new()
+    { StartAtStartup = startup, AgentId = agentId, AuthorizedUserId = _userId.Trim() };
+}

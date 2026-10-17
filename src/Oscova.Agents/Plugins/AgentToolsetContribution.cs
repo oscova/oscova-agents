@@ -7,4 +7,5 @@ namespace Oscova.Agents.Plugins;
 /// </summary>
 public sealed record AgentToolsetContribution(
     Type ToolsetType,
-    Func<AgentPluginContext, ICrewToolset> Factory);
+    Func<AgentPluginContext, IAgentToolset> Factory,
+    bool SupportsNodeExecution = false);

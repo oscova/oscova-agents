@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>কমান্ডগুলি অপারেটিং সিস্টেমের বিচ্ছিন্নতা ব্যবহার করে বর্তমান কর্মক্ষেত্র ও নেটওয়ার্কের অনুমতি মেনে চলে।</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>লেখার অনুমতিযুক্ত কর্মক্ষেত্রের পরিবর্তন স্থায়ী। অপারেটিং সিস্টেমের ফাইল ও ইনস্টল করা টুলের ফোল্ডার পড়া যেতে পারে।</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>নেটিভ স্যান্ডবক্স শনাক্ত হয়নি। এই মেশিনে Microsoft MXC-এর পূর্বশর্ত যাচাই করুন।</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC চালু করা যায়নি। এর নেটিভ নির্ভরতা ও মেশিনের অনুমতি যাচাই করুন।</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC দশ সেকেন্ডে সাড়া দেয়নি। পূর্বশর্ত যাচাই করে আবার চেষ্টা করুন।</value></data>
+</root>

@@ -1,0 +1,11 @@
+@inject IStringLocalizer<PluginText> Loc
+
+@if (Context.GetSpeechSettings!().ModelDownload is { } download)
+{
+    <OfficialSpeechModelDownloadCard Context="@Context" Text="@(key => Loc[key].Value)" Title="@(download.Title ?? Loc[PluginTextKeys.SpeechSynthesisSectionTitle].Value)" />
+}
+<OfficialSpeechFields Context="@Context" Prefix="speech-synthesis" Text="@(key => Loc[key].Value)" Voice="true" />
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+}

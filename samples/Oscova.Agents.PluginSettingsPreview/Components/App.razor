@@ -1,0 +1,25 @@
+@inject IConfiguration Configuration
+<!DOCTYPE html>
+<html lang="en" class="group/html" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="@(Resource("app.css"))" />
+    <link rel="stylesheet" href="@(Resource("custom-theme-bundle.css"))" />
+    <link rel="stylesheet" href="@(Resource("custom-theme-overrides.css"))" />
+    <script src="@(Resource("lib/tailwindcss/browser.global.js"))"></script>
+    <HeadOutlet />
+</head>
+<body>
+    <Routes />
+    <script src="@(Resource("lib/iconify-icon/lucide-icons.js"))"></script>
+    <script src="@(Resource("lib/iconify-icon/iconify-icon.min.js"))"></script>
+    <script src="@(Resource("lib/iconify-icon/offline.js"))"></script>
+    <script>window.previewTheme = value => document.documentElement.setAttribute('data-theme', value);</script>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>
+@code {
+    private string Resource(string path) => (Configuration["OscovaResourcesBaseUrl"] ?? "http://localhost:5000/").TrimEnd('/') + "/" + path;
+}

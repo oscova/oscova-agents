@@ -1,0 +1,40 @@
+@page "/"
+@using Oscova.Agents.Plugins.Docker
+@using Oscova.Agents.PluginSettingsPreview
+@using Microsoft.JSInterop
+@rendermode InteractiveServer
+
+<div class="custom-settings-page custom-scrollbar">
+    <div class="custom-settings-content">
+        <header class="custom-settings-heading">
+            <div class="custom-settings-title"><h1>Execution component preview</h1></div>
+            <p>Appearance sample. Installed plugin acceptance verifies authorization and real operations.</p>
+        </header>
+        <div class="flex gap-2 mb-4">
+            <select class="select select-bordered" @bind="_state" @bind:after="ChangeState">
+                <option value="idle">Idle</option><option value="busy">Busy</option>
+                <option value="unavailable">Unavailable</option><option value="success">Success</option><option value="error">Error</option>
+            </select>
+            <select class="select select-bordered" @bind="_theme" @bind:after="ChangeTheme"><option>light</option><option>dark</option></select>
+        </div>
+        <DockerImagePanelComponent Context="@_context" @key="@_state" />
+        @if (!string.IsNullOrEmpty(_images.Notification)) { <div class="alert alert-info mt-4">@_images.Notification</div> }
+    </div>
+</div>
+
+@code {
+    private string _state = "idle";
+    private string _theme = "light";
+    private readonly PreviewImagePanel _images = new();
+    private DockerPanelContext _context = default!;
+    [Inject] private IJSRuntime JavaScript { get; set; } = default!;
+    protected override void OnInitialized() => _context = new(_images, _images);
+    private bool _pendingError;
+    private void ChangeState() { _images.SetState(_state); _pendingError = _state == "error"; }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pendingError) { _pendingError = false; _images.ShowError(); }
+        return Task.CompletedTask;
+    }
+    private async Task ChangeTheme() => await JavaScript.InvokeVoidAsync("previewTheme", _theme);
+}

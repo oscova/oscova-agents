@@ -4,6 +4,16 @@ namespace Oscova.Agents.Tests.Framework.Search;
 
 public sealed class LexicalSearchStrategyTests
 {
+    /// <summary>Evidence uses complete original tokens even when a clipping boundary splits a longer word.</summary>
+    [Fact]
+    public void FindTokenMatches_UsesOriginalLexicalBoundaries()
+    {
+        Assert.Equal([(8, 4), (12, 4), (17, 4), (22, 4)],
+            LexicalSearchStrategy.FindTokenMatches("Fall Guys", "fallout FallGuys fall guys"));
+        var boundaryText = new string('x', 395) + " fallout " + new string('x', 490) + " fall";
+        Assert.Equal([(boundaryText.Length - 4, 4)], LexicalSearchStrategy.FindTokenMatches("fall", boundaryText));
+    }
+
     [Fact]
     public void Search_RanksTitleMatchesAboveBodyMatches()
     {

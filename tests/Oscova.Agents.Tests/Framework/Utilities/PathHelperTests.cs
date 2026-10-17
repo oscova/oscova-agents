@@ -5,6 +5,61 @@ namespace Oscova.Agents.Tests.Framework.Utilities;
 
 public sealed class PathHelperTests
 {
+    /// <summary>Alias ownership remains lexical when native roots belong to another operating system.</summary>
+    [Fact]
+    public void GetAgentPathRoots_MatchesNormalizedLongestAliasAcrossPlatforms()
+    {
+        AllowedDirectory[] grants =
+        [
+            new("C:\\Users\\owner\\project", "project", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/project"),
+            new("/srv/workspace", "workspace", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/default"),
+            new("/srv/nested", "nested", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, "/workspace/default/nested")
+        ];
+        Assert.Same(grants[0], Assert.Single(PathHelper.GetAgentPathRoots("\\project\\.\\record.txt", grants)));
+        Assert.Same(grants[2], Assert.Single(PathHelper.GetAgentPathRoots("/workspace//default/nested/record.txt", grants)));
+        Assert.Empty(PathHelper.GetAgentPathRoots("/workspace/default-other/record.txt", grants));
+        Assert.Empty(PathHelper.GetAgentPathRoots("C:\\Users\\owner\\project\\record.txt", grants));
+    }
+
+    [Fact]
+    public void ShellRootVariables_UsePortableUniqueNamesForEveryAliasedGrant()
+    {
+        var path = Path.GetTempPath();
+        AllowedDirectory[] grants =
+        [
+            new(path, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/private"),
+            new(path, "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/research"),
+            new(path, "other", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/RESEARCH"),
+            new(path, "試験", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/試験")
+        ];
+        var variables = PathHelper.GetShellRootVariables(grants);
+        Assert.Equal(grants.Length, variables.Count);
+        Assert.Same(grants[0], variables["ROOT_PRIVATE"]);
+        Assert.Same(grants[1], variables["ROOT_WORKSPACE_RESEARCH"]);
+        Assert.Same(grants[2], variables["ROOT_EXTRA_2"]);
+        Assert.Same(grants[3], variables["ROOT_EXTRA_3"]);
+    }
+
+    [Fact]
+    public void WorkingDirectoryMarker_OverridesDefaultAndNeverFallsBackWhenUnavailable()
+    {
+        var root = Directory.CreateTempSubdirectory("oscova-working-root-");
+        try
+        {
+            var project = new AllowedDirectory(root.FullName, "project", DirectorySourceKind.LocalPath,
+                WorkspaceAccessMode.ReadWrite, IsWorkingDirectory: true);
+            var fallback = project with { Value = Path.GetTempPath(), Label = "default", IsWorkingDirectory = false };
+            Assert.Equal(project.Value, PathHelper.ResolveWorkingDirectoryHostPath([fallback, project]));
+            Assert.Throws<UnauthorizedAccessException>(() => PathHelper.ResolveWorkingDirectoryHostPath(
+                [fallback, project, project with { AccessMode = WorkspaceAccessMode.ReadOnly, IsWorkingDirectory = false }]));
+            Assert.Throws<InvalidOperationException>(() => PathHelper.ResolveWorkingDirectoryHostPath([project, project]));
+            root.Delete();
+            Assert.Throws<UnauthorizedAccessException>(() => PathHelper.ResolveWorkingDirectoryHostPath([fallback, project]));
+            Assert.False(Directory.Exists(root.FullName));
+        }
+        finally { if (Directory.Exists(root.FullName)) { root.Delete(true); } }
+    }
+
     [Fact]
     public void ArePathsEqual_ReturnsTrueForEquivalentFullPaths()
     {
@@ -166,11 +221,11 @@ public sealed class PathHelperTests
         string dataPath = Path.Combine(Path.GetTempPath(), "agent-data");
         AllowedDirectory[] allowedDirectories =
         [
-            new(dataPath, "data", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/data")
+            new(dataPath, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/private")
         ];
 
         bool resolved = PathHelper.TryResolveToHostPath(
-            "/data/notes.md",
+            "/private/notes.md",
             allowedDirectories,
             dataPath,
             out string hostPath);
@@ -213,7 +268,7 @@ public sealed class PathHelperTests
     [InlineData("workspace/research/out.txt", "research", "out.txt")]
     [InlineData("./workspace/research/out.txt", "research", "out.txt")]
     [InlineData("/workspace//research/./drafts/out.txt", "research", "drafts/out.txt")]
-    [InlineData("data/notes/out.txt", "data", "notes/out.txt")]
+    [InlineData("private/notes/out.txt", "private", "notes/out.txt")]
     [InlineData("/mnt/reference/out.txt", "reference", "out.txt")]
     public void TryResolveToHostPath_MapsLogicalAliasesInEveryMode(
         string requestedPath,
@@ -225,7 +280,7 @@ public sealed class PathHelperTests
         [
             new(Path.Combine(root, "default"), "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
             new(Path.Combine(root, "research"), "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/research"),
-            new(Path.Combine(root, "data"), "data", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/data"),
+            new(Path.Combine(root, "private"), "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/private"),
             new(Path.Combine(root, "reference"), "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, AgentPath: "/mnt/reference")
         ];
 
@@ -245,7 +300,8 @@ public sealed class PathHelperTests
     [Theory]
     [InlineData("workspace/missing/out.txt")]
     [InlineData("workspace/research-copy/out.txt")]
-    [InlineData("/data/../workspace/default/out.txt")]
+    [InlineData("private/out.txt")]
+    [InlineData("/private/../workspace/default/out.txt")]
     [InlineData("mnt/reference/../../out.txt")]
     public void TryResolveToHostPath_RejectsUnknownOrEscapingLogicalAliases(string requestedPath)
     {
@@ -450,13 +506,26 @@ public sealed class PathHelperTests
             WorkspacePathAccess.Write));
     }
 
-    [SkippableFact]
-    public void ResolveAuthorizedHostPath_RejectsSymlinkHop()
+    [SkippableTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ResolveAuthorizedHostPath_RejectsSymlinkHop(bool useFilesystemRoot)
     {
-        string tempRoot = Path.Combine(Path.GetTempPath(), $"oscova-authorized-link-{Guid.NewGuid():N}");
+        string tempDirectory = Path.GetFullPath(Path.GetTempPath());
+        // Resolve linked temp ancestors, such as /var on macOS, so the plain-path control is link-free.
+        for (var ancestor = new DirectoryInfo(tempDirectory); ancestor.Parent is not null; ancestor = ancestor.Parent)
+        {
+            if (ancestor.ResolveLinkTarget(returnFinalTarget: true) is { } target)
+            {
+                tempDirectory = Path.Combine(target.FullName, Path.GetRelativePath(ancestor.FullName, tempDirectory));
+            }
+        }
+
+        string tempRoot = Path.Combine(tempDirectory, $"oscova-authorized-link-{Guid.NewGuid():N}");
         string workspacePath = Path.Combine(tempRoot, "workspace");
         string outsidePath = Path.Combine(tempRoot, "outside");
         string linkPath = Path.Combine(workspacePath, "linked");
+        string grantRoot = useFilesystemRoot ? Path.GetPathRoot(workspacePath)! : workspacePath;
 
         try
         {
@@ -473,11 +542,17 @@ public sealed class PathHelperTests
 
             AllowedDirectory[] allowedDirectories =
             [
-                new(workspacePath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default")
+                new(grantRoot, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default")
             ];
 
+            string plainPath = Path.Combine(workspacePath, "plain.txt");
+            Assert.False(PathHelper.HasSymlinkInPath(plainPath, grantRoot));
+            Assert.Equal(plainPath, PathHelper.ResolveAuthorizedHostPath(plainPath, allowedDirectories, WorkspacePathAccess.Read));
+
+            string linkedPath = Path.Combine(linkPath, "secret.txt");
+            Assert.True(PathHelper.HasSymlinkInPath(linkedPath, grantRoot));
             Assert.Throws<UnauthorizedAccessException>(() => PathHelper.ResolveAuthorizedHostPath(
-                "/workspace/default/linked/secret.txt",
+                useFilesystemRoot ? linkedPath : "/workspace/default/linked/secret.txt",
                 allowedDirectories,
                 WorkspacePathAccess.Read));
         }

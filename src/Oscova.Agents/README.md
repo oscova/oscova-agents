@@ -38,7 +38,7 @@ Use `IRedactionService` to keep persistence code provider-neutral and `FileSessi
 
 ## Agent memory
 
-`AgentMemoryService` stores bounded long-term, topic, and daily memory beneath caller-selected user roots. Callers provide root resolution, the text-size limit, the user's current local date, and a backup service.
+`AgentMemoryService` binds long-term concepts and dated short-term logs to caller-selected user roots. `EncryptedKnowledgeStore` shares encrypted OKF v0.2 persistence, metadata-preserving updates, lexical discovery and derived directory indexes with private agent notes. Callers supply the relative root, UTF-8 file limit, local date, vault protection and backups. Entry-index injection has no provider token cap.
 
 ## Shared agent personal context
 

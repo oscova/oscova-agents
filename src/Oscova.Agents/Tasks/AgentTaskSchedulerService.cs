@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Notifications;
+using Oscova.Agents.Conversations;
 
 namespace Oscova.Agents.Tasks;
 
@@ -18,10 +19,16 @@ namespace Oscova.Agents.Tasks;
 /// <param name="serviceProvider">The root service provider used to create scoped task services.</param>
 /// <param name="taskStatusNotifications">The notification hub used to publish task status updates.</param>
 /// <param name="logger">The logger used for scheduler activity and failures.</param>
-public class AgentTaskSchedulerService(
+/// <param name="timeProvider">The clock used for scheduler ticks and run timestamps.</param>
+/// <param name="canScheduleTaskAsync">Caller-owned eligibility for timer-driven starts. False leaves the task due without a run.</param>
+/// <param name="canRunUser">Caller-owned vault eligibility for starting and persisting any run.</param>
+public sealed class AgentTaskSchedulerService(
     IServiceProvider serviceProvider,
     NotificationHub<TaskStatusUpdate> taskStatusNotifications,
-    ILogger<AgentTaskSchedulerService> logger) : BackgroundService
+    ILogger<AgentTaskSchedulerService> logger,
+    TimeProvider timeProvider,
+    Func<AgentTaskDefinition, CancellationToken, Task<bool>>? canScheduleTaskAsync = null,
+    Func<string, bool>? canRunUser = null) : BackgroundService
 {
     private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(30);
 
@@ -38,6 +45,7 @@ public class AgentTaskSchedulerService(
     private readonly ConcurrentDictionary<TaskOwnerKey, SemaphoreSlim> _taskMutationGates = [];
     private readonly CancellationTokenSource _executionLifetimeCancellation = new();
     private readonly Dictionary<TaskOwnerKey, OwnedTaskExecution> _ownedExecutions = [];
+    private readonly ThreadRunGuard _userRuns = new();
     private readonly HashSet<TaskOwnerKey> _closedTaskAdmissions = [];
     private readonly Dictionary<TaskOwnerKey, byte[]> _taskDefinitionFingerprints = [];
     private bool _isStopping;
@@ -48,7 +56,7 @@ public class AgentTaskSchedulerService(
     {
         logger.LogDebug("Agent task scheduler started. Tick interval: {Interval}s", TickInterval.TotalSeconds);
 
-        using var timer = new PeriodicTimer(TickInterval);
+        using var timer = new PeriodicTimer(TickInterval, timeProvider);
         try
         {
             while (await timer.WaitForNextTickAsync(stoppingToken).ConfigureAwait(false))
@@ -117,16 +125,24 @@ public class AgentTaskSchedulerService(
             var repository = scope.ServiceProvider.GetRequiredService<IAgentTaskRepository>();
 
             var enabledTasks = await repository.GetAllEnabledTasksAsync(ct).ConfigureAwait(false);
-            var now = DateTimeOffset.UtcNow;
+            var now = timeProvider.GetUtcNow();
 
             foreach (var task in enabledTasks)
             {
                 try
                 {
+                    if (canRunUser is not null && !canRunUser(task.UserId)) { continue; }
                     var latestRun = _runningTasks.GetValueOrDefault(new TaskOwnerKey(task.UserId, task.Id))
                                     ?? await repository.GetLatestRunMetadataAsync(task.UserId, task.Id, ct).ConfigureAwait(false);
 
                     if (!TaskScheduleEvaluator.IsDue(task, latestRun, now))
+                    {
+                        continue;
+                    }
+
+                    // The caller controls when this owner's scheduled work may begin.
+                    if (canScheduleTaskAsync is not null &&
+                        !await canScheduleTaskAsync(task, ct).ConfigureAwait(false))
                     {
                         continue;
                     }
@@ -169,7 +185,7 @@ public class AgentTaskSchedulerService(
 
         var outcome = QueueTaskExecution(
             task,
-            DateTimeOffset.UtcNow,
+            timeProvider.GetUtcNow(),
             source,
             parameters ?? new Dictionary<string, JsonElement>());
         return Task.FromResult(outcome);
@@ -185,6 +201,11 @@ public class AgentTaskSchedulerService(
 
         try
         {
+            if (canRunUser is not null && !canRunUser(task.UserId))
+            {
+                _lastRunPerTask.TryRemove(taskKey, out _);
+                return;
+            }
             var scope = serviceProvider.CreateAsyncScope();
             await using (scope.ConfigureAwait(false))
             {
@@ -195,12 +216,17 @@ public class AgentTaskSchedulerService(
                 executorReturned = true;
 
                 // Ensure timestamps are always set, regardless of executor implementation
-                run.StartedAt ??= DateTimeOffset.UtcNow;
+                run.StartedAt ??= timeProvider.GetUtcNow();
                 if (run.Status is AgentTaskStatus.Completed or AgentTaskStatus.Failed)
                 {
-                    run.CompletedAt ??= DateTimeOffset.UtcNow;
+                    run.CompletedAt ??= timeProvider.GetUtcNow();
                 }
 
+                if (canRunUser is not null && !canRunUser(task.UserId))
+                {
+                    _lastRunPerTask.TryRemove(taskKey, out _);
+                    return;
+                }
                 _runningTasks[taskKey] = run;
 
                 var runPersisted = true;
@@ -214,12 +240,6 @@ public class AgentTaskSchedulerService(
                     logger.LogWarning(ex, "Retrying run persistence for task '{TaskId}'.", task.Id);
                     runPersisted = await PersistRunAsync(run).ConfigureAwait(false);
                 }
-                await taskStatusNotifications.NotifyAsync(
-                    task.UserId,
-                    new TaskStatusUpdate(task.Id, task.Name, run.Status, StatusMessageFor(run))).ConfigureAwait(false);
-                statusNotificationSent = true;
-                if (!runPersisted) return;
-
                 logger.LogDebug(
                     "Task '{TaskName}' (ID: {TaskId}) finished with status {Status}",
                     task.Name,
@@ -227,13 +247,13 @@ public class AgentTaskSchedulerService(
                     run.Status);
 
                 // Queue successors before automatic deletion closes this completed task's admission.
-                if (run.Status == AgentTaskStatus.Completed && !IsTaskAdmissionClosed(taskKey))
+                if (runPersisted && run.Status == AgentTaskStatus.Completed && !IsTaskAdmissionClosed(taskKey))
                 {
                     await TriggerDependentTasksAsync(repository, task, ct).ConfigureAwait(false);
                 }
 
                 // Failed one-shots stay enabled for manual retry; successful runs retain their finalization policy.
-                if (task.Schedule.Kind == TaskScheduleKind.OneShot && run.Status == AgentTaskStatus.Completed)
+                if (runPersisted && task.Schedule.Kind == TaskScheduleKind.OneShot && run.Status == AgentTaskStatus.Completed)
                 {
                     await RunTaskFinalizationAsync(
                         taskKey,
@@ -283,6 +303,12 @@ public class AgentTaskSchedulerService(
                         },
                         ct).ConfigureAwait(false);
                 }
+
+                // Subscribers reload task definitions, so publish after one-shot disable or deletion.
+                await taskStatusNotifications.NotifyAsync(
+                    task.UserId,
+                    new TaskStatusUpdate(task.Id, task.Name, run.Status, StatusMessageFor(run))).ConfigureAwait(false);
+                statusNotificationSent = true;
             }
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -302,7 +328,7 @@ public class AgentTaskSchedulerService(
             if (_runningTasks.TryGetValue(taskKey, out var cancelledRun))
             {
                 cancelledRun.Status = AgentTaskStatus.Failed;
-                cancelledRun.CompletedAt = DateTimeOffset.UtcNow;
+                cancelledRun.CompletedAt = timeProvider.GetUtcNow();
                 cancelledRun.Error = "Task was cancelled.";
                 await PersistRunAsync(cancelledRun).ConfigureAwait(false);
                 await taskStatusNotifications.NotifyAsync(
@@ -328,7 +354,7 @@ public class AgentTaskSchedulerService(
             if (_runningTasks.TryGetValue(taskKey, out var failedRun))
             {
                 failedRun.Status = AgentTaskStatus.Failed;
-                failedRun.CompletedAt = DateTimeOffset.UtcNow;
+                failedRun.CompletedAt = timeProvider.GetUtcNow();
                 failedRun.Error = ex.Message;
                 await PersistRunAsync(failedRun).ConfigureAwait(false);
                 await taskStatusNotifications.NotifyAsync(
@@ -386,7 +412,7 @@ public class AgentTaskSchedulerService(
                     continue;
                 }
 
-                QueueTaskExecution(candidate, DateTimeOffset.UtcNow, TaskTriggerSource.AfterTask, new Dictionary<string, JsonElement>());
+                QueueTaskExecution(candidate, timeProvider.GetUtcNow(), TaskTriggerSource.AfterTask, new Dictionary<string, JsonElement>());
             }
         }
         catch (Exception ex)
@@ -456,6 +482,10 @@ public class AgentTaskSchedulerService(
     /// <returns><see langword="true"/> when the task is currently running.</returns>
     public bool IsTaskRunning(string userId, string taskId)
         => _runningTasks.TryGetValue(new TaskOwnerKey(userId, taskId), out var run) && run.Status == AgentTaskStatus.Running;
+
+    /// <summary>Cancels and drains a user's task executions while blocking new starts until cleanup finishes.</summary>
+    public Task<ThreadRunGuard.UserRunLease> CancelAndAcquireUserAsync(string userId, CancellationToken ct = default)
+        => _userRuns.CancelAndAcquireUserAsync(userId, ct);
 
     /// <summary>Cancels a task and keeps its admission closed while its definition is deleted.</summary>
     /// <param name="userId">The task owner's user identifier.</param>
@@ -618,6 +648,14 @@ public class AgentTaskSchedulerService(
         TaskTriggerSource source,
         IReadOnlyDictionary<string, JsonElement> parameters)
     {
+        if (canRunUser is not null && !canRunUser(task.UserId))
+        {
+            return new TaskTriggerOutcome
+            {
+                Started = false, Status = AgentTaskStatus.Pending,
+                Message = "Unlock your Vault Password before running this task."
+            };
+        }
         lock (_executionLifetimeGate)
         {
             var taskKey = new TaskOwnerKey(task.UserId, task.Id);
@@ -684,6 +722,17 @@ public class AgentTaskSchedulerService(
                     continue;
                 }
 
+                var userRun = _userRuns.Acquire(task.UserId, task.Id, queuedRun.Id);
+                if (userRun is null)
+                {
+                    _runningTasks.TryRemove(taskKey, out _);
+                    return new TaskTriggerOutcome
+                    {
+                        Started = false, Status = AgentTaskStatus.Pending,
+                        Message = "The user's tasks are being stopped. Try again after cleanup finishes."
+                    };
+                }
+
                 _lastRunPerTask[taskKey] = queuedRun;
                 Task startNotification = taskStatusNotifications.NotifyAsync(task.UserId, new TaskStatusUpdate(
                     task.Id,
@@ -697,7 +746,7 @@ public class AgentTaskSchedulerService(
                 logger.LogDebug("Starting task '{TaskName}' (ID: {TaskId}) via {Source}", task.Name, task.Id, source);
 
                 var executionCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                    _executionLifetimeCancellation.Token);
+                    _executionLifetimeCancellation.Token, userRun.CancellationToken);
                 var execution = ExecuteTaskAfterStartNotificationAsync(
                     task,
                     queuedRun,
@@ -718,6 +767,8 @@ public class AgentTaskSchedulerService(
                         }
 
                         executionCancellation.Dispose();
+                        // Release only after execution, persistence, notifications and owned-resource cleanup finish.
+                        userRun.Dispose();
                     },
                     CancellationToken.None,
                     TaskContinuationOptions.ExecuteSynchronously,
@@ -746,6 +797,10 @@ public class AgentTaskSchedulerService(
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
+            queuedRun.Status = AgentTaskStatus.Failed;
+            queuedRun.CompletedAt = timeProvider.GetUtcNow();
+            queuedRun.Error = "Task was cancelled.";
+            _runningTasks.TryRemove(new TaskOwnerKey(task.UserId, task.Id), out _);
             return;
         }
 
@@ -763,11 +818,11 @@ public class AgentTaskSchedulerService(
         };
     }
 
-    private static string? StatusMessageFor(AgentTaskRun run) =>
-        run.IsEncrypted ? null : run.Error;
+    private static string? StatusMessageFor(AgentTaskRun run) => null;
 
     private async Task<bool> PersistRunAsync(AgentTaskRun run)
     {
+        if (canRunUser is not null && !canRunUser(run.UserId)) { return false; }
         try
         {
             var scope = serviceProvider.CreateAsyncScope();

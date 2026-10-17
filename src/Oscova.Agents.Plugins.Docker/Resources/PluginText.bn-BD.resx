@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Settings.Skills.SandboxImageTitle">
+    <value>স্যান্ডবক্স ইমেজ</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageDescription">
+    <value>কন্টেইনার স্যান্ডবক্সড স্কিল স্ক্রিপ্ট দ্বারা ব্যবহৃত Docker স্যান্ডবক্স ইমেজ পরিচালনা করুন।</value>
+  </data>
+  <data name="Settings.Skills.SandboxDockerfileLabel">
+    <value>Dockerfile</value>
+  </data>
+  <data name="Settings.Skills.SandboxNoCacheLabel">
+    <value>ক্যাশ ছাড়া</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildButton">
+    <value>ইমেজ তৈরি করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxRebuildButton">
+    <value>ইমেজ পুনরায় তৈরি করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxCancelButton">
+    <value>বাতিল করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetButton">
+    <value>ডিফল্ট ব্যবহার করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxEditDockerfileButton">
+    <value>Dockerfile সম্পাদনা করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxDefaultImageBadge">
+    <value>ডিফল্ট ইমেজ</value>
+  </data>
+  <data name="Settings.Skills.SandboxCustomImageBadge">
+    <value>কাস্টম ইমেজ</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuiltBadge">
+    <value>নির্মিত</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageNotBuiltBadge">
+    <value>নির্মিত নয়</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuildingBadge">
+    <value>তৈরি হচ্ছে</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputLabel">
+    <value>বিল্ড আউটপুট</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputEmpty">
+    <value>বিল্ড আউটপুট এখানে প্রদর্শিত হবে।</value>
+  </data>
+  <data name="Settings.Skills.SandboxClearOutputButton">
+    <value>সাফ করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxOfflineTooltip">
+    <value>স্যান্ডবক্স ইমেজ তৈরি করার আগে অফলাইন মোড বন্ধ করুন।</value>
+  </data>
+  <data name="Settings.Skills.SandboxSavedToast">
+    <value>স্যান্ডবক্স Dockerfile সংরক্ষণ করা হয়েছে।</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildStartedToast">
+    <value>স্যান্ডবক্স ইমেজ তৈরি শুরু হয়েছে।</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildSucceededToast">
+    <value>স্যান্ডবক্স ইমেজ তৈরি সফল হয়েছে।</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildFailedToast">
+    <value>স্যান্ডবক্স ইমেজ তৈরি ব্যর্থ হয়েছে।</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildCancelledToast">
+    <value>স্যান্ডবক্স ইমেজ তৈরি বাতিল করা হয়েছে।</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmTitle">
+    <value>ডিফল্ট Dockerfile ব্যবহার করুন</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmMessage">
+    <value>ডিফল্ট Dockerfile ব্যবহার করবেন এবং শেয়ার করা স্যান্ডবক্স ইমেজ পুনরায় তৈরি করবেন?</value>
+  </data>
+  <data name="Execution.Title" xml:space="preserve">
+    <value>Docker</value>
+  </data>
+  <data name="Execution.Description" xml:space="preserve">
+    <value>কমান্ড অনুমোদিত ফোল্ডার মাউন্ট করে Docker-এ চলে। হোস্টের সরঞ্জাম স্বয়ংক্রিয়ভাবে উপলব্ধ হয় না।</value>
+  </data>
+  <data name="Availability.Unavailable" xml:space="preserve"><value>Docker উপলব্ধ নয়। ইনস্টলেশন, ডেমন সংযোগ ও অ্যাকাউন্টের অনুমতি পরীক্ষা করে আবার নির্বাচন করুন।</value></data>
+</root>

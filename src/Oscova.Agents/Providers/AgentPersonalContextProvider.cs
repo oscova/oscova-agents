@@ -1,6 +1,7 @@
 using Microsoft.Agents.AI;
 using Oscova.Agents.Templating;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,9 @@ public sealed class AgentPersonalContextProvider(
     string instructionTemplate,
     Func<CancellationToken, Task<object>> modelFactory) : AIContextProvider
 {
+    /// <summary>Returns no state keys because rendering current instructions is stateless.</summary>
+    public override IReadOnlyList<string> StateKeys => [];
+
     /// <inheritdoc />
     protected override async ValueTask<AIContext> ProvideAIContextAsync(
         InvokingContext context,

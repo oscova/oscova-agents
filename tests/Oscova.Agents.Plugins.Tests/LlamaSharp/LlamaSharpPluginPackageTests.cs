@@ -1,21 +1,23 @@
 using System.Text.Json;
 using NuGet.Packaging;
 using NuGet.Versioning;
+using Oscova.Agents.Tests.TestSupport;
 
 namespace Oscova.Agents.Plugins.Tests.LlamaSharp;
 
 public sealed class LlamaSharpPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.LlamaSharp";
-    private const string PackageVersion = "2.0.0";
+    private static readonly string PackageVersion = PackageVersions.Get(PackageId);
     private const string PluginId = "oscova.llamasharp";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     [Fact]
+    [Trait("Category", "Slow")]
     public void Package_ContainsReviewedManifestDependenciesAndRuntimeTrees()
     {
-        var packagePath = GetPackagePath();
+        var packagePath = ReleasePackages.GetPath(PackageId, PackageVersion);
         using var archive = new PackageArchiveReader(packagePath);
         var files = archive.GetFiles().Select(NormalizePath).ToHashSet(StringComparer.Ordinal);
         var packageTypes = archive.GetPackageTypes();
@@ -52,40 +54,13 @@ public sealed class LlamaSharpPluginPackageTests
             .Distinct(StringComparer.Ordinal)
             .Order(StringComparer.Ordinal)
             .ToList();
-        Assert.Equal(["linux-x64", "osx-arm64", "win-x64"], runtimeRoots);
+        Assert.Equal(["linux-x64", "osx-arm64", "osx-x64", "win-x64"], runtimeRoots);
         Assert.Contains("runtimes/win-x64/native/avx2/llama.dll", files);
         Assert.Contains("runtimes/win-x64/native/noavx/llama.dll", files);
         Assert.Contains("runtimes/linux-x64/native/avx2/libllama.so", files);
         Assert.Contains("runtimes/osx-arm64/native/libllama.dylib", files);
+        Assert.Contains("runtimes/osx-x64/native/libllama.dylib", files);
         Assert.True(new FileInfo(packagePath).Length <= MaxPackageBytes);
-    }
-
-    private static string GetPackagePath()
-    {
-        var packagePath = Path.Combine(
-            FindAssistantRoot(),
-            "artifacts",
-            "nuget",
-            $"{PackageId}.{PackageVersion}.nupkg");
-        return File.Exists(packagePath)
-            ? packagePath
-            : throw new FileNotFoundException($"Release plugin package was not found: {packagePath}.");
-    }
-
-    private static string FindAssistantRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "Oscova.Assistant.sln")))
-            {
-                return directory.FullName;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the Oscova.Assistant repository root.");
     }
 
     private static string NormalizePath(string path) => path.Replace('\\', '/');

@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace Oscova.Agents.Llm;
 
-/// <summary>Downloads provider-owned model assets into the provider's local cache.</summary>
+/// <summary>Downloads model assets into the configured provider's managed cache.</summary>
 public interface IModelDownloadProvider
 {
-    /// <summary>Downloads the selected model and reports percentage progress.</summary>
+    /// <summary>Downloads the configured model and reports transfer and preparation progress.</summary>
     Task DownloadModelAsync(
-        string modelId,
-        IProgress<float>? progress = null,
+        ModelProviderConfig config,
+        IProgress<ModelDownloadProgress>? progress = null,
         CancellationToken cancellationToken = default);
 }

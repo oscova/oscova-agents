@@ -71,6 +71,8 @@ public sealed partial class WorkspaceFileAccess
 
             using var handle = new SafeFileHandle((IntPtr)descriptor, ownsHandle: true);
             using var stream = new FileStream(handle, FileAccess.Write);
+            // Positioned writes do not honor O_APPEND on macOS.
+            stream.Seek(0, SeekOrigin.End);
             write(stream);
             stream.Flush();
             return;
@@ -362,6 +364,8 @@ public sealed partial class WorkspaceFileAccess
     private static int UnixNoFollow => OperatingSystem.IsMacOS() ? UnixNoFollowDarwin : UnixNoFollowLinux;
     private static int UnixCloseOnExec => OperatingSystem.IsMacOS() ? UnixCloseOnExecDarwin : UnixCloseOnExecLinux;
     private static int AtSymlinkNoFollow => OperatingSystem.IsMacOS() ? AtSymlinkNoFollowDarwin : AtSymlinkNoFollowLinux;
+    // Intel's unsuffixed exports use legacy inode layouts, unlike Apple Silicon.
+    private static bool IsDarwinX64 => OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.X64;
 
     private sealed class UnixOpenedParent(UnixDirectoryHandle directory, string targetName) : IDisposable
     {
@@ -453,12 +457,12 @@ public sealed partial class WorkspaceFileAccess
     private static extern int OpenAt(int directoryDescriptor, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, int flags);
 
     private static int OpenAt(int directoryDescriptor, string path, int flags, uint mode) =>
-        OperatingSystem.IsMacOS()
+        OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64
             ? OpenAtDarwin(directoryDescriptor, path, flags, 0, 0, 0, 0, 0, mode)
-            : OpenAtLinux(directoryDescriptor, path, flags, mode);
+            : OpenAtUnix(directoryDescriptor, path, flags, mode);
 
     [DllImport("libc", EntryPoint = "openat", SetLastError = true)]
-    private static extern int OpenAtLinux(int directoryDescriptor, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, int flags, uint mode);
+    private static extern int OpenAtUnix(int directoryDescriptor, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, int flags, uint mode);
 
     // Apple arm64 puts variadic arguments on the stack. Fill x3-x7 so mode occupies the first stack slot.
     [DllImport("libc", EntryPoint = "openat", SetLastError = true)]
@@ -483,10 +487,22 @@ public sealed partial class WorkspaceFileAccess
     private static extern int Close(int descriptor);
 
     [DllImport("libc", EntryPoint = "fdopendir", SetLastError = true)]
-    private static extern IntPtr FdOpenDirectory(int descriptor);
+    private static extern IntPtr FdOpenDirectoryNative(int descriptor);
+
+    [DllImport("libc", EntryPoint = "fdopendir$INODE64", SetLastError = true)]
+    private static extern IntPtr FdOpenDirectoryDarwinX64(int descriptor);
+
+    private static IntPtr FdOpenDirectory(int descriptor) =>
+        IsDarwinX64 ? FdOpenDirectoryDarwinX64(descriptor) : FdOpenDirectoryNative(descriptor);
 
     [DllImport("libc", EntryPoint = "readdir", SetLastError = true)]
-    private static extern IntPtr ReadDirectory(IntPtr directory);
+    private static extern IntPtr ReadDirectoryNative(IntPtr directory);
+
+    [DllImport("libc", EntryPoint = "readdir$INODE64", SetLastError = true)]
+    private static extern IntPtr ReadDirectoryDarwinX64(IntPtr directory);
+
+    private static IntPtr ReadDirectory(IntPtr directory) =>
+        IsDarwinX64 ? ReadDirectoryDarwinX64(directory) : ReadDirectoryNative(directory);
 
     [DllImport("libc", EntryPoint = "closedir", SetLastError = true)]
     private static extern int CloseDirectory(IntPtr directory);
@@ -502,12 +518,26 @@ public sealed partial class WorkspaceFileAccess
         int flags);
 
     [DllImport("libc", EntryPoint = "fstat", SetLastError = true)]
-    private static extern int FStatDarwin(int descriptor, out DarwinStat metadata);
+    private static extern int FStatDarwinNative(int descriptor, out DarwinStat metadata);
+
+    [DllImport("libc", EntryPoint = "fstat$INODE64", SetLastError = true)]
+    private static extern int FStatDarwinX64(int descriptor, out DarwinStat metadata);
+
+    private static int FStatDarwin(int descriptor, out DarwinStat metadata) =>
+        IsDarwinX64 ? FStatDarwinX64(descriptor, out metadata) : FStatDarwinNative(descriptor, out metadata);
 
     [DllImport("libc", EntryPoint = "fstatat", SetLastError = true)]
-    private static extern int FStatAtDarwin(
+    private static extern int FStatAtDarwinNative(
         int directoryDescriptor,
         [MarshalAs(UnmanagedType.LPUTF8Str)] string path,
         out DarwinStat metadata,
         int flags);
+
+    [DllImport("libc", EntryPoint = "fstatat$INODE64", SetLastError = true)]
+    private static extern int FStatAtDarwinX64(
+        int directoryDescriptor, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, out DarwinStat metadata, int flags);
+
+    private static int FStatAtDarwin(int directoryDescriptor, string path, out DarwinStat metadata, int flags) =>
+        IsDarwinX64 ? FStatAtDarwinX64(directoryDescriptor, path, out metadata, flags)
+            : FStatAtDarwinNative(directoryDescriptor, path, out metadata, flags);
 }

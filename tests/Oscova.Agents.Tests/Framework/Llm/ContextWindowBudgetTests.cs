@@ -4,6 +4,15 @@ namespace Oscova.Agents.Tests.Framework.Llm;
 
 public sealed class ContextWindowBudgetTests
 {
+    /// <summary>Evidence leaves room for other input and output without the history minimum floor.</summary>
+    [Theory]
+    [InlineData(10_000, 2_000, 1_000, 4_200)]
+    [InlineData(2_000, 1_800, 400, 0)]
+    [InlineData(2_000, 1_000, 500, 300)]
+    [InlineData(0, 10_000, 1_000, ContextWindowBudget.DefaultHistoryBudget)]
+    public void DeriveEvidenceBudget_AccountsForInputAndOutput(int context, int other, int output, int expected)
+        => Assert.Equal(expected, ContextWindowBudget.DeriveEvidenceBudget(context, other, output));
+
     [Fact]
     public void DeriveOutputReserve_WhenWindowUnknown_ReturnsZero()
     {

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Telegram.Label"><value>Telegram</value></data>
+  <data name="Settings.Section.Telegram.Description"><value>Telegram بوٹ انضمام اور نجی چیٹ رسائی سیٹ اپ کریں۔</value></data>
+  <data name="Settings.Telegram.GetTokenLink"><value>BotFather سے اپنا بوٹ ٹوکن حاصل کریں</value></data>
+  <data name="Settings.Telegram.UserIdPlaceholder"><value>Telegram صارف ID درج کریں</value></data>
+  <data name="Settings.Telegram.UserIdLabel"><value>مجاز Telegram صارف ID</value></data>
+  <data name="Settings.Telegram.UserIdHint"><value>صرف اس عددی Telegram صارف آئی ڈی کو نجی چیٹ کی اجازت ہے۔ صارف نام درج نہ کریں۔ پہلے بوٹ کے ساتھ گفتگو شروع کریں۔</value></data>
+  <data name="Credential.Label"><value>Telegram بوٹ</value></data>
+  <data name="Credential.Description"><value>Telegram بوٹ سے رابطہ قائم کرنے کے لیے استعمال ہونے والا بوٹ ٹوکن۔</value></data>
+  <data name="Credential.BotToken.Label"><value>بوٹ ٹوکن</value></data>
+  <data name="Validation.AuthorizedUserId"><value>مجاز صارف ID عدد صحیح ہونا چاہیے، 1 سے 9223372036854775807 تک۔</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>آغاز پر منسلک کریں</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>فعال ہونے پر، ایپلیکیشن شروع ہوتے ہی بوٹ خود بخود جڑ جائے گا</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>بوٹ ٹوکنز کا نظم مرکزی طور پر اسناد والے ٹیب میں کیا جاتا ہے۔</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>اسناد کا نظم کریں</value></data>
+  <data name="Settings.Section.Agent.Label"><value>مرکزی ایجنٹ</value></data>
+  <data name="Settings.Channels.AgentHint"><value>اس چینل میں جواب دینے والا ایجنٹ منتخب کریں۔</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>ترتیبات محفوظ کریں</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>بوٹ کی حالت</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>چینل شروع کرنے سے پہلے تبدیلیاں محفوظ کریں۔</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>بوٹ روکیں</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>بوٹ شروع کریں</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>ترتیبات کامیابی کے ساتھ محفوظ ہو گئیں۔</value></data>
+  <data name="Common.Connected">
+		<value>منسلک</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>منقطع</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>لوڈ ہو رہا ہے...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

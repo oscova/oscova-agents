@@ -238,7 +238,7 @@ public sealed class SkillImportServiceTests : IDisposable
             name: warning-skill
             description: Allowed tools warning test
             allowed-tools:
-              - web_search
+              - web__search
             ---
             # Warning Skill
             """;
@@ -600,6 +600,41 @@ public sealed class SkillImportServiceTests : IDisposable
                 CreateAuthoringContext()));
 
         Assert.Empty(GetImportTempDirectories());
+    }
+
+    [Fact]
+    public async Task TrustedPackage_RetainsProvenanceAndReplacesOnlyNamedSkill()
+    {
+        await ImportAgentAuthoredSkillAsync("shared-procedure", "Original instructions");
+        string original = await ReadInstalledSkillAsync("shared-procedure");
+        string revised = original + "\nPublished revision\n";
+        await using var package = CreateZipStream([
+            ("shared-procedure/SKILL.md", revised),
+            ("shared-procedure/scripts/check.py", "print('published')"),
+            ("shared-procedure/references/input.txt", "support file")]);
+
+        await _service.ImportTrustedPackageAsync(UserId, "shared-procedure", package, replaceExisting: true);
+
+        Assert.Equal(revised, await ReadInstalledSkillAsync("shared-procedure"));
+        Assert.Equal("support file", await File.ReadAllTextAsync(
+            Path.Combine(_skillsRootPath, "shared-procedure", "references", "input.txt")));
+        await using var untrusted = CreateUtf8Stream(revised);
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.ImportAsync(UserId, "shared-procedure.md", untrusted));
+    }
+
+    [Fact]
+    public async Task TrustedPackage_RejectsWrongNameWithoutReplacingInstalledSkill()
+    {
+        await ImportAgentAuthoredSkillAsync("shared-procedure", "Original instructions");
+        string original = await ReadInstalledSkillAsync("shared-procedure");
+        await using var package = CreateZipStream([
+            ("different-skill/SKILL.md", "---\nname: different-skill\ndescription: Wrong target\n---\nBody")]);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.ImportTrustedPackageAsync(
+            UserId, "shared-procedure", package, replaceExisting: true));
+
+        Assert.Equal(original, await ReadInstalledSkillAsync("shared-procedure"));
+        Assert.False(Directory.Exists(Path.Combine(_skillsRootPath, "different-skill")));
     }
 
     public void Dispose()

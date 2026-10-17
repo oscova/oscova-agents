@@ -38,6 +38,12 @@ public abstract class SettingsBase : INotifyPropertyChanged
     /// <summary>Gets the key used to store and load this settings domain.</summary>
     public abstract string SettingsKey { get; }
 
+    /// <summary>Identifies the persisted shape supported by this settings domain.</summary>
+    protected virtual int SchemaVersion => 1;
+
+    /// <summary>Converts supported older raw settings before version validation and current model binding.</summary>
+    protected virtual string PreparePersistedYaml(string yaml) => yaml;
+
     /// <summary>Gets whether the initial load has completed.</summary>
     public bool IsLoaded { get; private set; }
 
@@ -65,11 +71,17 @@ public abstract class SettingsBase : INotifyPropertyChanged
                 var content = await _repository.GetSettingsAsync(_userId, SettingsKey).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(content))
                 {
-                    FromYaml(content);
+                    var prepared = PreparePersistedYaml(content);
+                    Yaml.RequireSchemaVersion(prepared, SchemaVersion);
+                    FromYaml(prepared);
+                    if (!string.Equals(content, prepared, StringComparison.Ordinal))
+                    {
+                        await _repository.SaveSettingsAsync(_userId, SettingsKey, prepared).ConfigureAwait(false);
+                    }
                 }
             }
 
-            _persistedContent = ToYaml();
+            _persistedContent = CreatePersistedYaml();
             IsLoaded = true;
         }
         catch (Exception ex)
@@ -92,7 +104,7 @@ public abstract class SettingsBase : INotifyPropertyChanged
             return;
         }
 
-        var content = ToYaml();
+        var content = CreatePersistedYaml();
         try
         {
             await _repository.SaveSettingsAsync(_userId, SettingsKey, content).ConfigureAwait(false);
@@ -116,7 +128,7 @@ public abstract class SettingsBase : INotifyPropertyChanged
                 return false;
             }
 
-            var content = ToYaml();
+            var content = CreatePersistedYaml();
             await _repository.SaveSettingsAsync(_userId, SettingsKey, content).ConfigureAwait(false);
             _persistedContent = content;
             return true;
@@ -133,6 +145,8 @@ public abstract class SettingsBase : INotifyPropertyChanged
 
     /// <summary>Applies values from a YAML string to this instance.</summary>
     public abstract void FromYaml(string yaml);
+
+    private string CreatePersistedYaml() => YamlConverter.WithSchemaVersion(ToYaml(), SchemaVersion);
 
     /// <summary>Updates a property and raises its change notifications when the value differs.</summary>
     protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

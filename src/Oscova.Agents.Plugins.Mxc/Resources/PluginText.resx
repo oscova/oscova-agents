@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>Commands follow existing workspace and network permissions using native operating-system isolation.</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>Writable workspace changes are permanent. Operating-system files and installed tool directories may remain readable.</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>The native sandbox was not detected. Check the Microsoft MXC prerequisites for this machine.</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC could not start. Check its native dependencies and this machine's permissions.</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC did not respond within ten seconds. Check the prerequisites and try again.</value></data>
+</root>

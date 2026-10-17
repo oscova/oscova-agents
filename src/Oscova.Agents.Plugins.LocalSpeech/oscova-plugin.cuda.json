@@ -1,7 +1,0 @@
-{
-  "id": "oscova.local-speech",
-  "name": "Oscova Local Speech NVIDIA CUDA",
-  "version": "2.0.3",
-  "assembly": "Oscova.Agents.Plugins.LocalSpeech.dll",
-  "entryType": "Oscova.Agents.Plugins.LocalSpeech.LocalSpeechAgentPlugin"
-}

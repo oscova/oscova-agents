@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Discord.Label"><value>Discord</value></data>
+  <data name="Settings.Section.Discord.Description"><value>Discord বট ইন্টিগ্রেশন এবং চ্যানেল বাইন্ডিং সেট আপ করুন।</value></data>
+  <data name="Settings.Discord.GetTokenLink"><value>Discord Developer Portal থেকে আপনার বট টোকেন পান</value></data>
+  <data name="Settings.Discord.FindUserIdLink"><value>কীভাবে আপনার Discord ব্যবহারকারী ID খুঁজে পাবেন</value></data>
+  <data name="Settings.Discord.UserIdPlaceholder"><value>Discord ব্যবহারকারী ID লিখুন (যেমন: 123456789012345678)</value></data>
+  <data name="Settings.Discord.UserIdLabel"><value>অনুমোদিত ব্যবহারকারী ID</value></data>
+  <data name="Settings.Discord.UserIdHint"><value>শুধুমাত্র এই ব্যবহারকারী বটের সাথে বার্তা পাঠাতে এবং গ্রহণ করতে সক্ষম হবেন।</value></data>
+  <data name="Credential.Label"><value>Discord বট</value></data>
+  <data name="Credential.Description"><value>Discord বট সংযোগের জন্য ব্যবহৃত বট টোকেন।</value></data>
+  <data name="Credential.BotToken.Label"><value>বট টোকেন</value></data>
+  <data name="Validation.AuthorizedUserId"><value>অনুমোদিত ব্যবহারকারী আইডি 1 থেকে 18446744073709551615 পর্যন্ত পূর্ণসংখ্যা হতে হবে।</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>চালু হলে সংযোগ করুন</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>সক্ষম করা হলে, অ্যাপ্লিকেশন শুরুতে বট স্বয়ংক্রিয়ভাবে সংযুক্ত হবে</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>বট টোকেনগুলি ক্রেডেনশিয়াল ট্যাবে কেন্দ্রীয়ভাবে পরিচালিত হয়।</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>ক্রেডেনশিয়াল পরিচালনা করুন</value></data>
+  <data name="Settings.Section.Agent.Label"><value>মূল এজেন্ট</value></data>
+  <data name="Settings.Channels.AgentHint"><value>এই চ্যানেলে উত্তর দেবে এমন এজেন্ট বেছে নিন।</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>সেটিংস সংরক্ষণ করুন</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>বট স্থিতি</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>চ্যানেল চালু করার আগে পরিবর্তনগুলি সংরক্ষণ করুন।</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>বট বন্ধ করুন</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>বট চালু করুন</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>সেটিংস সফলভাবে সংরক্ষিত হয়েছে।</value></data>
+  <data name="Common.Connected">
+		<value>সংযুক্ত</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>বিচ্ছিন্ন</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>লোড হচ্ছে...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

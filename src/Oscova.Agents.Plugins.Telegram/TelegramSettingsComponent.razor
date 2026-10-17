@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
+@using Oscova.Agents.Plugins.Telegram.Settings
+@inject IStringLocalizer<PluginText> Loc
+
+<OfficialChannelSettingsPanel TSettings="TelegramSettings" Context="@Context" ChannelId="@_channelId" Text="@(key => Loc[key].Value)"
+    Load="@TelegramSettings.LoadAsync" Capture="@Capture" Initialize="@Initialize"
+    Validate="@((settings, complete) => settings.Validate(complete))" Persist="@((settings, context, ct) => settings.SaveAsync(context, ct))">
+    <div class="form-control w-full">
+        <label class="label" for="telegram-authorizeduserid"><span class="label-text">@Loc[PluginTextKeys.SettingsTelegramUserIdLabel] <span class="text-error">*</span></span></label>
+        <label class="input w-full"><input id="telegram-authorizeduserid" class="grow focus:outline-0" type="text" @bind="_userId" placeholder="@Loc[PluginTextKeys.SettingsTelegramUserIdPlaceholder]" aria-describedby="telegram-authorizeduserid-help" /></label>
+        <p id="telegram-authorizeduserid-help" class="text-xs opacity-70">@Loc[PluginTextKeys.SettingsTelegramUserIdHint]</p>
+    </div>
+    <p class="text-xs"><a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" class="link link-primary">@Loc[PluginTextKeys.SettingsTelegramGetTokenLink]</a></p>
+</OfficialChannelSettingsPanel>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    private readonly string _channelId = new TelegramChannel().Definition.Id;
+    private string _userId = string.Empty;
+    private void Initialize(TelegramSettings settings)
+    {
+        _userId = settings.AuthorizedUserId ?? string.Empty;
+    }
+    private TelegramSettings Capture(bool startup, string? agentId) => new()
+    { StartAtStartup = startup, AgentId = agentId, AuthorizedUserId = _userId.Trim() };
+}

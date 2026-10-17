@@ -1,3 +1,4 @@
+using Oscova.Agents.Collections;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Toolsets;
 using Oscova.Agents.Workspace;
@@ -20,6 +21,17 @@ public sealed class CodingToolsetTests : IDisposable
         [
             new(_workspacePath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite)
         ]);
+    }
+
+    /// <summary>The registered file tools expose concise names under their File owner.</summary>
+    [Fact]
+    public void RegisteredTools_UseFileOwnerAndConciseNames()
+    {
+        var tools = new AgentToolCollection();
+        tools.Add(_toolset);
+
+        Assert.Equal(["file__apply_patch", "file__edit", "file__glob", "file__grep", "file__read", "file__write"],
+            tools.Select(tool => tool.Name).Order(StringComparer.Ordinal));
     }
 
     /// <summary>A successful case-only move must preserve destination content on Windows.</summary>
@@ -85,6 +97,46 @@ public sealed class CodingToolsetTests : IDisposable
     }
 
     [Fact]
+    public void ApplyPatch_WhenFormatIsInvalid_ExplainsAcceptedFormatAndLeavesFileUnchanged()
+    {
+        var filePath = WriteWorkspaceFile("notes.txt", "original");
+        var tools = new AgentToolCollection();
+        tools.Add(_toolset);
+        var function = Assert.Single(
+            tools,
+            tool => tool.UnderlyingMethod?.Name == nameof(CodingToolset.ApplyPatch));
+        var description = function.JsonSchema.GetProperty("properties").GetProperty("patch")
+            .GetProperty("description").GetString()!.ReplaceLineEndings("\n");
+
+        Assert.Contains("*** Begin Patch", description, StringComparison.Ordinal);
+        Assert.Contains("*** Update File: path\n@@\n-old line\n+new line", description, StringComparison.Ordinal);
+        Assert.Contains("*** Add File: path", description, StringComparison.Ordinal);
+        Assert.Contains("*** Delete File: path", description, StringComparison.Ordinal);
+
+        var exception = Assert.Throws<ToolFailureException>(() => _toolset.ApplyPatch(
+            "diff --git a/notes.txt b/notes.txt",
+            _workspacePath));
+
+        Assert.Equal("The patch format is invalid.", exception.Message);
+        var correction = Assert.IsType<string>(exception.Fix);
+        Assert.Contains("Start with *** Begin Patch.", correction, StringComparison.Ordinal);
+        Assert.Contains("End with *** End Patch.", correction, StringComparison.Ordinal);
+        Assert.DoesNotContain(filePath, exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("original", File.ReadAllText(filePath));
+
+        _toolset.ApplyPatch("""
+            *** Begin Patch
+            *** Update File: notes.txt
+            @@
+            -original
+            +updated
+            *** End Patch
+            """, _workspacePath);
+
+        Assert.Equal("updated", File.ReadAllText(filePath));
+    }
+
+    [Fact]
     public void ApplyPatch_WhenHunkIsMissing_Throws_AndLeavesFileUnchanged()
     {
         var filePath = WriteWorkspaceFile("src/Missing.cs", "alpha\nbeta\ngamma\n");
@@ -128,6 +180,26 @@ public sealed class CodingToolsetTests : IDisposable
     }
 
     [Fact]
+    public void ApplyPatch_WhenHeaderNamesALine_UpdatesTheMatchBelowIt()
+    {
+        var filePath = WriteWorkspaceFile("src/Twice.cs", "void First()\n{\n    return;\n}\nvoid Second()\n{\n    return;\n}\n");
+
+        var patch = """
+            *** Begin Patch
+            *** Update File: src/Twice.cs
+            @@ void Second()
+             {
+            -    return;
+            +    Save();
+            *** End Patch
+            """;
+
+        _toolset.ApplyPatch(patch, _workspacePath);
+
+        Assert.Equal("void First()\n{\n    return;\n}\nvoid Second()\n{\n    Save();\n}\n", File.ReadAllText(filePath).ReplaceLineEndings("\n"));
+    }
+
+    [Fact]
     public void ApplyPatch_WhenTargetIsInNestedReadOnlyDirectory_ThrowsAndLeavesFileUnchanged()
     {
         string filePath = WriteWorkspaceFile("protected/secret.txt", "original");
@@ -148,7 +220,7 @@ public sealed class CodingToolsetTests : IDisposable
             """;
 
         var exception = Assert.Throws<ToolFailureException>(() => toolset.ApplyPatch(patch, _workspacePath));
-        Assert.Equal("The patch path is not writable within Workspace Access.", exception.Message);
+        Assert.Equal("The patch path is not within a writable granted folder.", exception.Message);
         Assert.DoesNotContain(filePath, exception.Message, StringComparison.OrdinalIgnoreCase);
         Assert.Equal("original", File.ReadAllText(filePath));
     }
@@ -167,7 +239,7 @@ public sealed class CodingToolsetTests : IDisposable
 
         var exception = Assert.Throws<ToolFailureException>(() => toolset.ApplyPatch(patch, _workspacePath));
 
-        Assert.Equal("The patch path is not writable within Workspace Access.", exception.Message);
+        Assert.Equal("The patch path is not within a writable granted folder.", exception.Message);
         Assert.False(File.Exists(targetPath));
     }
 
@@ -189,6 +261,141 @@ public sealed class CodingToolsetTests : IDisposable
     }
 
     [Fact]
+    public void EditFile_WhenCrlfFileGetsLfText_MatchesAndKeepsCrlf()
+    {
+        var path = GetWorkspaceFile("edit/crlf.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, "one\r\ntwo\r\nthree\r\n");
+
+        _toolset.EditFile(path, "one\ntwo", "uno\ndos");
+
+        Assert.Equal("uno\r\ndos\r\nthree\r\n", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void EditFile_WhenMixedFileHasAnExactMatch_EditsThatBlock()
+    {
+        var path = GetWorkspaceFile("edit/mixed.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, "one\ntwo\n---\r\none\r\ntwo\r\n");
+
+        _toolset.EditFile(path, "one\ntwo", "uno\ndos");
+
+        Assert.Equal("uno\ndos\n---\r\none\r\ntwo\r\n", File.ReadAllText(path));
+    }
+
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    public void EditFile_WhenOnlyTrailingSpacesDiffer_EditsTheUniqueLines(string newLine)
+    {
+        var path = GetWorkspaceFile("edit/trailing.py");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, $"def total():{newLine}    x = 1  {newLine}    return x{newLine}");
+
+        _toolset.EditFile(path, "    x = 1\n    return x", "    x = 2\n    return x");
+
+        Assert.Equal($"def total():{newLine}    x = 2{newLine}    return x{newLine}", File.ReadAllText(path));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void EditFile_WhenTrailingSpacesDiffer_LeavesDeeperIndentedCopyAlone(bool replaceAll)
+    {
+        var path = GetWorkspaceFile("edit/nested.py");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, "    x = 1  \n        x = 1  \n");
+
+        _toolset.EditFile(path, "    x = 1\n", "    x = 2\n", replaceAll);
+
+        Assert.Equal("    x = 2\n        x = 1  \n", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void ApplyPatch_WhenTrailingSpacesMatchTwiceBelowHeader_FailsWithoutEditing()
+    {
+        var path = GetWorkspaceFile("patch/twice.yaml");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, "items:\n  - eggs  \n  - eggs \n");
+        const string patch = """
+            *** Begin Patch
+            *** Update File: patch/twice.yaml
+            @@ items:
+            -  - eggs
+            +  - milk
+            *** End Patch
+            """;
+
+        var exception = Assert.Throws<ToolFailureException>(() => _toolset.ApplyPatch(patch, _workspacePath));
+
+        Assert.Equal("A patch section matched multiple locations.", exception.Message);
+        Assert.Equal("items:\n  - eggs  \n  - eggs \n", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void ApplyPatch_WhenOnlyTrailingSpacesDiffer_AppliesTheHunk()
+    {
+        var path = WriteWorkspaceFile("patch/trailing.yaml", "items:  \n  - eggs\n");
+        const string patch = """
+            *** Begin Patch
+            *** Update File: patch/trailing.yaml
+            @@
+             items:
+            -  - eggs
+            +  - milk
+            *** End Patch
+            """;
+
+        _toolset.ApplyPatch(patch, _workspacePath);
+
+        Assert.Equal("items:\n  - milk\n", File.ReadAllText(path).ReplaceLineEndings("\n"));
+    }
+
+    [Fact]
+    public void ApplyPatch_WhenIndentationDiffers_StillFails()
+    {
+        var path = WriteWorkspaceFile("patch/indent.yaml", "items:\n    - eggs\n");
+        const string patch = """
+            *** Begin Patch
+            *** Update File: patch/indent.yaml
+            @@
+            -  - eggs
+            +  - milk
+            *** End Patch
+            """;
+
+        var exception = Assert.Throws<ToolFailureException>(() => _toolset.ApplyPatch(patch, _workspacePath));
+
+        Assert.Equal("A patch section could not be located.", exception.Message);
+        Assert.Equal("items:\n    - eggs\n", File.ReadAllText(path).ReplaceLineEndings("\n"));
+    }
+
+    [Theory]
+    [InlineData("\n")]
+    [InlineData("\r\n")]
+    public void ApplyPatch_UpdateFile_KeepsTheFileLineEnding(string newLine)
+    {
+        var path = GetWorkspaceFile("patch/endings.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, $"alpha{newLine}beta{newLine}gamma{newLine}");
+        const string patch = """
+            *** Begin Patch
+            *** Update File: patch/endings.txt
+            @@
+             alpha
+            -beta
+            +bravo
+             gamma
+            *** End Patch
+            """;
+
+        _toolset.ApplyPatch(patch, _workspacePath);
+
+        Assert.Equal($"alpha{newLine}bravo{newLine}gamma{newLine}", File.ReadAllText(path));
+    }
+
+    [Fact]
     public void WriteAppendAndEdit_PreserveExistingFileContract()
     {
         var path = GetWorkspaceFile("write/notes.txt");
@@ -205,7 +412,7 @@ public sealed class CodingToolsetTests : IDisposable
     {
         string defaultPath = Path.Combine(_workspacePath, "default");
         string researchPath = Path.Combine(_workspacePath, "research");
-        string dataPath = Path.Combine(_workspacePath, "data");
+        string dataPath = Path.Combine(_workspacePath, "private");
         string referencePath = Path.Combine(_workspacePath, "reference");
         Directory.CreateDirectory(defaultPath);
         Directory.CreateDirectory(researchPath);
@@ -215,13 +422,13 @@ public sealed class CodingToolsetTests : IDisposable
         [
             new(defaultPath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
             new(researchPath, "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/research"),
-            new(dataPath, "data", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/data"),
+            new(dataPath, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/private"),
             new(referencePath, "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/reference")
         ]);
 
         toolset.WriteFile("workspace/default/poem.txt", "default");
         toolset.WriteFile("workspace/research/report.txt", "research");
-        toolset.WriteFile("data/drafts/note.txt", "private");
+        toolset.WriteFile("private/drafts/note.txt", "private");
         toolset.WriteFile("mnt/reference/result.txt", "reference");
         toolset.ApplyPatch("""
             *** Begin Patch
@@ -237,7 +444,7 @@ public sealed class CodingToolsetTests : IDisposable
         Assert.Equal("private", File.ReadAllText(Path.Combine(dataPath, "drafts", "note.txt")));
         Assert.Equal("reference", File.ReadAllText(Path.Combine(referencePath, "result.txt")));
         Assert.False(Directory.Exists(Path.Combine(defaultPath, "workspace")));
-        Assert.False(Directory.Exists(Path.Combine(defaultPath, "data")));
+        Assert.False(Directory.Exists(Path.Combine(defaultPath, "private")));
         Assert.False(Directory.Exists(Path.Combine(defaultPath, "mnt")));
     }
 

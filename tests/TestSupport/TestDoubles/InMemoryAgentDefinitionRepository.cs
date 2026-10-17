@@ -21,8 +21,9 @@ public sealed class InMemoryAgentDefinitionRepository : IAgentDefinitionReposito
     {
         return Task.FromResult<IReadOnlyList<AgentDefinition>>([.. _agents.Values]);
     }
+    public Task SaveInstructionSourceAsync(string userId, AgentDefinition agent, CancellationToken ct = default) => SaveAgentAsync(userId, agent, ct);
 
-    public Task SaveAgentAsync(string userId, AgentDefinition agent, CancellationToken ct = default)
+    public Task SaveAgentAsync(string userId, AgentDefinition agent, CancellationToken ct = default, string? creationDirectoryName = null)
     {
         _agents[agent.Id] = agent;
         return Task.CompletedTask;

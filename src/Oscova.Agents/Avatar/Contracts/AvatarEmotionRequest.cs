@@ -19,5 +19,9 @@ namespace Oscova.Agents.Avatar.Contracts
         /// </summary>
         [JsonPropertyName("BlendSpeed")]
         public float BlendSpeed { get; set; }
+
+        /// <summary>Finite emotion strength from 0 to 1, defaulting to full influence when omitted.</summary>
+        [JsonPropertyName("Intensity")]
+        public float Intensity { get; set; } = 1f;
     }
 }

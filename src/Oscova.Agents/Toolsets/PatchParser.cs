@@ -9,6 +9,28 @@ namespace Oscova.Agents.Toolsets;
 /// </summary>
 public static class PatchParser
 {
+    internal const string FormatDescription = """
+        Applies a structured multi-file patch relative to base_directory.
+        Start the patch with *** Begin Patch.
+        End the patch with *** End Patch.
+        To update a file, use:
+        *** Update File: path
+        @@
+        -old line
+        +new line
+        To create a file, use *** Add File: path followed by one or more + lines.
+        To delete a file, use *** Delete File: path.
+        Prefix each update hunk line with a space, +, or -.
+        Keep every patch path inside base_directory.
+        """;
+
+    internal const string FormatCorrection = """
+        Start with *** Begin Patch.
+        Use *** Add File: path, *** Update File: path, or *** Delete File: path.
+        For updates, add @@ and prefix each hunk line with a space, +, or -.
+        End with *** End Patch.
+        """;
+
     /// <summary>
     /// Parses a complete patch document into file operations.
     /// </summary>

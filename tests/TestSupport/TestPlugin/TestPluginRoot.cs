@@ -69,6 +69,23 @@ public sealed class TestPluginRoot : IDisposable
         var pluginDirectory = Path.Combine(RootPath, folderName);
         Directory.CreateDirectory(pluginDirectory);
 
+        var outputPath = GetPluginProjectOutputPath(projectRelativeDirectory);
+        CopyDirectory(outputPath, pluginDirectory);
+
+        var manifestPath = Path.Combine(outputPath, manifestRelativePath);
+        if (!File.Exists(manifestPath))
+        {
+            throw new InvalidOperationException($"Plugin manifest was not found at '{manifestPath}'.");
+        }
+
+        File.Copy(manifestPath, Path.Combine(pluginDirectory, AgentPluginLoader.ManifestFileName), overwrite: true);
+
+        return pluginDirectory;
+    }
+
+    /// <summary>Resolves an existing build output whose files remain available for lazy plugin resource loading.</summary>
+    public static string GetPluginProjectOutputPath(string projectRelativeDirectory)
+    {
         var outputPath = Path.Combine(
             FindRepoRoot(),
             projectRelativeDirectory,
@@ -81,17 +98,7 @@ public sealed class TestPluginRoot : IDisposable
             throw new InvalidOperationException($"Plugin output was not found at '{outputPath}'. Build the solution first.");
         }
 
-        CopyDirectory(outputPath, pluginDirectory);
-
-        var manifestPath = Path.Combine(FindRepoRoot(), projectRelativeDirectory, manifestRelativePath);
-        if (!File.Exists(manifestPath))
-        {
-            throw new InvalidOperationException($"Plugin manifest was not found at '{manifestPath}'.");
-        }
-
-        File.Copy(manifestPath, Path.Combine(pluginDirectory, AgentPluginLoader.ManifestFileName), overwrite: true);
-
-        return pluginDirectory;
+        return outputPath;
     }
 
     /// <summary>
@@ -142,11 +149,7 @@ public sealed class TestPluginRoot : IDisposable
 
     internal static string GetTestPluginManifestPath()
     {
-        var manifestPath = Path.Combine(
-            FindRepoRoot(),
-            "tests",
-            "Oscova.Agents.Plugins.Echo",
-            AgentPluginLoader.ManifestFileName);
+        var manifestPath = Path.Combine(GetTestPluginOutputPath(), AgentPluginLoader.ManifestFileName);
 
         if (!File.Exists(manifestPath))
         {

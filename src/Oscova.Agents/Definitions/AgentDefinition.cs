@@ -30,10 +30,22 @@ public class AgentDefinition
     /// </summary>
     public string SystemInstruction { get; set; } = "You are a helpful assistant.";
 
+    /// <summary>Gets or sets the opaque source of a managed default instruction.</summary>
+    public string? InstructionSource { get; set; }
+
+    /// <summary>Gets or sets the saved instruction composition mode.</summary>
+    public string? InstructionMode { get; set; }
+
+    /// <summary>Gets or sets the last supplied default retained for a contributed agent.</summary>
+    public string? DefaultInstruction { get; set; }
+
     /// <summary>
     /// Gets or sets the optional chat model provider override for this agent.
     /// </summary>
     public string? ModelOverrideId { get; set; }
+
+    /// <summary>Gets or sets whether consultations may use the caller-selected model provider.</summary>
+    public bool UseCallerModelForConsultations { get; set; }
 
     /// <summary>
     /// Gets or sets the qualified tool names this agent may use.
@@ -71,10 +83,6 @@ public class AgentDefinition
     /// </summary>
     public bool IsLocalOnly { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether this agent stores its chats and task runs encrypted at rest.
-    /// </summary>
-    public bool IsConfidential { get; set; }
 
     /// <summary>
     /// Gets or sets whether other agents may call this agent as a tool.

@@ -55,11 +55,37 @@ public sealed class EnvironmentContextProvider : AIContextProvider
         host_shell: {{ host_shell }}
         host_path_separator: {{ host_path_separator }}
 
-        Use Host Context only when exec_host_command is available; otherwise use Runtime Context.
+        Use Host Context only when host_shell__exec is available; otherwise use Runtime Context.
         Host commands start in the matching host workspace. Use relative paths because Runtime Context paths may exist only inside the sandbox.
 
         ## Workspace Access
         {{ workspace_directories }}
+
+        {{ if has_private_directory }}
+        ## Your Private Folder
+        {{ private_directories }}
+
+        This is your own private folder.
+        You may read and write here whenever you need to keep files for your own use.
+        It persists across runs and chats and can hold any file type, including working documents, notes, and progress records.
+        {{ end }}
+
+        ## Shell Paths
+
+        Pass a listed folder as `workdir` to shell__exec or shell__start.
+        Inside commands, use relative paths.
+        {{ if uses_host_paths }}
+        Listed aliases are file-tool addresses, not native operating-system paths.
+        {{ end }}
+        {{ if has_shell_roots }}
+        For another folder on this execution device, use its environment variable:
+        {{ shell_root_variables }}
+        Variables contain actual paths on the execution device and are inherited by scripts and subprocesses.
+        {{ end }}
+
+        ## Execution
+
+        After a read or check produces a result, reuse it while it remains valid. Repeat the action only after a relevant change or to resolve new uncertainty.
 
         ## Decision Safety
 
@@ -68,12 +94,8 @@ public sealed class EnvironmentContextProvider : AIContextProvider
         Do not guess a missing required value or choose among equally plausible targets. Before changing files or other state, ask the user to supply the missing value or identify the intended target.
 
         Use `working_directory` as the default base for relative paths.
-        Use the exact paths listed under Workspace Access; user workspace labels identify the user's files.
-        The directory labelled `data` is your own private folder for notes, to-do lists, and temporary files; it persists across runs.
+        Use the exact directory paths listed above; user workspace labels identify the user's files.
         User facts, decisions, and preferences belong in memory tools.
-        Your private self-improvement notes belong in the `notes` child of the directory labelled `data`.
-        Use `notes/index.md` inside that data directory as the notes index and link topic files from that index.
-        Create the notes index only when you have a durable note worth keeping.
         Only read or modify files inside the directories listed above.
         When asked to write, create, or save a file, always use your available file tools; do not output file content as text.
         """;
@@ -82,6 +104,9 @@ public sealed class EnvironmentContextProvider : AIContextProvider
     /// Template used to render the environment instructions injected into the agent prompt.
     /// </summary>
     public string SystemPrompt { get; set; } = DefaultEnvironmentPrompt;
+
+    /// <summary>Restricts shell root variables to folders owned by the executing device.</summary>
+    public IReadOnlyList<AllowedDirectory>? ShellDirectories { get; set; }
 
     /// <summary>
     /// Runtime facts for the shell execution target; when omitted, host process facts are used.
@@ -131,14 +156,33 @@ public sealed class EnvironmentContextProvider : AIContextProvider
         IReadOnlyList<AllowedDirectory> workspaceDirectories = GetWorkspaceDirectories();
         RuntimeEnvironmentInfo hostEnvironment = HostEnvironment ?? CreateHostRuntimeEnvironment(workspaceDirectories);
         RuntimeEnvironmentInfo runtimeEnvironment = RuntimeEnvironment ?? hostEnvironment;
+        if (_workspaceResolver is not null)
+        {
+            // Cached providers keep shell facts, while each invocation supplies its own working folder.
+            hostEnvironment = hostEnvironment with { WorkingDirectory = GetWorkingDirectory(workspaceDirectories) };
+            runtimeEnvironment = runtimeEnvironment with
+            {
+                WorkingDirectory = runtimeEnvironment.UsesHostPaths
+                    ? hostEnvironment.WorkingDirectory
+                    : PathHelper.ResolveWorkingDirectoryAgentPath(workspaceDirectories) ?? "not available"
+            };
+        }
         string prompt = SystemPrompt ?? DefaultEnvironmentPrompt;
+        var privateDirectories = workspaceDirectories.Where(static directory => directory.AgentPath == "/private").ToArray();
+        var shellRoots = PathHelper.GetShellRootVariables(ShellDirectories ?? workspaceDirectories);
+        string workingDirectory = runtimeEnvironment.WorkingDirectory;
+        if (workspaceDirectories.Count > 0 &&
+            PathHelper.TryResolveToAgentPath(workingDirectory, workspaceDirectories, out string displayWorkingDirectory))
+        {
+            workingDirectory = displayWorkingDirectory;
+        }
 
         var instructions = PromptTemplateRenderer.Render(prompt, new
         {
             os = runtimeEnvironment.Os,
             architecture = runtimeEnvironment.Architecture,
             shell = runtimeEnvironment.Shell,
-            working_directory = runtimeEnvironment.WorkingDirectory,
+            working_directory = workingDirectory,
             path_separator = runtimeEnvironment.PathSeparator,
             home_directory = runtimeEnvironment.HomeDirectory,
             temp_directory = runtimeEnvironment.TempDirectory,
@@ -146,7 +190,13 @@ public sealed class EnvironmentContextProvider : AIContextProvider
             host_architecture = hostEnvironment.Architecture,
             host_shell = hostEnvironment.Shell,
             host_path_separator = hostEnvironment.PathSeparator,
-            workspace_directories = BuildWorkspaceDirectoryList(workspaceDirectories, runtimeEnvironment.UsesHostPaths)
+            workspace_directories = BuildWorkspaceDirectoryList(workspaceDirectories.Where(static directory => directory.AgentPath != "/private").ToArray()),
+            private_directories = BuildWorkspaceDirectoryList(privateDirectories),
+            has_private_directory = privateDirectories.Length > 0,
+            workspace_has_aliases = workspaceDirectories.Any(static directory => !string.IsNullOrWhiteSpace(directory.AgentPath)),
+            shell_root_variables = string.Join("\n", shellRoots.Select(entry => "- " + entry.Key + ": " + NormalizeMarkdownPath(PathHelper.ResolveToAgentPath(entry.Value.Value, [entry.Value])))),
+            has_shell_roots = shellRoots.Count > 0,
+            uses_host_paths = runtimeEnvironment.UsesHostPaths
         });
 
         return ValueTask.FromResult(new AIContext { Instructions = instructions });
@@ -177,7 +227,7 @@ public sealed class EnvironmentContextProvider : AIContextProvider
         return PathHelper.ResolveWorkingDirectoryHostPath(workspaceDirectories) ?? workspaceDirectories[0].Value;
     }
 
-    private static string BuildWorkspaceDirectoryList(IReadOnlyList<AllowedDirectory> workspaceDirectories, bool usesHostPaths)
+    private static string BuildWorkspaceDirectoryList(IReadOnlyList<AllowedDirectory> workspaceDirectories)
     {
         if (workspaceDirectories.Count == 0)
         {
@@ -194,24 +244,7 @@ public sealed class EnvironmentContextProvider : AIContextProvider
                 .Append(" (`")
                 .Append(access)
                 .Append("`): ")
-                .Append(NormalizeMarkdownPath(agentPath));
-            if (usesHostPaths && !string.IsNullOrWhiteSpace(directory.AgentPath) &&
-                !string.Equals(agentPath, directory.Value, StringComparison.Ordinal))
-            {
-                builder.Append(" (host shell: ")
-                    .Append(NormalizeMarkdownPath(directory.Value))
-                    .Append(')');
-            }
-            builder.AppendLine();
-        }
-
-        if (workspaceDirectories.Any(static directory => !string.IsNullOrWhiteSpace(directory.AgentPath)))
-        {
-            builder.Append("The listed aliases are file-tool addresses. File tools also accept granted native paths. ")
-                .Append("Aliases without a leading slash are accepted by file tools only. ")
-                .Append(usesHostPaths
-                    ? "Shell commands use the host addresses or paths relative to the physical working_directory."
-                    : "Shell commands use the mounted absolute addresses or paths relative to the container working_directory.");
+                .AppendLine(NormalizeMarkdownPath(agentPath));
         }
 
         return builder.ToString().TrimEnd();

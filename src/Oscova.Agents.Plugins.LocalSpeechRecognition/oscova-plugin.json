@@ -1,0 +1,8 @@
+{
+  "id": "oscova.local-speech-recognition",
+  "name": "Oscova Local Speech Recognition",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.LocalSpeechRecognition.dll",
+  "entryType": "Oscova.Agents.Plugins.LocalSpeechRecognition.LocalSpeechRecognitionAgentPlugin"
+}

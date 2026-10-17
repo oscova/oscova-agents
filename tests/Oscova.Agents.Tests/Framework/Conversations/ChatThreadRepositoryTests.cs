@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Oscova.Agents.Persistence;
@@ -9,6 +8,163 @@ namespace Oscova.Agents.Tests.Framework.Conversations;
 
 public sealed class ChatThreadRepositoryTests : IDisposable
 {
+    [SkippableFact]
+    public async Task GetThreadAsync_WhilePublicationHoldsDeleteAccess_ReadsCompleteSession()
+    {
+        Skip.IfNot(OperatingSystem.IsWindows(), "Windows file-sharing semantics.");
+        var thread = new ChatThread
+        {
+            SessionElement = JsonSerializer.SerializeToElement(new { receipt = "complete-session" }),
+            DisplayMessages = [new() { MessageId = "visible", Text = "Complete reply" }]
+        };
+        await _repository.CreateThreadAsync("user-1", thread);
+        // DeleteOnClose holds the same delete access as atomic publication.
+        using var publication = new FileStream(GetSessionPath("user-1", thread.Id), FileMode.Open,
+            FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.DeleteOnClose);
+
+        var loaded = await _repository.GetThreadAsync("user-1", thread.Id);
+
+        Assert.Equal("complete-session", loaded!.SessionElement!.Value.GetProperty("receipt").GetString());
+        Assert.Equal("Complete reply", Assert.Single(loaded.DisplayMessages).Text);
+    }
+
+    /// <summary>Unknown transcript and native-archive versions cannot be read or overwritten by ordinary saves.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task FutureVersion_RefusesReadAndSaveWithoutChangingBytes(bool nativeArchive)
+    {
+        var thread = new ChatThread
+        {
+            Id = "future-version",
+            SessionElement = JsonSerializer.SerializeToElement(new { receipt = "native-original" }),
+            DisplayMessages = [new() { MessageId = "original", Text = "Original display" }]
+        };
+        await _repository.CreateThreadAsync("user-1", thread);
+        var path = nativeArchive ? GetSessionPath("user-1", thread.Id) : GetTranscriptPath("user-1", thread.Id);
+        var protector = new PassThroughContentProtector();
+        var purpose = $"chat\0{thread.Id}\0{(nativeArchive ? "session" : "transcript")}";
+        var lines = await File.ReadAllLinesAsync(path);
+        var fields = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(protector.Unprotect("user-1", purpose, lines[0])!)!;
+        fields["v"] = JsonSerializer.SerializeToElement(99);
+        lines[0] = protector.Protect("user-1", purpose, JsonSerializer.Serialize(fields));
+        await File.WriteAllLinesAsync(path, lines);
+        var original = await File.ReadAllBytesAsync(path);
+        var transcriptPath = GetTranscriptPath("user-1", thread.Id);
+        var originalTranscript = await File.ReadAllBytesAsync(transcriptPath);
+        var originalIndex = await File.ReadAllBytesAsync(GetIndexPath("user-1"));
+        thread.DisplayMessages.Add(new() { MessageId = "new", Text = "Must not be appended" });
+        await Assert.ThrowsAsync<InvalidDataException>(() => _repository.GetThreadAsync("user-1", thread.Id));
+        await Assert.ThrowsAsync<InvalidDataException>(() => _repository.SaveThreadAsync("user-1", thread));
+        Assert.Equal(original, await File.ReadAllBytesAsync(path));
+        Assert.Equal(originalTranscript, await File.ReadAllBytesAsync(transcriptPath));
+        Assert.Equal(originalIndex, await File.ReadAllBytesAsync(GetIndexPath("user-1")));
+    }
+
+    /// <summary>Saving opaque reply checkpoints preserves current context and prunes removed replies.</summary>
+    [Fact]
+    public async Task SaveCheckpoint_PreservesCurrentSessionAndPrunesRemovedReplies()
+    {
+        var thread = new ChatThread
+        {
+            Id = "checkpoints",
+            SessionElement = JsonSerializer.SerializeToElement(new { current = "native-current" }),
+            DisplayMessages = [new() { MessageId = "first" }, new() { MessageId = "second" }],
+            SessionCheckpoints = new Dictionary<string, JsonElement>
+            {
+                ["first"] = JsonSerializer.SerializeToElement(new { captured = "first-marker" }),
+                ["second"] = JsonSerializer.SerializeToElement(new { captured = "second-marker" })
+            }
+        };
+        await _repository.CreateThreadAsync("user-1", thread);
+        thread.SessionCheckpoints = null;
+        await _repository.SaveThreadAsync("user-1", thread);
+        Assert.Equal(2, thread.SessionCheckpoints!.Count);
+        await _repository.SaveSessionElementAsync("user-1", thread.Id,
+            JsonSerializer.SerializeToElement(new { current = "updated-current" }), null);
+        thread = (await _repository.GetThreadAsync("user-1", thread.Id))!;
+        thread.SessionCheckpoints = new Dictionary<string, JsonElement> { ["second"] = thread.SessionCheckpoints!["second"] };
+        await _repository.SaveThreadAsync("user-1", thread);
+        thread.DisplayMessages.RemoveAt(1);
+        await _repository.SaveThreadAsync("user-1", thread);
+
+        var fresh = new ChatThreadRepository(() => _usersRoot, new FileSessionIndexCoordinator(),
+            new SecretRedactionService(), new PassThroughContentProtector(), NullLogger<ChatThreadRepository>.Instance);
+        var reloaded = (await fresh.GetThreadAsync("user-1", thread.Id))!;
+        Assert.Equal("updated-current", reloaded.SessionElement!.Value.GetProperty("current").GetString());
+        Assert.Empty(reloaded.SessionCheckpoints!);
+        Assert.Empty(reloaded.BranchableMessageIds);
+        var encrypted = await File.ReadAllTextAsync(GetSessionPath("user-1", thread.Id));
+        Assert.DoesNotContain("updated-current", encrypted, StringComparison.Ordinal);
+        Assert.DoesNotContain("first-marker", encrypted, StringComparison.Ordinal);
+    }
+
+    /// <summary>The browser receives eligible identities without historical session payloads.</summary>
+    [Fact]
+    public async Task CheckpointPayloads_AreExcludedFromThreadJson()
+    {
+        var thread = new ChatThread
+        {
+            DisplayMessages = [new() { MessageId = "eligible" }],
+            SessionCheckpoints = new Dictionary<string, JsonElement>
+            {
+                ["eligible"] = JsonSerializer.SerializeToElement(new { secret = "checkpoint-only-marker" })
+            }
+        };
+        await _repository.CreateThreadAsync("user-1", thread);
+        var loaded = (await _repository.GetThreadAsync("user-1", thread.Id))!;
+        Assert.Equal(["eligible"], loaded.BranchableMessageIds);
+        Assert.Equal("checkpoint-only-marker", loaded.SessionCheckpoints!["eligible"].GetProperty("secret").GetString());
+        var json = JsonSerializer.Serialize(loaded);
+        Assert.Contains("eligible", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("checkpoint-only-marker", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("SessionCheckpoints", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>Deleting a session clears both current state and retained reply checkpoints.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task DeleteSession_ClearsCurrentContextAndCheckpoints(bool incognito)
+    {
+        var thread = new ChatThread
+        {
+            IsIncognito = incognito,
+            SessionElement = JsonSerializer.SerializeToElement(new { current = true }),
+            DisplayMessages = [new() { MessageId = "reply" }],
+            SessionCheckpoints = new Dictionary<string, JsonElement> { ["reply"] = JsonSerializer.SerializeToElement(new { saved = true }) }
+        };
+        await _repository.CreateThreadAsync("user-1", thread);
+        await _repository.DeleteSessionElementAsync("user-1", thread.Id);
+        var loaded = (await _repository.GetThreadAsync("user-1", thread.Id))!;
+        Assert.Null(loaded.SessionElement);
+        Assert.Empty(loaded.SessionCheckpoints!);
+        Assert.Empty(loaded.BranchableMessageIds);
+        Assert.False(File.Exists(GetSessionPath("user-1", thread.Id)));
+    }
+
+    [Fact]
+    public async Task ProjectReference_RoundTripsAndScopesCurrentFlagsToAgentAndProject()
+    {
+        var general = new ChatThread { AgentId = "agent-1" };
+        var first = new ChatThread { AgentId = "agent-1", ProjectId = "first" };
+        var second = new ChatThread { AgentId = "agent-1", ProjectId = "second" };
+        var replacement = new ChatThread { AgentId = "agent-1", ProjectId = "first" };
+        foreach (var thread in new[] { general, first, second, replacement })
+        {
+            await _repository.CreateThreadAsync("user-1", thread);
+            Assert.Equal(thread.ProjectId, (await _repository.GetThreadAsync("user-1", thread.Id))!.ProjectId);
+        }
+        var threads = await _repository.GetThreadsAsync("user-1");
+        Assert.False(threads.Single(thread => thread.Id == first.Id).IsCurrent);
+        Assert.All(threads.Where(thread => thread.Id != first.Id), thread => Assert.True(thread.IsCurrent));
+        await _repository.ClearCurrentAsync("user-1", "agent-1", "second");
+        threads = await _repository.GetThreadsAsync("user-1");
+        Assert.False(threads.Single(thread => thread.Id == second.Id).IsCurrent);
+        Assert.True(threads.Single(thread => thread.Id == general.Id).IsCurrent);
+        Assert.True(threads.Single(thread => thread.Id == replacement.Id).IsCurrent);
+    }
+
     private readonly string _usersRoot =
         Path.Combine(Path.GetTempPath(), $"oscova-chat-repository-{Guid.NewGuid():N}");
     private readonly ChatThreadRepository _repository;
@@ -20,7 +176,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             new FileSessionIndexCoordinator(),
             new SecretRedactionService(),
             new PassThroughContentProtector(),
-            new InMemoryAgentDefinitionRepository(),
+
             NullLogger<ChatThreadRepository>.Instance);
     }
 
@@ -32,11 +188,13 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var thread = new ChatThread
         {
-            Id = "question-replacement", IsIncognito = incognito, Title = "Questions",
+            Id = "question-replacement",
+            IsIncognito = incognito,
+            Title = "Questions",
             SessionElement = JsonSerializer.SerializeToElement(new { receipt = "original" }),
             DisplayMessages = [new() { MessageId = "first", Text = "Original" }, new() { MessageId = "second", Text = "Unchanged" }]
         };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         var replacement = new ChatDisplayMessage { MessageId = "first", Text = "Replaced" };
         Assert.False(await _repository.TryReplaceDisplayMessageAsync("other-user", thread.Id, replacement));
         Assert.True(await _repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
@@ -55,25 +213,25 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var protector = new PassThroughContentProtector();
         var agents = new InMemoryAgentDefinitionRepository();
-        await agents.SaveAgentAsync("user-1", new AgentDefinition { Id = "private", IsConfidential = true });
+        await agents.SaveAgentAsync("user-1", new AgentDefinition { Id = "private" });
         var repository = CreateRepository(protector, agents);
         var thread = new ChatThread
         {
-            AgentId = "private", DisplayMessages = [new() { MessageId = "card", Text = "Question" }],
+            AgentId = "private",
+            DisplayMessages = [new() { MessageId = "card", Text = "Question" }],
             SessionElement = JsonSerializer.SerializeToElement(new { receipt = "original" })
         };
-        await repository.SaveThreadAsync("user-1", thread);
+        await repository.CreateThreadAsync("user-1", thread);
         var replacement = new ChatDisplayMessage { MessageId = "card", Text = "Closed question" };
         protector.Available = false;
         Assert.False(await repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
         protector.Available = true;
         Assert.True(await repository.TryReplaceDisplayMessageAsync("user-1", thread.Id, replacement));
         var saved = (await repository.GetThreadAsync("user-1", thread.Id))!;
-        Assert.True(saved.IsEncrypted);
         Assert.Equal("Closed question", Assert.Single(saved.DisplayMessages).Text);
         Assert.Equal("original", saved.SessionElement!.Value.GetProperty("receipt").GetString());
         var lines = await File.ReadAllLinesAsync(Path.Combine(_usersRoot, "user-1", "chat", thread.Id + ".jsonl"));
-        Assert.All(lines, line => Assert.Contains("\"IsEncrypted\":true", line, StringComparison.Ordinal));
+        Assert.All(lines, line => Assert.DoesNotContain("Closed question", line, StringComparison.Ordinal));
     }
 
     [Fact]
@@ -85,7 +243,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
                 new FileSessionIndexCoordinator(),
                 new SecretRedactionService(),
                 new PassThroughContentProtector(),
-                new InMemoryAgentDefinitionRepository(),
+
                 NullLogger<ChatThreadRepository>.Instance));
     }
 
@@ -100,14 +258,14 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             new FileSessionIndexCoordinator(),
             new SecretRedactionService(),
             new PassThroughContentProtector(),
-            new InMemoryAgentDefinitionRepository(),
+
             NullLogger<ChatThreadRepository>.Instance);
         var firstThread = new ChatThread { Id = "first-thread" };
         var secondThread = new ChatThread { Id = "second-thread" };
 
-        await repository.SaveThreadAsync("user-1", firstThread);
+        await repository.CreateThreadAsync("user-1", firstThread);
         currentRoot = secondRoot;
-        await repository.SaveThreadAsync("user-1", secondThread);
+        await repository.CreateThreadAsync("user-1", secondThread);
 
         Assert.True(File.Exists(Path.Combine(firstRoot, "user-1", "chat", "first-thread.jsonl")));
         Assert.False(File.Exists(Path.Combine(firstRoot, "user-1", "chat", "second-thread.jsonl")));
@@ -126,8 +284,8 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     [Fact]
     public async Task GetThreadsAsync_OnlyReturnsCurrentUserThreads()
     {
-        await _repository.SaveThreadAsync("user-1", new ChatThread { Title = "Thread A" });
-        await _repository.SaveThreadAsync("user-2", new ChatThread { Title = "Thread B" });
+        await _repository.CreateThreadAsync("user-1", new ChatThread { Title = "Thread A" });
+        await _repository.CreateThreadAsync("user-2", new ChatThread { Title = "Thread B" });
 
         var result = await _repository.GetThreadsAsync("user-1");
 
@@ -139,10 +297,10 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task GetThreadsAsync_ReturnsThreadsOrderedByUpdatedAtDescending()
     {
         var older = new ChatThread { Title = "Older" };
-        await _repository.SaveThreadAsync("user-1", older);
+        await _repository.CreateThreadAsync("user-1", older);
         await Task.Delay(10);
         var newer = new ChatThread { Title = "Newer" };
-        await _repository.SaveThreadAsync("user-1", newer);
+        await _repository.CreateThreadAsync("user-1", newer);
 
         var result = await _repository.GetThreadsAsync("user-1");
 
@@ -164,7 +322,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             [
                 new ChatDisplayMessage
                 {
-                    Channel = ChatChannels.Discord,
+                    Channel = "discord",
                     From = MessageOwner.User,
                     Text = "Hello stored-secret-value.",
                     IsInteractionResponse = true
@@ -181,7 +339,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             ]
         };
 
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
 
         var result = await _repository.GetThreadAsync("user-1", thread.Id);
 
@@ -193,7 +351,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         Assert.Equal(42, result.SessionElement.Value.GetProperty("count").GetInt32());
         Assert.Equal("Use [REDACTED] carefully.", result.SystemInstruction);
         Assert.Equal(2, result.DisplayMessages.Count);
-        Assert.Equal(ChatChannels.Discord, result.DisplayMessages[0].Channel);
+        Assert.Equal("discord", result.DisplayMessages[0].Channel);
         Assert.Equal("Hello [REDACTED].", result.DisplayMessages[0].Text);
         Assert.True(result.DisplayMessages[0].IsInteractionResponse);
         Assert.Equal("Segment [REDACTED].", result.DisplayMessages[1].Segments.Single().Text);
@@ -206,8 +364,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var agents = new InMemoryAgentDefinitionRepository();
         await agents.SaveAgentAsync("user-1", new AgentDefinition
         {
-            Id = "private-agent",
-            IsConfidential = true
+            Id = "private-agent"
         });
         var repository = CreateRepository(protector, agents);
         var thread = new ChatThread
@@ -222,7 +379,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             ]
         };
 
-        await repository.SaveThreadAsync("user-1", thread);
+        await repository.CreateThreadAsync("user-1", thread);
 
         var raw = string.Join(
             Environment.NewLine,
@@ -237,7 +394,6 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var loaded = await repository.GetThreadAsync("user-1", thread.Id);
 
         Assert.NotNull(loaded);
-        Assert.True(loaded!.IsEncrypted);
         Assert.Equal("confidential-title", loaded.Title);
         Assert.Equal("confidential-instruction", loaded.SystemInstruction);
         Assert.Equal("confidential-message", Assert.Single(loaded.DisplayMessages).Text);
@@ -258,23 +414,20 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             AgentId = agent.Id,
             DisplayMessages = [new ChatDisplayMessage { From = MessageOwner.User, Text = "first-message" }]
         };
-        await repository.SaveThreadAsync("user-1", thread);
-        agent.IsConfidential = true;
+        await repository.CreateThreadAsync("user-1", thread);
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.Bot, Text = "second-message" });
 
         await repository.SaveThreadAsync("user-1", thread);
 
         var encryptedLines = await File.ReadAllLinesAsync(GetTranscriptPath("user-1", thread.Id));
         Assert.Equal(3, encryptedLines.Length);
-        Assert.All(encryptedLines, line => Assert.Contains("\"IsEncrypted\":true", line, StringComparison.Ordinal));
+        Assert.All(encryptedLines, line => Assert.DoesNotContain("first-message", line, StringComparison.Ordinal));
         Assert.DoesNotContain("first-message", string.Join(Environment.NewLine, encryptedLines), StringComparison.Ordinal);
         Assert.DoesNotContain("second-message", string.Join(Environment.NewLine, encryptedLines), StringComparison.Ordinal);
-
-        agent.IsConfidential = false;
         await repository.SaveThreadAsync("user-1", thread);
         var plainTranscript = await File.ReadAllTextAsync(GetTranscriptPath("user-1", thread.Id));
-        Assert.Contains("first-message", plainTranscript, StringComparison.Ordinal);
-        Assert.Contains("second-message", plainTranscript, StringComparison.Ordinal);
+        Assert.DoesNotContain("first-message", plainTranscript, StringComparison.Ordinal);
+        Assert.DoesNotContain("second-message", plainTranscript, StringComparison.Ordinal);
         Assert.Equal(2, (await repository.GetThreadAsync("user-1", thread.Id))!.DisplayMessages.Count);
     }
 
@@ -285,17 +438,17 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var agents = new InMemoryAgentDefinitionRepository();
         await agents.SaveAgentAsync("user-1", new AgentDefinition
         {
-            Id = "private-agent",
-            IsConfidential = true
+            Id = "private-agent"
         });
         var repository = CreateRepository(protector, agents);
-        await repository.SaveThreadAsync("user-1", new ChatThread
+        await repository.CreateThreadAsync("user-1", new ChatThread
         {
             AgentId = "private-agent",
             Title = "hidden-title"
         });
 
-        var threads = await repository.GetThreadsAsync("user-1", includeEncrypted: false);
+        protector.Available = false;
+        var threads = await repository.GetThreadsAsync("user-1");
 
         Assert.Empty(threads);
         Assert.Empty(protector.UnprotectCalls);
@@ -308,8 +461,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var agents = new InMemoryAgentDefinitionRepository();
         await agents.SaveAgentAsync("user-1", new AgentDefinition
         {
-            Id = "private-agent",
-            IsConfidential = true
+            Id = "private-agent"
         });
         var repository = CreateRepository(protector, agents);
         var thread = new ChatThread
@@ -318,7 +470,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             Title = "hidden-title",
             DisplayMessages = [new ChatDisplayMessage { From = MessageOwner.User, Text = "hidden-message" }]
         };
-        await repository.SaveThreadAsync("user-1", thread);
+        await repository.CreateThreadAsync("user-1", thread);
         protector.Available = false;
 
         Assert.Empty(await repository.GetThreadsAsync("user-1"));
@@ -342,8 +494,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var agents = new InMemoryAgentDefinitionRepository();
         await agents.SaveAgentAsync("user-1", new AgentDefinition
         {
-            Id = "private-agent",
-            IsConfidential = true
+            Id = "private-agent"
         });
         var repository = CreateRepository(protector, agents);
         var thread = new ChatThread
@@ -351,20 +502,24 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             AgentId = "private-agent",
             DisplayMessages = [new ChatDisplayMessage { From = MessageOwner.User, Text = "secret" }]
         };
-        await repository.SaveThreadAsync("user-1", thread);
+        await repository.CreateThreadAsync("user-1", thread);
         var path = GetTranscriptPath("user-1", thread.Id);
         var lines = await File.ReadAllLinesAsync(path);
-        var message = JsonNode.Parse(lines[1])!.AsObject();
-        message.Remove("Message");
-        message["IsEncrypted"] = true;
-        message["ProtectedPayload"] = corruption switch
+        lines[1] = corruption switch
         {
-            "missing-payload" => null,
+            "missing-payload" => "{}",
             "unopenable-payload" => "invalid",
             _ => protector.Protect("user-1", $"chat\0{thread.Id}\0transcript", "not-json")
         };
-        lines[1] = message.ToJsonString();
         await File.WriteAllLinesAsync(path, lines);
+
+        if (corruption == "invalid-json")
+        {
+            var loaded = await repository.GetThreadAsync("user-1", thread.Id);
+            Assert.NotNull(loaded);
+            Assert.Empty(loaded!.DisplayMessages);
+            return;
+        }
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => repository.GetThreadAsync("user-1", thread.Id));
@@ -392,7 +547,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
                 new ChatDisplayMessage { From = MessageOwner.Bot, Text = "two" }
             ]
         };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         var canonicalTranscriptPath = GetTranscriptPath("user-1", thread.Id);
         var canonicalSessionPath = GetSessionPath("user-1", thread.Id);
 
@@ -410,7 +565,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var reloadedMessages = reloaded!.DisplayMessages.Select(message => message.Text).ToArray();
         var reloadedSessionVersion = reloaded.SessionElement?.GetProperty("version").GetInt32();
         var sessionDirectory = Path.GetDirectoryName(canonicalSessionPath)!;
-        var sessionFileCount = Directory.GetFiles(sessionDirectory, "*.session.json").Length;
+        var sessionFileCount = Directory.GetFiles(sessionDirectory, "*.session.json.enc").Length;
 
         await _repository.DeleteThreadAsync("user-1", "THREAD-AB12");
 
@@ -456,7 +611,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var deleteSessionOnlyPath = GetSessionPath(victimUserId, "delete-session-only");
         await File.WriteAllTextAsync(deleteSessionOnlyPath, "{\"sentinel\":\"delete-session-only\"}");
 
-        var saveThreadException = await Record.ExceptionAsync(() => _repository.SaveThreadAsync(
+        var saveThreadException = await Record.ExceptionAsync(() => _repository.CreateThreadAsync(
             attackerUserId,
             new ChatThread { Id = saveThreadId }));
         var saveSessionException = await Record.ExceptionAsync(() => _repository.SaveSessionElementAsync(
@@ -516,7 +671,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
 
         try
         {
-            await Assert.ThrowsAsync<ArgumentException>(() => _repository.SaveThreadAsync(
+            await Assert.ThrowsAsync<ArgumentException>(() => _repository.CreateThreadAsync(
                 userId,
                 new ChatThread { Id = "escaped-thread" }));
 
@@ -540,7 +695,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             SessionElement = JsonSerializer.SerializeToElement(new { value = "session" })
         };
 
-        var saveException = await Record.ExceptionAsync(() => _repository.SaveThreadAsync("user-1", thread));
+        var saveException = await Record.ExceptionAsync(() => _repository.CreateThreadAsync("user-1", thread));
         var reloadException = await Record.ExceptionAsync(() => _repository.GetThreadAsync("user-1", string.Empty));
 
         Assert.IsType<ArgumentException>(saveException);
@@ -582,7 +737,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             ]
         };
 
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
 
         var transcript = await File.ReadAllTextAsync(GetTranscriptPath("user-1", thread.Id));
         var reloaded = await _repository.GetThreadAsync("user-1", thread.Id);
@@ -603,7 +758,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var thread = new ChatThread { AgentId = "agent-1" };
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "one" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
 
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.Bot, Text = "two" });
         await _repository.SaveThreadAsync("user-1", thread);
@@ -624,7 +779,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
                 new ChatDisplayMessage { From = MessageOwner.Bot, Text = "keep me" }
             ]
         };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         thread.DisplayMessages.RemoveAt(0);
         thread.DisplayMessages[0].AgentId = null;
 
@@ -639,7 +794,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var thread = new ChatThread { AgentId = "agent-1" };
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "one" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
 
         thread.SystemInstruction = "Use stored-secret-value carefully.";
         await _repository.SaveThreadAsync("user-1", thread);
@@ -657,7 +812,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var thread = new ChatThread { AgentId = "agent-1" };
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "one" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         var transcriptPath = GetTranscriptPath("user-1", thread.Id);
         var before = File.GetLastWriteTimeUtc(transcriptPath);
         await Task.Delay(10);
@@ -675,8 +830,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task SaveThreadAsync_WithDeletedEncryptedThread_DoesNotRecreateIt()
     {
         var thread = new ChatThread { AgentId = "agent-1" };
-        await _repository.SaveThreadAsync("user-1", thread);
-        thread.IsEncrypted = true;
+        await _repository.CreateThreadAsync("user-1", thread);
         await _repository.DeleteThreadAsync("user-1", thread.Id);
 
         await _repository.SaveThreadAsync("user-1", thread);
@@ -689,7 +843,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task SaveSessionElementAsync_AfterThreadDeletion_DoesNotRecreateIt()
     {
         var thread = new ChatThread { AgentId = "agent-1" };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         await _repository.DeleteThreadAsync("user-1", thread.Id);
         var session = JsonDocument.Parse("{\"stale\":true}").RootElement.Clone();
 
@@ -705,7 +859,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var session = JsonDocument.Parse("{\"key\":\"value\"}").RootElement.Clone();
         var thread = new ChatThread { Title = "Keep Thread", AgentId = "agent-1", SessionElement = session };
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "keep transcript" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
 
         await _repository.DeleteSessionElementAsync("user-1", thread.Id);
 
@@ -725,7 +879,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             AgentId = "agent-1",
             SessionElement = JsonSerializer.SerializeToElement(new { value = "stale" })
         };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         var sessionPath = GetSessionPath("user-1", thread.Id);
         Assert.True(File.Exists(sessionPath));
 
@@ -741,7 +895,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var thread = new ChatThread { AgentId = "agent-1" };
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "one" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         var transcriptPath = GetTranscriptPath("user-1", thread.Id);
         var before = File.GetLastWriteTimeUtc(transcriptPath);
         await Task.Delay(10);
@@ -755,13 +909,36 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         Assert.Equal(3, result.LastSummarizedMessageCount);
     }
 
+    /// <summary>A stale transcript save cannot erase committed fragments or move independent task progress backwards.</summary>
+    [Fact]
+    public async Task SaveThreadAsync_AfterFragmentProgress_PreservesIndependentOffsets()
+    {
+        var thread = new ChatThread { AgentId = "agent-1" };
+        thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "one long message" });
+        await _repository.CreateThreadAsync("user-1", thread);
+        await _repository.UpdateWatermarksAsync("user-1", thread.Id, null, 0,
+            lastReflectedMessageCount: 0, lastSummarizedMessageOffset: 4, lastReflectedMessageOffset: 8);
+        thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.Bot, Text = "new reply" });
+        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.UpdateWatermarksAsync("user-1", thread.Id, null, 0, lastSummarizedMessageOffset: 2);
+        var saved = (await _repository.GetThreadAsync("user-1", thread.Id))!;
+        Assert.Equal(4, saved.LastSummarizedMessageOffset);
+        Assert.Equal(8, saved.LastReflectedMessageOffset);
+        await _repository.UpdateWatermarksAsync("user-1", thread.Id, null, 1);
+        saved = (await _repository.GetThreadAsync("user-1", thread.Id))!;
+        Assert.Equal(1, saved.LastSummarizedMessageCount);
+        Assert.Equal(0, saved.LastSummarizedMessageOffset);
+        Assert.Equal(0, saved.LastReflectedMessageCount);
+        Assert.Equal(8, saved.LastReflectedMessageOffset);
+    }
+
     [Fact]
     public async Task SaveThreadAsync_AfterConcurrentWatermarkUpdate_PreservesMonotonicProgress()
     {
         var thread = new ChatThread { AgentId = "agent-1" };
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "one" });
         thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.Bot, Text = "two" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         await _repository.UpdateWatermarksAsync(
             "user-1",
             thread.Id,
@@ -791,7 +968,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
                 new ChatDisplayMessage { From = MessageOwner.Bot, Text = "two" }
             ]
         };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         await _repository.UpdateWatermarksAsync(
             "user-1",
             thread.Id,
@@ -819,7 +996,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
                 new ChatDisplayMessage { From = MessageOwner.Bot, Text = "two" }
             ]
         };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         await _repository.UpdateWatermarksAsync(
             "user-1",
             thread.Id,
@@ -845,10 +1022,10 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task SaveThreadAsync_WithSetCurrentFalse_DoesNotClearExistingCurrentThread()
     {
         var currentThread = new ChatThread { Title = "Current", AgentId = "agent-1" };
-        await _repository.SaveThreadAsync("user-1", currentThread);
+        await _repository.CreateThreadAsync("user-1", currentThread);
 
         var notificationThread = new ChatThread { Title = "Notification", AgentId = "agent-1", IsUnread = true };
-        await _repository.SaveThreadAsync("user-1", notificationThread, setCurrent: false);
+        await _repository.CreateThreadAsync("user-1", notificationThread, setCurrent: false);
 
         var threads = await _repository.GetThreadsAsync("user-1");
 
@@ -861,8 +1038,8 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var currentThread = new ChatThread { Title = "Current", AgentId = "agent-1" };
         var notificationThread = new ChatThread { Title = "Notification", AgentId = "agent-1", IsUnread = true };
-        await _repository.SaveThreadAsync("user-1", currentThread);
-        await _repository.SaveThreadAsync("user-1", notificationThread, setCurrent: false);
+        await _repository.CreateThreadAsync("user-1", currentThread);
+        await _repository.CreateThreadAsync("user-1", notificationThread, setCurrent: false);
 
         notificationThread.IsUnread = false;
         await _repository.SaveThreadAsync("user-1", notificationThread);
@@ -879,7 +1056,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
         var session = JsonDocument.Parse("{\"key\":\"value\"}").RootElement.Clone();
         var thread = new ChatThread { Title = "To Delete", SessionElement = session };
         thread.DisplayMessages.Add(new ChatDisplayMessage { Text = "hello" });
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
 
         await _repository.DeleteThreadAsync("user-1", thread.Id);
 
@@ -893,7 +1070,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     {
         var session = JsonSerializer.SerializeToElement(new { value = "session" });
         var thread = new ChatThread { Title = "Keep On Failure", SessionElement = session };
-        await _repository.SaveThreadAsync("user-1", thread);
+        await _repository.CreateThreadAsync("user-1", thread);
         var transcriptPath = GetTranscriptPath("user-1", thread.Id);
         File.Delete(transcriptPath);
         Directory.CreateDirectory(transcriptPath);
@@ -909,8 +1086,8 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     [Fact]
     public async Task DeleteAllThreadsAsync_DoesNotAffectOtherUsers()
     {
-        await _repository.SaveThreadAsync("user-1", new ChatThread { Title = "User 1" });
-        await _repository.SaveThreadAsync("user-2", new ChatThread { Title = "User 2" });
+        await _repository.CreateThreadAsync("user-1", new ChatThread { Title = "User 1" });
+        await _repository.CreateThreadAsync("user-2", new ChatThread { Title = "User 2" });
 
         var deleted = await _repository.DeleteAllThreadsAsync("user-1");
 
@@ -923,8 +1100,8 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task GetThreadsAsync_SkipsMalformedIndexRows()
     {
         var thread = new ChatThread { Title = "Valid" };
-        await _repository.SaveThreadAsync("user-1", thread);
-        await File.AppendAllTextAsync(GetIndexPath("user-1"), "not json" + Environment.NewLine);
+        await _repository.CreateThreadAsync("user-1", thread);
+        await File.AppendAllTextAsync(GetIndexPath("user-1"), new PassThroughContentProtector().Protect("user-1", "chat\0index", "not json") + Environment.NewLine);
 
         var result = await _repository.GetThreadsAsync("user-1");
 
@@ -936,12 +1113,12 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task SaveThreadAsync_WithIncognitoThread_WritesNothingToDiskAndStaysOutOfTheThreadList()
     {
         var persisted = new ChatThread { Title = "Persisted" };
-        await _repository.SaveThreadAsync("user-1", persisted);
+        await _repository.CreateThreadAsync("user-1", persisted);
         var indexBefore = await File.ReadAllTextAsync(GetIndexPath("user-1"));
 
         var incognito = new ChatThread { Title = "Incognito", IsIncognito = true };
         incognito.DisplayMessages.Add(new ChatDisplayMessage { Text = "hello" });
-        await _repository.SaveThreadAsync("user-1", incognito);
+        await _repository.CreateThreadAsync("user-1", incognito);
 
         Assert.Equal(indexBefore, await File.ReadAllTextAsync(GetIndexPath("user-1")));
         Assert.False(File.Exists(GetTranscriptPath("user-1", incognito.Id)));
@@ -959,10 +1136,10 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task SaveThreadAsync_WithIncognitoThread_DoesNotBecomeCurrent()
     {
         var persisted = new ChatThread { Title = "Persisted", AgentId = "agent-1" };
-        await _repository.SaveThreadAsync("user-1", persisted);
+        await _repository.CreateThreadAsync("user-1", persisted);
 
         var incognito = new ChatThread { Title = "Incognito", AgentId = "agent-1", IsIncognito = true, IsCurrent = true };
-        await _repository.SaveThreadAsync("user-1", incognito, setCurrent: true);
+        await _repository.CreateThreadAsync("user-1", incognito, setCurrent: true);
 
         Assert.False(incognito.IsCurrent);
         Assert.True(Assert.Single(await _repository.GetThreadsAsync("user-1")).IsCurrent);
@@ -972,7 +1149,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     public async Task DeleteThreadAsync_WithIncognitoThread_RemovesItFromMemory()
     {
         var incognito = new ChatThread { Title = "Incognito", IsIncognito = true };
-        await _repository.SaveThreadAsync("user-1", incognito);
+        await _repository.CreateThreadAsync("user-1", incognito);
 
         await _repository.DeleteThreadAsync("user-1", incognito.Id);
 
@@ -983,9 +1160,9 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     [Fact]
     public async Task DeleteAllThreadsAsync_WithIncognitoThreads_ClearsOnlyTheRequestedUser()
     {
-        await _repository.SaveThreadAsync("user-1", new ChatThread { Title = "Persisted" });
-        await _repository.SaveThreadAsync("user-1", new ChatThread { Title = "Incognito", IsIncognito = true });
-        await _repository.SaveThreadAsync("user-2", new ChatThread { Title = "Other", IsIncognito = true });
+        await _repository.CreateThreadAsync("user-1", new ChatThread { Title = "Persisted" });
+        await _repository.CreateThreadAsync("user-1", new ChatThread { Title = "Incognito", IsIncognito = true });
+        await _repository.CreateThreadAsync("user-2", new ChatThread { Title = "Other", IsIncognito = true });
 
         var deleted = await _repository.DeleteAllThreadsAsync("user-1");
 
@@ -1014,7 +1191,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
 
     private string GetSessionPath(string userId, string threadId)
     {
-        return Path.Combine(_usersRoot, userId, "chat", threadId + ".session.json");
+        return Path.Combine(_usersRoot, userId, "chat", threadId + ".session.json.enc");
     }
 
     private ChatThreadRepository CreateRepository(
@@ -1024,7 +1201,7 @@ public sealed class ChatThreadRepositoryTests : IDisposable
             new FileSessionIndexCoordinator(),
             new SecretRedactionService(),
             protector,
-            agents,
+
             NullLogger<ChatThreadRepository>.Instance);
 
     private sealed class SecretRedactionService : IRedactionService

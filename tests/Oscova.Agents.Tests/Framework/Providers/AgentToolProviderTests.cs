@@ -4,6 +4,7 @@ using Oscova.Agents.Collections;
 using Oscova.Agents.Policies;
 using Oscova.Agents.Providers;
 using Oscova.Agents.Tests.Framework.TestTools;
+using Oscova.Agents.Toolsets;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -11,13 +12,13 @@ namespace Oscova.Agents.Tests.Framework.Providers;
 
 public sealed class AgentToolProviderTests
 {
-    private readonly CrewToolCollection _collection;
+    private readonly AgentToolCollection _collection;
     private readonly string _addToolName;
     private readonly string _riskyToolName;
 
     public AgentToolProviderTests()
     {
-        _collection = new CrewToolCollection();
+        _collection = new AgentToolCollection();
         _collection.Add(new SimpleTestTool());
         var qualifier = ToolNaming.GetToolsetOwner(typeof(SimpleTestTool));
         _addToolName = ToolNaming.BuildQualifiedName(qualifier, "Add");
@@ -137,6 +138,36 @@ public sealed class AgentToolProviderTests
         Assert.Empty(context.Tools!);
     }
 
+    [Theory]
+    [InlineData(ToolApprovalMode.Default)]
+    [InlineData(ToolApprovalMode.RequireApproval)]
+    [InlineData(ToolApprovalMode.Deny)]
+    public async Task ProvideAIContextAsync_FileWritesAutoApproveUnlessExplicitlyRestricted(ToolApprovalMode mode)
+    {
+        var collection = new AgentToolCollection { new CodingToolset() };
+        var names = new[] { nameof(CodingToolset.WriteFile), nameof(CodingToolset.EditFile) }
+            .Select(name => ToolNaming.BuildToolsetQualifiedName<CodingToolset>(name)).ToArray();
+        var tools = collection.Where(tool => names.Contains(tool.Name, StringComparer.Ordinal)).ToArray();
+        Assert.Equal(2, tools.Length);
+        var provider = new AgentToolProvider(
+            tools.Select(tool => tool.Name).ToArray(), collection,
+            tools.Select(tool => new AgentToolPolicy { ToolName = tool.Name, ApprovalMode = mode }));
+        var context = await InvokeProviderAsync(provider);
+
+        if (mode == ToolApprovalMode.Deny)
+        {
+            Assert.Empty(context.Tools!);
+            return;
+        }
+        var exposed = context.Tools!.ToArray();
+        Assert.Equal(2, exposed.Length);
+        foreach (var tool in exposed)
+        {
+            if (mode == ToolApprovalMode.RequireApproval) { Assert.IsType<ApprovalRequiredAIFunction>(tool); }
+            else { Assert.IsNotType<ApprovalRequiredAIFunction>(tool); }
+        }
+    }
+
     [Fact]
     public async Task ProvideAIContextAsync_UnknownToolName_IsSkipped()
     {
@@ -150,7 +181,7 @@ public sealed class AgentToolProviderTests
     [Fact]
     public async Task ProvideAIContextAsync_WhenAirGapped_OmitsEgressTools()
     {
-        var collection = new CrewToolCollection
+        var collection = new AgentToolCollection
         {
             new ScopedToolset()
         };
@@ -173,7 +204,7 @@ public sealed class AgentToolProviderTests
     [Fact]
     public async Task ProvideAIContextAsync_WhenAirGapped_OmitsExternalToolMarkedEgress()
     {
-        var collection = new CrewToolCollection();
+        var collection = new AgentToolCollection();
         var method = typeof(AgentToolProviderTests).GetMethod(nameof(ExternalToolStub))!;
         var function = AIFunctionFactory.Create(
             method,
@@ -189,18 +220,12 @@ public sealed class AgentToolProviderTests
     }
 
     [Fact]
-    public async Task ProvideAIContextAsync_AppliesConfidentialityMode()
+    public async Task ProvideAIContextAsync_ExplicitSelectionExposesEncryptedReader()
     {
-        var collection = new CrewToolCollection { new ConfidentialOnlyToolset() };
+        var collection = new AgentToolCollection { new ConfidentialOnlyToolset() };
         var toolName = Assert.Single(collection).Name;
-        var ordinaryContext = await InvokeProviderAsync(new AgentToolProvider([toolName], collection));
-        var confidentialContext = await InvokeProviderAsync(new AgentToolProvider(
-            [toolName],
-            collection,
-            isConfidential: true));
-
-        Assert.Empty(ordinaryContext.Tools!);
-        Assert.Single(confidentialContext.Tools!);
+        var context = await InvokeProviderAsync(new AgentToolProvider([toolName], collection));
+        Assert.Single(context.Tools!);
     }
 
     public static string ExternalToolStub()
@@ -223,6 +248,7 @@ public sealed class AgentToolProviderTests
 
     private sealed class ScopedToolset
     {
+        [AgentTool]
         [DisplayName("local-tool")]
         [ToolNetworkScope(NetworkScope.None)]
         public static string LocalTool()
@@ -230,6 +256,7 @@ public sealed class AgentToolProviderTests
             return "ok";
         }
 
+        [AgentTool]
         [DisplayName("shell-tool")]
         [ToolNetworkScope(NetworkScope.Incidental)]
         public static string ShellTool()
@@ -237,6 +264,7 @@ public sealed class AgentToolProviderTests
             return "ok";
         }
 
+        [AgentTool]
         [DisplayName("internet-tool")]
         [ToolNetworkScope(NetworkScope.Egress)]
         public static string InternetTool()
@@ -245,9 +273,9 @@ public sealed class AgentToolProviderTests
         }
     }
 
-    [ConfidentialAgentOnly]
     private sealed class ConfidentialOnlyToolset
     {
+        [AgentTool]
         public static string ReadSecret() => "secret";
     }
 }

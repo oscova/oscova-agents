@@ -8,6 +8,11 @@ namespace Oscova.Agents.Persistence;
 /// </summary>
 public sealed class AgentTaskDefinitionFile
 {
+    /// <summary>Identifies the task definition shape understood by this release.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <summary>Gets or sets the persisted task shape identifier.</summary>
+    public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     /// <summary>
     /// Gets or sets the persisted task identifier.
     /// </summary>
@@ -17,6 +22,17 @@ public sealed class AgentTaskDefinitionFile
     /// Gets or sets the persisted task name.
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the opaque source assigned during provisioning.</summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? InstructionSource { get; set; }
+
+    /// <summary>Gets or sets the saved instruction composition mode.</summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? InstructionMode { get; set; }
+
+    /// <summary>Gets or sets whether execution requires a handler registered for the task directory.</summary>
+    public bool RequiresHandler { get; set; }
 
     /// <summary>
     /// Gets or sets the agent identifier that executes the task.
@@ -43,14 +59,13 @@ public sealed class AgentTaskDefinitionFile
     /// </summary>
     public bool IsEnabled { get; set; } = true;
 
-    /// <summary>
-    /// Gets or sets the serialized notification mode.
-    /// </summary>
-    public string NotificationMode { get; set; } = string.Empty;
+    /// <summary>Gets or sets whether scheduled starts wait for the owner's foreground provider requests.</summary>
+    public bool WaitForOwnerProviderIdle { get; set; } = true;
 
-    /// <summary>
-    /// Gets or sets the optional notification channel identifier.
-    /// </summary>
+    /// <summary>Gets or sets whether a successful task run emits an automatic completion notice.</summary>
+    public bool NotifyOnCompletion { get; set; }
+
+    /// <summary>Gets or sets the channel used by agent-initiated notifications and handoffs.</summary>
     public string? NotificationChannel { get; set; }
 
     /// <summary>

@@ -61,7 +61,8 @@ public class AgentAsToolProvider(IEnumerable<string> agentToolIds, AIAgentCollec
         return conversations;
     }
 
-    private AIFunction CreateAgentFunction(ChatClientAgent agent, AgentSession? parentSession)
+    /// <summary>Creates the callable wrapper while letting a harness add governed conversation destinations.</summary>
+    protected virtual AIFunction CreateAgentFunction(ChatClientAgent agent, AgentSession? parentSession)
     {
         [Description("Invoke an agent to retrieve some information.")]
         async Task<string> InvokeAgentAsync(
@@ -75,8 +76,9 @@ public class AgentAsToolProvider(IEnumerable<string> agentToolIds, AIAgentCollec
 
             if (parentSession is null)
             {
-                var stateless = await agent
-                    .RunAsync(query, options: runOptions, cancellationToken: cancellationToken)
+                var session = await agent.CreateSessionAsync(cancellationToken).ConfigureAwait(false);
+                var stateless = await RunAgentAsync(agent,
+                    [new ChatMessage(ChatRole.User, query)], session, runOptions, cancellationToken)
                     .ConfigureAwait(false);
                 return stateless.Text;
             }
@@ -88,8 +90,8 @@ public class AgentAsToolProvider(IEnumerable<string> agentToolIds, AIAgentCollec
                 ? await agent.CreateSessionAsync(cancellationToken).ConfigureAwait(false)
                 : await agent.DeserializeSessionAsync(entry.Session, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            var response = await agent
-                .RunAsync(query, session: childSession, options: runOptions, cancellationToken: cancellationToken)
+            var response = await RunAgentAsync(agent,
+                [new ChatMessage(ChatRole.User, query)], childSession, runOptions, cancellationToken)
                 .ConfigureAwait(false);
 
             // Storing after the run keeps a failed or cancelled call from replacing the last good snapshot.
@@ -107,6 +109,14 @@ public class AgentAsToolProvider(IEnumerable<string> agentToolIds, AIAgentCollec
             Description = agent.Description
         });
     }
+
+    /// <summary>Executes a child while preserving this provider's named session ownership.</summary>
+    protected virtual Task<AgentResponse> RunAgentAsync(
+        ChatClientAgent agent,
+        IEnumerable<ChatMessage> messages,
+        AgentSession session,
+        AgentRunOptions? options,
+        CancellationToken cancellationToken) => agent.RunAsync(messages, session, options, cancellationToken);
 
     /// <summary>Stores one serialized child session per called agent and conversation name.</summary>
     private sealed class State

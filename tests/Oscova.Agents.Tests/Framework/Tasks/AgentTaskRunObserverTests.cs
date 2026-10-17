@@ -8,7 +8,7 @@ namespace Oscova.Agents.Tests.Framework.Tasks;
 public sealed class AgentTaskRunObserverTests
 {
     [Fact]
-    public void OnRequest_CapturesCurrentUserMessageAndFirstSystemInstruction()
+    public async Task OnRequest_CapturesCurrentUserMessageAndFirstSystemInstruction()
     {
         var changeCount = 0;
         var run = new AgentTaskRun
@@ -21,14 +21,14 @@ public sealed class AgentTaskRunObserverTests
             .WithAgentRequestMessageSource(AgentRequestMessageSourceType.ChatHistory);
         var current = new ChatMessage(ChatRole.User, "Current input");
 
-        observer.OnRequest([history, current], new ChatOptions { Instructions = "First instruction" });
-        observer.OnRequest(
+        await observer.OnRequestAsync([history, current], new ChatOptions { Instructions = "First instruction" });
+        await observer.OnRequestAsync(
             [new ChatMessage(ChatRole.User, "Later input")],
             new ChatOptions { Instructions = "Later instruction" });
 
         var secondRun = new AgentTaskRun { LiveMessages = [] };
         var secondObserver = new AgentTaskRunObserver(secondRun);
-        secondObserver.OnRequest([current], options: null);
+        await secondObserver.OnRequestAsync([current], options: null);
 
         var captured = Assert.Single(run.LiveMessages!);
         Assert.Same(current, captured);
@@ -38,7 +38,7 @@ public sealed class AgentTaskRunObserverTests
     }
 
     [Fact]
-    public void OnRequest_AppendsOnlyEligibleResultMessages()
+    public async Task OnRequest_AppendsOnlyEligibleResultMessages()
     {
         var changeCount = 0;
         var run = new AgentTaskRun
@@ -64,16 +64,16 @@ public sealed class AgentTaskRunObserverTests
         namelessResult.Result = "nameless";
         var nameless = new ChatMessage(ChatRole.Tool, [namelessResult]);
 
-        observer.OnRequest([historyResult], options: null);
-        observer.OnRequest([currentAfterHistory], options: null);
-        observer.OnRequest([named], options: null);
-        observer.OnRequest([named], options: null);
-        observer.OnRequest([nameless], options: null);
-        observer.OnRequest([nameless], options: null);
+        await observer.OnRequestAsync([historyResult], options: null);
+        await observer.OnRequestAsync([currentAfterHistory], options: null);
+        await observer.OnRequestAsync([named], options: null);
+        await observer.OnRequestAsync([named], options: null);
+        await observer.OnRequestAsync([nameless], options: null);
+        await observer.OnRequestAsync([nameless], options: null);
 
         var secondRun = new AgentTaskRun { LiveMessages = [] };
         var secondObserver = new AgentTaskRunObserver(secondRun);
-        secondObserver.OnRequest([named], options: null);
+        await secondObserver.OnRequestAsync([named], options: null);
 
         Assert.Equal([currentAfterHistory, named, nameless, nameless], run.LiveMessages);
         Assert.Equal(4, changeCount);

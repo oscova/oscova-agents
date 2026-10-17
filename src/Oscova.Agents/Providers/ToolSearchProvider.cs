@@ -17,6 +17,8 @@ namespace Oscova.Agents.Providers;
 public sealed class ToolSearchProvider : AIContextProvider
 {
     private const int SearchResultLimit = 5;
+    /// <summary>The callable identity of the tool that searches and loads available tools.</summary>
+    public const string SearchToolName = "search_tools";
     /// <summary>Default instruction used when the host has no custom tool-search prompt.</summary>
     public const string DefaultInstructions =
         """
@@ -31,7 +33,7 @@ public sealed class ToolSearchProvider : AIContextProvider
     private readonly string _instructions;
     private readonly AgentToolResolver _resolver;
     private readonly IToolSearchStrategy _strategy;
-    private readonly CrewToolCollection _tools;
+    private readonly AgentToolCollection _tools;
     private readonly Lock _gate = new();
     private readonly HashSet<string> _unlocked = new(StringComparer.OrdinalIgnoreCase);
     private readonly AIFunction _searchTool;
@@ -40,20 +42,20 @@ public sealed class ToolSearchProvider : AIContextProvider
     public ToolSearchProvider(
         IEnumerable<string> allowedToolNames,
         IEnumerable<string> pinnedToolNames,
-        CrewToolCollection tools,
+        AgentToolCollection tools,
         AgentToolResolver resolver,
         IToolSearchStrategy strategy,
         string? instructions = null)
     {
         _allowedToolNames = [.. allowedToolNames];
         _pinnedToolNames = new HashSet<string>(pinnedToolNames, StringComparer.OrdinalIgnoreCase);
-        _instructions = string.IsNullOrWhiteSpace(instructions) ? DefaultInstructions : instructions;
+        _instructions = instructions ?? DefaultInstructions;
         _tools = tools;
         _resolver = resolver;
         _strategy = strategy;
         _searchTool = AIFunctionFactory.Create(
             SearchTools,
-            name: "search_tools",
+            name: SearchToolName,
             description: "Search for tools by capability and load the matches so you can call them.");
     }
 
@@ -139,27 +141,32 @@ public sealed class ToolSearchProvider : AIContextProvider
             : "Loaded tools (now callable):\n" + string.Join("\n", lines);
     }
 
+    /// <summary>Returns effective unpinned functions available through tool discovery.</summary>
+    public IReadOnlyList<AIFunction> GetSearchableTools()
+    {
+        var functions = new List<AIFunction>();
+        foreach (var name in _allowedToolNames)
+        {
+            if (_pinnedToolNames.Contains(name)) { continue; }
+            if (_resolver.Resolve(name) is AIFunction function)
+            {
+                functions.Add(function);
+            }
+        }
+        return functions;
+    }
+
     private IReadOnlyList<ToolSearchCandidate> BuildCandidates()
     {
         var candidates = new List<ToolSearchCandidate>();
-        foreach (var name in _allowedToolNames)
+        // Discovery and inspection use the same effective functions and argument metadata.
+        foreach (var function in GetSearchableTools())
         {
-            if (_pinnedToolNames.Contains(name))
-            {
-                continue;
-            }
-
-            if (_resolver.Resolve(name) is not AIFunction function)
-            {
-                continue;
-            }
-
             candidates.Add(new ToolSearchCandidate(
                 function.Name,
                 function.Description,
                 GetArgumentNames(function.JsonSchema)));
         }
-
         return candidates;
     }
 

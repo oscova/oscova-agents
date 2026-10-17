@@ -13,6 +13,24 @@ public sealed class AgentTaskCatalogTests : IDisposable
     private readonly YamlConverter _yamlConverter = new();
 
     [Fact]
+    public async Task Reload_RequiredHandlerRetainsDirectoryKeyWithoutRegistration()
+    {
+        var root = Path.Combine(_temporaryRoot, "users");
+        const string userId = "saved-user";
+        await WriteTaskAsync(root, userId, "plugin-example.record-run", "required", requiresHandler: true);
+        await WriteTaskAsync(root, userId, "ordinary", "plain");
+        var catalog = CreateCatalog(root);
+
+        await catalog.ReloadAsync();
+        Assert.Equal("plugin-example.record-run", catalog.TryGetHandlerKey("required"));
+        Assert.Null(catalog.TryGetHandlerKey("plain"));
+
+        await catalog.ReloadUserAsync(userId);
+        Assert.Equal("plugin-example.record-run", catalog.TryGetHandlerKey("required"));
+        Assert.Null(catalog.TryGetHandlerKey("plain"));
+    }
+
+    [Fact]
     public async Task ReloadAsync_ReevaluatesRootAndAppliesCallerPolicies()
     {
         var firstRoot = Path.Combine(_temporaryRoot, "first-users");
@@ -35,13 +53,13 @@ public sealed class AgentTaskCatalogTests : IDisposable
             },
             _yamlConverter,
             NullLogger<AgentTaskCatalog>.Instance,
-            static userId => userId.StartsWith("accepted-", StringComparison.Ordinal),
-            builtInTaskKeys: ["reserved"]);
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector(),
+            static userId => userId.StartsWith("accepted-", StringComparison.Ordinal));
 
         await catalog.ReloadAsync();
 
         Assert.Equal("accepted-first", catalog.TryGetOwnerUserId(firstTaskId));
-        Assert.Equal("reserved", catalog.TryGetBuiltInTaskKey(firstTaskId));
+        Assert.Equal("RESERVED", catalog.TryGetHandlerKey(firstTaskId));
         Assert.Null(catalog.TryGetTaskDirectory(rejectedTaskId));
         Assert.Single(catalog.GetAllEnabledTasks());
 
@@ -98,7 +116,7 @@ public sealed class AgentTaskCatalogTests : IDisposable
 
         Assert.Equal("safe-user", catalog.TryGetOwnerUserId(safeTaskId));
         Assert.Null(catalog.TryGetTaskDirectory(outsideTaskId));
-        Assert.True(File.Exists(Path.Combine(outsideTaskDirectory, "task.md")));
+        Assert.True(File.Exists(Path.Combine(outsideTaskDirectory, "task.md.enc")));
     }
 
     [Fact]
@@ -111,9 +129,7 @@ public sealed class AgentTaskCatalogTests : IDisposable
         await WriteTaskAsync(usersRoot, userId, "valid", validTaskId);
         var malformedTaskDirectory = Path.Combine(usersRoot, userId, "tasks", "malformed");
         Directory.CreateDirectory(malformedTaskDirectory);
-        await File.WriteAllTextAsync(
-            Path.Combine(malformedTaskDirectory, "task.md"),
-            "---\nid: [unterminated\n---\nRun the task.");
+        await Secrets.EncryptedFileContent.WriteAllTextAsync(userId, Path.Combine(malformedTaskDirectory, "task.md.enc"), "---\nid: [unterminated\n---\nRun the task.", new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
 
         var catalog = CreateCatalog(usersRoot);
 
@@ -136,6 +152,7 @@ public sealed class AgentTaskCatalogTests : IDisposable
             () => usersRoot,
             _yamlConverter,
             logger,
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector(),
             persistedDefinitionValidator: file =>
             {
                 validationCalls++;
@@ -236,7 +253,8 @@ public sealed class AgentTaskCatalogTests : IDisposable
         Assert.Throws<ArgumentNullException>(() => new AgentTaskCatalog(
             null!,
             _yamlConverter,
-            NullLogger<AgentTaskCatalog>.Instance));
+            NullLogger<AgentTaskCatalog>.Instance,
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()));
     }
 
     public void Dispose()
@@ -252,14 +270,16 @@ public sealed class AgentTaskCatalogTests : IDisposable
         return new AgentTaskCatalog(
             () => usersRoot,
             _yamlConverter,
-            NullLogger<AgentTaskCatalog>.Instance);
+            NullLogger<AgentTaskCatalog>.Instance,
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
     }
 
     private async Task<string> WriteTaskAsync(
         string usersRoot,
         string userId,
         string taskDirectoryName,
-        string taskId)
+        string taskId,
+        bool requiresHandler = false)
     {
         var taskDirectory = Path.Combine(usersRoot, userId, "tasks", taskDirectoryName);
         Directory.CreateDirectory(taskDirectory);
@@ -268,6 +288,7 @@ public sealed class AgentTaskCatalogTests : IDisposable
         {
             Id = taskId,
             Name = taskId,
+            RequiresHandler = taskDirectoryName == "RESERVED" || requiresHandler,
             AgentId = "agent-id",
             Schedule = new ScheduleFile
             {
@@ -275,13 +296,13 @@ public sealed class AgentTaskCatalogTests : IDisposable
                 IntervalMinutes = 30
             },
             IsEnabled = true,
-            NotificationMode = "never",
+            NotifyOnCompletion = false,
             SessionMode = "isolated",
             CreatedAt = "2026-08-01T00:00:00Z"
         };
         var yaml = _yamlConverter.Serialize(taskFile);
         var content = MarkdownFrontmatter.Combine(yaml, "Run the task.");
-        await File.WriteAllTextAsync(Path.Combine(taskDirectory, "task.md"), content);
+        await Secrets.EncryptedFileContent.WriteAllTextAsync(userId, Path.Combine(taskDirectory, "task.md.enc"), content, new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
         return taskDirectory;
     }
 

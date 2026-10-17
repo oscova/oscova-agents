@@ -16,4 +16,7 @@ public interface IAgentPluginCatalog
     /// Non-fatal load issues the host should log or surface.
     /// </summary>
     IReadOnlyList<AgentPluginLoadDiagnostic> Diagnostics { get; }
+
+    /// <summary>Reports a contribution issue after the plugin assembly has loaded.</summary>
+    void ReportDiagnostic(AgentPluginLoadDiagnostic diagnostic);
 }

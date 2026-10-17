@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Slack.Label"><value>Slack</value></data>
+  <data name="Settings.Slack.ConfigurationDescription"><value>يمكن لأعضاء مساحة العمل رؤية تطبيق Slack المثبّت. يرد Oscova فقط على الرسائل المباشرة من العضو المصرح له.</value></data>
+  <data name="Settings.Slack.WorkspaceIdLabel"><value>معرّف مساحة عمل Slack</value></data>
+  <data name="Settings.Slack.WorkspaceIdHint"><value>افتح Slack في المتصفح. انسخ فقط المعرّف الذي يبدأ بحرف T بعد ‎/client/‎، وتوقف عند الشرطة المائلة التالية.</value></data>
+  <data name="Settings.Slack.UserIdLabel"><value>معرّف عضو Slack المصرح له</value></data>
+  <data name="Settings.Slack.IdentityHint"><value>في ملفك الشخصي على Slack، اختر المزيد &gt; نسخ معرّف العضو. تُقبل الرسائل المباشرة من هذا العضو فقط.</value></data>
+  <data name="Credential.Label"><value>Slack بوت</value></data>
+  <data name="Credential.Description"><value>رمز OAuth لمستخدم البوت ورمز مستوى التطبيق لاتصال Slack خاص.</value></data>
+  <data name="Credential.BotToken.Label"><value>رمز OAuth لمستخدم البوت</value></data>
+  <data name="Credential.AppLevelToken.Label"><value>رمز مستوى التطبيق</value></data>
+  <data name="Validation.WorkspaceId"><value>معرّف مساحة عمل Slack مطلوب.</value></data>
+  <data name="Validation.AuthorizedUserId"><value>معرّف عضو Slack المصرّح له مطلوب.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>الاتصال عند بدء التشغيل</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>عند التمكين، سيتصل الروبوت تلقائياً عند بدء تشغيل التطبيق</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>تتم إدارة رموز الروبوت مركزياً في علامة تبويب بيانات الاعتماد.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>إدارة بيانات الاعتماد</value></data>
+  <data name="Settings.Section.Agent.Label"><value>الوكيل الرئيسي</value></data>
+  <data name="Settings.Channels.AgentHint"><value>اختر الوكيل الذي يرد في هذه القناة.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>حفظ الإعدادات</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>حالة الروبوت</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>احفظ التغييرات قبل بدء القناة.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>إيقاف الروبوت</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>بدء تشغيل الروبوت</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>تم حفظ الإعدادات بنجاح.</value></data>
+  <data name="Common.Connected">
+		<value>متصل</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>غير متصل</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>جارٍ التحميل...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

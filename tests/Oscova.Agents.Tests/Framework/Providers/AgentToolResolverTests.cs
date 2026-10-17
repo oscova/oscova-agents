@@ -12,7 +12,7 @@ public sealed class AgentToolResolverTests
     [Fact]
     public void ResolveAll_AppliesGovernanceParityRules()
     {
-        var collection = new CrewToolCollection
+        var collection = new AgentToolCollection
         {
             new SimpleTestTool(),
             new ScopedToolset()
@@ -45,7 +45,7 @@ public sealed class AgentToolResolverTests
     {
         // Regression: sub-agents run inside AsAIFunction() and never reach ToolApprovalRunLoop;
         // an approval-required tool would emit an unanswerable approval request.
-        var collection = new CrewToolCollection
+        var collection = new AgentToolCollection
         {
             new SimpleTestTool(),
             new ScopedToolset()
@@ -70,7 +70,7 @@ public sealed class AgentToolResolverTests
     [Fact]
     public void ResolveAll_AutoApprovedToolRemainsUnwrappedForRunAutoRejectRouting()
     {
-        var collection = new CrewToolCollection { new SimpleTestTool() };
+        var collection = new AgentToolCollection { new SimpleTestTool() };
         string qualifier = ToolNaming.GetToolsetOwner(typeof(SimpleTestTool));
         string toolName = ToolNaming.BuildQualifiedName(qualifier, "risky");
         var resolver = new AgentToolResolver(
@@ -86,63 +86,45 @@ public sealed class AgentToolResolverTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void ResolveAll_AppliesClassAndMethodConfidentialityMarkers(bool isConfidential)
+    public void ResolveAll_AppliesConfidentialOnlyMarker(bool isConfidential)
     {
-        var collection = new CrewToolCollection
+        var collection = new AgentToolCollection
         {
             new ConfidentialOnlyToolset(),
-            new MixedConfidentialityToolset(),
-            new ConflictingToolset()
+            new PlainToolset()
         };
         var names = collection.Select(tool => tool.Name).ToList();
-        var resolver = new AgentToolResolver(collection, isConfidential: isConfidential);
+        var resolver = new AgentToolResolver(collection);
 
         var result = resolver.ResolveAll(names);
 
         Assert.Equal(2, result.Count);
-        Assert.Equal(isConfidential, result.Any(tool => IsFunctionFor(tool, nameof(ConfidentialOnlyToolset.ReadSecret))));
-        Assert.Equal(!isConfidential, result.Any(tool => IsFunctionFor(tool, nameof(MixedConfidentialityToolset.SaveMemory))));
-        Assert.Contains(result, tool => IsFunctionFor(tool, nameof(MixedConfidentialityToolset.ReadMemory)));
-        Assert.DoesNotContain(result, tool => IsFunctionFor(tool, nameof(ConflictingToolset.ConflictingOperation)));
+        Assert.Contains(result, tool => IsFunctionFor(tool, nameof(ConfidentialOnlyToolset.ReadSecret)));
+        Assert.Contains(result, tool => IsFunctionFor(tool, nameof(PlainToolset.ReadMemory)));
     }
 
-    [Fact]
-    public void IsAvailable_NonReflectedTool_RemainsAvailable()
-    {
-        var tool = new NonReflectedTool();
 
-        Assert.True(ConfidentialToolPolicy.IsAvailable(tool, isConfidential: false));
-        Assert.True(ConfidentialToolPolicy.IsAvailable(tool, isConfidential: true));
-    }
 
     private static bool IsFunctionFor(AITool tool, string methodName) =>
         tool is AIFunction function && function.UnderlyingMethod?.Name == methodName;
 
-    [ConfidentialAgentOnly]
     private sealed class ConfidentialOnlyToolset
     {
+        [AgentTool]
         public static string ReadSecret() => "secret";
     }
 
-    private sealed class MixedConfidentialityToolset
+    private sealed class PlainToolset
     {
+        [AgentTool]
         public static string ReadMemory() => "memory";
-
-        [NonConfidentialAgentOnly]
-        public static string SaveMemory() => "saved";
-    }
-
-    [ConfidentialAgentOnly]
-    private sealed class ConflictingToolset
-    {
-        [NonConfidentialAgentOnly]
-        public static string ConflictingOperation() => "unreachable";
     }
 
     private sealed class NonReflectedTool : AITool;
 
     private sealed class ScopedToolset
     {
+        [AgentTool]
         [DisplayName("internet-tool")]
         [ToolNetworkScope(NetworkScope.Egress)]
         public static string InternetTool()

@@ -1,3 +1,4 @@
+using Oscova.Agents.Secrets;
 using Oscova.Agents.Persistence;
 using Oscova.Agents.Utils;
 using System;
@@ -15,9 +16,12 @@ namespace Oscova.Agents.Definitions;
 public sealed class SharedAgentPersonalContextRepository(
     Func<string, string> personalContextRootResolver,
     long maxTextSizeBytes,
-    YamlConverter yamlCodec) : ISharedAgentPersonalContextRepository
+    long maxStoredTextSizeBytes,
+    YamlConverter yamlCodec,
+    Oscova.Agents.Secrets.IContentProtector protector) : ISharedAgentPersonalContextRepository
 {
-    private const string ContextFileName = "context.md";
+    private const string ContextFileName = "context.md.enc";
+    private readonly long _maxStoredTextSizeBytes = maxStoredTextSizeBytes;
     private static readonly SemaphoreSlim SaveGate = new(1, 1);
     private readonly Func<string, string> _personalContextRootResolver = personalContextRootResolver ??
         throw new ArgumentNullException(nameof(personalContextRootResolver));
@@ -30,13 +34,13 @@ public sealed class SharedAgentPersonalContextRepository(
     {
         var root = ResolveRoot(userId);
         var slugs = ListSharedFolders(root);
-        var existing = await TryFindByIdAsync(root, agent.Id, slugs).ConfigureAwait(false);
+        var existing = await TryFindByIdAsync(userId, root, agent.Id, slugs).ConfigureAwait(false);
         if (existing is null)
         {
             return string.Empty;
         }
 
-        var fileText = await ReadFileTextAsync(existing.Value.Path).ConfigureAwait(false);
+        var fileText = await ReadFileTextAsync(userId, existing.Value.Path).ConfigureAwait(false);
         var (_, body) = MarkdownFrontmatter.Split(fileText);
         return body;
     }
@@ -50,10 +54,10 @@ public sealed class SharedAgentPersonalContextRepository(
         {
             // Reuse the existing folder if we've saved for this agent before; never rename it.
             var slugs = ListSharedFolders(root);
-            var existing = await TryFindByIdAsync(root, agent.Id, slugs).ConfigureAwait(false);
+            var existing = await TryFindByIdAsync(userId, root, agent.Id, slugs).ConfigureAwait(false);
             var targetPath = existing?.Path ?? ResolveContextPath(root, ResolveNewSlug(agent, slugs));
 
-            var yaml = yamlCodec.Serialize(new SharedAgentPersonalContextFile { AgentId = agent.Id });
+            var yaml = yamlCodec.Serialize(new SharedAgentPersonalContextFile { AgentId = agent.Id, OwnerUserId = agent.OwnerUserId ?? string.Empty });
             var content = MarkdownFrontmatter.Combine(yaml, body ?? string.Empty);
             if (Encoding.UTF8.GetByteCount(content) > _maxTextSizeBytes)
             {
@@ -61,7 +65,7 @@ public sealed class SharedAgentPersonalContextRepository(
             }
 
             Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
-            await File.WriteAllTextAsync(targetPath, content).ConfigureAwait(false);
+            await EncryptedFileContent.WriteAllTextAsync(userId, targetPath, content, protector).ConfigureAwait(false);
         }
         finally
         {
@@ -76,9 +80,10 @@ public sealed class SharedAgentPersonalContextRepository(
         foreach (var userId in userIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase))
         {
             ct.ThrowIfCancellationRequested();
+            if (!protector.IsAvailable(userId)) { continue; }
             var root = ResolveRoot(userId);
             var slugs = ListSharedFolders(root);
-            var existing = await TryFindByIdAsync(root, agent.Id, slugs).ConfigureAwait(false);
+            var existing = await TryFindByIdAsync(userId, root, agent.Id, slugs).ConfigureAwait(false);
             if (existing is null)
             {
                 continue;
@@ -97,6 +102,7 @@ public sealed class SharedAgentPersonalContextRepository(
     }
 
     private async Task<(string Slug, string Path)?> TryFindByIdAsync(
+        string userId,
         string root,
         string agentId,
         IReadOnlyList<string> slugs)
@@ -109,7 +115,7 @@ public sealed class SharedAgentPersonalContextRepository(
                 continue;
             }
 
-            var fileText = await ReadFileTextAsync(path).ConfigureAwait(false);
+            var fileText = await ReadFileTextAsync(userId, path).ConfigureAwait(false);
             try
             {
                 var (yaml, _) = MarkdownFrontmatter.Split(fileText);
@@ -126,7 +132,7 @@ public sealed class SharedAgentPersonalContextRepository(
             }
             catch (Exception ex) when (ex is InvalidDataException or YamlException)
             {
-                // Hand-edited or unrelated file at <slug>/context.md; skip.
+                // Hand-edited or unrelated file at <slug>/context.md.enc; skip.
             }
         }
 
@@ -173,21 +179,65 @@ public sealed class SharedAgentPersonalContextRepository(
         return path;
     }
 
-    private async Task<string> ReadFileTextAsync(string path)
+    private async Task<string> ReadFileTextAsync(string userId, string path)
     {
-        if (new FileInfo(path).Length > _maxTextSizeBytes)
+        if (new FileInfo(path).Length > _maxStoredTextSizeBytes)
         {
-            throw new InvalidOperationException($"File exceeds the maximum size of {_maxTextSizeBytes} bytes.");
+            throw new InvalidOperationException($"File exceeds the maximum stored size of {_maxStoredTextSizeBytes} bytes.");
         }
-
-        return await File.ReadAllTextAsync(path).ConfigureAwait(false);
+        var text = await EncryptedFileContent.ReadAllTextAsync(userId, path, protector).ConfigureAwait(false)
+            ?? throw new FileNotFoundException("File not found.", path);
+        if (Encoding.UTF8.GetByteCount(text) > _maxTextSizeBytes)
+        {
+            throw new InvalidOperationException($"Content exceeds the maximum size of {_maxTextSizeBytes} bytes.");
+        }
+        return text;
+    }
+    /// <summary>Deletes existing context when the caller confirms its agent is no longer accessible.</summary>
+    public async Task<int> DeleteWhereAsync(string userId, Func<string, string, Task<bool>> shouldDelete, CancellationToken ct = default)
+    {
+        var root = ResolveRoot(userId);
+        var count = 0;
+        await SaveGate.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            foreach (var slug in ListSharedFolders(root))
+            {
+                ct.ThrowIfCancellationRequested();
+                var path = ResolveContextPath(root, slug);
+                if (!File.Exists(path)) { continue; }
+                var text = await ReadFileTextAsync(userId, path).ConfigureAwait(false);
+                var (yaml, _) = MarkdownFrontmatter.Split(text);
+                if (string.IsNullOrWhiteSpace(yaml)) { continue; }
+                SharedAgentPersonalContextFile? meta;
+                try
+                {
+                    meta = yamlCodec.Deserialize<SharedAgentPersonalContextFile>(yaml);
+                }
+                catch (Exception ex) when (ex is InvalidDataException or YamlException)
+                {
+                    // Unidentified context cannot establish a deleted agent.
+                    continue;
+                }
+                if (meta is null || string.IsNullOrWhiteSpace(meta.AgentId)) { continue; }
+                if (await shouldDelete(meta.AgentId, meta.OwnerUserId).ConfigureAwait(false))
+                {
+                    File.Delete(path);
+                    count++;
+                }
+            }
+            return count;
+        }
+        finally
+        {
+            SaveGate.Release();
+        }
     }
 }
 
-/// <summary>
-/// YAML frontmatter shape for a shared agent's per-user personal context file.
-/// </summary>
+/// <summary>Identifies the shared agent and owner inside the encrypted personal context.</summary>
 internal sealed class SharedAgentPersonalContextFile
 {
     public string AgentId { get; set; } = string.Empty;
+    public string OwnerUserId { get; set; } = string.Empty;
 }

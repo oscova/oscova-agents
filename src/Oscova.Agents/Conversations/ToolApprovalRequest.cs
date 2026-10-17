@@ -8,8 +8,29 @@ public sealed class ToolApprovalRequest
     /// <summary>Gets or sets the approval request identifier.</summary>
     public string RequestId { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets whether the captured identity supports a reusable approval.</summary>
+    public bool CanAllowForSession { get; set; }
+
+    /// <summary>Gets or sets the original tool-call identifier.</summary>
+    public string? ToolCallId { get; set; }
+
+    /// <summary>Gets or sets the selected execution machine.</summary>
+    public string? ExecutionDevice { get; set; }
+
+    /// <summary>Gets or sets the effective execution target.</summary>
+    public string? ExecutionTarget { get; set; }
+
+    /// <summary>Gets or sets a resolved outcome that never restores execution authority.</summary>
+    public ToolApprovalOutcome? Outcome { get; set; }
+
     /// <summary>Gets or sets the requested tool name.</summary>
     public string ToolName { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the identity of the agent requesting this decision.</summary>
+    public string? AgentId { get; set; }
+
+    /// <summary>Gets or sets the display name of the agent requesting this decision.</summary>
+    public string? AgentName { get; set; }
 
     /// <summary>Gets or sets the approval message shown to the user.</summary>
     public string Message { get; set; } = string.Empty;

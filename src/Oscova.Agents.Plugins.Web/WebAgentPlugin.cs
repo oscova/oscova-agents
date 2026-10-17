@@ -15,11 +15,11 @@ public sealed class WebAgentPlugin : IAgentPlugin
     {
         builder.AddToolset(context => new WebSearchToolset(
             context.CredentialResolver,
-            context.CreateHttpClient(nameof(WebSearchToolset)),
+            context.CreateHttpClient(),
             context.LoggerFactory.CreateLogger<WebSearchToolset>()))
             .AddToolset(context => new NewsToolset(
             context.CredentialResolver,
-            context.CreateHttpClient(nameof(NewsToolset)),
+            context.CreateHttpClient(),
             context.LoggerFactory.CreateLogger<NewsToolset>(),
             () => context.UserTimeZone));
     }

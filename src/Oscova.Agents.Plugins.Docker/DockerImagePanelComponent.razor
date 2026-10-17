@@ -1,0 +1,181 @@
+@implements IDisposable
+@inject IStringLocalizer<PluginText> Loc
+
+        <div class="card custom-settings-catalog-card">
+            <div class="card-body gap-4">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h4 class="text-base font-semibold">@Loc.GetOrDefault(PluginTextKeys.SkillsSandboxImageTitle, "Sandbox image")</h4>
+                            <span class="badge badge-info badge-soft">
+                                @(HasCustomSandboxDockerfile
+                                    ? Loc.GetOrDefault(PluginTextKeys.SkillsSandboxCustomImageBadge, "Custom image")
+                                    : Loc.GetOrDefault(PluginTextKeys.SkillsSandboxDefaultImageBadge, "Default image"))
+                            </span>
+                            <span class="@GetSandboxStatusBadgeClass()">
+                                @(_sandboxBuildInFlight
+                                    ? Loc.GetOrDefault(PluginTextKeys.SkillsSandboxImageBuildingBadge, "Building")
+                                    : _sandboxImageBuilt
+                                    ? Loc.GetOrDefault(PluginTextKeys.SkillsSandboxImageBuiltBadge, "Built")
+                                    : Loc.GetOrDefault(PluginTextKeys.SkillsSandboxImageNotBuiltBadge, "Not built"))
+                            </span>
+                        </div>
+                        <p class="text-sm opacity-70">
+                            @Loc.GetOrDefault(PluginTextKeys.SkillsSandboxImageDescription, "Manage the Docker sandbox image used by Container Sandboxed skill scripts.")
+                        </p>
+                    </div>
+                </div>
+
+                @if (_isSandboxImageLoading)
+                {
+                    <div class="flex justify-center py-6">
+                        <span class="loading loading-dots loading-md"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <button type="button"
+                                class="link link-hover inline-flex items-center gap-2 text-sm"
+                                disabled="@_sandboxBuildInFlight"
+                                @onclick="OpenSandboxDockerfileEditorAsync">
+                            <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>
+                            @Loc.GetOrDefault(PluginTextKeys.SkillsSandboxEditDockerfileButton, "Edit Dockerfile")
+                        </button>
+
+                        <div class="flex flex-wrap items-center justify-end gap-3">
+                            <label class="label cursor-pointer gap-3 p-0">
+                                <input type="checkbox"
+                                       class="toggle toggle-primary toggle-sm"
+                                       disabled="@_sandboxBuildInFlight"
+                                       @bind="_sandboxNoCache" />
+                                <span class="label-text">@Loc.GetOrDefault(PluginTextKeys.SkillsSandboxNoCacheLabel, "No cache")</span>
+                            </label>
+
+                            @if (_sandboxBuildInFlight)
+                            {
+                                <button type="button"
+                                        class="btn btn-warning btn-sm"
+                                        @onclick="CancelSandboxBuildAsync">
+                                    <span class="iconify lucide--square size-4" aria-hidden="true"></span>
+                                    @Loc.GetOrDefault(PluginTextKeys.SkillsSandboxCancelButton, "Cancel")
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="@(_sandboxOffline ? "tooltip tooltip-left" : string.Empty)"
+                                     data-tip="@Loc.GetOrDefault(PluginTextKeys.SkillsSandboxOfflineTooltip, "Turn off Offline mode before building or resetting the sandbox image.")">
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm"
+                                            disabled="@_sandboxOffline"
+                                            @onclick="BuildSandboxImageAsync">
+                                        <span class="iconify lucide--wrench size-4" aria-hidden="true"></span>
+                                        @GetSandboxBuildButtonText()
+                                    </button>
+                                </div>
+                            }
+                            <div class="@(_sandboxOffline ? "tooltip tooltip-left" : string.Empty)"
+                                 data-tip="@Loc.GetOrDefault(PluginTextKeys.SkillsSandboxOfflineTooltip, "Turn off Offline mode before building or resetting the sandbox image.")">
+                                <button type="button"
+                                        class="btn btn-outline btn-sm"
+                                        disabled="@(_sandboxBuildInFlight || _sandboxOffline || !HasCustomSandboxDockerfile)"
+                                        @onclick="ResetSandboxImageAsync">
+                                    <span class="iconify lucide--rotate-ccw size-4" aria-hidden="true"></span>
+                                    @Loc.GetOrDefault(PluginTextKeys.SkillsSandboxResetButton, "Use default")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <SandboxBuildOutputPanel Lines="@_sandboxBuildOutput" OnClear="@ClearSandboxBuildOutput" />
+                }
+            </div>
+        </div>
+@code {
+    [Parameter, EditorRequired] public DockerPanelContext Context { get; set; } = default!;
+    private const int MaxSandboxBuildOutputLines = 500;
+    private bool _isSandboxImageLoading = true;
+    private bool _sandboxBuildInFlight;
+    private bool _sandboxImageBuilt;
+    private bool _sandboxNoCache;
+    private bool _sandboxOffline;
+    private bool _disposed;
+    private string _savedSandboxDockerfile = string.Empty;
+    private string _defaultSandboxDockerfile = string.Empty;
+    private readonly List<SandboxBuildOutputLine> _sandboxBuildOutput = [];
+    private bool HasCustomSandboxDockerfile => !string.IsNullOrWhiteSpace(_savedSandboxDockerfile);
+    protected override async Task OnInitializedAsync()
+    {
+        Context.Images.Output += OnOutput;
+        await RunAsync(RefreshAsync);
+        _isSandboxImageLoading = false;
+    }
+    private async Task RefreshAsync()
+    {
+        var info = await Context.Images.GetAsync();
+        _savedSandboxDockerfile = info.CustomDockerfile;
+        _defaultSandboxDockerfile = info.DefaultDockerfile;
+        _sandboxImageBuilt = info.ImageBuilt;
+        _sandboxBuildInFlight = info.IsBuilding;
+        _sandboxOffline = info.Offline;
+    }
+    private string GetSandboxBuildButtonText() => _sandboxImageBuilt
+        ? Loc.GetOrDefault(PluginTextKeys.SkillsSandboxRebuildButton, "Rebuild image")
+        : Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildButton, "Build image");
+    private string GetSandboxStatusBadgeClass() => _sandboxBuildInFlight ? "badge badge-info badge-soft"
+        : _sandboxImageBuilt ? "badge badge-success badge-soft" : "badge badge-warning badge-soft";
+    private async Task OpenSandboxDockerfileEditorAsync()
+    {
+        await RunAsync(async () =>
+        {
+            if (await Context.Ui.EditTextAsync(Loc.GetOrDefault(PluginTextKeys.SkillsSandboxDockerfileLabel, "Dockerfile"),
+                async () => { await RefreshAsync(); return HasCustomSandboxDockerfile ? _savedSandboxDockerfile : _defaultSandboxDockerfile; },
+                content => Context.Images.SaveAsync(content), Context.EditorHelpTopic))
+            { Context.Ui.Notify(Loc.GetOrDefault(PluginTextKeys.SkillsSandboxSavedToast, "Sandbox Dockerfile saved."), PluginNotificationKind.Success); await RefreshAsync(); }
+        });
+    }
+    private Task BuildSandboxImageAsync() => RunAsync(async () =>
+    {
+        await Context.Images.StartAsync(_sandboxNoCache, false);
+        _sandboxBuildOutput.Clear(); await RefreshAsync();
+        Context.Ui.Notify(Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildStartedToast, "Sandbox image build started."), PluginNotificationKind.Info);
+    });
+    private Task CancelSandboxBuildAsync() => RunAsync(() => Context.Images.CancelAsync());
+    private async Task ResetSandboxImageAsync()
+    {
+        if (!await Context.Ui.ConfirmAsync(Loc.GetOrDefault(PluginTextKeys.SkillsSandboxResetConfirmTitle, "Use default Dockerfile"),
+            Loc.GetOrDefault(PluginTextKeys.SkillsSandboxResetConfirmMessage, "Use the default Dockerfile and rebuild the shared sandbox image?"))) { return; }
+        await RunAsync(async () => { await Context.Images.StartAsync(false, true); _sandboxBuildOutput.Clear(); await RefreshAsync(); _savedSandboxDockerfile = string.Empty; });
+    }
+    private void ClearSandboxBuildOutput() => _sandboxBuildOutput.Clear();
+    private void OnOutput(SandboxBuildOutputEvent output)
+    {
+        if (_disposed) { return; }
+        _ = InvokeAsync(async () =>
+        {
+            if (_disposed) { return; }
+            if (!string.IsNullOrEmpty(output.Line))
+            {
+                _sandboxBuildOutput.Add(new(output.Line, output.IsError));
+                if (_sandboxBuildOutput.Count > MaxSandboxBuildOutputLines) { _sandboxBuildOutput.RemoveRange(0, _sandboxBuildOutput.Count - MaxSandboxBuildOutputLines); }
+            }
+            if (output.Completed)
+            {
+                _sandboxBuildInFlight = false;
+                await RunAsync(RefreshAsync);
+                var cancelled = output.Line.Contains("cancel", StringComparison.OrdinalIgnoreCase);
+                Context.Ui.Notify(output.Succeeded ? Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildSucceededToast, "Sandbox image build succeeded.")
+                    : cancelled ? Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildCancelledToast, "Sandbox image build cancelled.")
+                    : Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildFailedToast, "Sandbox image build failed."),
+                    output.Succeeded ? PluginNotificationKind.Success : cancelled ? PluginNotificationKind.Warning : PluginNotificationKind.Error);
+            }
+            StateHasChanged();
+        });
+    }
+    private async Task RunAsync(Func<Task> action)
+    {
+        try { await action(); }
+        catch (Exception ex) { Context.Ui.Notify(ex.Message, PluginNotificationKind.Error); }
+    }
+    public void Dispose() { _disposed = true; Context.Images.Output -= OnOutput; }
+}

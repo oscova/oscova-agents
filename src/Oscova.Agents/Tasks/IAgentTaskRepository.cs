@@ -34,7 +34,7 @@ namespace Oscova.Agents.Tasks
         /// <summary>
         /// Creates or updates the given task definition.
         /// </summary>
-        Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default);
+        Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default, string? creationDirectoryName = null);
 
         /// <summary>
         /// Permanently deletes the specified task definition and its run history.
@@ -81,5 +81,7 @@ namespace Oscova.Agents.Tasks
         /// Creates or updates the given run record.
         /// </summary>
         Task SaveRunAsync(AgentTaskRun run, CancellationToken ct = default);
+        /// <summary>Parses caller-owned task markdown before validation and saving.</summary>
+        AgentTaskDefinition ParseDefinition(string ownerUserIdFromCatalog, string fileText);
     }
 }

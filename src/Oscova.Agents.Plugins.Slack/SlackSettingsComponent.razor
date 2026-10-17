@@ -1,0 +1,33 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
+@using Oscova.Agents.Plugins.Slack.Settings
+@inject IStringLocalizer<PluginText> Loc
+
+<OfficialChannelSettingsPanel TSettings="SlackSettings" Context="@Context" ChannelId="@_channelId" Text="@(key => Loc[key].Value)"
+    Load="@SlackSettings.LoadAsync" Capture="@Capture" Initialize="@Initialize"
+    Validate="@((settings, complete) => settings.Validate(complete))" Persist="@((settings, context, ct) => settings.SaveAsync(context, ct))">
+    <div class="form-control w-full">
+        <label class="label" for="slack-workspace"><span class="label-text">@Loc[PluginTextKeys.SettingsSlackWorkspaceIdLabel] <span class="text-error">*</span></span></label>
+        <label class="input w-full"><input id="slack-workspace" class="grow focus:outline-0" type="text" @bind="_workspaceId" aria-describedby="slack-workspace-help" /></label>
+        <p id="slack-workspace-help" class="text-xs opacity-70">@Loc[PluginTextKeys.SettingsSlackWorkspaceIdHint]</p>
+    </div>
+    <div class="form-control w-full">
+        <label class="label" for="slack-user"><span class="label-text">@Loc[PluginTextKeys.SettingsSlackUserIdLabel] <span class="text-error">*</span></span></label>
+        <label class="input w-full"><input id="slack-user" class="grow focus:outline-0" type="text" @bind="_userId" aria-describedby="slack-user-help" /></label>
+        <p id="slack-user-help" class="text-xs opacity-70">@Loc[PluginTextKeys.SettingsSlackIdentityHint]</p>
+    </div>
+</OfficialChannelSettingsPanel>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    private readonly string _channelId = new SlackChannel().Definition.Id;
+    private string _workspaceId = string.Empty;
+    private string _userId = string.Empty;
+    private void Initialize(SlackSettings settings)
+    {
+        _userId = settings.AuthorizedUserId ?? string.Empty;
+        _workspaceId = settings.WorkspaceId ?? string.Empty;
+    }
+    private SlackSettings Capture(bool startup, string? agentId) => new()
+    { StartAtStartup = startup, AgentId = agentId, AuthorizedUserId = _userId.Trim(), WorkspaceId = _workspaceId.Trim() };
+}

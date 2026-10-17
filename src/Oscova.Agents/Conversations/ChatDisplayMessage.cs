@@ -21,6 +21,12 @@ public class ChatDisplayMessage
     /// <summary>Identifies the agent that produced an assistant message so artifacts retain their original file grants.</summary>
     public string? AgentId { get; set; }
 
+    /// <summary>Retains the displayed speaker name independently of the thread owner.</summary>
+    public string? AgentName { get; set; }
+
+    /// <summary>Identifies the selected recipient of a user message for replay and regeneration.</summary>
+    public string? RecipientAgentId { get; set; }
+
     /// <summary>Gets or sets whether the message continues an active interaction.</summary>
     public bool IsInteractionResponse { get; set; }
 

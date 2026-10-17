@@ -1,0 +1,8 @@
+{
+  "id": "oscova.microsoft-graph",
+  "name": "Oscova Microsoft Graph",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.MicrosoftGraph.dll",
+  "entryType": "Oscova.Agents.Plugins.MicrosoftGraph.MicrosoftGraphAgentPlugin"
+}

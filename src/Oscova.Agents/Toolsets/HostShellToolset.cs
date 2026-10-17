@@ -10,19 +10,22 @@ namespace Oscova.Agents.Toolsets;
 
 /// <summary>Exposes one approval-required-by-default foreground command on a caller-provided host executor.</summary>
 /// <param name="createExecutor">Creates a new executor that the tool owns and disposes after each call.</param>
+/// <param name="outputStore">Saves long command output for the active run.</param>
 [DisplayName("Host Shell")]
 public sealed class HostShellToolset(
-    Func<CancellationToken, Task<ShellExecutor>> createExecutor) : ICrewToolset
+    Func<CancellationToken, Task<ShellExecutor>> createExecutor,
+    IToolOutputStore? outputStore = null) : IAgentToolset
 {
     /// <summary>Gets the model-visible host command name.</summary>
-    public const string ToolName = "exec_host_command";
+    public const string ToolName = "exec";
 
     /// <summary>Identifies the built-in host command used by policy filters.</summary>
-    public const string QualifiedToolName = "host_shell__exec_host_command";
+    public const string QualifiedToolName = "host_shell__exec";
 
     /// <summary>Runs one foreground command directly on the host. Approval is required by default.</summary>
     [DisplayName(ToolName)]
-    [Description("Runs one foreground command directly on the host outside Docker from the matching workspace. Use relative paths. Use this for host-persistent global installs or host-only tools; use exec_command for normal workspace work. Requires user approval by default.")]
+    [AgentTool]
+    [Description("Runs one foreground command directly on the host outside Docker from the matching workspace. Use relative paths. Use this for host-persistent global installs or host-only tools; use shell__exec for normal workspace work. Requires user approval by default.")]
     [ToolPolicy(ApprovalMode = ToolApprovalMode.RequireApproval)]
     [ToolNetworkScope(NetworkScope.Incidental)]
     public async Task<object> ExecHostCommandAsync(
@@ -41,6 +44,7 @@ public sealed class HostShellToolset(
             static () => Task.CompletedTask,
             command,
             timeoutSeconds,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken,
+            outputStore).ConfigureAwait(false);
     }
 }

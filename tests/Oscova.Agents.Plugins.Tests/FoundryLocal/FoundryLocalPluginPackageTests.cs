@@ -1,21 +1,23 @@
 using System.Text.Json;
 using NuGet.Packaging;
 using NuGet.Versioning;
+using Oscova.Agents.Tests.TestSupport;
 
 namespace Oscova.Agents.Plugins.Tests.FoundryLocal;
 
 public sealed class FoundryLocalPluginPackageTests
 {
     private const string PackageId = "Oscova.Agents.Plugins.FoundryLocal";
-    private const string PackageVersion = "2.0.0";
+    private static readonly string PackageVersion = PackageVersions.Get(PackageId);
     private const string PluginId = "oscova.foundry-local";
     private const long MaxPackageBytes = 26_214_400;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     [Fact]
+    [Trait("Category", "Slow")]
     public void Package_ContainsReviewedManifestDependencyAndNotices()
     {
-        var packagePath = GetPackagePath();
+        var packagePath = ReleasePackages.GetPath(PackageId, PackageVersion);
         using var archive = new PackageArchiveReader(packagePath);
         var files = archive.GetFiles().Select(NormalizePath).ToHashSet(StringComparer.Ordinal);
         using var nuspecStream = archive.GetNuspec();
@@ -34,7 +36,9 @@ public sealed class FoundryLocalPluginPackageTests
         Assert.Equal("Oscova.Agents.Plugins.FoundryLocal.dll", manifest.Assembly);
         Assert.Contains("lib/net10.0/Oscova.Agents.Plugins.FoundryLocal.dll", files);
 
-        var foundry = Assert.Single(dependencies);
+        Assert.Equal(["Microsoft.AI.Foundry.Local", "Oscova.Agents"],
+            dependencies.Select(dependency => dependency.Id).Order(StringComparer.Ordinal));
+        var foundry = Assert.Single(dependencies, dependency => dependency.Id == "Microsoft.AI.Foundry.Local");
         Assert.Equal("Microsoft.AI.Foundry.Local", foundry.Id);
         var foundryVersion = NuGetVersion.Parse("1.2.4");
         Assert.Equal(foundryVersion, foundry.VersionRange.MinVersion);
@@ -55,34 +59,6 @@ public sealed class FoundryLocalPluginPackageTests
         Assert.Contains("licenses/dotnet-extensions-LICENSE.txt", files);
         Assert.Contains("licenses/dotnet-extensions-THIRD-PARTY-NOTICES.txt", files);
         Assert.True(new FileInfo(packagePath).Length <= MaxPackageBytes);
-    }
-
-    private static string GetPackagePath()
-    {
-        var packagePath = Path.Combine(
-            FindAssistantRoot(),
-            "artifacts",
-            "nuget",
-            $"{PackageId}.{PackageVersion}.nupkg");
-        return File.Exists(packagePath)
-            ? packagePath
-            : throw new FileNotFoundException($"Release plugin package was not found: {packagePath}.");
-    }
-
-    private static string FindAssistantRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "Oscova.Assistant.sln")))
-            {
-                return directory.FullName;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the Oscova.Assistant repository root.");
     }
 
     private static string NormalizePath(string path) => path.Replace('\\', '/');

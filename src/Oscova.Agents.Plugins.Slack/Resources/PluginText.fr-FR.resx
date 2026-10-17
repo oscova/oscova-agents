@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Slack.Label"><value>Slack</value></data>
+  <data name="Settings.Slack.ConfigurationDescription"><value>Les membres de l’espace de travail peuvent voir l’application Slack installée. Oscova répond uniquement aux messages directs du membre autorisé.</value></data>
+  <data name="Settings.Slack.WorkspaceIdLabel"><value>ID de l’espace de travail Slack</value></data>
+  <data name="Settings.Slack.WorkspaceIdHint"><value>Ouvrez Slack dans un navigateur. Copiez uniquement l’ID commençant par T après /client/, jusqu’à la barre oblique suivante.</value></data>
+  <data name="Settings.Slack.UserIdLabel"><value>ID du membre Slack autorisé</value></data>
+  <data name="Settings.Slack.IdentityHint"><value>Dans votre profil Slack, choisissez Plus &gt; Copier l’ID du membre. Seuls les messages directs de ce membre sont acceptés.</value></data>
+  <data name="Credential.Label"><value>Slack bot</value></data>
+  <data name="Credential.Description"><value>Jeton OAuth de l’utilisateur bot et jeton au niveau de l’application pour une connexion Slack privée.</value></data>
+  <data name="Credential.BotToken.Label"><value>Jeton OAuth de l’utilisateur bot</value></data>
+  <data name="Credential.AppLevelToken.Label"><value>Jeton au niveau de l’application</value></data>
+  <data name="Validation.WorkspaceId"><value>L’identifiant de l’espace de travail Slack est requis.</value></data>
+  <data name="Validation.AuthorizedUserId"><value>L’identifiant du membre Slack autorisé est requis.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Connecter au démarrage</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>Lorsqu'il est activé, le bot se connecte automatiquement au démarrage de l'application</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>Les jetons de bot sont gérés de manière centralisée dans l'onglet Identifiants.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>Gérer les identifiants</value></data>
+  <data name="Settings.Section.Agent.Label"><value>Agent principal</value></data>
+  <data name="Settings.Channels.AgentHint"><value>Choisissez l’agent qui répond dans ce canal.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>Enregistrer les paramètres</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>État du bot</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Enregistrez les modifications avant de démarrer le canal.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>Arrêter le bot</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>Démarrer le bot</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>Paramètres enregistrés avec succès.</value></data>
+  <data name="Common.Connected">
+		<value>Connecté</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>Déconnecté</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>Chargement...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

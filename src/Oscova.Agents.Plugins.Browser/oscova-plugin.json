@@ -1,0 +1,16 @@
+{
+  "id": "oscova.browser",
+  "name": "Oscova Browser",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.Browser.dll",
+  "entryType": "Oscova.Agents.Plugins.Browser.BrowserAgentPlugin",
+  "dependencyAssets": [
+    { "packageId": "Microsoft.Playwright", "path": ".playwright/package/" },
+    { "packageId": "Microsoft.Playwright", "path": ".playwright/node/LICENSE" },
+    { "packageId": "Microsoft.Playwright", "path": ".playwright/node/win32_x64/", "rid": "win-x64" },
+    { "packageId": "Microsoft.Playwright", "path": ".playwright/node/linux-x64/", "rid": "linux-x64" },
+    { "packageId": "Microsoft.Playwright", "path": ".playwright/node/darwin-x64/", "rid": "osx-x64" },
+    { "packageId": "Microsoft.Playwright", "path": ".playwright/node/darwin-arm64/", "rid": "osx-arm64" }
+  ]
+}

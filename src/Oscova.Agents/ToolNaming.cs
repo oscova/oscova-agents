@@ -97,6 +97,35 @@ public static partial class ToolNaming
             : BuildWireName([origin, owner, toolName]);
     }
 
+    /// <summary>Builds the registered wire name for a public declared tool method.</summary>
+    public static string BuildToolsetQualifiedName<TToolset>(string methodName, string? origin = null)
+    {
+        var type = typeof(TToolset);
+        var method = type.GetMethod(methodName,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            ?? throw new ArgumentException($"Public tool method '{methodName}' was not found on '{type.Name}'.", nameof(methodName));
+        return BuildToolsetQualifiedName(origin, GetToolsetOwner(type), GetToolName(method));
+    }
+
+    /// <summary>Lists contributed tool identities without constructing a plugin's runtime.</summary>
+    public static IReadOnlyList<string> GetToolsetQualifiedNames(Type type, string? origin = null)
+        => type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(method => !method.IsSpecialName && method.IsDefined(typeof(AgentToolAttribute), inherit: false))
+            .Select(method => BuildToolsetQualifiedName(origin, GetToolsetOwner(type), GetToolName(method))).ToArray();
+
+    /// <summary>Resolves method display names using the tool registration rules.</summary>
+    internal static string GetToolName(MethodInfo method)
+    {
+        var displayName = method.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
+        var baseName = string.IsNullOrWhiteSpace(displayName) ? method.Name : displayName;
+        var toolName = NormalizeToolName(baseName);
+        if (string.IsNullOrEmpty(toolName))
+        {
+            throw new InvalidOperationException($"Tool name derived from method '{method.Name}' cannot be empty.");
+        }
+        return toolName;
+    }
+
     /// <summary>
     /// Returns the normalized friendly owner segment for a reflected toolset type.
     /// </summary>

@@ -1,34 +1,44 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <EmbedOscovaPackageVersions>true</EmbedOscovaPackageVersions>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/Oscova.Agents.Plugins.AgentTemplates/Oscova.Agents.Plugins.AgentTemplates.csproj" />
     <PackageReference Include="coverlet.collector" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.11" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <PackageReference Include="NuGet.Packaging" Version="7.9.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/Oscova.Agents.Plugins.GoogleWorkspace/Oscova.Agents.Plugins.GoogleWorkspace.csproj" />
+    <ProjectReference Include="../../src/Oscova.Agents.Plugins.MicrosoftGraph/Oscova.Agents.Plugins.MicrosoftGraph.csproj" />
     <ProjectReference Include="..\..\src\Oscova.Agents\Oscova.Agents.csproj" />
+    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.Discord\Oscova.Agents.Plugins.Discord.csproj" />
+    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.Telegram\Oscova.Agents.Plugins.Telegram.csproj" />
+    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.Slack\Oscova.Agents.Plugins.Slack.csproj" />
     <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.Web\Oscova.Agents.Plugins.Web.csproj" />
     <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LlamaSharp\Oscova.Agents.Plugins.LlamaSharp.csproj" />
     <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.FoundryLocal\Oscova.Agents.Plugins.FoundryLocal.csproj" ReferenceOutputAssembly="false" Private="false" />
-    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LocalSpeech\Oscova.Agents.Plugins.LocalSpeech.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LocalSpeechRecognition\Oscova.Agents.Plugins.LocalSpeechRecognition.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LocalSpeechSynthesis\Oscova.Agents.Plugins.LocalSpeechSynthesis.csproj" ReferenceOutputAssembly="false" Private="false" />
     <Compile Include="..\TestSupport\TestPlugin\TestPluginRoot.cs" Link="TestSupport\TestPlugin\TestPluginRoot.cs" />
+    <Compile Include="..\TestSupport\PackageVersions.cs" Link="TestSupport\PackageVersions.cs" />
+    <Compile Include="..\TestSupport\ReleasePackages.cs" Link="TestSupport\ReleasePackages.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.266" />
     <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
     <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
   </ItemGroup>

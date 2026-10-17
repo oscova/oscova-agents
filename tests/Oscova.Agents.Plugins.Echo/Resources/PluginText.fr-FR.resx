@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Channel.Title"><value>Canal écho</value></data>
+  <data name="Channel.Description"><value>Vérification du chargement du plugin.</value></data>
+  <data name="Channel.Help.Other"><value>Détails de l'écho</value></data>
+  <data name="Settings.Title"><value>Paramètres du canal Echo</value></data>
+  <data name="Settings.Note"><value>Note exemple</value></data>
+  <data name="Settings.Save"><value>Enregistrer la note</value></data>
+  <data name="Settings.Saved"><value>Note exemple enregistrée.</value></data>
+</root>

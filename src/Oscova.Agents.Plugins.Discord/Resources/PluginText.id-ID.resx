@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Discord.Label"><value>Discord</value></data>
+  <data name="Settings.Section.Discord.Description"><value>Siapkan integrasi bot Discord dan pengikatan saluran.</value></data>
+  <data name="Settings.Discord.GetTokenLink"><value>Dapatkan token bot Anda dari Discord Developer Portal</value></data>
+  <data name="Settings.Discord.FindUserIdLink"><value>Cara menemukan ID Pengguna Discord Anda</value></data>
+  <data name="Settings.Discord.UserIdPlaceholder"><value>Masukkan ID pengguna Discord (mis. 123456789012345678)</value></data>
+  <data name="Settings.Discord.UserIdLabel"><value>ID Pengguna yang Diizinkan</value></data>
+  <data name="Settings.Discord.UserIdHint"><value>Hanya pengguna ini yang dapat mengirim dan menerima pesan dengan bot.</value></data>
+  <data name="Credential.Label"><value>Discord bot</value></data>
+  <data name="Credential.Description"><value>Token bot yang digunakan untuk menghubungkan bot Discord.</value></data>
+  <data name="Credential.BotToken.Label"><value>Token bot</value></data>
+  <data name="Validation.AuthorizedUserId"><value>ID Pengguna yang Diizinkan harus berupa bilangan bulat dari 1 hingga 18446744073709551615.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Hubungkan saat mulai</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>Jika diaktifkan, bot akan otomatis terhubung saat aplikasi dimulai</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>Token bot dikelola secara terpusat di tab Kredensial.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>Kelola kredensial</value></data>
+  <data name="Settings.Section.Agent.Label"><value>Agen Utama</value></data>
+  <data name="Settings.Channels.AgentHint"><value>Pilih agen yang membalas di saluran ini.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>Simpan Pengaturan</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>Status Bot</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Simpan perubahan sebelum memulai saluran.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>Hentikan Bot</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>Mulai Bot</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>Pengaturan berhasil disimpan.</value></data>
+  <data name="Common.Connected">
+		<value>Terhubung</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>Terputus</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>Memuat...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

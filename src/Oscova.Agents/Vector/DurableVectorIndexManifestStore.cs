@@ -1,3 +1,4 @@
+using Oscova.Agents.Secrets;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Utils;
 using System;
@@ -12,7 +13,10 @@ namespace Oscova.Agents.Vector;
 /// <summary>Reads and atomically writes one durable vector-index manifest.</summary>
 internal sealed class DurableVectorIndexManifestStore(
     string manifestPath,
-    ILogger logger)
+    ILogger logger,
+    IContentProtector protector,
+    string userId,
+    string purpose)
 {
     private int _malformedWarningReported;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
@@ -30,7 +34,12 @@ internal sealed class DurableVectorIndexManifestStore(
 
         try
         {
-            string json = await File.ReadAllTextAsync(manifestPath, cancellationToken).ConfigureAwait(false);
+            // Read a complete snapshot while allowing the indexer to publish its replacement.
+            using var stream = new FileStream(manifestPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            using var reader = new StreamReader(stream);
+            string ciphertext = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+            string json = protector.Unprotect(userId, purpose, ciphertext)
+                ?? throw new InvalidDataException("The encrypted vector manifest could not be authenticated.");
             DurableVectorIndexManifest? manifest =
                 JsonSerializer.Deserialize<DurableVectorIndexManifest>(json, JsonOptions);
             if (manifest is null)
@@ -65,8 +74,10 @@ internal sealed class DurableVectorIndexManifestStore(
         DurableVectorIndexManifest manifest,
         CancellationToken cancellationToken = default)
     {
+        manifest.Version = DurableVectorIndexManifest.CurrentVersion;
         string json = JsonSerializer.Serialize(manifest, JsonOptions);
-        await FileUtil.WriteAllTextAtomicAsync(manifestPath, json, cancellationToken).ConfigureAwait(false);
+        string ciphertext = protector.Protect(userId, purpose, json);
+        await FileUtil.WriteAllTextAtomicAsync(manifestPath, ciphertext, cancellationToken).ConfigureAwait(false);
         Interlocked.Exchange(ref _malformedWarningReported, 0);
     }
 

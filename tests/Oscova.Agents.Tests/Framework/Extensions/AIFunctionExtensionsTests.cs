@@ -10,7 +10,7 @@ namespace Oscova.Agents.Tests.Framework.Extensions
         public void GetSchemaSummary_Subtract_ProducesExpectedSummary()
         {
             // Arrange: build tools from the SimpleTestTool toolset
-            var tools = new CrewToolCollection();
+            var tools = new AgentToolCollection();
             tools.Add(new SimpleTestTool());
 
             var qualifier = ToolNaming.GetToolsetOwner(typeof(SimpleTestTool));

@@ -68,42 +68,72 @@ public static class LexicalSearchStrategy
             .Select(entry => entry.Id)];
     }
 
-    // Splits text into lowercase tokens, breaking on non-alphanumerics and camelCase boundaries.
+    /// <summary>Returns original-text positions of complete query tokens using the search tokenizer.</summary>
+    public static IReadOnlyList<(int Start, int Length)> FindTokenMatches(string query, string text)
+    {
+        var queryTokens = Tokenize(query);
+        return GetTokenSpans(text)
+            .Where(span => queryTokens.Contains(NormalizeToken(text, span.Start, span.Length)))
+            .ToArray();
+    }
+
+    // Ranking and evidence use one tokenizer so clipping cannot invent a keyword match.
     private static HashSet<string> Tokenize(string text)
     {
         var tokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var builder = new StringBuilder();
-
-        char previous = '\0';
-        foreach (char character in text)
+        foreach (var span in GetTokenSpans(text))
         {
-            if (char.IsLetterOrDigit(character))
-            {
-                if (builder.Length > 0 && char.IsUpper(character) && char.IsLower(previous))
-                {
-                    AddToken(tokens, builder);
-                }
-
-                builder.Append(char.ToLowerInvariant(character));
-                previous = character;
-                continue;
-            }
-
-            AddToken(tokens, builder);
-            previous = '\0';
+            tokens.Add(NormalizeToken(text, span.Start, span.Length));
         }
 
-        AddToken(tokens, builder);
         return tokens;
     }
 
-    private static void AddToken(HashSet<string> tokens, StringBuilder builder)
+    /// <summary>Finds the same alphanumeric and camel-case token boundaries used for ranking.</summary>
+    private static IEnumerable<(int Start, int Length)> GetTokenSpans(string text)
     {
-        if (builder.Length >= 2)
+        var start = -1;
+        for (var index = 0; index < text.Length; index++)
         {
-            tokens.Add(builder.ToString());
+            var character = text[index];
+            if (!char.IsLetterOrDigit(character))
+            {
+                if (start >= 0 && index - start >= 2)
+                {
+                    yield return (start, index - start);
+                }
+                start = -1;
+                continue;
+            }
+
+            if (start >= 0 && char.IsUpper(character) && char.IsLower(text[index - 1]))
+            {
+                if (index - start >= 2)
+                {
+                    yield return (start, index - start);
+                }
+                start = index;
+            }
+            else if (start < 0)
+            {
+                start = index;
+            }
         }
 
-        builder.Clear();
+        if (start >= 0 && text.Length - start >= 2)
+        {
+            yield return (start, text.Length - start);
+        }
+    }
+
+    private static string NormalizeToken(string text, int start, int length)
+    {
+        var builder = new StringBuilder(length);
+        for (var index = start; index < start + length; index++)
+        {
+            builder.Append(char.ToLowerInvariant(text[index]));
+        }
+
+        return builder.ToString();
     }
 }

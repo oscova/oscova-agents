@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Settings.Skills.SandboxImageTitle">
+    <value>سینڈ باکس امیج</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageDescription">
+    <value>کنٹینر سینڈ باکسڈ مہارت اسکرپٹس کے زیر استعمال Docker سینڈ باکس امیج کا نظم کریں۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxDockerfileLabel">
+    <value>Dockerfile</value>
+  </data>
+  <data name="Settings.Skills.SandboxNoCacheLabel">
+    <value>بغیر کیشے</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildButton">
+    <value>امیج بنائیں</value>
+  </data>
+  <data name="Settings.Skills.SandboxRebuildButton">
+    <value>امیج دوبارہ بنائیں</value>
+  </data>
+  <data name="Settings.Skills.SandboxCancelButton">
+    <value>منسوخ کریں</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetButton">
+    <value>ڈیفالٹ استعمال کریں</value>
+  </data>
+  <data name="Settings.Skills.SandboxEditDockerfileButton">
+    <value>Dockerfile میں ترمیم کریں</value>
+  </data>
+  <data name="Settings.Skills.SandboxDefaultImageBadge">
+    <value>ڈیفالٹ امیج</value>
+  </data>
+  <data name="Settings.Skills.SandboxCustomImageBadge">
+    <value>کسٹم امیج</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuiltBadge">
+    <value>تیار شدہ</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageNotBuiltBadge">
+    <value>غیر تیار شدہ</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuildingBadge">
+    <value>زیر تعمیر</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputLabel">
+    <value>تعمیر کا آؤٹ پٹ</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputEmpty">
+    <value>تعمیر کا آؤٹ پٹ یہاں ظاہر ہوگا۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxClearOutputButton">
+    <value>صاف کریں</value>
+  </data>
+  <data name="Settings.Skills.SandboxOfflineTooltip">
+    <value>سینڈ باکس امیج بنانے سے پہلے آف لائن موڈ کو بند کریں۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxSavedToast">
+    <value>سینڈ باکس Dockerfile محفوظ ہو گیا۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildStartedToast">
+    <value>سینڈ باکس امیج کی تعمیر شروع ہو گئی۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildSucceededToast">
+    <value>سینڈ باکس امیج کی تعمیر کامیاب رہی۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildFailedToast">
+    <value>سینڈ باکس امیج کی تعمیر ناکام ہو گئی۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildCancelledToast">
+    <value>سینڈ باکس امیج کی تعمیر منسوخ کر دی گئی۔</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmTitle">
+    <value>ڈیفالٹ Dockerfile استعمال کریں</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmMessage">
+    <value>کیا ڈیفالٹ Dockerfile استعمال کریں اور مشترکہ سینڈ باکس امیج کو دوبارہ بنائیں؟</value>
+  </data>
+  <data name="Execution.Title" xml:space="preserve">
+    <value>Docker</value>
+  </data>
+  <data name="Execution.Description" xml:space="preserve">
+    <value>کمانڈز Docker میں مجاز فولڈرز کے ساتھ چلتی ہیں۔ ہوسٹ کے آلات خود بخود دستیاب نہیں ہوتے۔</value>
+  </data>
+  <data name="Availability.Unavailable" xml:space="preserve"><value>Docker دستیاب نہیں ہے۔ تنصیب، ڈیمون کنکشن اور اکاؤنٹ کی اجازتیں چیک کریں، پھر اسے دوبارہ منتخب کریں۔</value></data>
+</root>

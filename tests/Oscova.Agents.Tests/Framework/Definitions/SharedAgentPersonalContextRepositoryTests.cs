@@ -54,7 +54,7 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
 
         await repository.SaveAsync("user-1", agent, "body");
 
-        var contextPath = Path.Combine(_contextRoot, "researcher", "context.md");
+        var contextPath = Path.Combine(_contextRoot, "researcher", "context.md.enc");
         Assert.True(File.Exists(contextPath));
     }
 
@@ -94,9 +94,9 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
         var repository = CreateRepository();
         var agent = SharedAgent("Researcher");
         await repository.SaveAsync("user-1", agent, "valid context");
-        var malformedPath = Path.Combine(_contextRoot, "aaa-malformed", "context.md");
+        var malformedPath = Path.Combine(_contextRoot, "aaa-malformed", "context.md.enc");
         Directory.CreateDirectory(Path.GetDirectoryName(malformedPath)!);
-        await File.WriteAllTextAsync(malformedPath, "---\nagent_id: malformed");
+        await Secrets.EncryptedFileContent.WriteAllTextAsync("user-1", malformedPath, "---\nagent_id: malformed", new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
 
         var result = await repository.GetAsync("user-1", agent);
 
@@ -133,7 +133,9 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
                 return _contextRoot;
             },
             MaxTextSizeBytes,
-            new YamlConverter());
+            long.MaxValue,
+            new YamlConverter(),
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
         var agentA = SharedAgent("Helper");
         var agentB = SharedAgent("Helper");
 
@@ -185,18 +187,16 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             repository.SaveAsync("user-1", agent, new string('x', 33)));
 
-        Assert.False(File.Exists(Path.Combine(_contextRoot, "researcher", "context.md")));
+        Assert.False(File.Exists(Path.Combine(_contextRoot, "researcher", "context.md.enc")));
     }
 
     [Fact]
     public async Task GetAsync_WhenContextFileExceedsLimit_Throws()
     {
         var agent = SharedAgent("Researcher");
-        var contextPath = Path.Combine(_contextRoot, "researcher", "context.md");
+        var contextPath = Path.Combine(_contextRoot, "researcher", "context.md.enc");
         Directory.CreateDirectory(Path.GetDirectoryName(contextPath)!);
-        await File.WriteAllTextAsync(
-            contextPath,
-            $"---\nagent_id: {agent.Id}\n---\n{new string('x', 33)}");
+        await Secrets.EncryptedFileContent.WriteAllTextAsync("user-1", contextPath, $"---\nagent_id: {agent.Id}\n---\n{new string('x', 33)}", new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
         var repository = CreateRepository(maxBytes: 32);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -224,7 +224,7 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
                 repository.SaveAsync("user-1", SharedAgent("Researcher"), "must stay contained"));
-            Assert.False(File.Exists(Path.Combine(_outsideLinkTarget, "context.md")));
+            Assert.False(File.Exists(Path.Combine(_outsideLinkTarget, "context.md.enc")));
         }
         finally
         {
@@ -244,7 +244,9 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
         var repository = new SharedAgentPersonalContextRepository(
             _ => currentRoot,
             MaxTextSizeBytes,
-            new YamlConverter());
+            long.MaxValue,
+            new YamlConverter(),
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
         var agent = SharedAgent("Researcher");
         await repository.SaveAsync("user-1", agent, "first root");
 
@@ -263,11 +265,11 @@ public sealed class SharedAgentPersonalContextRepositoryTests : IDisposable
         var deletedCount = await repository.DeleteForUsersAsync(["User-1", "user-1"], agent);
 
         Assert.Equal(1, deletedCount);
-        Assert.False(File.Exists(Path.Combine(_contextRoot, "helper", "context.md")));
+        Assert.False(File.Exists(Path.Combine(_contextRoot, "helper", "context.md.enc")));
     }
 
     private SharedAgentPersonalContextRepository CreateRepository(long maxBytes = MaxTextSizeBytes) =>
-        new(_ => _contextRoot, maxBytes, new YamlConverter());
+        new(_ => _contextRoot, maxBytes, long.MaxValue, new YamlConverter(), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
 
     private static AgentDefinition SharedAgent(string name) => SharedAgentWithId(Guid.NewGuid().ToString(), name);
 

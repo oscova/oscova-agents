@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.VectorData;
 using CommunityToolkit.VectorData.SqliteVec;
 using System;
@@ -18,19 +18,22 @@ namespace Oscova.Agents.Vector
     {
         private readonly SqliteVectorStore _vectorStore;
 
-        /// <summary>
-        /// Creates a vector store service backed by a SQLite database file.
-        /// </summary>
-        /// <param name="vectorDbPath">The file path for the SQLite vector database.</param>
-        public VectorStoreService(string vectorDbPath)
+        /// <summary>Creates a vector store using the connection policy supplied by its owner.</summary>
+        /// <param name="vectorDbPath">The database path whose parent directory must exist.</param>
+        /// <param name="connectionString">The complete unpooled connection string, including any engine key.</param>
+        public VectorStoreService(string vectorDbPath, string connectionString)
         {
-            _vectorStore = new SqliteVectorStore($"Data source={vectorDbPath};Pooling=False");
+            _vectorStore = new SqliteVectorStore(connectionString);
             var directoryPath = Path.GetDirectoryName(vectorDbPath);
             if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
         }
+
+        /// <summary>Checks for a backing collection without creating it.</summary>
+        public Task<bool> CollectionExistsAsync(string collectionName, CancellationToken cancellationToken = default) =>
+            _vectorStore.CollectionExistsAsync(collectionName, cancellationToken);
 
         /// <summary>
         /// Gets or creates a typed vector collection.

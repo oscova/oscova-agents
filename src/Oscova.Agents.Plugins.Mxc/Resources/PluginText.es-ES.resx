@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>Los comandos siguen los permisos actuales del espacio de trabajo y la red mediante el aislamiento nativo del sistema operativo.</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>Los cambios en espacios con permiso de escritura son permanentes. Los archivos del sistema y las carpetas de herramientas instaladas pueden seguir siendo legibles.</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>No se detectó el entorno aislado nativo. Comprueba los requisitos de Microsoft MXC para este equipo.</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC no pudo iniciarse. Comprueba sus dependencias nativas y los permisos de este equipo.</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC no respondió en diez segundos. Comprueba los requisitos e inténtalo de nuevo.</value></data>
+</root>

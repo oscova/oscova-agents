@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>کمانڈز آپریٹنگ سسٹم کی مقامی علیحدگی کے ذریعے موجودہ ورک اسپیس اور نیٹ ورک کی اجازتوں کی پیروی کرتی ہیں۔</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>قابل تحریر ورک اسپیس میں تبدیلیاں مستقل ہوتی ہیں۔ سسٹم کی فائلیں اور نصب شدہ ٹولز کے فولڈر پڑھنے کے قابل رہ سکتے ہیں۔</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>مقامی سینڈ باکس کا پتہ نہیں چلا۔ اس مشین کے لیے Microsoft MXC کی ضروریات دیکھیں۔</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC شروع نہیں ہو سکا۔ اس کی مقامی ضروریات اور مشین کی اجازتیں دیکھیں۔</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC نے دس سیکنڈ میں جواب نہیں دیا۔ ضروریات دیکھ کر دوبارہ کوشش کریں۔</value></data>
+</root>

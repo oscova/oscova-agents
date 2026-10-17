@@ -9,10 +9,48 @@ namespace Oscova.Agents.Tests.Framework.Collections
     public class CrewToolCollectionTests
     {
         [Fact]
+        public void BothReflectionPaths_ExposeOnlyMarkedTools()
+        {
+            var toolset = new ReflectionBoundaryToolset();
+            var collection = new AgentToolCollection();
+
+            collection.Add(toolset);
+            var direct = AgentToolCollection.CreateToolsFromToolset(toolset).ToArray();
+
+            Assert.Equal(2, collection.Count);
+            Assert.Equal(collection.Select(tool => tool.Name), direct.Select(tool => tool.Name));
+            var owner = ToolNaming.GetToolsetOwner(typeof(ReflectionBoundaryToolset));
+            var marked = ToolNaming.BuildQualifiedName(owner, "marked");
+            Assert.Equal("Visible method", collection.Find(marked)?.Description);
+            Assert.Equal(NetworkScope.Egress, collection.GetNetworkScope(marked));
+            Assert.Null(collection.Find(ToolNaming.BuildQualifiedName(owner, "Helper")));
+            Assert.DoesNotContain(direct, tool => tool.UnderlyingMethod?.IsSpecialName == true);
+        }
+
+        [Fact]
+        public void TypedToolNames_MatchActualRegistration()
+        {
+            var toolset = new SimpleTestTool();
+            var collection = new AgentToolCollection();
+            collection.Add(toolset);
+            collection.Add(toolset, "sample.plugin");
+            foreach (var method in new[] { nameof(SimpleTestTool.Add), nameof(SimpleTestTool.Subtract), nameof(SimpleTestTool.OpenApp) })
+            {
+                var local = ToolNaming.BuildToolsetQualifiedName<SimpleTestTool>(method);
+                var plugin = ToolNaming.BuildToolsetQualifiedName<SimpleTestTool>(method, "sample.plugin");
+                Assert.NotNull(collection.Find(local));
+                Assert.NotNull(collection.Find(plugin));
+                Assert.Contains(AgentToolCollection.CreateToolsFromToolset(toolset), tool => tool.Name == local);
+            }
+            Assert.Throws<ArgumentException>(() =>
+                ToolNaming.BuildToolsetQualifiedName<SimpleTestTool>("MissingMethod"));
+        }
+
+        [Fact]
         public void Adds_SimpleTestTool_Methods_AreAdded()
         {
             // Arrange
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var toolset = new SimpleTestTool();
 
             // Act
@@ -39,7 +77,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         public void Function_Names_Follow_DisplayNameAttribute()
         {
             // Arrange
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var toolset = new SimpleTestTool();
             collection.Add(toolset);
 
@@ -82,7 +120,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         public void Function_Description_From_DescriptionAttribute()
         {
             // Arrange
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var toolset = new SimpleTestTool();
             collection.Add(toolset);
 
@@ -98,7 +136,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void ToolInfo_Metadata_IsTracked()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var qualifier = ToolNaming.GetToolsetOwner(typeof(SimpleTestTool));
             var addQualifiedName = ToolNaming.BuildQualifiedName(qualifier, "Add");
 
@@ -125,7 +163,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void Add_StaticToolMethod_IsDiscovered()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
 
             collection.Add(new StaticToolset());
 
@@ -154,7 +192,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void GetNetworkScope_Uses_ReflectedMethodAttribute()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var qualifier = ToolNaming.GetToolsetOwner(typeof(NetworkDeclarationToolset));
 
             collection.Add(new NetworkDeclarationToolset());
@@ -167,7 +205,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void GetNetworkScope_ExternalTool_DefaultsToNone()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var method = typeof(CrewToolCollectionTests).GetMethod(nameof(ExternalToolStub))!;
             var function = AIFunctionFactory.Create(
                 method,
@@ -182,7 +220,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void TrySetNetworkScope_ChangesEffectiveScope_ForExistingTool()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var method = typeof(CrewToolCollectionTests).GetMethod(nameof(ExternalToolStub))!;
             var function = AIFunctionFactory.Create(
                 method,
@@ -199,7 +237,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void TrySetNetworkScope_NormalizesQualifiedNameSeparators()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var method = typeof(CrewToolCollectionTests).GetMethod(nameof(ExternalToolStub))!;
             var function = AIFunctionFactory.Create(
                 method,
@@ -216,7 +254,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void TrySetNetworkScope_PreservesDeclaredScope_ForExistingTool()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
             var qualifier = ToolNaming.GetToolsetOwner(typeof(NetworkDeclarationToolset));
             var qualifiedName = ToolNaming.BuildQualifiedName(qualifier, "internet-tool");
             collection.Add(new NetworkDeclarationToolset());
@@ -231,7 +269,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
         [Fact]
         public void TrySetNetworkScope_UnknownTool_ReturnsFalse()
         {
-            var collection = new CrewToolCollection();
+            var collection = new AgentToolCollection();
 
             var updated = collection.TrySetNetworkScope("missing__tool", NetworkScope.Egress);
 
@@ -246,6 +284,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
 
         private sealed class StaticToolset
         {
+            [AgentTool]
             [DisplayName("ping")]
             public static string StaticPing()
             {
@@ -253,8 +292,26 @@ namespace Oscova.Agents.Tests.Framework.Collections
             }
         }
 
+        private sealed class ReflectionBoundaryToolset
+        {
+            [AgentTool]
+            [DisplayName("marked")]
+            [Description("Visible method")]
+            [ToolNetworkScope(NetworkScope.Egress)]
+            public static string Marked() => "ok";
+
+            [AgentTool]
+            public string Instance() => Property;
+
+            [Description("A described helper is not callable.")]
+            public string Helper() => Property;
+
+            public string Property { get; } = "hidden";
+        }
+
         private sealed class NetworkDeclarationToolset
         {
+            [AgentTool]
             [DisplayName("internet-tool")]
             [ToolNetworkScope(NetworkScope.Egress)]
             public static string InternetTool()
@@ -262,6 +319,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
                 return "ok";
             }
 
+            [AgentTool]
             [DisplayName("shell-tool")]
             [ToolNetworkScope(NetworkScope.Incidental)]
             public static string ShellTool()
@@ -269,6 +327,7 @@ namespace Oscova.Agents.Tests.Framework.Collections
                 return "ok";
             }
 
+            [AgentTool]
             [DisplayName("local-tool")]
             [ToolNetworkScope(NetworkScope.None)]
             public static string LocalTool()

@@ -18,5 +18,8 @@ public enum ToolExecutionState
     Completed,
 
     /// <summary>Tool execution failed.</summary>
-    Failed
+    Failed,
+
+    /// <summary>The run stopped before the tool call finished.</summary>
+    Cancelled
 }

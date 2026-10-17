@@ -122,11 +122,9 @@ public sealed class PdfToolsetTests : IDisposable
     }
 
     [Fact]
-    public void ExtractPdfText_WhenOutputExceedsCap_TruncatesWithNote()
+    public void ExtractPdfText_SavesFullTextPastBudget()
     {
-        // Build a PDF large enough to exceed the 200k-char output cap. Each page contributes
-        // ~2.5k chars of extractable text, so ~120 pages comfortably overshoots the cap.
-        const int pageCount = 120;
+        const int pageCount = 12;
         var pageText = new string('A', 2500);
 
         var pdfPath = Path.Combine(_workspaceDirectory, "large.pdf");
@@ -141,38 +139,60 @@ public sealed class PdfToolsetTests : IDisposable
 
         File.WriteAllBytes(pdfPath, builder.Build());
 
-        var output = _toolset.ExtractPdfText(pdfPath);
+        var store = new RecordingToolOutputStore();
+        var toolset = new PdfToolset(() =>
+        [
+            new(_workspaceDirectory, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite)
+        ], outputStore: store);
+        var output = toolset.ExtractPdfText(pdfPath);
 
-        Assert.EndsWith("[Output truncated. Re-run extract_pdf_text with a narrower pageRange.]", output);
+        Assert.Contains("Showing the first 16000", output);
+        Assert.Contains("Full output saved", output);
+        Assert.Contains("--- Page 12 ---", store.Saved);
+        Assert.DoesNotContain("--- Page 12 ---", output);
     }
 
-    [Fact]
-    public void SearchPdfText_PaginatesMatchingPagesAndReportsPageCount()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void SearchPdfText_ReportsTotalAndSavesAllSnippets(bool aliasInput)
     {
         var pdfPath = CreatePdf("search.pdf",
             "Alpha paragraph with enough real content to be considered meaningful text.",
             "First NEEDLE result with enough surrounding text for a useful discovery snippet.",
             "Second NEEDLE result with enough surrounding text for a useful discovery snippet.");
 
-        var firstPage = _toolset.SearchPdfText(pdfPath, "needle", offset: 1, limit: 1);
-        var secondPage = _toolset.SearchPdfText(pdfPath, "needle", offset: 2, limit: 1);
+        var store = new RecordingToolOutputStore();
+        var toolset = new PdfToolset(() =>
+        [
+            new(_workspaceDirectory, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/default")
+        ], outputStore: store);
+        string result = toolset.SearchPdfText(aliasInput ? "/workspace/default/search.pdf" : pdfPath, "needle", limit: 1);
 
-        Assert.Contains("Pages: 3", firstPage);
-        Assert.Contains("--- Page 2 ---", firstPage);
-        Assert.DoesNotContain("--- Page 3 ---", firstPage);
-        Assert.Contains("Continue with offset=2 of 2", firstPage);
-        Assert.Contains("--- Page 3 ---", secondPage);
+        Assert.Contains("PDF: /workspace/default/search.pdf |", result);
+        Assert.Contains("Pages: 3 | Matching pages: 2", result);
+        Assert.Contains("--- Page 2 ---", result);
+        Assert.DoesNotContain("--- Page 3 ---", result);
+        Assert.Contains("Showing 1 of 2 results. Full results saved", result);
+        Assert.Contains("--- Page 3 ---", store.Saved);
     }
 
-    [Fact]
-    public void SearchPdfText_WithNoMatchStillReportsPageCount()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void SearchPdfText_WithNoMatchStillReportsPageCount(bool aliasInput)
     {
         var pdfPath = CreatePdf("no-match.pdf",
             "Alpha paragraph with enough real content to be considered meaningful text.",
             "Beta paragraph with enough real content to be considered meaningful text.");
 
-        var output = _toolset.SearchPdfText(pdfPath, "missing phrase");
+        var toolset = new PdfToolset(() =>
+        [
+            new(_workspaceDirectory, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/default")
+        ]);
+        var output = toolset.SearchPdfText(aliasInput ? "/workspace/default/no-match.pdf" : pdfPath, "missing phrase");
 
+        Assert.Contains("PDF: /workspace/default/no-match.pdf |", output);
         Assert.Contains("Pages: 2", output);
         Assert.Contains("No matching pages", output);
     }

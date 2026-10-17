@@ -130,14 +130,16 @@ public sealed class FoundryLocalModelProvider : IModelProvider, IModelDownloadPr
         }
     }
 
+    /// <summary>Downloads the configured model into the Foundry Local managed cache.</summary>
     public async Task DownloadModelAsync(
-        string modelId,
-        IProgress<float>? progress = null,
+        ModelProviderConfig config,
+        IProgress<ModelDownloadProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        var modelId = config.ModelId?.Trim();
         if (string.IsNullOrWhiteSpace(modelId))
         {
-            throw new ArgumentException("A Foundry Local model alias is required.", nameof(modelId));
+            throw new ArgumentException("A Foundry Local model alias is required.", nameof(config));
         }
 
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -145,7 +147,7 @@ public sealed class FoundryLocalModelProvider : IModelProvider, IModelDownloadPr
         {
             var manager = await EnsureManagerAsync(cancellationToken).ConfigureAwait(false);
             var model = await GetModelAsync(manager, modelId, cancellationToken).ConfigureAwait(false);
-            Action<float>? callback = progress is null ? null : value => progress.Report(value);
+            Action<float>? callback = progress is null ? null : value => progress.Report(new ModelDownloadProgress { Percent = value });
             await model.DownloadAsync(callback, cancellationToken).ConfigureAwait(false);
         }
         finally

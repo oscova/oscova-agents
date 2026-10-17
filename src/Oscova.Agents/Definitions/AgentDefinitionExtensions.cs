@@ -21,7 +21,6 @@ public static class AgentDefinitionExtensions
             Name = agentDefinition.Name,
             Description = agentDefinition.Description,
             AIContextProviders = aiContextProviders,
-            DisableApprovalNotRequiredFunctionBypassing = false,
         };
     }
 }

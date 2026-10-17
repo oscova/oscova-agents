@@ -71,8 +71,6 @@ namespace Oscova.Agents.Tasks
         /// </summary>
         public TaskTriggerSource TriggerSource { get; set; } = TaskTriggerSource.Schedule;
 
-        /// <summary>Gets or sets whether this run's content is stored encrypted.</summary>
-        public bool IsEncrypted { get; set; }
 
         /// <summary>
         /// Gets or sets validated webhook parameters captured for this run.

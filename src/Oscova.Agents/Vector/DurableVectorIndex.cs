@@ -22,13 +22,19 @@ public sealed class DurableVectorIndex : IDisposable
     private readonly DurableVectorIndexManifestStore _manifestStore;
     private readonly ILogger _logger;
     private readonly SemaphoreSlim _mutationGate = new(1, 1);
+    private readonly Func<VectorStoreService> _createStore;
+    private readonly Func<CancellationToken, Task<IDisposable>> _acquireAccess;
 
     /// <summary>Creates an index over caller-owned database, manifest, and collection paths.</summary>
     public DurableVectorIndex(
         string vectorDatabasePath,
         string manifestPath,
         string collectionName,
-        ILogger logger)
+        ILogger logger,
+        Oscova.Agents.Secrets.IContentProtector protector,
+        string userId,
+        Func<VectorStoreService> createStore,
+        Func<CancellationToken, Task<IDisposable>> acquireAccess)
     {
         if (string.IsNullOrWhiteSpace(vectorDatabasePath))
         {
@@ -47,7 +53,10 @@ public sealed class DurableVectorIndex : IDisposable
 
         _vectorDatabasePath = vectorDatabasePath;
         _collectionName = collectionName;
-        _manifestStore = new DurableVectorIndexManifestStore(manifestPath, logger);
+        _createStore = createStore;
+        _acquireAccess = acquireAccess;
+        _manifestStore = new DurableVectorIndexManifestStore(
+            manifestPath, logger, protector, userId, $"vector-manifest:{collectionName}:v1");
         _logger = logger;
     }
 
@@ -55,6 +64,7 @@ public sealed class DurableVectorIndex : IDisposable
     public async Task<DurableVectorIndexSnapshot> GetSnapshotAsync(
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         DurableVectorIndexManifestLoadResult load =
             await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
         var sources = load.Manifest.Sources.ToDictionary(
@@ -63,7 +73,7 @@ public sealed class DurableVectorIndex : IDisposable
             DurableVectorIndexManifest.SourceComparer);
         return new DurableVectorIndexSnapshot(
             load.Exists,
-            load.IsTrusted,
+            load.IsTrusted && await HasBackingCollectionAsync(load, cancellationToken).ConfigureAwait(false),
             load.Manifest.Fingerprint,
             load.Manifest.VectorDimensions,
             sources);
@@ -75,11 +85,13 @@ public sealed class DurableVectorIndex : IDisposable
         string sourceId,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         ValidateSourceId(sourceId);
         DurableVectorIndexManifestLoadResult load =
             await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
         if (!IsCurrent(load, space) ||
+            !await HasBackingCollectionAsync(load, cancellationToken).ConfigureAwait(false) ||
             !load.Manifest.Sources.TryGetValue(sourceId, out DurableVectorSourceEntry? entry) ||
             entry.Mode != DurableVectorSourceMode.Append)
         {
@@ -98,6 +110,7 @@ public sealed class DurableVectorIndex : IDisposable
         string? sourceMetadata = null,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         ValidateSourceId(sourceId);
         ValidateGenerationId(generationId);
@@ -108,6 +121,7 @@ public sealed class DurableVectorIndex : IDisposable
 
         ValidateChunks(chunks, space.VectorDimensions);
 
+        bool publicationStarted = false;
         await _mutationGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
@@ -121,6 +135,7 @@ public sealed class DurableVectorIndex : IDisposable
                 State = DurableVectorSourceState.Pending
             };
             await _manifestStore.SaveAsync(manifest, cancellationToken).ConfigureAwait(false);
+            publicationStarted = true;
             await DeleteRecordsAsync(
                 record => record.SourceId == sourceId,
                 space.VectorDimensions,
@@ -143,7 +158,7 @@ public sealed class DurableVectorIndex : IDisposable
             };
             await _manifestStore.SaveAsync(manifest, cancellationToken).ConfigureAwait(false);
         }
-        catch
+        catch when (publicationStarted)
         {
             await TryCleanupSourceAsync(sourceId, space.VectorDimensions).ConfigureAwait(false);
             throw;
@@ -165,6 +180,7 @@ public sealed class DurableVectorIndex : IDisposable
         IReadOnlyList<DurableVectorChunk> chunks,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         ValidateSourceId(sourceId);
         ValidateGenerationId(generationId);
@@ -182,6 +198,7 @@ public sealed class DurableVectorIndex : IDisposable
 
         ValidateChunks(chunks, space.VectorDimensions);
 
+        bool publicationStarted = false;
         await _mutationGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
@@ -219,6 +236,7 @@ public sealed class DurableVectorIndex : IDisposable
                 CommittedPosition = committedPosition
             };
             await _manifestStore.SaveAsync(manifest, cancellationToken).ConfigureAwait(false);
+            publicationStarted = true;
             await DeleteRecordsAsync(
                 record => record.SourceId == sourceId && record.GenerationId == generationId,
                 space.VectorDimensions,
@@ -243,7 +261,7 @@ public sealed class DurableVectorIndex : IDisposable
             await _manifestStore.SaveAsync(manifest, cancellationToken).ConfigureAwait(false);
             return new DurableVectorAppendResult(nextPosition, true, false);
         }
-        catch
+        catch when (publicationStarted)
         {
             await TryCleanupGenerationAsync(sourceId, generationId, space.VectorDimensions)
                 .ConfigureAwait(false);
@@ -265,6 +283,7 @@ public sealed class DurableVectorIndex : IDisposable
         string? sourceMetadata = null,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         ValidateSourceId(sourceId);
         if (state is not DurableVectorSourceState.Queued and
@@ -306,6 +325,7 @@ public sealed class DurableVectorIndex : IDisposable
         int maxResults,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         if (embedding is null || embedding.Vector.Length != space.VectorDimensions)
         {
@@ -319,12 +339,13 @@ public sealed class DurableVectorIndex : IDisposable
 
         DurableVectorIndexManifestLoadResult load =
             await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
-        if (!IsCurrent(load, space) || !File.Exists(_vectorDatabasePath))
+        if (!IsCurrent(load, space) || !File.Exists(_vectorDatabasePath) ||
+            !await HasBackingCollectionAsync(load, cancellationToken).ConfigureAwait(false))
         {
             return [];
         }
 
-        await using var store = new VectorStoreService(_vectorDatabasePath);
+        await using var store = _createStore();
         var results = new List<DurableVectorHit>(maxResults);
         for (int skip = 0; results.Count < maxResults; skip += SearchBatchSize)
         {
@@ -370,6 +391,7 @@ public sealed class DurableVectorIndex : IDisposable
         int take = int.MaxValue,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         if (skip < 0)
         {
@@ -397,6 +419,7 @@ public sealed class DurableVectorIndex : IDisposable
         int vectorDimensions,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSourceId(sourceId);
         ValidateDimensions(vectorDimensions);
         await _mutationGate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -404,6 +427,7 @@ public sealed class DurableVectorIndex : IDisposable
         {
             DurableVectorIndexManifestLoadResult load =
                 await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            if (!load.IsTrusted) { return 0; }
             load.Manifest.Sources.Remove(sourceId);
             await _manifestStore.SaveAsync(load.Manifest, cancellationToken).ConfigureAwait(false);
             return await DeleteRecordsAsync(
@@ -423,6 +447,7 @@ public sealed class DurableVectorIndex : IDisposable
         int vectorDimensions,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(ownerId))
         {
             throw new ArgumentException("An owner id is required.", nameof(ownerId));
@@ -434,6 +459,7 @@ public sealed class DurableVectorIndex : IDisposable
         {
             DurableVectorIndexManifestLoadResult load =
                 await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            if (!load.IsTrusted) { return 0; }
             foreach (string sourceId in load.Manifest.Sources
                          .Where(pair => string.Equals(pair.Value.OwnerId, ownerId, StringComparison.Ordinal))
                          .Select(static pair => pair.Key)
@@ -454,11 +480,38 @@ public sealed class DurableVectorIndex : IDisposable
         }
     }
 
+    /// <summary>Clears every source and its records while preserving the vector space and other collections.</summary>
+    public async Task<int> DeleteAllSourcesAsync(int vectorDimensions, CancellationToken cancellationToken = default)
+    {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
+        ValidateDimensions(vectorDimensions);
+        await _mutationGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            DurableVectorIndexManifestLoadResult load =
+                await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            if (!load.IsTrusted) { return 0; }
+
+            // Unpublish every source before deleting its stored records.
+            load.Manifest.Sources.Clear();
+            await _manifestStore.SaveAsync(load.Manifest, cancellationToken).ConfigureAwait(false);
+            return await DeleteRecordsAsync(
+                static _ => true,
+                GetDimensions(load.Manifest, vectorDimensions),
+                cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _mutationGate.Release();
+        }
+    }
+
     /// <summary>Publishes an empty trusted manifest before removing all physical records.</summary>
     public async Task ResetAsync(
         DurableVectorSpace space,
         CancellationToken cancellationToken = default)
     {
+        using IDisposable access = await _acquireAccess(cancellationToken).ConfigureAwait(false);
         ValidateSpace(space);
         await _mutationGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
@@ -477,18 +530,32 @@ public sealed class DurableVectorIndex : IDisposable
         _mutationGate.Dispose();
     }
 
+    /// <summary>Detects lost physical rows even when another collection recreated the database.</summary>
+    private async Task<bool> HasBackingCollectionAsync(
+        DurableVectorIndexManifestLoadResult load,
+        CancellationToken cancellationToken)
+    {
+        bool expectsRecords = load.Manifest.Sources.Values.Any(static source =>
+            source.State is DurableVectorSourceState.Pending or DurableVectorSourceState.Committed);
+        if (!expectsRecords) { return true; }
+        if (!File.Exists(_vectorDatabasePath)) { return false; }
+        await using var store = _createStore();
+        return await store.CollectionExistsAsync(_collectionName, cancellationToken).ConfigureAwait(false);
+    }
+
     private async Task<DurableVectorIndexManifest> EnsureSpaceAsync(
         DurableVectorSpace space,
         CancellationToken cancellationToken)
     {
         DurableVectorIndexManifestLoadResult load =
             await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
-        if (IsCurrent(load, space))
+        bool hasBackingCollection = await HasBackingCollectionAsync(load, cancellationToken).ConfigureAwait(false);
+        if (IsCurrent(load, space) && hasBackingCollection)
         {
             return load.Manifest;
         }
 
-        if (!load.Exists)
+        if (!load.IsTrusted || !hasBackingCollection)
         {
             return await ResetCoreAsync(space, cancellationToken).ConfigureAwait(false);
         }
@@ -510,7 +577,7 @@ public sealed class DurableVectorIndex : IDisposable
         await _manifestStore.SaveAsync(manifest, cancellationToken).ConfigureAwait(false);
         if (File.Exists(_vectorDatabasePath))
         {
-            await using var store = new VectorStoreService(_vectorDatabasePath);
+            await using var store = _createStore();
             await store.DeleteCollectionAsync<string, DurableVectorRecord>(
                 _collectionName,
                 BuildCollectionDefinition(space.VectorDimensions)).ConfigureAwait(false);
@@ -524,7 +591,7 @@ public sealed class DurableVectorIndex : IDisposable
         int vectorDimensions,
         CancellationToken cancellationToken)
     {
-        await using var store = new VectorStoreService(_vectorDatabasePath);
+        await using var store = _createStore();
         VectorStoreCollectionDefinition definition = BuildCollectionDefinition(vectorDimensions);
         await store.UpdateBatchAsync<string, DurableVectorRecord>(
             _collectionName,
@@ -551,12 +618,13 @@ public sealed class DurableVectorIndex : IDisposable
     {
         DurableVectorIndexManifestLoadResult load =
             await _manifestStore.LoadAsync(cancellationToken).ConfigureAwait(false);
-        if (!IsCurrent(load, space) || !File.Exists(_vectorDatabasePath))
+        if (!IsCurrent(load, space) || !File.Exists(_vectorDatabasePath) ||
+            !await HasBackingCollectionAsync(load, cancellationToken).ConfigureAwait(false))
         {
             return [];
         }
 
-        await using var store = new VectorStoreService(_vectorDatabasePath);
+        await using var store = _createStore();
         VectorStoreCollection<string, DurableVectorRecord> collection =
             await store.GetCollectionAsync<string, DurableVectorRecord>(
                 _collectionName,
@@ -585,7 +653,7 @@ public sealed class DurableVectorIndex : IDisposable
             return 0;
         }
 
-        await using var store = new VectorStoreService(_vectorDatabasePath);
+        await using var store = _createStore();
         return await store.DeleteWhereAsync<string, DurableVectorRecord>(
             _collectionName,
             filter,

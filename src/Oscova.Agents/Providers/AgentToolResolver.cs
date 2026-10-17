@@ -5,16 +5,12 @@ using Oscova.Agents.Policies;
 
 namespace Oscova.Agents.Providers;
 
-/// <summary>
-/// Resolves allowed tool names into exposable tools, applying confidentiality, air-gap egress,
-/// and per-tool approval policy for both direct and search-based tool exposure.
-/// </summary>
+/// <summary>Resolves allowed tool names with egress and approval policy for direct and search-based exposure.</summary>
 public sealed class AgentToolResolver(
-    CrewToolCollection tools,
+    AgentToolCollection tools,
     IEnumerable<AgentToolPolicy>? toolPolicies = null,
     bool airGapped = false,
-    bool suppressApprovalRequiredTools = false, // Sub-agents have no approval channel; drop instead of wrap.
-    bool isConfidential = false)
+    bool suppressApprovalRequiredTools = false)
 {
     private readonly ToolPolicyResolver _policyResolver = new(toolPolicies);
 
@@ -27,10 +23,6 @@ public sealed class AgentToolResolver(
             return null;
         }
 
-        if (!ConfidentialToolPolicy.IsAvailable(tool, isConfidential))
-        {
-            return null;
-        }
 
         if (airGapped && tools.GetNetworkScope(toolName) == NetworkScope.Egress)
         {
