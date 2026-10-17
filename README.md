@@ -25,7 +25,7 @@
 
 > **Follow new releases:** select **Watch > Custom > Releases** at the top of this page, and add a ⭐ if Oscova is useful to you. New Oscova versions, avatars and Avatar Engine updates are announced here.
 
-![The Oscova chat workspace](assets/screenshots/oscova-chat-workspace.webp)
+![An Oscova Avatar Engine avatar beside the Oscova chat workspace](assets/screenshots/oscova-avatar-and-chat.webp)
 
 ## What is Oscova?
 
