@@ -2,34 +2,33 @@
   <img src="assets/branding/oscova-logo.svg" alt="Oscova logo" width="112" />
 </p>
 
-<h1 align="center">Oscova Agents</h1>
+<h1 align="center">Oscova Agents: Self-Hosted AI Agent OS</h1>
 
 <p align="center">
   <strong>Private AI agents. Encrypted by default.</strong><br />
-  The self-hosted agent OS for home and office, on hardware you own.
+  For home and office, on hardware you own.
 </p>
 
 <p align="center">
-  <a href="https://github.com/oscova/oscova-agents/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/oscova/oscova-agents?label=release" /></a>
   <a href="https://www.nuget.org/packages/Oscova.Agents.App"><img alt="Oscova CLI on NuGet" src="https://img.shields.io/nuget/v/Oscova.Agents.App?label=oscova%20cli" /></a>
   <a href="https://www.nuget.org/packages/Oscova.Agents"><img alt="Oscova.Agents on NuGet" src="https://img.shields.io/nuget/v/Oscova.Agents?label=framework" /></a>
   <a href="LICENSE"><img alt="Apache-2.0 license" src="https://img.shields.io/badge/license-Apache--2.0-blue" /></a>
-  <img alt=".NET 10" src="https://img.shields.io/badge/.NET-10-512BD4" />
 </p>
 
 <p align="center">
   <a href="https://oscova.ai">Website</a> ·
-  <a href="https://oscova.ai/docs/">Documentation</a> ·
-  <a href="https://github.com/oscova/oscova-agents/releases">Releases</a>
+  <a href="https://oscova.ai/docs/">Documentation</a>
 </p>
 
-> **Follow new releases:** select **Watch > Custom > Releases** at the top of this page, and add a ⭐ if Oscova is useful to you. New Oscova versions, avatars and Avatar Engine updates are announced here.
+> ⭐ **Star this repository** to follow Oscova and help more people find a private, self-hosted AI agent OS.
 
 ![An Oscova Avatar Engine avatar beside the Oscova chat workspace](assets/screenshots/oscova-avatar-and-chat.webp)
 
-## What is Oscova?
+## What is Oscova Agents?
 
-Oscova runs AI agents as durable services on your own machine. They keep working on scheduled tasks while you sleep, answer from any browser on your network, and can put a face in the room through the Oscova Avatar Engine.
+Oscova Agents is a self-hosted AI agent OS for home and office. It runs on hardware you own, works with local models such as Ollama, and keeps chats, files and keys on your machine, with chats, definitions, user settings and memory encrypted on disk and an egress audit you can read.
+
+Agents run as durable services. They keep working on scheduled tasks while you sleep, answer from any browser on your network, and can put a face in the room through the Oscova Avatar Engine.
 
 - **Confidential by design.** Every agent's chats, tool calls, task runs and memory are encrypted on disk under your Vault Password. Incognito chats never touch disk.
 - **Local by default.** Run local models such as Ollama, LLamaSharp and Foundry Local. Cloud providers are opt-in, and the Egress Audit lists every moment data left the machine.
@@ -51,7 +50,7 @@ Oscova runs AI agents as durable services on your own machine. They keep working
 | Execution | Docker sandboxing and Microsoft MXC operating-system containment for shell commands |
 | Automation | Scheduled and triggered tasks, agent templates, notifications |
 
-## Install Oscova
+## Install Oscova on Windows, macOS or Linux
 
 Oscova runs on Windows, macOS and Linux and needs the .NET 10 SDK. The installer offers to install .NET 10 when it is needed. Automatic .NET setup on Linux currently supports Ubuntu 24.04.
 
@@ -104,7 +103,7 @@ The Oscova application, CLI and Avatar Engine are closed source and ship as free
 | [Microsoft Graph](src/Oscova.Agents.Plugins.MicrosoftGraph/README.md) | Outlook mail and Microsoft To Do tools |
 | [Web](src/Oscova.Agents.Plugins.Web/README.md) | Web and news search |
 
-## Build a plugin
+## Build a .NET plugin
 
 Plugins are NuGet packages that Oscova installs, enables and loads at runtime.
 
