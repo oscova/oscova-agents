@@ -203,7 +203,7 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
             throw new ToolFailureException("The task importance is invalid.", "Use low, normal, or high.");
         }
 
-        var dueDate = TryCreateGraphDateTime(dueDateTime);
+        var dueDate = TryCreateGraphDateTime(dueDateTime, _context.UserTimeZone);
         if (dueDateTime is not null && dueDate is null)
         {
             throw new ToolFailureException("The task due date is invalid.", "Use an ISO 8601 date and time.");
@@ -305,7 +305,7 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
             throw new ToolFailureException("The task importance is invalid.", "Use low, normal, or high.");
         }
 
-        var dueDate = string.IsNullOrWhiteSpace(dueDateTime) ? null : TryCreateGraphDateTime(dueDateTime);
+        var dueDate = string.IsNullOrWhiteSpace(dueDateTime) ? null : TryCreateGraphDateTime(dueDateTime, _context.UserTimeZone);
         if (!string.IsNullOrWhiteSpace(dueDateTime) && dueDate is null)
         {
             throw new ToolFailureException("The task due date is invalid.", "Use an ISO 8601 date and time.");
@@ -478,25 +478,29 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
     }
 
     /// <summary>
-    /// Creates a Graph dateTimeTimeZone payload in UTC from user-supplied ISO 8601 input.
+    /// Creates a Graph dateTimeTimeZone payload as wall-clock time in the user's time zone.
     /// </summary>
-    private static DateTimeTimeZone? TryCreateGraphDateTime(string? value)
+    private static DateTimeTimeZone? TryCreateGraphDateTime(string? value, TimeZoneInfo userTimeZone)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
 
-        if (!DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var result))
+        if (!DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed))
         {
             return null;
         }
 
-        var utc = result.ToUniversalTime();
+        // Offset-less input is already the user's wall clock. To Do keeps the due day of that wall clock.
+        var wallClock = parsed.Kind == DateTimeKind.Unspecified ? parsed : TimeZoneInfo.ConvertTime(parsed, userTimeZone);
+        var timeZoneId = userTimeZone.HasIanaId && TimeZoneInfo.TryConvertIanaIdToWindowsId(userTimeZone.Id, out var windowsId)
+            ? windowsId
+            : userTimeZone.Id;
         return new DateTimeTimeZone
         {
-            DateTime = utc.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
-            TimeZone = "UTC"
+            DateTime = wallClock.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
+            TimeZone = timeZoneId
         };
     }
 

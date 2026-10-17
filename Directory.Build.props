@@ -1,5 +1,7 @@
 <Project>
   <Import Project="$(MSBuildThisFileDirectory)Versions.props" />
+  <!-- Untracked Debug version overrides for local package testing. Release builds ignore them. -->
+  <Import Project="$(MSBuildThisFileDirectory)Versions.local.props" Condition="'$(Configuration)' != 'Release' and Exists('$(MSBuildThisFileDirectory)Versions.local.props')" />
 
   <PropertyGroup>
     <Authors>Oscova</Authors>

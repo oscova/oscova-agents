@@ -35,3 +35,4 @@ CLAUDE.md
 *.sqlite3
 *.bak
 *.tmp
+/Versions.local.props

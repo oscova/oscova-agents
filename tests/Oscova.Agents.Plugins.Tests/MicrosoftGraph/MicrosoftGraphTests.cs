@@ -249,6 +249,31 @@ public sealed class MicrosoftGraphTests
         Assert.Equal(status is 401 or 403 ? null : "Check the connection or try again later.", failure.Fix);
     }
 
+    /// <summary>Sends due dates as the user's wall clock so To Do keeps the intended day.</summary>
+    [Theory]
+    [InlineData("2026-10-20")]
+    [InlineData("2026-10-19T10:00:00Z")]
+    public async Task CreateTask_SendsDueDateInUserTimeZone(string dueDateTime)
+    {
+        JsonElement? sentDue = null;
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"),
+            () => new StubHttpMessageHandler(async (request, ct) =>
+            {
+                using var sent = JsonDocument.Parse(await request.Content!.ReadAsStringAsync(ct));
+                sentDue = sent.RootElement.GetProperty("dueDateTime").Clone();
+                return new HttpResponseMessage(HttpStatusCode.Created)
+                { Content = new StringContent("{\"id\":\"task-1\",\"title\":\"Task\"}", Encoding.UTF8, "application/json") };
+            }),
+            clock: new ZoneClock(TimeZoneInfo.FindSystemTimeZoneById("Pacific/Kiritimati")));
+
+        await new MicrosoftTodoToolset(context).CreateTaskAsync("list-1", "Task", dueDateTime: dueDateTime);
+
+        Assert.NotNull(sentDue);
+        Assert.Equal("2026-10-20T00:00:00", sentDue.Value.GetProperty("dateTime").GetString());
+        Assert.Equal("Line Islands Standard Time", sentDue.Value.GetProperty("timeZone").GetString());
+    }
+
     private static (object Target, string Method, AIFunctionArguments Arguments, string Service) CreateRead(
         int index, AgentPluginContext context) => index switch
     {
@@ -259,6 +284,11 @@ public sealed class MicrosoftGraphTests
         4 => (new MicrosoftTodoToolset(context), nameof(MicrosoftTodoToolset.ListTasksAsync), new() { ["taskListId"] = "list-1" }, "Microsoft To Do"),
         _ => throw new ArgumentOutOfRangeException(nameof(index))
     };
+
+    private sealed class ZoneClock(TimeZoneInfo zone) : TimeProvider
+    {
+        public override TimeZoneInfo LocalTimeZone => zone;
+    }
 
     private sealed class MissingCredentials : IToolCredentialResolver
     {
