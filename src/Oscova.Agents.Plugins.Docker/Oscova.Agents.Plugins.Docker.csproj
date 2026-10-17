@@ -4,8 +4,10 @@
     <EnableDynamicLoading>true</EnableDynamicLoading><IsPackable>true</IsPackable>
     <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
     <PackageId>Oscova.Agents.Plugins.Docker</PackageId><Version>$(DockerPluginVersion)</Version>
-    <PackageType>OscovaPlugin</PackageType><Description>Optional Docker execution and shared image management.</Description>
+    <PackageType>OscovaPlugin</PackageType><Description>Docker execution for shell commands run by Oscova Agents, with shared image management.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression><PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>oscova;oscova-agents;plugin;docker;sandbox</PackageTags>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl><RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup>
   <ItemGroup>

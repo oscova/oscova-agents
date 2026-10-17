@@ -3,7 +3,7 @@
 Oscova Agents is a reusable .NET agent framework for building **local-first** AI agents and tools on top of the Microsoft Agent Framework (`Microsoft.Agents.AI`). It is the foundation the rest of the Oscova Agents product builds on.
 
 - Build AI agents with pluggable model providers, toolsets, and context providers.
-- Extend agents through a NuGet-distributed plugin system (see the sample `Oscova.Agents.Plugins.Echo`).
+- Extend agents through a NuGet-distributed plugin system (see the [Echo plugin example](https://oscova.ai/docs/articles/developer-guide/examples/echo-plugin.html)).
 - Targets .NET 10.
 
 ## Install

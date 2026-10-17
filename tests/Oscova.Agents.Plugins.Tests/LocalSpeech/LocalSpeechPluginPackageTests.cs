@@ -9,7 +9,7 @@ namespace Oscova.Agents.Plugins.Tests.LocalSpeech;
 /// <summary>Checks each speech capability's real CPU and CUDA publication graph.</summary>
 public sealed class LocalSpeechPluginPackageTests
 {
-    private const string NativeVersion = "2.0.0";
+    private const string NativeVersion = "2.0.1";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     [Theory]

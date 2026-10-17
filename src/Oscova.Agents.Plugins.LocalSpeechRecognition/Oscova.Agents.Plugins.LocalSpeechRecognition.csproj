@@ -14,7 +14,7 @@
     <PackageId Condition="'$(LocalSpeechEdition)' == 'Cuda'">Oscova.Agents.Plugins.LocalSpeechRecognition.Cuda</PackageId>
     <Version>$(LocalSpeechRecognitionPluginVersion)</Version>
     <WhisperRuntimeVersion>1.9.1</WhisperRuntimeVersion>
-    <WhisperNativePackageVersion>2.0.0</WhisperNativePackageVersion>
+    <WhisperNativePackageVersion>2.0.1</WhisperNativePackageVersion>
     <NAudioVersion>3.0.1</NAudioVersion>
     <DefineConstants Condition="'$(LocalSpeechEdition)' == 'Cuda'">$(DefineConstants);LOCAL_SPEECH_CUDA</DefineConstants>
     <NuspecFile Condition="'$(LocalSpeechEdition)' == 'Cuda' and '$(NuspecFile)' == ''">$(MSBuildProjectDirectory)/packaging/LocalSpeechRecognition.Cuda.nuspec</NuspecFile>

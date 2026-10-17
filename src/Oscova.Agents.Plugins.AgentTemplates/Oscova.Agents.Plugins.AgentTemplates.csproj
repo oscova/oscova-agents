@@ -8,7 +8,7 @@
     <PackageId>Oscova.Agents.Plugins.AgentTemplates</PackageId>
     <Version>$(AgentTemplatesPluginVersion)</Version>
     <PackageType>OscovaPlugin</PackageType>
-    <Description>Prebuilt agents for research, writing, study, planning and everyday work.</Description>
+    <Description>Prebuilt Oscova Agents for research, writing, study, planning and everyday work.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageTags>oscova;oscova-agents;plugin;agent-templates</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

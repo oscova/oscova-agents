@@ -8,9 +8,12 @@
     <PackageId>Oscova.Agents.Plugins.Browser</PackageId>
     <Version>$(BrowserPluginVersion)</Version>
     <PackageType>OscovaPlugin</PackageType>
-    <Description>Visible browser navigation and page interaction for Oscova agents.</Description>
+    <Description>Visible browser navigation, page reading and interaction for Oscova Agents.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>oscova;oscova-agents;plugin;browser;playwright</PackageTags>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

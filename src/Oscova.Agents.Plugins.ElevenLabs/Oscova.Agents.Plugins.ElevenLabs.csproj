@@ -12,9 +12,9 @@
     <PackageId>Oscova.Agents.Plugins.ElevenLabs</PackageId>
     <Version>$(ElevenLabsPluginVersion)</Version>
     <PackageType>OscovaPlugin</PackageType>
-    <Description>ElevenLabs speech recognition and synthesis using a saved ElevenLabs credential.</Description>
+    <Description>ElevenLabs speech recognition and synthesis for Oscova Agents, using a saved ElevenLabs credential.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageTags>oscova;plugin;openai;speech</PackageTags>
+    <PackageTags>oscova;oscova-agents;plugin;elevenlabs;speech</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

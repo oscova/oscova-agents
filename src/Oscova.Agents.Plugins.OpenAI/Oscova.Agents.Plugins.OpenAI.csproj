@@ -12,9 +12,9 @@
     <PackageId>Oscova.Agents.Plugins.OpenAI</PackageId>
     <Version>$(OpenAIPluginVersion)</Version>
     <PackageType>OscovaPlugin</PackageType>
-    <Description>OpenAI speech recognition and synthesis using a saved OpenAI credential.</Description>
+    <Description>OpenAI speech recognition and synthesis for Oscova Agents, using a saved OpenAI credential.</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageTags>oscova;plugin;openai;speech</PackageTags>
+    <PackageTags>oscova;oscova-agents;plugin;openai;speech</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
