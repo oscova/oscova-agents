@@ -20,13 +20,17 @@
   <a href="https://oscova.ai/docs/">Documentation</a>
 </p>
 
-> ⭐ **Star this repository** to follow Oscova and help more people find a private, self-hosted AI agent OS.
+> ⭐ **Star and watch Oscova so you never miss what's new:**
+> - **New avatars** for your agent, or for your own app through the Oscova Avatar Engine
+> - **New plugins** for channels, tools, speech and models
+> - **Framework changes** that plugin builders need to know about
+> - **Regular updates** to the agent OS itself
 
 ![An Oscova Avatar Engine avatar beside the Oscova chat workspace](assets/screenshots/oscova-avatar-and-chat.webp)
 
 ## What is Oscova Agents?
 
-Oscova Agents is a self-hosted AI agent OS for home and office. It runs on hardware you own, works with local models such as Ollama, and keeps chats, files and keys on your machine, with chats, definitions, user settings and memory encrypted on disk and an egress audit you can read.
+Oscova Agents is a self-hosted AI agent OS that keeps your agents' data encrypted. Chats, memory, instructions and settings are encrypted on disk under a Vault Password only you hold. An Egress Audit shows every call that leaves your machine. The Oscova Avatar Engine gives your agent a realistic 3D avatar that speaks. It runs on hardware you own, at home or in the office, with local models such as Ollama.
 
 Agents run as durable services. They keep working on scheduled tasks while you sleep, answer from any browser on your network, and can put a face in the room through the Oscova Avatar Engine.
 
