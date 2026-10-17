@@ -10,8 +10,4 @@ public static class NotificationChannels
     /// </summary>
     public const string Web = "web";
 
-    /// <summary>
-    /// Discord notification channel.
-    /// </summary>
-    public const string Discord = "discord";
 }

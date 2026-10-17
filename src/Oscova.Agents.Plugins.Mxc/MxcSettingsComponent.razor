@@ -1,0 +1,13 @@
+@using Microsoft.Extensions.Localization
+@using Oscova.Agents.Plugins
+@inject IStringLocalizer<PluginText> Loc
+
+<div class="card custom-settings-catalog-card">
+    <div class="card-body gap-4">
+        <p class="text-xs opacity-60">@Loc[PluginTextKeys.Limits]</p>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+}

@@ -1,0 +1,166 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
+@using Oscova.Agents.Channels
+@using Oscova.Agents.Plugins
+@typeparam TSettings where TSettings : OfficialChannelConfiguration
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<div class="space-y-6">
+    @if (_loaded)
+    {
+        <div class="card custom-settings-catalog-card">
+            <div class="card-body custom-settings-form space-y-4">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" class="toggle toggle-primary" @bind="_startup" disabled="@_busy" />
+                    <span class="label-text">@Text(ChannelSettingsTextKeys.EnableAtStartupLabel)</span>
+                </label>
+                <p class="text-xs opacity-70">@Text(ChannelSettingsTextKeys.EnableAtStartupHint)</p>
+                <div class="flex flex-wrap items-start justify-between gap-3 rounded-box border border-base-300 bg-base-200/40 p-4">
+                    <p class="text-xs opacity-70">@Text(ChannelSettingsTextKeys.TokensManagedDescription)</p>
+                    <button type="button" class="btn btn-ghost btn-sm" @onclick="OpenCredentials">@Text(ChannelSettingsTextKeys.ManageCredentials)</button>
+                </div>
+                <fieldset class="space-y-4" disabled="@_busy">@ChildContent</fieldset>
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend" id="channel-agent-label">@Text(ChannelSettingsTextKeys.AgentLabel)</legend>
+                    <select id="channel-agent" aria-labelledby="channel-agent-label" class="select select-bordered w-full" @bind="_agentId" disabled="@_busy">
+                        @foreach (var agent in _agents) { <option value="@agent.Id">@agent.Name</option> }
+                    </select>
+                    <p class="label">@Text(ChannelSettingsTextKeys.AgentHint)</p>
+                </fieldset>
+                <div class="flex justify-end">
+                    <button type="button" data-action="save" class="btn btn-primary btn-sm" @onclick="SaveAsync" disabled="@_busy">@Text(ChannelSettingsTextKeys.SaveSettingsButton)</button>
+                </div>
+            </div>
+        </div>
+    }
+    @if (_error is not null) { <p class="text-sm text-error" role="alert">@_error</p> }
+    @if (_loadError is not null) { <p class="text-sm text-error" role="alert">@_loadError</p> }
+    @if (_control is not null)
+    {
+        <div class="card custom-settings-catalog-card">
+            <div class="card-body custom-settings-form space-y-4">
+                <h2 class="card-title">@Text(ChannelSettingsTextKeys.StatusTitle)</h2>
+                <div class="badge @(_status?.State == ChannelConnectionState.Connected ? "badge-success" : "badge-neutral") h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@StatusLabel</div>
+                @if (!string.IsNullOrWhiteSpace(_status?.BotName)) { <p class="text-sm">@_status.BotName</p> }
+                @if (!string.IsNullOrWhiteSpace(_status?.Error)) { <p class="text-sm text-error" role="alert">@_status.Error</p> }
+                @if (IsDirty) { <p class="text-sm opacity-70">@Text(ChannelSettingsTextKeys.SaveBeforeStartHint)</p> }
+                <div class="flex flex-wrap gap-2">
+                    @if (_status?.IsRunning == true)
+                    { <button type="button" data-action="stop" class="btn btn-error btn-sm" @onclick="StopAsync" disabled="@_busy">@Text(ChannelSettingsTextKeys.StopBotButton)</button> }
+                    else
+                    { <button type="button" data-action="start" class="btn btn-success btn-sm" @onclick="StartAsync" disabled="@(_busy || !_loaded || IsDirty)">@Text(ChannelSettingsTextKeys.StartBotButton)</button> }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    [Parameter, EditorRequired] public string ChannelId { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public Func<string, string> Text { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<AgentPluginContext, CancellationToken, Task<TSettings>> Load { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<bool, string?, TSettings> Capture { get; set; } = default!;
+    [Parameter, EditorRequired] public Action<TSettings> Initialize { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<TSettings, bool, IReadOnlyDictionary<string, ChannelValidationError>> Validate { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<TSettings, AgentPluginContext, CancellationToken, Task> Persist { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    private TSettings? _saved;
+    private IPluginChannelControl? _control;
+    private PluginChannelStatus? _status;
+    private IReadOnlyList<PluginChannelAgent> _agents = [];
+    private IDisposable? _subscription;
+    private readonly CancellationTokenSource _lifetime = new();
+    private bool _startup, _busy, _loaded, _disposed;
+    private string? _agentId, _error, _loadError;
+    private string? SavedAgentId => _agents.Any(agent => agent.Id == _saved?.AgentId) ? _saved!.AgentId : _agents.FirstOrDefault()?.Id;
+    private bool IsDirty => _saved is not null && !Equals(Capture(_startup, _agentId), _saved with { AgentId = SavedAgentId });
+    private string StatusLabel => Text(_status?.State switch
+    {
+        ChannelConnectionState.Connected => ChannelSettingsTextKeys.Connected,
+        ChannelConnectionState.Starting => ChannelSettingsTextKeys.Loading,
+        ChannelConnectionState.Error => ChannelSettingsTextKeys.Error,
+        _ => ChannelSettingsTextKeys.Disconnected
+    });
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RunAsync(async () =>
+        {
+            var resolve = Context.ResolveChannelAsync ?? throw new InvalidOperationException("The host does not supply channel controls.");
+            _control = await resolve(ChannelId, _lifetime.Token);
+            if (_disposed) { return; }
+            var subscription = await _control.SubscribeAsync(status => { _ = UpdateStatusAsync(status); }, _lifetime.Token);
+            if (_disposed) { subscription.Dispose(); return; }
+            _subscription = subscription;
+            _status = await _control.GetStatusAsync(_lifetime.Token);
+            _agents = await _control.GetAgentsAsync(_lifetime.Token);
+        });
+        if (_disposed || _control is null) { return; }
+        // Configuration loading is separate so status and Stop survive an unreadable plugin file.
+        await RunAsync(async () =>
+        {
+            _saved = await Load(Context.Plugin, _lifetime.Token);
+            Initialize(_saved);
+            _startup = _saved.StartAtStartup;
+            _agentId = SavedAgentId;
+            _loaded = true;
+        }, loading: true);
+    }
+
+    private Task SaveAsync() => RunAsync(async () =>
+    {
+        var draft = Capture(_startup, _agentId);
+        var result = await _control!.SaveAsync(draft.AgentId, async (complete, ct) =>
+        {
+            var errors = Validate(draft, complete || draft.StartAtStartup);
+            if (errors.Count > 0) { throw new ArgumentException(string.Join(" ", errors.Values.Select(error => Text(error.ResourceKey ?? string.Empty)))); }
+            await Persist(draft, Context.Plugin, ct);
+        }, _lifetime.Token);
+        _saved = draft;
+        _status = result.Status;
+        Context.Ui.Notify(Text(ChannelSettingsTextKeys.Saved), PluginNotificationKind.Success);
+        _error = result.ApplicationError;
+    });
+
+    private Task StartAsync() => RunAsync(async () =>
+    { if (_loaded && !IsDirty) { _status = await _control!.StartAsync(_lifetime.Token); } });
+    private Task StopAsync() => RunAsync(async () => _status = await _control!.StopAsync(_lifetime.Token));
+
+    private async Task RunAsync(Func<Task> action, bool loading = false)
+    {
+        _busy = true; _error = null;
+        try { await action(); }
+        catch (OperationCanceledException) when (_disposed) { }
+        catch (Exception ex)
+        {
+            Context.Plugin.LoggerFactory.CreateLogger("OfficialChannelSettings").LogError(ex, "Settings operation failed for channel {ChannelId}.", ChannelId);
+            if (!_disposed)
+            {
+                if (loading) { _loadError = ex.Message; }
+                else { _error = ex.Message; }
+            }
+        }
+        finally { _busy = false; }
+    }
+
+    private async Task UpdateStatusAsync(PluginChannelStatus status)
+    {
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                if (_disposed) { return; }
+                _status = status;
+                StateHasChanged();
+            });
+        }
+        catch (OperationCanceledException) { }
+        catch (ObjectDisposedException) when (_disposed) { }
+    }
+    private void OpenCredentials() => Navigation.NavigateTo("/settings/accounts-access/credentials");
+    public void Dispose()
+    { _disposed = true; _subscription?.Dispose(); _lifetime.Cancel(); _lifetime.Dispose(); }
+}

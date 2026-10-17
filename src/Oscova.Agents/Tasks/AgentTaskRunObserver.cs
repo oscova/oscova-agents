@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Middleware;
@@ -14,7 +16,7 @@ public sealed class AgentTaskRunObserver(AgentTaskRun run) : IAgentRunObserver
     private bool _capturedInitialUserMessage;
 
     /// <inheritdoc />
-    public void OnRequest(IEnumerable<ChatMessage> messages, ChatOptions? options)
+    public Task OnRequestAsync(IEnumerable<ChatMessage> messages, ChatOptions? options, CancellationToken cancellationToken = default)
     {
         CaptureSystemInstruction(run, options);
         var snapshot = messages as IReadOnlyList<ChatMessage> ?? messages.ToList();
@@ -59,7 +61,8 @@ public sealed class AgentTaskRunObserver(AgentTaskRun run) : IAgentRunObserver
                 added = true;
             }
         }
-        if (added) run.LiveMessagesChanged?.Invoke();
+        if (added) { run.LiveMessagesChanged?.Invoke(); }
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

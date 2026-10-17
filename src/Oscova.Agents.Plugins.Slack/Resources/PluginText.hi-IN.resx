@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Slack.Label"><value>Slack</value></data>
+  <data name="Settings.Slack.ConfigurationDescription"><value>वर्कस्पेस के सदस्य इंस्टॉल किया गया Slack ऐप देख सकते हैं। Oscova केवल अधिकृत सदस्य के सीधे संदेशों का जवाब देता है।</value></data>
+  <data name="Settings.Slack.WorkspaceIdLabel"><value>Slack कार्यस्थान ID</value></data>
+  <data name="Settings.Slack.WorkspaceIdHint"><value>Slack को ब्राउज़र में खोलें। /client/ के बाद T से शुरू होने वाली ID ही कॉपी करें, अगली स्लैश तक।</value></data>
+  <data name="Settings.Slack.UserIdLabel"><value>अधिकृत Slack सदस्य ID</value></data>
+  <data name="Settings.Slack.IdentityHint"><value>अपनी Slack प्रोफ़ाइल में More &gt; Copy member ID चुनें। केवल इस सदस्य के निजी संदेश स्वीकार किए जाते हैं।</value></data>
+  <data name="Credential.Label"><value>Slack बॉट</value></data>
+  <data name="Credential.Description"><value>निजी Slack कनेक्शन के लिए बॉट उपयोगकर्ता OAuth टोकन और ऐप-स्तरीय टोकन।</value></data>
+  <data name="Credential.BotToken.Label"><value>बॉट उपयोगकर्ता OAuth टोकन</value></data>
+  <data name="Credential.AppLevelToken.Label"><value>ऐप-स्तरीय टोकन</value></data>
+  <data name="Validation.WorkspaceId"><value>Slack कार्यस्थान ID आवश्यक है।</value></data>
+  <data name="Validation.AuthorizedUserId"><value>अधिकृत Slack सदस्य ID आवश्यक है।</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>शुरू होने पर कनेक्ट करें</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>सक्षम होने पर, एप्लिकेशन शुरू होने पर बॉट अपने आप कनेक्ट हो जाएगा</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>बॉट टोकन क्रेडेंशियल्स टैब में केंद्रीय रूप से प्रबंधित किए जाते हैं।</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>क्रेडेंशियल्स प्रबंधित करें</value></data>
+  <data name="Settings.Section.Agent.Label"><value>मुख्य एजेंट</value></data>
+  <data name="Settings.Channels.AgentHint"><value>इस चैनल में जवाब देने वाला एजेंट चुनें।</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>सेटिंग्स सहेजें</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>बॉट स्थिति</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>चैनल शुरू करने से पहले बदलाव सहेजें।</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>बॉट रोकें</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>बॉट प्रारंभ करें</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>सेटिंग्स सफलतापूर्वक सहेजी गईं।</value></data>
+  <data name="Common.Connected">
+		<value>कनेक्ट किया गया</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>डिस्कनेक्ट किया गया</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>लोड हो रहा है...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

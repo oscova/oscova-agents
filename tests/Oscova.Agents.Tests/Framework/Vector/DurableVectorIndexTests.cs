@@ -7,6 +7,9 @@ namespace Oscova.Agents.Tests.Framework.Vector;
 
 public sealed class DurableVectorIndexTests : IDisposable
 {
+    private readonly Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector _protector = new();
+    private sealed class NoopAccess : IDisposable { public void Dispose() { } }
+
     private static readonly DurableVectorSpace Space = new("provider:model", 3);
     private readonly string _root = Path.Combine(
         Path.GetTempPath(),
@@ -58,7 +61,7 @@ public sealed class DurableVectorIndexTests : IDisposable
         DurableVectorChunk chunk = CreateChunk("recover", new float[] { 1, 0, 0 });
         await index.AppendAsync(Space, "thread", "agent", "0:1:hash", 0, 1, [chunk]);
 
-        var store = new DurableVectorIndexManifestStore(ManifestPath, NullLogger.Instance);
+        var store = new DurableVectorIndexManifestStore(ManifestPath, NullLogger.Instance, _protector, "vector-test", "vector-manifest:durable:v1");
         DurableVectorIndexManifest manifest = (await store.LoadAsync()).Manifest;
         manifest.Sources["thread"].State = DurableVectorSourceState.Pending;
         manifest.Sources["thread"].CommittedPosition = 0;
@@ -137,7 +140,7 @@ public sealed class DurableVectorIndexTests : IDisposable
             "generation",
             [CreateChunk("valid", new float[] { 0.9f, 0.1f, 0 })]);
 
-        var store = new DurableVectorIndexManifestStore(ManifestPath, NullLogger.Instance);
+        var store = new DurableVectorIndexManifestStore(ManifestPath, NullLogger.Instance, _protector, "vector-test", "vector-manifest:durable:v1");
         DurableVectorIndexManifest manifest = (await store.LoadAsync()).Manifest;
         foreach (DurableVectorSourceEntry source in manifest.Sources.Values)
         {
@@ -167,7 +170,7 @@ public sealed class DurableVectorIndexTests : IDisposable
 
         Assert.Empty(await index.BrowseAsync(new DurableVectorSpace("other", 3), null, null));
 
-        await File.WriteAllTextAsync(ManifestPath, "{ malformed");
+        await File.WriteAllTextAsync(ManifestPath, _protector.Protect("vector-test", "vector-manifest:durable:v1", "{ malformed"));
         Assert.Empty(await index.BrowseAsync(Space, null, null));
     }
 
@@ -226,11 +229,37 @@ public sealed class DurableVectorIndexTests : IDisposable
 
         await index.ResetAsync(Space);
 
-        await using var store = new VectorStoreService(DatabasePath);
+        await using var store = new VectorStoreService(DatabasePath, new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString());
         VectorStoreCollection<string, SiblingRecord> sibling =
             await store.GetCollectionAsync<string, SiblingRecord>("sibling", SiblingDefinition());
         SiblingRecord remaining = Assert.Single(await sibling.GetAsync(record => true, 10).ToListAsync());
         Assert.Equal("keep", remaining.Key);
+    }
+
+    [Fact]
+    public async Task DeleteAllSourcesAsync_ClearsRecordsAndPreservesSiblingCollection()
+    {
+        using DurableVectorIndex index = CreateIndex();
+        await index.AppendAsync(Space, "thread-a", "agent-a", "a", 0, 1,
+            [CreateChunk("a", new float[] { 1, 0, 0 })]);
+        await index.ReplaceAsync(Space, "source-b", "b",
+            [CreateChunk("b", new float[] { 0, 1, 0 })]);
+        await SeedSiblingCollectionAsync();
+
+        Assert.Equal(2, await index.DeleteAllSourcesAsync(3));
+        DurableVectorIndexSnapshot snapshot = await index.GetSnapshotAsync();
+        Assert.Empty(snapshot.Sources);
+        Assert.Equal(Space.Fingerprint, snapshot.Fingerprint);
+        Assert.Empty(await index.BrowseAsync(Space, null, null));
+
+        await using var store = new VectorStoreService(DatabasePath,
+            new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString());
+        var sibling = await store.GetCollectionAsync<string, SiblingRecord>("sibling", SiblingDefinition());
+        Assert.Equal("keep", Assert.Single(await sibling.GetAsync(record => true, 10).ToListAsync()).Key);
+
+        await index.AppendAsync(Space, "thread-a", "agent-a", "a", 0, 1,
+            [CreateChunk("new", new float[] { 1, 0, 0 })]);
+        Assert.Equal("new", Assert.Single(await index.BrowseAsync(Space, null, null)).Content);
     }
 
     public void Dispose()
@@ -243,10 +272,11 @@ public sealed class DurableVectorIndexTests : IDisposable
 
     private string DatabasePath => Path.Combine(_root, "vectors.db");
 
-    private string ManifestPath => Path.Combine(_root, "index.json");
+    private string ManifestPath => Path.Combine(_root, "index.json.enc");
 
     private DurableVectorIndex CreateIndex() =>
-        new(DatabasePath, ManifestPath, "durable", NullLogger.Instance);
+        new(DatabasePath, ManifestPath, "durable", NullLogger.Instance, _protector, "vector-test",
+            () => new VectorStoreService(DatabasePath, new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString()), _ => Task.FromResult<IDisposable>(new NoopAccess()));
 
     private static DurableVectorChunk CreateChunk(string content, ReadOnlyMemory<float> vector) =>
         new(content, vector, 0, Metadata: "opaque", Timestamp: DateTimeOffset.UnixEpoch);
@@ -268,7 +298,7 @@ public sealed class DurableVectorIndexTests : IDisposable
 
     private async Task SeedSiblingCollectionAsync()
     {
-        await using var store = new VectorStoreService(DatabasePath);
+        await using var store = new VectorStoreService(DatabasePath, new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString());
         await store.UpdateBatchAsync<string, SiblingRecord>(
             "sibling",
             [new SiblingRecord { Key = "keep", Vector = new float[] { 1, 0, 0 } }],

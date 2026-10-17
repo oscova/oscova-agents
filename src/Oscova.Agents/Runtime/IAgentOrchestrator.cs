@@ -15,20 +15,19 @@ public interface IAgentOrchestrator : IAgentCacheInvalidator
     /// <summary>
     /// Gets the synchronized tool collection used by built agents.
     /// </summary>
-    CrewToolCollection Tools { get; }
+    AgentToolCollection Tools { get; }
 
     /// <summary>
     /// Gets the cache of built agents, including exposed agent-as-tool dependencies.
     /// </summary>
     AIAgentCollection AIAgents { get; }
 
-    /// <summary>
-    /// Replaces the tool collection contents with host toolsets and external tools.
-    /// </summary>
+    /// <summary>Replaces registered tools after applying the caller's optional execution decorators.</summary>
     void SyncTools(
         IEnumerable<ToolsetRegistration> toolsets,
         IReadOnlyList<AIFunction> externalTools,
-        IReadOnlyDictionary<string, ExternalToolMetadata> externalToolMetadata);
+        IReadOnlyDictionary<string, ExternalToolMetadata> externalToolMetadata,
+        System.Func<AIFunction, AIFunction>? decorate = null);
 
     /// <summary>
     /// Removes a single agent from the cache.

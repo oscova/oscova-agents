@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.AI;
 
 namespace Oscova.Agents.Middleware;
@@ -14,7 +16,8 @@ public interface IAgentRunObserver
     /// </summary>
     /// <param name="messages">The messages that will be submitted to the model.</param>
     /// <param name="options">The request options that contain the assembled instruction and offered tools.</param>
-    void OnRequest(IEnumerable<ChatMessage> messages, ChatOptions? options);
+    /// <param name="cancellationToken">Cancels preparation before the model receives the request.</param>
+    Task OnRequestAsync(IEnumerable<ChatMessage> messages, ChatOptions? options, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Called after the model client returns a response.

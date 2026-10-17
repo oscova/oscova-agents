@@ -6,7 +6,6 @@ using Oscova.Agents.Secrets;
 using Oscova.Agents.Tasks;
 using Oscova.Agents.Workspace;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace Oscova.Agents.Tests.Framework.Tasks;
 
@@ -17,6 +16,79 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         Path.GetTempPath(),
         $"oscova-task-repository-tests-{Guid.NewGuid():N}");
     private readonly YamlConverter _yamlConverter = new();
+
+    [Fact]
+    public async Task EnsureTask_PreservesEditedDefinitionAndHistory()
+    {
+        var (repository, catalog) = CreateRepository();
+        var initial = CreateTask("Seeded task");
+        initial.RequiresHandler = true;
+        await repository.EnsureTaskAsync("plugin-example.record-run", initial);
+        var directory = Assert.IsType<string>(catalog.TryGetTaskDirectory(initial.Id));
+        var file = Path.Combine(directory, "task.md.enc");
+        var saved = Assert.IsType<AgentTaskDefinition>(await repository.GetTaskAsync(_userId, initial.Id));
+        saved.Name = "Edited task";
+        saved.Schedule.IntervalMinutes = 45;
+        await repository.SaveTaskAsync(saved);
+        await repository.SaveRunAsync(new AgentTaskRun
+        {
+            Id = "first-run",
+            TaskId = saved.Id,
+            UserId = saved.UserId,
+            Status = AgentTaskStatus.Completed,
+            StartedAt = DateTimeOffset.UtcNow,
+            CompletedAt = DateTimeOffset.UtcNow,
+            ResultSummary = "Recorded."
+        });
+        var bytes = await File.ReadAllBytesAsync(file);
+
+        await repository.EnsureTaskAsync("plugin-example.record-run", CreateTask("New default"));
+
+        Assert.Equal(bytes, await File.ReadAllBytesAsync(file));
+        var restored = Assert.IsType<AgentTaskDefinition>(await repository.GetTaskAsync(_userId, initial.Id));
+        Assert.Equal(saved.Id, restored.Id);
+        Assert.Equal(saved.CreatedAt.ToUnixTimeSeconds(), restored.CreatedAt.ToUnixTimeSeconds());
+        Assert.Equal("Edited task", restored.Name);
+        Assert.Equal(45, restored.Schedule.IntervalMinutes);
+        Assert.True(restored.RequiresHandler);
+        Assert.Equal("Recorded.", Assert.Single(await repository.GetRunsAsync(_userId, initial.Id)).ResultSummary);
+    }
+
+    [SkippableFact]
+    public async Task EnsureTask_RejectsEscapingDirectory()
+    {
+        var (repository, _) = CreateRepository();
+        var task = CreateTask("Safe task");
+        await Assert.ThrowsAsync<ArgumentException>(() => repository.EnsureTaskAsync("../outside", task));
+        Assert.False(Directory.Exists(Path.Combine(_usersRoot, _userId, "outside")));
+
+        var tasksRoot = Path.Combine(_usersRoot, _userId, "tasks");
+        var outside = Path.Combine(_usersRoot, "outside");
+        Directory.CreateDirectory(tasksRoot);
+        Directory.CreateDirectory(outside);
+        var link = Path.Combine(tasksRoot, "plugin-link");
+        try
+        {
+            try
+            {
+                Directory.CreateSymbolicLink(link, outside);
+            }
+            catch (Exception exception) when (exception is PlatformNotSupportedException or IOException or UnauthorizedAccessException)
+            {
+                Skip.If(true, $"Symbolic link creation is unavailable on this runner: {exception.Message}");
+            }
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() => repository.EnsureTaskAsync("plugin-link", task));
+            Assert.False(File.Exists(Path.Combine(outside, "task.md.enc")));
+        }
+        finally
+        {
+            if (Directory.Exists(link))
+            {
+                Directory.Delete(link);
+            }
+        }
+    }
 
     [Fact]
     public void Constructor_WhenUsersRootResolverIsNull_Throws()
@@ -39,7 +111,8 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var catalog = new AgentTaskCatalog(
             () => currentRoot,
             _yamlConverter,
-            NullLogger<AgentTaskCatalog>.Instance);
+            NullLogger<AgentTaskCatalog>.Instance,
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
         var repository = new AgentTaskRepository(
             () => currentRoot,
             catalog,
@@ -54,9 +127,9 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var secondTask = CreateTask("Second Root Task");
         await repository.SaveTaskAsync(secondTask);
 
-        Assert.True(File.Exists(Path.Combine(firstRoot, _userId, "tasks", "first-root-task", "task.md")));
-        Assert.True(File.Exists(Path.Combine(secondRoot, _userId, "tasks", "second-root-task", "task.md")));
-        Assert.False(File.Exists(Path.Combine(firstRoot, _userId, "tasks", "second-root-task", "task.md")));
+        Assert.True(File.Exists(Path.Combine(firstRoot, _userId, "tasks", "first-root-task", "task.md.enc")));
+        Assert.True(File.Exists(Path.Combine(secondRoot, _userId, "tasks", "second-root-task", "task.md.enc")));
+        Assert.False(File.Exists(Path.Combine(firstRoot, _userId, "tasks", "second-root-task", "task.md.enc")));
     }
 
     [Fact]
@@ -71,7 +144,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         Assert.NotNull(taskDirectory);
         Assert.EndsWith($"tasks{Path.DirectorySeparatorChar}reserved-task-2", taskDirectory);
 
-        var taskFile = await File.ReadAllTextAsync(Path.Combine(taskDirectory!, "task.md"));
+        var taskFile = (await EncryptedFileContent.ReadAllTextAsync(_userId, Path.Combine(taskDirectory!, "task.md.enc"), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()))!;
         Assert.Contains($"id: {task.Id}", taskFile);
         Assert.Contains("is_enabled: true", taskFile);
         Assert.DoesNotContain("is_system", taskFile, StringComparison.OrdinalIgnoreCase);
@@ -225,7 +298,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var runsDirectory = Path.Combine(taskDirectory!, "runs");
         Assert.True(File.Exists(Path.Combine(runsDirectory, "index.jsonl")));
         Assert.True(File.Exists(Path.Combine(runsDirectory, run.Id + ".jsonl")));
-        Assert.True(File.Exists(Path.Combine(runsDirectory, run.Id + ".session.json")));
+        Assert.True(File.Exists(Path.Combine(runsDirectory, run.Id + ".session.json.enc")));
         Assert.Equal(2, (await File.ReadAllLinesAsync(Path.Combine(runsDirectory, run.Id + ".jsonl"))).Length);
 
         var loaded = await repository.GetRunAsync(_userId, task.Id, run.Id);
@@ -249,7 +322,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             Id = Guid.NewGuid().ToString(),
             TaskId = task.Id,
             UserId = task.UserId,
-            IsEncrypted = true,
             Status = AgentTaskStatus.Failed,
             StartedAt = DateTimeOffset.UtcNow,
             ResultSummary = "confidential-summary",
@@ -271,7 +343,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             Environment.NewLine,
             await File.ReadAllTextAsync(Path.Combine(runsDirectory, "index.jsonl")),
             await File.ReadAllTextAsync(Path.Combine(runsDirectory, run.Id + ".jsonl")),
-            await File.ReadAllTextAsync(Path.Combine(runsDirectory, run.Id + ".session.json")));
+            await File.ReadAllTextAsync(Path.Combine(runsDirectory, run.Id + ".session.json.enc")));
         foreach (var secret in new[]
                  {
                      "confidential-summary",
@@ -288,7 +360,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var loaded = await repository.GetRunAsync(_userId, task.Id, run.Id);
 
         Assert.NotNull(loaded);
-        Assert.True(loaded!.IsEncrypted);
         Assert.Equal("confidential-summary", loaded.ResultSummary);
         Assert.Equal("confidential-error", loaded.Error);
         Assert.Equal("confidential-instruction", loaded.SystemInstruction);
@@ -306,7 +377,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         await repository.SaveTaskAsync(task);
         var startedAt = DateTimeOffset.UtcNow;
         var completed = CreateRun("completed", task, "private summary", "private response", "earlier-session");
-        completed.IsEncrypted = true;
         completed.StartedAt = startedAt;
         await repository.SaveRunAsync(completed);
         for (var occurrence = 1; occurrence <= 2; occurrence++)
@@ -323,10 +393,10 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         Assert.Equal(AgentTaskStatus.Skipped, (await repository.GetLatestRunAsync(task.UserId, task.Id))?.Status);
         Assert.Null(await repository.GetLatestSessionAsync("another-user", task.Id));
-        Assert.Empty(protector.UnprotectCalls);
+        Assert.DoesNotContain(protector.UnprotectCalls, call => call.UserId == "another-user");
         var session = await repository.GetLatestSessionAsync(task.UserId, task.Id);
         Assert.Equal("earlier-session", session?.GetProperty("value").GetString());
-        var opened = Assert.Single(protector.UnprotectCalls);
+        var opened = Assert.Single(protector.UnprotectCalls, call => call.Purpose.EndsWith("\0session", StringComparison.Ordinal));
         Assert.Equal(task.UserId, opened.UserId);
         Assert.Equal($"task\0{task.Id}\0{completed.Id}\0session", opened.Purpose);
 
@@ -346,7 +416,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             StartedAt = startedAt.AddMinutes(4)
         });
         Assert.Null(await repository.GetLatestSessionAsync(task.UserId, task.Id));
-        Assert.Single(protector.UnprotectCalls);
+        Assert.Equal(2, protector.UnprotectCalls.Count(call => call.Purpose.EndsWith("\0session", StringComparison.Ordinal)));
     }
 
     [Fact]
@@ -361,7 +431,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             Id = Guid.NewGuid().ToString(),
             TaskId = task.Id,
             UserId = task.UserId,
-            IsEncrypted = true,
             Status = AgentTaskStatus.Completed,
             StartedAt = DateTimeOffset.UtcNow,
             ResultSummary = "hidden-summary"
@@ -371,10 +440,10 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var metadata = await repository.GetRunMetadataAsync(_userId, task.Id, run.Id);
 
         Assert.NotNull(metadata);
-        Assert.True(metadata!.IsEncrypted);
         Assert.Null(metadata.ResultSummary);
         Assert.Null(metadata.Error);
-        Assert.Empty(protector.UnprotectCalls);
+        var opened = Assert.Single(protector.UnprotectCalls);
+        Assert.Equal($"task\0{task.Id}\0index", opened.Purpose);
     }
 
     [Theory]
@@ -392,23 +461,26 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             Id = Guid.NewGuid().ToString(),
             TaskId = task.Id,
             UserId = task.UserId,
-            IsEncrypted = true,
             LiveMessages = [new ChatMessage(ChatRole.User, "secret")]
         };
         await repository.SaveRunAsync(run);
         var path = Path.Combine(catalog.TryGetTaskDirectory(task.Id)!, "runs", run.Id + ".jsonl");
         var lines = await File.ReadAllLinesAsync(path);
-        var message = JsonNode.Parse(lines[1])!.AsObject();
-        message.Remove("message");
-        message["is_encrypted"] = true;
-        message["protected_payload"] = corruption switch
+        lines[1] = corruption switch
         {
-            "missing-payload" => null,
+            "missing-payload" => "{}",
             "unopenable-payload" => "invalid",
             _ => protector.Protect(_userId, $"task\0{task.Id}\0{run.Id}\0transcript", "not-json")
         };
-        lines[1] = message.ToJsonString();
         await File.WriteAllLinesAsync(path, lines);
+
+        if (corruption == "invalid-json")
+        {
+            var loaded = await repository.GetRunAsync(_userId, task.Id, run.Id);
+            Assert.NotNull(loaded);
+            Assert.Null(loaded!.LiveMessages);
+            return;
+        }
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => repository.GetRunAsync(_userId, task.Id, run.Id));
@@ -433,7 +505,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
         var runsDirectory = Path.Combine(taskDirectory!, "runs");
-        Assert.False(File.Exists(Path.Combine(runsDirectory, run.Id + ".session.json")));
+        Assert.False(File.Exists(Path.Combine(runsDirectory, run.Id + ".session.json.enc")));
     }
 
     [Fact]
@@ -453,7 +525,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         await repository.SaveRunAsync(run);
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
-        var sessionPath = Path.Combine(taskDirectory!, "runs", run.Id + ".session.json");
+        var sessionPath = Path.Combine(taskDirectory!, "runs", run.Id + ".session.json.enc");
         Assert.True(File.Exists(sessionPath));
 
         run.SessionElement = null;
@@ -487,12 +559,12 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             await Assert.ThrowsAsync<ArgumentException>(() => repository.SaveRunAsync(run));
 
             Assert.False(File.Exists(outsideStem + ".jsonl"));
-            Assert.False(File.Exists(outsideStem + ".session.json"));
+            Assert.False(File.Exists(outsideStem + ".session.json.enc"));
         }
         finally
         {
             File.Delete(outsideStem + ".jsonl");
-            File.Delete(outsideStem + ".session.json");
+            File.Delete(outsideStem + ".session.json.enc");
         }
     }
 
@@ -610,7 +682,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
-        var taskFile = await File.ReadAllTextAsync(Path.Combine(taskDirectory!, "task.md"));
+        var taskFile = (await EncryptedFileContent.ReadAllTextAsync(_userId, Path.Combine(taskDirectory!, "task.md.enc"), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()))!;
         Assert.Contains("tool_approval_run_mode: auto_approve_required", taskFile);
         Assert.Contains("created_by_agent_id: agent-creator", taskFile);
 
@@ -636,7 +708,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
-        var taskFile = await File.ReadAllTextAsync(Path.Combine(taskDirectory!, "task.md"));
+        var taskFile = (await EncryptedFileContent.ReadAllTextAsync(_userId, Path.Combine(taskDirectory!, "task.md.enc"), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()))!;
         Assert.Contains("kind: after_task", taskFile, StringComparison.Ordinal);
         Assert.Contains($"predecessor_task_id: {predecessorTaskId}", taskFile, StringComparison.Ordinal);
 
@@ -675,22 +747,22 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var task = CreateTask("Scoped Reflection");
         task.RunScope = new TaskRunScope
         {
-            AllowedToolNames = ["coding__read_file", "coding__write_file"],
+            AllowedToolNames = ["file__read", "file__write"],
             ToolPolicies =
             [
                 new AgentToolPolicy
                 {
-                    ToolName = "coding__write_file",
+                    ToolName = "file__write",
                     ApprovalMode = ToolApprovalMode.AutoApprove
                 },
                 new AgentToolPolicy
                 {
-                    ToolName = "coding__read_file",
+                    ToolName = "file__read",
                     ApprovalMode = ToolApprovalMode.Default
                 }
             ],
             IsToolSearchEnabled = true,
-            PinnedToolNames = ["coding__read_file"],
+            PinnedToolNames = ["file__read"],
             IsCompactionEnabled = false,
             IsMemoryEnabled = false,
             IsTodoEnabled = true,
@@ -701,7 +773,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             AllowedDirectories =
             [
                 new AllowedDirectory(
-                    "agents/main/data/notes",
+                    "agents/main/private/notes",
                     "notes",
                     DirectorySourceKind.UserDirectory,
                     WorkspaceAccessMode.ReadWrite)
@@ -712,7 +784,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
-        var taskFile = await File.ReadAllTextAsync(Path.Combine(taskDirectory!, "task.md"));
+        var taskFile = (await EncryptedFileContent.ReadAllTextAsync(_userId, Path.Combine(taskDirectory!, "task.md.enc"), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()))!;
         Assert.Contains("run_scope:", taskFile, StringComparison.Ordinal);
         Assert.Contains("allowed_workspaces: []", taskFile, StringComparison.Ordinal);
         Assert.DoesNotContain("approval_mode: default", taskFile, StringComparison.OrdinalIgnoreCase);
@@ -720,20 +792,20 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var loaded = await repository.GetTaskAsync(_userId, task.Id);
 
         Assert.NotNull(loaded?.RunScope);
-        Assert.Equal(["coding__read_file", "coding__write_file"], loaded!.RunScope!.AllowedToolNames);
+        Assert.Equal(["file__read", "file__write"], loaded!.RunScope!.AllowedToolNames);
         Assert.True(loaded.RunScope.IsToolSearchEnabled);
         Assert.False(loaded.RunScope.IsMemoryEnabled);
         Assert.True(loaded.RunScope.IsTodoEnabled);
         Assert.True(loaded.RunScope.IsLocalOnly);
-        Assert.Equal(["coding__read_file"], loaded.RunScope.PinnedToolNames);
+        Assert.Equal(["file__read"], loaded.RunScope.PinnedToolNames);
         Assert.Equal(["agent-tool-1"], loaded.RunScope.AgentToolIds);
         Assert.Equal(["note-review"], loaded.RunScope.AllowedSkillNames);
         Assert.Empty(loaded.RunScope.AllowedWorkspaces);
         var policy = Assert.Single(loaded.RunScope.ToolPolicies);
-        Assert.Equal("coding__write_file", policy.ToolName);
+        Assert.Equal("file__write", policy.ToolName);
         Assert.Equal(ToolApprovalMode.AutoApprove, policy.ApprovalMode);
         var directory = Assert.Single(loaded.RunScope.AllowedDirectories);
-        Assert.Equal("agents/main/data/notes", directory.Value);
+        Assert.Equal("agents/main/private/notes", directory.Value);
         Assert.Equal("notes", directory.Label);
         Assert.Equal(DirectorySourceKind.UserDirectory, directory.Kind);
         Assert.Equal(WorkspaceAccessMode.ReadWrite, directory.AccessMode);
@@ -749,7 +821,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
-        var taskFile = await File.ReadAllTextAsync(Path.Combine(taskDirectory!, "task.md"));
+        var taskFile = (await EncryptedFileContent.ReadAllTextAsync(_userId, Path.Combine(taskDirectory!, "task.md.enc"), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()))!;
         Assert.DoesNotContain("run_scope:", taskFile, StringComparison.Ordinal);
 
         var loaded = await repository.GetTaskAsync(_userId, task.Id);
@@ -798,7 +870,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         Assert.NotNull(taskDirectory);
 
         var runsDirectory = Path.Combine(taskDirectory!, "runs");
-        await File.AppendAllTextAsync(Path.Combine(runsDirectory, "index.jsonl"), "not json" + Environment.NewLine);
+        await File.AppendAllTextAsync(Path.Combine(runsDirectory, "index.jsonl"), new PassThroughContentProtector().Protect(_userId, $"task\0{task.Id}\0index", "not json") + Environment.NewLine);
 
         var laterRun = new AgentTaskRun
         {
@@ -843,7 +915,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         var indexPath = Path.Combine(taskDirectory!, "runs", "index.jsonl");
         await File.AppendAllTextAsync(
             indexPath,
-            "{\"id\":\"bad-run\",\"task_id\":\"" + task.Id + "\",\"status\":\"completed\",\"started_at\":\"not-a-timestamp\"}" + Environment.NewLine);
+            new PassThroughContentProtector().Protect(_userId, $"task\0{task.Id}\0index", "{\"id\":\"bad-run\",\"task_id\":\"" + task.Id + "\",\"status\":\"completed\",\"started_at\":\"not-a-timestamp\"}") + Environment.NewLine);
 
         var runs = await repository.GetRunsAsync(_userId, task.Id);
 
@@ -922,7 +994,8 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         return new AgentTaskCatalog(
             () => _usersRoot,
             _yamlConverter,
-            NullLogger<AgentTaskCatalog>.Instance);
+            NullLogger<AgentTaskCatalog>.Instance,
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector());
     }
 
     private static IRedactionService CreateRedactionService()
@@ -945,7 +1018,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
                 IntervalMinutes = 30
             },
             IsEnabled = true,
-            NotificationMode = TaskNotificationMode.Never,
+            NotifyOnCompletion = false,
             SessionMode = TaskSessionMode.Isolated,
             CreatedAt = DateTimeOffset.UtcNow
         };
@@ -986,14 +1059,14 @@ public sealed class AgentTaskRepositoryTests : IDisposable
                 IntervalMinutes = 30
             },
             IsEnabled = true,
-            NotificationMode = "never",
+            NotifyOnCompletion = false,
             SessionMode = "isolated",
             CreatedAt = IsoTimestamp.FormatSeconds(DateTimeOffset.UtcNow)
         };
 
         var yaml = _yamlConverter.Serialize(taskFile);
         var content = MarkdownFrontmatter.Combine(yaml, "Summarize the queue.");
-        await File.WriteAllTextAsync(Path.Combine(taskDirectory, "task.md"), content).ConfigureAwait(false);
+        await EncryptedFileContent.WriteAllTextAsync(userId, Path.Combine(taskDirectory, "task.md.enc"), content, new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()).ConfigureAwait(false);
     }
 
     private sealed class ReplacingRedactionService : IRedactionService
@@ -1066,7 +1139,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         public string? TryGetOwnerUserId(string taskId) => inner.TryGetOwnerUserId(taskId);
 
-        public string? TryGetBuiltInTaskKey(string taskId) => inner.TryGetBuiltInTaskKey(taskId);
+        public string? TryGetHandlerKey(string taskId) => inner.TryGetHandlerKey(taskId);
 
         public IReadOnlyCollection<AgentTaskCatalogEntry> GetTasksForUser(string userId) => inner.GetTasksForUser(userId);
 

@@ -10,7 +10,7 @@ public sealed class VectorStoreServiceTests
     {
         var tempDirectory = CreateTempDirectory();
         var databasePath = Path.Combine(tempDirectory, "vectors.db");
-        var store = new VectorStoreService(databasePath);
+        var store = new VectorStoreService(databasePath, new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = databasePath, Pooling = false }.ToString());
 
         try
         {

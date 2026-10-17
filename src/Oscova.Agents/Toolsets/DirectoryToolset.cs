@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Oscova.Agents.Harness;
+using Oscova.Agents.Utils;
 using Oscova.Agents.Workspace;
 
 namespace Oscova.Agents.Toolsets;
@@ -11,9 +12,10 @@ namespace Oscova.Agents.Toolsets;
 /// <summary>
 /// Lists files and directories inside host-approved workspaces.
 /// </summary>
-public sealed class DirectoryToolset : ICrewToolset
+public sealed class DirectoryToolset : IAgentToolset
 {
     private readonly IWorkspaceFileAccess _files;
+    private readonly Func<IReadOnlyList<AllowedDirectory>> _directories;
 
     /// <summary>
     /// Creates directory tools that resolve agent-facing paths against the active run's allowed directories.
@@ -24,6 +26,7 @@ public sealed class DirectoryToolset : ICrewToolset
     {
         Func<IReadOnlyList<AllowedDirectory>> resolver = workspaceResolver ?? (() => []);
         _files = fileAccess ?? new WorkspaceFileAccess(resolver);
+        _directories = resolver;
     }
 
     /// <summary>
@@ -34,10 +37,11 @@ public sealed class DirectoryToolset : ICrewToolset
     /// <param name="limit">The maximum number of entries to return.</param>
     /// <param name="depth">The maximum child-directory depth to traverse.</param>
     /// <returns>A formatted directory listing with range metadata.</returns>
-    [DisplayName("list_directory")]
+    [DisplayName("list")]
+    [AgentTool]
     [Description("Lists files and folders with depth control and pagination.")]
     public string ListDirectory(
-        [Description("Directory path: relative to your working directory, or an absolute path listed under Workspace Access")]
+        [Description("Directory path: relative to your working directory, or an absolute path within a listed granted folder")]
         [WorkspacePath(Access = WorkspacePathAccess.Read)]
         string path,
         [Description("1-indexed entry number to start from")] int offset = 1,
@@ -75,15 +79,16 @@ public sealed class DirectoryToolset : ICrewToolset
 
         var entries = new List<string>();
         AppendEntries(entries, root.Path, 0, depth);
+        string displayedRoot = PathHelper.ResolveToAgentPath(root.Path, _directories());
 
         if (entries.Count < offset)
         {
-            return $"Directory: {path} | Total entries: {entries.Count} | Depth: {depth}\nOffset {offset} is beyond the end of the listing.";
+            return $"Directory: {displayedRoot} | Total entries: {entries.Count} | Depth: {depth}\nOffset {offset} is beyond the end of the listing.";
         }
 
         var page = entries.Skip(offset - 1).Take(limit).ToList();
         var lastEntry = offset + page.Count - 1;
-        var header = $"Directory: {path} | Entries {offset}-{lastEntry} of {entries.Count} | Depth: {depth}";
+        var header = $"Directory: {displayedRoot} | Entries {offset}-{lastEntry} of {entries.Count} | Depth: {depth}";
         return $"{header}\n{string.Join(Environment.NewLine, page)}";
     }
 
@@ -117,7 +122,7 @@ public sealed class DirectoryToolset : ICrewToolset
 
         foreach (var directory in directories)
         {
-            entries.Add($"{indent}[DIR] {Path.GetFileName(directory.Path)}");
+            entries.Add($"{indent}[DIR] {PathHelper.ResolveToAgentPath(directory.Path, _directories())}");
             // List links themselves without letting recursion escape the approved root.
             if (!directory.Attributes.HasFlag(FileAttributes.ReparsePoint))
             {
@@ -131,7 +136,7 @@ public sealed class DirectoryToolset : ICrewToolset
 
         foreach (var file in files)
         {
-            entries.Add($"{indent}[FILE] {Path.GetFileName(file.Path)} ({file.Length} bytes)");
+            entries.Add($"{indent}[FILE] {PathHelper.ResolveToAgentPath(file.Path, _directories())} ({file.Length} bytes)");
         }
     }
 

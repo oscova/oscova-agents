@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>कमांड ऑपरेटिंग सिस्टम के मूल अलगाव का उपयोग करके मौजूदा कार्यक्षेत्र और नेटवर्क अनुमतियों का पालन करते हैं।</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>लिखने योग्य कार्यक्षेत्र में बदलाव स्थायी हैं। ऑपरेटिंग सिस्टम की फ़ाइलें और स्थापित टूल के फ़ोल्डर पढ़े जा सकते हैं।</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>मूल सैंडबॉक्स का पता नहीं चला। इस मशीन के लिए Microsoft MXC की आवश्यकताएँ जाँचें।</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC शुरू नहीं हो सका। इसकी मूल निर्भरताएँ और इस मशीन की अनुमतियाँ जाँचें।</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC ने दस सेकंड में जवाब नहीं दिया। आवश्यकताएँ जाँचकर फिर कोशिश करें।</value></data>
+</root>

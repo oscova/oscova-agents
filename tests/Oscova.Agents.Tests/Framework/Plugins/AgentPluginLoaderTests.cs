@@ -1,13 +1,124 @@
-using Oscova.Agents.Collections;
+﻿using Oscova.Agents.Collections;
 using Oscova.Agents.Plugins;
 using Oscova.Agents.Tests.TestSupport.TestPlugin;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Text.Json;
+using Oscova.Agents.Tasks;
+using Oscova.Agents.Credentials;
 
 namespace Oscova.Agents.Tests.Framework.Plugins;
 
 public sealed class AgentPluginLoaderTests
 {
+    /// <summary>Invalid instruction declarations become diagnostics without replacing accepted defaults.</summary>
+    [Fact]
+    public void AddInstruction_RejectsDuplicateAndUnsafeKeys_AndRetainsDefaultData()
+    {
+        var builder = new AgentPluginBuilder()
+            .AddInstruction("browser-use", "Browser Instruction", "Default Markdown")
+            .AddInstruction("browser-use", "Duplicate", "Other Markdown")
+            .AddInstruction("../unsafe", "Unsafe", "Other Markdown");
+        var contribution = Assert.Single(builder.Instructions);
+        Assert.Equal("browser-use", contribution.Key);
+        Assert.Equal("Browser Instruction", contribution.Label);
+        Assert.Equal("Default Markdown", contribution.DefaultInstruction);
+        Assert.Equal(2, builder.Diagnostics.Count);
+    }
+
+    /// <summary>Admits independent page registrations without an inline association or a component factory call.</summary>
+    [Fact]
+    public void IndependentPage_RegistersWithoutAssociationOrFactoryExecution()
+    {
+        var builder = new AgentPluginBuilder().AddSettingsPanel(new("settings", PluginSettingsSlots.Page, null,
+            typeof(object), _ => throw new InvalidOperationException("Context creation is interactive only."), PluginSettingsAccess.CurrentUser)
+        { Page = new("workspace", "Example") });
+        Assert.Empty(builder.Diagnostics);
+        Assert.Null(Assert.Single(builder.SettingsPanels).AssociationId);
+        builder.AddSettingsPanel(new("inline", PluginSettingsSlots.ExecutionEnvironment, null,
+            typeof(object), context => context, PluginSettingsAccess.CurrentUser));
+        Assert.Single(builder.Diagnostics);
+        Assert.Single(builder.SettingsPanels);
+    }
+
+    [Fact]
+    public void TaskOverloads_RegisterWithoutCreatingHandlers()
+    {
+        var calls = 0;
+        var builder = new AgentPluginBuilder()
+            .AddTask("defaults", _ => new AgentTaskDefinition { Name = "Defaults" })
+            .AddTask("deterministic", _ => new AgentTaskDefinition { Name = "Deterministic" },
+                deterministicHandlerFactory: _ => { calls++; throw new InvalidOperationException("Factory ran during registration."); })
+            .AddTask("agent", _ => new AgentTaskDefinition { Name = "Agent" },
+                agentHandlerFactory: _ => { calls++; throw new InvalidOperationException("Factory ran during registration."); });
+
+        Assert.Equal(["defaults", "deterministic", "agent"], builder.Tasks.Select(task => task.Key));
+        Assert.Null(builder.Tasks[0].DeterministicHandlerFactory);
+        Assert.Null(builder.Tasks[0].AgentHandlerFactory);
+        Assert.NotNull(builder.Tasks[1].DeterministicHandlerFactory);
+        Assert.NotNull(builder.Tasks[2].AgentHandlerFactory);
+        Assert.Equal(0, calls);
+    }
+
+    [Fact]
+    public void InvalidCredential_DoesNotDiscardSurroundingContributions()
+    {
+        var builder = new AgentPluginBuilder()
+            .AddTask("before", _ => new AgentTaskDefinition { Name = "Before" })
+            .AddCredential(new CredentialDeclaration { Key = "invalid", Label = "Invalid" })
+            .AddTask("after", _ => new AgentTaskDefinition { Name = "After" });
+
+        Assert.Equal(["before", "after"], builder.Tasks.Select(task => task.Key));
+        Assert.Empty(builder.Credentials);
+        Assert.Contains(builder.Diagnostics, message => message.Contains("Credential 'invalid'", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void LoadDirectory_RetainsTaskContributions()
+    {
+        using var pluginRoot = TestPluginRoot.Create();
+        pluginRoot.AddTestPlugin();
+
+        var plugin = Assert.Single(AgentPluginLoader.LoadDirectory(pluginRoot.RootPath).Plugins);
+        var task = Assert.Single(plugin.Tasks);
+        var context = CreateContext(plugin.PluginDirectory, Path.Combine(pluginRoot.RootPath, "models"));
+
+        Assert.Equal("record-run", task.Key);
+        Assert.Equal("Record plugin task run", task.DefinitionFactory(context).Name);
+        Assert.NotNull(task.DeterministicHandlerFactory!(context));
+        Assert.Null(task.AgentHandlerFactory);
+    }
+
+    [Fact]
+    public void AddTask_RejectsInvalidDeclarations()
+    {
+        var builder = new AgentPluginBuilder();
+        builder.AddTask("daily-check", _ => new AgentTaskDefinition())
+            .AddTask("daily-check", _ => new AgentTaskDefinition())
+            .AddTask("../unsafe", _ => new AgentTaskDefinition())
+            .AddTask("Uppercase", _ => new AgentTaskDefinition());
+        Assert.Single(builder.Tasks);
+        Assert.Equal(3, builder.Diagnostics.Count);
+    }
+
+    [Fact]
+    public void AddAgentTemplate_ValidatesMetadataAndDuplicateLocalIds()
+    {
+        var builder = new AgentPluginBuilder();
+        var template = new AgentTemplateDefinition
+        {
+            Id = "release-notes", Name = "Release Notes", Description = "Drafts notes",
+            SystemInstruction = "Write release notes."
+        };
+        Assert.Same(builder, builder.AddAgentTemplate(template));
+        Assert.Same(template, Assert.Single(builder.AgentTemplates));
+        builder.AddAgentTemplate(template with { Id = "Invalid" })
+            .AddAgentTemplate(template with { Name = " " })
+            .AddAgentTemplate(template);
+        Assert.Single(builder.AgentTemplates);
+        Assert.Equal(3, builder.Diagnostics.Count);
+    }
+
     [SkippableFact]
     public void NativeLibraryPath_OnWindows_UsesExtendedPathSyntax()
     {
@@ -43,18 +154,17 @@ public sealed class AgentPluginLoaderTests
         var plugin = Assert.Single(catalog.Plugins);
         Assert.Equal("oscova.agents.plugins.echo", plugin.Manifest.Id);
         Assert.Equal("Oscova Echo Plugin", plugin.Manifest.Name);
-        Assert.Equal("0.2.0", plugin.Manifest.Version);
+        Assert.Equal(plugin.Assembly.GetName().Version!.ToString(3), plugin.Manifest.Version);
         Assert.Equal("Oscova.Agents.Plugins.Echo.dll", plugin.Manifest.Assembly);
         Assert.Equal("Oscova.Agents.Plugins.Echo.EchoAgentPlugin", plugin.Manifest.EntryType);
         Assert.Equal(Path.GetFullPath(pluginDirectory), plugin.PluginDirectory);
 
-        var contribution = Assert.Single(plugin.Toolsets);
+        Assert.Equal(2, plugin.Toolsets.Count);
+        Assert.True(Assert.Single(plugin.Toolsets, item => item.ToolsetType.Name == "EchoProjectToolset").SupportsNodeExecution);
+        var contribution = Assert.Single(plugin.Toolsets, item => item.ToolsetType.Name == "EchoToolset");
         Assert.Equal("EchoToolset", contribution.ToolsetType.Name);
-        Assert.True(typeof(ICrewToolset).IsAssignableFrom(contribution.ToolsetType));
-        var context = new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            plugin.PluginDirectory,
-            modelStorageDirectory);
+        Assert.True(typeof(IAgentToolset).IsAssignableFrom(contribution.ToolsetType));
+        var context = CreateContext(plugin.PluginDirectory, modelStorageDirectory);
         var modelProvider = Assert.Single(plugin.ModelProviders);
         Assert.Equal("EchoModelProvider", modelProvider.ProviderType.Name);
         Assert.Equal("echo", modelProvider.Factory(context).Type);
@@ -64,11 +174,14 @@ public sealed class AgentPluginLoaderTests
         Assert.Empty(plugin.SpeechRecognitionProviders);
         Assert.Contains("test-echo", plugin.DeclaredCredentialKeys);
         Assert.Contains("echo", plugin.DeclaredCredentialKeys);
+        Assert.Equal("echo-channel", Assert.Single(plugin.Credentials).Key);
+        Assert.Contains("echo-channel", plugin.DeclaredCredentialKeys);
+        Assert.Equal("echo", Assert.Single(plugin.Channels).Definition.Id);
         Assert.DoesNotContain("undeclared", plugin.DeclaredCredentialKeys);
 
-        var toolset = Assert.IsAssignableFrom<ICrewToolset>(contribution.Factory(context));
+        var toolset = Assert.IsAssignableFrom<IAgentToolset>(contribution.Factory(context));
 
-        var tools = new CrewToolCollection();
+        var tools = new AgentToolCollection();
         tools.Add(toolset, plugin.Manifest.Id);
 
         var qualifiedName = ToolNaming.BuildToolsetQualifiedName(plugin.Manifest.Id, "echo", "test_echo");
@@ -78,19 +191,39 @@ public sealed class AgentPluginLoaderTests
         Assert.Equal("test_echo", tools.GetOriginalName(tool!));
     }
 
+    /// <summary>Proves an invoked plugin dependency releases its DLL for Windows cleanup.</summary>
+    [SkippableFact]
+    public async Task LoadDirectory_InvokedManagedDependency_ReleasesItsFile()
+    {
+        Skip.IfNot(OperatingSystem.IsWindows(), "Windows file locking is required for this regression.");
+
+        using var pluginRoot = TestPluginRoot.Create();
+        var pluginDirectory = pluginRoot.AddTestPlugin();
+        var catalog = AgentPluginLoader.LoadDirectory(pluginRoot.RootPath);
+        var plugin = Assert.Single(catalog.Plugins);
+        var context = CreateContext(pluginDirectory, Path.Combine(pluginRoot.RootPath, "models"));
+        var tools = new AgentToolCollection();
+        tools.Add(Assert.Single(plugin.Toolsets, item => item.ToolsetType.Name == "EchoToolset").Factory(context), plugin.Manifest.Id);
+        var qualifiedName = ToolNaming.BuildToolsetQualifiedName(plugin.Manifest.Id, "echo", "test_pluralize");
+        var pluralize = tools.Find(qualifiedName);
+        Assert.NotNull(pluralize);
+
+        var result = await pluralize.InvokeAsync(new AIFunctionArguments { ["text"] = "cat" });
+
+        Assert.Equal("cats", Assert.IsType<JsonElement>(result).GetString());
+        var dependencyPath = Path.Combine(pluginDirectory, "Humanizer.dll");
+        Assert.True(File.Exists(dependencyPath));
+        File.Delete(dependencyPath);
+        Assert.False(File.Exists(dependencyPath));
+    }
+
     [Fact]
     public void Constructor_RejectsRelativeRuntimeDirectories()
     {
         var absoluteDirectory = Path.Combine(Path.GetTempPath(), "oscova-plugin-context-tests");
 
-        Assert.Throws<ArgumentException>(() => new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            "relative-plugin",
-            absoluteDirectory));
-        Assert.Throws<ArgumentException>(() => new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            absoluteDirectory,
-            "relative-models"));
+        Assert.Throws<ArgumentException>(() => CreateContext("relative-plugin", absoluteDirectory));
+        Assert.Throws<ArgumentException>(() => CreateContext(absoluteDirectory, "relative-models"));
     }
 
     [Fact]
@@ -102,18 +235,12 @@ public sealed class AgentPluginLoaderTests
         var destinationPath = Path.Combine(root, "models", "nested", "..", "model.bin");
         var expectedDestinationPath = Path.GetFullPath(destinationPath);
         (string Id, string Url, string DestinationPath, CancellationToken Token)? captured = null;
-        var context = new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            _ => new HttpClient(),
-            NullLoggerFactory.Instance,
-            () => TimeZoneInfo.Utc,
-            Path.Combine(root, "plugin"),
-            Path.Combine(root, "models"),
-            (id, url, destinationPath, ct) =>
-            {
-                captured = (id, url, destinationPath, ct);
-                return Task.CompletedTask;
-            });
+        var services = new TestPluginServices((request, ct) =>
+        {
+            captured = (request.Id, request.Url, request.DestinationPath, ct);
+            return Task.CompletedTask;
+        });
+        var context = CreateContext(Path.Combine(root, "plugin"), Path.Combine(root, "models"), services);
 
         await context.EnsureDownloadAsync("asset", "https://example.test/model", destinationPath, expectedToken);
 
@@ -126,18 +253,12 @@ public sealed class AgentPluginLoaderTests
         var root = Path.Combine(Path.GetTempPath(), "oscova-plugin-context-tests");
         var modelStorageDirectory = Path.Combine(root, "models");
         var delegateCalls = 0;
-        var context = new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            _ => new HttpClient(),
-            NullLoggerFactory.Instance,
-            () => TimeZoneInfo.Utc,
-            Path.Combine(root, "plugin"),
-            modelStorageDirectory,
-            (_, _, _, _) =>
-            {
-                delegateCalls++;
-                return Task.CompletedTask;
-            });
+        var services = new TestPluginServices((_, _) =>
+        {
+            delegateCalls++;
+            return Task.CompletedTask;
+        });
+        var context = CreateContext(Path.Combine(root, "plugin"), modelStorageDirectory, services);
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             context.EnsureDownloadAsync("asset", "https://example.test/model", "model.bin"));
@@ -150,10 +271,7 @@ public sealed class AgentPluginLoaderTests
     public async Task EnsureDownloadAsync_WithoutHostDownloadSupport_Throws()
     {
         var root = Path.Combine(Path.GetTempPath(), "oscova-plugin-context-tests");
-        var context = new AgentPluginContext(
-            new NullToolCredentialResolver(),
-            Path.Combine(root, "plugin"),
-            Path.Combine(root, "models"));
+        var context = CreateContext(Path.Combine(root, "plugin"), Path.Combine(root, "models"));
 
         await Assert.ThrowsAsync<NotSupportedException>(() =>
             context.EnsureDownloadAsync("asset", "https://example.test/model", Path.Combine(root, "models", "model.bin")));
@@ -232,9 +350,10 @@ public sealed class AgentPluginLoaderTests
 
     [Theory]
     [InlineData(" oscova.agents.plugins.echo", "Oscova.Agents.Plugins.Echo.dll", "Oscova.Agents.Plugins.Echo.EchoAgentPlugin", "Plugin manifest Id must not contain leading or trailing whitespace.")]
+    [InlineData("vendor:extension", "Oscova.Agents.Plugins.Echo.dll", "Oscova.Agents.Plugins.Echo.EchoAgentPlugin", "Plugin manifest Id must not contain ':' because it separates credential namespaces.")]
     [InlineData("oscova.agents.plugins.echo", "Oscova.Agents.Plugins.Echo.dll ", "Oscova.Agents.Plugins.Echo.EchoAgentPlugin", "Plugin manifest Assembly must not contain leading or trailing whitespace.")]
     [InlineData("oscova.agents.plugins.echo", "Oscova.Agents.Plugins.Echo.dll", " Oscova.Agents.Plugins.Echo.EchoAgentPlugin", "Plugin manifest EntryType must not contain leading or trailing whitespace.")]
-    public void LoadDirectory_RejectsExecutionValuesWithSurroundingWhitespace(
+    public void LoadDirectory_RejectsInvalidExecutionValues(
         string pluginId,
         string assembly,
         string entryType,
@@ -333,6 +452,33 @@ public sealed class AgentPluginLoaderTests
             => Task.FromResult<string?>(null);
 
         public Task<string?> ResolveAsync(string credentialKey, CancellationToken ct = default)
+            => Task.FromResult<string?>(null);
+    }
+
+    private static AgentPluginContext CreateContext(string pluginDirectory, string modelDirectory,
+        IAgentPluginServices? services = null)
+        => new(new NullToolCredentialResolver(), services ?? new TestPluginServices(),
+            NullLoggerFactory.Instance, TimeProvider.System, pluginDirectory, modelDirectory)
+        {
+            UserDataDirectory = Path.Combine(modelDirectory, "user")
+        };
+
+    private sealed class TestPluginServices(
+        Func<PluginDownloadRequest, CancellationToken, Task>? download = null) : IAgentPluginServices, IPluginEncryptionService
+    {
+        public Oscova.Agents.Toolsets.IToolOutputStore? ToolOutputStore => null;
+        public IPluginEncryptionService Encryption => this;
+        /// <inheritdoc />
+        public string Encrypt(string plaintext)
+            => throw new NotSupportedException("Plugin encryption is not configured in this fixture.");
+        /// <inheritdoc />
+        public string Decrypt(string ciphertext)
+            => throw new NotSupportedException("Plugin encryption is not configured in this fixture.");
+        public HttpClient CreateHttpClient() => new();
+        public HttpMessageHandler CreateHttpMessageHandler() => new HttpClientHandler();
+        public Task EnsureDownloadAsync(PluginDownloadRequest request, CancellationToken ct = default)
+            => download?.Invoke(request, ct) ?? throw new NotSupportedException();
+        public Task<string?> ResolveAccessTokenAsync(string providerId, CancellationToken ct = default)
             => Task.FromResult<string?>(null);
     }
 }

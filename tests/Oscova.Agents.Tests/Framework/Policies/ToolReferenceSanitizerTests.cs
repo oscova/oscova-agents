@@ -7,15 +7,15 @@ public sealed class ToolReferenceSanitizerTests
     [Fact]
     public void RemoveUnavailableTools_RemovesStaleAllowedPinnedAndPolicyNames()
     {
-        var allowedToolNames = new List<string> { " coding__read_file ", "backgroundshell__kill_command" };
-        var pinnedToolNames = new List<string> { " coding__read_file ", "backgroundshell__kill_command", "coding__write_file" };
+        var allowedToolNames = new List<string> { " file__read ", "backgroundshell__kill" };
+        var pinnedToolNames = new List<string> { " file__read ", "backgroundshell__kill", "file__write" };
         var toolPolicies = new List<AgentToolPolicy>
         {
-            new() { ToolName = " coding__read_file ", ApprovalMode = ToolApprovalMode.RequireApproval },
-            new() { ToolName = "backgroundshell__kill_command", ApprovalMode = ToolApprovalMode.RequireApproval },
-            new() { ToolName = "coding__write_file", ApprovalMode = ToolApprovalMode.RequireApproval }
+            new() { ToolName = " file__read ", ApprovalMode = ToolApprovalMode.RequireApproval },
+            new() { ToolName = "backgroundshell__kill", ApprovalMode = ToolApprovalMode.RequireApproval },
+            new() { ToolName = "file__write", ApprovalMode = ToolApprovalMode.RequireApproval }
         };
-        var availableToolNames = new HashSet<string>(["coding__read_file", "coding__write_file"], StringComparer.OrdinalIgnoreCase);
+        var availableToolNames = new HashSet<string>(["file__read", "file__write"], StringComparer.OrdinalIgnoreCase);
 
         var result = ToolReferenceSanitizer.RemoveUnavailableTools(
             allowedToolNames,
@@ -24,13 +24,13 @@ public sealed class ToolReferenceSanitizerTests
             availableToolNames);
 
         Assert.True(result.HasChanges);
-        Assert.Equal(["backgroundshell__kill_command"], result.RemovedAllowedToolNames);
-        Assert.Equal(["backgroundshell__kill_command", "coding__write_file"], result.RemovedPinnedToolNames);
-        Assert.Equal(["backgroundshell__kill_command", "coding__write_file"], result.RemovedPolicyToolNames);
-        Assert.Equal(["coding__read_file"], allowedToolNames);
-        Assert.Equal(["coding__read_file"], pinnedToolNames);
+        Assert.Equal(["backgroundshell__kill"], result.RemovedAllowedToolNames);
+        Assert.Equal(["backgroundshell__kill", "file__write"], result.RemovedPinnedToolNames);
+        Assert.Equal(["backgroundshell__kill", "file__write"], result.RemovedPolicyToolNames);
+        Assert.Equal(["file__read"], allowedToolNames);
+        Assert.Equal(["file__read"], pinnedToolNames);
         var policy = Assert.Single(toolPolicies);
-        Assert.Equal("coding__read_file", policy.ToolName);
+        Assert.Equal("file__read", policy.ToolName);
     }
 
     [Fact]

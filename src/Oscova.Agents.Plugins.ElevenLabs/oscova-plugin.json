@@ -1,0 +1,9 @@
+{
+  "id": "oscova.elevenlabs",
+  "name": "Oscova ElevenLabs",
+  "description": "ElevenLabs speech recognition and synthesis using a saved API-key credential.",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.ElevenLabs.dll",
+  "entryType": "Oscova.Agents.Plugins.ElevenLabs.ElevenLabsAgentPlugin"
+}

@@ -4,9 +4,9 @@ namespace Oscova.Agents.Tasks;
 internal static class AgentTaskFileLayout
 {
     internal const string TasksDirectory = "tasks";
-    internal const string TaskFile = "task.md";
+    internal const string TaskFile = "task.md.enc";
     internal const string RunsDirectory = "runs";
     internal const string RunIndexFile = "index.jsonl";
     internal const string TranscriptExtension = ".jsonl";
-    internal const string SessionFileSuffix = ".session.json";
+    internal const string SessionFileSuffix = ".session.json.enc";
 }

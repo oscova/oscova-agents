@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Slack.Label"><value>Slack</value></data>
+  <data name="Settings.Slack.ConfigurationDescription"><value>ওয়ার্কস্পেসের সদস্যরা ইনস্টল করা Slack অ্যাপটি দেখতে পারেন। Oscova শুধু অনুমোদিত সদস্যের সরাসরি বার্তার উত্তর দেয়।</value></data>
+  <data name="Settings.Slack.WorkspaceIdLabel"><value>Slack ওয়ার্কস্পেস ID</value></data>
+  <data name="Settings.Slack.WorkspaceIdHint"><value>ব্রাউজারে Slack খুলুন। /client/ এর পর T দিয়ে শুরু হওয়া ID-টুকুই কপি করুন, পরের স্ল্যাশ পর্যন্ত।</value></data>
+  <data name="Settings.Slack.UserIdLabel"><value>অনুমোদিত Slack সদস্যের ID</value></data>
+  <data name="Settings.Slack.IdentityHint"><value>আপনার Slack প্রোফাইলে More &gt; Copy member ID বেছে নিন। শুধু এই সদস্যের সরাসরি বার্তা গ্রহণ করা হয়।</value></data>
+  <data name="Credential.Label"><value>Slack বট</value></data>
+  <data name="Credential.Description"><value>ব্যক্তিগত Slack সংযোগের জন্য বট ব্যবহারকারীর OAuth টোকেন এবং অ্যাপ-লেভেল টোকেন।</value></data>
+  <data name="Credential.BotToken.Label"><value>বট ব্যবহারকারীর OAuth টোকেন</value></data>
+  <data name="Credential.AppLevelToken.Label"><value>অ্যাপ-লেভেল টোকেন</value></data>
+  <data name="Validation.WorkspaceId"><value>Slack ওয়ার্কস্পেস আইডি প্রয়োজন।</value></data>
+  <data name="Validation.AuthorizedUserId"><value>অনুমোদিত Slack সদস্য আইডি প্রয়োজন।</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>চালু হলে সংযোগ করুন</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>সক্ষম করা হলে, অ্যাপ্লিকেশন শুরুতে বট স্বয়ংক্রিয়ভাবে সংযুক্ত হবে</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>বট টোকেনগুলি ক্রেডেনশিয়াল ট্যাবে কেন্দ্রীয়ভাবে পরিচালিত হয়।</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>ক্রেডেনশিয়াল পরিচালনা করুন</value></data>
+  <data name="Settings.Section.Agent.Label"><value>মূল এজেন্ট</value></data>
+  <data name="Settings.Channels.AgentHint"><value>এই চ্যানেলে উত্তর দেবে এমন এজেন্ট বেছে নিন।</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>সেটিংস সংরক্ষণ করুন</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>বট স্থিতি</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>চ্যানেল চালু করার আগে পরিবর্তনগুলি সংরক্ষণ করুন।</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>বট বন্ধ করুন</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>বট চালু করুন</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>সেটিংস সফলভাবে সংরক্ষিত হয়েছে।</value></data>
+  <data name="Common.Connected">
+		<value>সংযুক্ত</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>বিচ্ছিন্ন</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>লোড হচ্ছে...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

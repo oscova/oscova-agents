@@ -27,6 +27,8 @@ public sealed class AgentTaskRepository(
     IRedactionService? redactionService = null,
     IEnumerable<string>? reservedTaskSlugs = null) : IAgentTaskRepository
 {
+    private static string RunIndexPurpose(string taskId) => $"task\0{taskId}\0index";
+
     private readonly Func<string> _usersRootResolver = usersRootResolver
         ?? throw new ArgumentNullException(nameof(usersRootResolver));
     private readonly IReadOnlySet<string> _reservedTaskSlugs =
@@ -46,6 +48,7 @@ public sealed class AgentTaskRepository(
     public Task<IReadOnlyList<AgentTaskDefinition>> GetAllEnabledTasksAsync(CancellationToken ct = default)
     {
         var tasks = catalog.GetAllEnabledTasks()
+            .Where(entry => contentProtector.IsAvailable(entry.OwnerUserId))
             .Select(entry => ReadFromDisk(GetTaskFilePath(entry.DirectoryPath), entry.OwnerUserId))
             .ToList();
 
@@ -56,6 +59,7 @@ public sealed class AgentTaskRepository(
     public Task<IReadOnlyList<AgentTaskDefinition>> GetTasksByUserAsync(string userId, CancellationToken ct = default)
     {
         var tasks = catalog.GetTasksForUser(userId)
+            .Where(entry => contentProtector.IsAvailable(entry.OwnerUserId))
             .Select(entry => ReadFromDisk(GetTaskFilePath(entry.DirectoryPath), entry.OwnerUserId))
             .OrderBy(task => task.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
@@ -68,7 +72,7 @@ public sealed class AgentTaskRepository(
     {
         var taskDirectory = catalog.TryGetTaskDirectory(taskId);
         var ownerUserId = catalog.TryGetOwnerUserId(taskId);
-        if (taskDirectory is null || ownerUserId is null || !IsOwnedBy(ownerUserId, userId))
+        if (taskDirectory is null || ownerUserId is null || !IsOwnedBy(ownerUserId, userId) || !contentProtector.IsAvailable(ownerUserId))
         {
             return Task.FromResult<AgentTaskDefinition?>(null);
         }
@@ -89,7 +93,8 @@ public sealed class AgentTaskRepository(
             try
             {
                 var ownerUserId = GetOwnerUserIdFromTaskFilePath(taskFilePath);
-                if (string.IsNullOrWhiteSpace(ownerUserId))
+                if (string.IsNullOrWhiteSpace(ownerUserId) || !contentProtector.IsAvailable(ownerUserId) ||
+                    !normalizedSlug.StartsWith(Slugs.ForTaskTrigger(ownerUserId) + "-", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -115,8 +120,30 @@ public sealed class AgentTaskRepository(
         return Task.FromResult(matches.SingleOrDefault());
     }
 
+    /// <summary>Seeds a missing task in a caller-selected directory while preserving an existing definition.</summary>
+    public async Task EnsureTaskAsync(string directoryName, AgentTaskDefinition task, CancellationToken ct = default)
+    {
+        if (!PathHelper.IsSafePathSegment(directoryName))
+        {
+            throw new ArgumentException("Task directory must be a safe path segment.", nameof(directoryName));
+        }
+        var root = GetTasksRoot(task.UserId);
+        if (!PathHelper.TryResolveContainedPath(root, directoryName, out var directory))
+        {
+            throw new UnauthorizedAccessException("Task directory escapes the user's task root.");
+        }
+        if (File.Exists(GetTaskFilePath(directory)))
+        {
+            return;
+        }
+
+        ct.ThrowIfCancellationRequested();
+        WriteToDisk(directory, task);
+        await catalog.ReloadUserAsync(task.UserId, CancellationToken.None).ConfigureAwait(false);
+    }
+
     /// <inheritdoc />
-    public async Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default)
+    public async Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default, string? creationDirectoryName = null)
     {
         var currentDirectory = catalog.TryGetTaskDirectory(task.Id);
         string ownerUserId;
@@ -126,9 +153,23 @@ public sealed class AgentTaskRepository(
         {
             ownerUserId = task.UserId;
             var tasksRoot = GetTasksRoot(ownerUserId);
-            var existingSlugs = GetExistingSlugs(tasksRoot);
-            var slug = Slugs.MakeUnique(Slugs.ForAgentFolder(task.Name), existingSlugs);
-            targetDirectory = Path.Combine(tasksRoot, slug);
+            if (creationDirectoryName is not null)
+            {
+                if (!PathHelper.IsSafePathSegment(creationDirectoryName))
+                {
+                    throw new ArgumentException("The new task directory must be a safe path segment.", nameof(creationDirectoryName));
+                }
+                if (!PathHelper.TryResolveContainedPath(tasksRoot, creationDirectoryName, out targetDirectory))
+                {
+                    throw new UnauthorizedAccessException("The task directory escapes the user's task root.");
+                }
+            }
+            else
+            {
+                var existingSlugs = GetExistingSlugs(tasksRoot);
+                var slug = Slugs.MakeUnique(Slugs.ForAgentFolder(task.Name), existingSlugs);
+                targetDirectory = Path.Combine(tasksRoot, slug);
+            }
         }
         else
         {
@@ -178,7 +219,7 @@ public sealed class AgentTaskRepository(
             return Task.FromResult<AgentTaskRun?>(null);
         }
 
-        return Task.FromResult(ReadLatestRun(taskDirectory, taskId, ownerUserId!, includeEncryptedContent: true));
+        return Task.FromResult(ReadLatestRun(taskDirectory, taskId, ownerUserId!, includeContent: true));
     }
 
     /// <inheritdoc />
@@ -196,7 +237,7 @@ public sealed class AgentTaskRepository(
         if (!File.Exists(indexPath)) return Task.FromResult<JsonElement?>(null);
 
         // A skipped occurrence with no session must not erase the last execution's context.
-        var row = ReadRunIndexRows(indexPath, taskId)
+        var row = ReadRunIndexRows(indexPath, taskId, ownerUserId!)
             .OrderByDescending(run => string.IsNullOrWhiteSpace(run.StartedAt)
                 ? DateTimeOffset.MinValue : IsoTimestamp.Parse(run.StartedAt))
             .FirstOrDefault(run => ParseEnum(run.Status, AgentTaskStatus.Pending) != AgentTaskStatus.Skipped ||
@@ -217,7 +258,7 @@ public sealed class AgentTaskRepository(
             return Task.FromResult<AgentTaskRun?>(null);
         }
 
-        return Task.FromResult(ReadLatestRun(taskDirectory, taskId, ownerUserId!, includeEncryptedContent: false));
+        return Task.FromResult(ReadLatestRun(taskDirectory, taskId, ownerUserId!, includeContent: false));
     }
 
     /// <inheritdoc />
@@ -237,12 +278,12 @@ public sealed class AgentTaskRepository(
             return Task.FromResult<AgentTaskRun?>(null);
         }
 
-        var indexRow = ReadRunIndexRows(indexPath, taskId)
+        var indexRow = ReadRunIndexRows(indexPath, taskId, ownerUserId!)
             .FirstOrDefault(row => string.Equals(row.Id, runId, StringComparison.OrdinalIgnoreCase));
 
         return Task.FromResult(indexRow is null
             ? null
-            : MapRunToDomain(indexRow, runsDirectory, taskId, ownerUserId!, includeEncryptedContent: true));
+            : MapRunToDomain(indexRow, runsDirectory, taskId, ownerUserId!, includeContent: true));
     }
 
     /// <inheritdoc />
@@ -266,11 +307,11 @@ public sealed class AgentTaskRepository(
             return Task.FromResult<AgentTaskRun?>(null);
         }
 
-        var indexRow = ReadRunIndexRows(indexPath, taskId)
+        var indexRow = ReadRunIndexRows(indexPath, taskId, ownerUserId!)
             .FirstOrDefault(row => string.Equals(row.Id, runId, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult(indexRow is null
             ? null
-            : MapRunToDomain(indexRow, runsDirectory, taskId, ownerUserId!, includeEncryptedContent: false));
+            : MapRunToDomain(indexRow, runsDirectory, taskId, ownerUserId!, includeContent: false));
     }
 
     /// <inheritdoc />
@@ -286,7 +327,7 @@ public sealed class AgentTaskRepository(
                 continue;
             }
 
-            var run = ReadLatestRun(taskDirectory, taskId, ownerUserId, includeEncryptedContent: true);
+            var run = ReadLatestRun(taskDirectory, taskId, ownerUserId, includeContent: true);
             if (run is not null)
             {
                 runs[taskId] = run;
@@ -313,10 +354,10 @@ public sealed class AgentTaskRepository(
             return Task.FromResult<IReadOnlyList<AgentTaskRun>>([]);
         }
 
-        var runs = ReadRunIndexRows(indexPath, taskId)
+        var runs = ReadRunIndexRows(indexPath, taskId, ownerUserId!)
             .OrderByDescending(row => string.IsNullOrWhiteSpace(row.StartedAt) ? DateTimeOffset.MinValue : IsoTimestamp.Parse(row.StartedAt))
             .Take(limit)
-            .Select(row => MapRunToDomain(row, runsDirectory, taskId, ownerUserId!, includeEncryptedContent: true))
+            .Select(row => MapRunToDomain(row, runsDirectory, taskId, ownerUserId!, includeContent: true))
             .ToList();
 
         return Task.FromResult<IReadOnlyList<AgentTaskRun>>(runs);
@@ -340,32 +381,47 @@ public sealed class AgentTaskRepository(
         var ownerUserId = taskEntry.OwnerUserId;
         var taskDirectory = taskEntry.DirectoryPath;
         var runDirectory = GetRunsDirectory(taskDirectory);
-        var isEncrypted = run.IsEncrypted;
+        if (!contentProtector.IsAvailable(ownerUserId))
+        {
+            throw new InvalidOperationException("Unlock your Vault Password before continuing.");
+        }
         await indexCoordinator.RunForTaskAsync(ownerUserId, run.TaskId, async cancellationToken =>
         {
-            await WriteRunMessagesAsync(runDirectory, run, ownerUserId, isEncrypted, cancellationToken).ConfigureAwait(false);
-            await WriteRunSessionAsync(runDirectory, run, ownerUserId, isEncrypted, cancellationToken).ConfigureAwait(false);
-            await UpsertRunIndexAsync(runDirectory, run, ownerUserId, isEncrypted, cancellationToken).ConfigureAwait(false);
+            await WriteRunMessagesAsync(runDirectory, run, ownerUserId, cancellationToken).ConfigureAwait(false);
+            await WriteRunSessionAsync(runDirectory, run, ownerUserId, cancellationToken).ConfigureAwait(false);
+            await UpsertRunIndexAsync(runDirectory, run, ownerUserId, cancellationToken).ConfigureAwait(false);
         }, ct).ConfigureAwait(false);
     }
 
     private AgentTaskDefinition ReadFromDisk(string taskFilePath, string ownerUserIdFromCatalog)
     {
-        var fileText = File.ReadAllText(taskFilePath);
+        var text = EncryptedFileContent.ReadAllText(ownerUserIdFromCatalog, taskFilePath, contentProtector)
+            ?? throw new FileNotFoundException("Task definition not found.", taskFilePath);
+        return ParseDefinition(ownerUserIdFromCatalog, text);
+    }
+
+    /// <summary>Parses caller-owned task markdown for validation before a repository save.</summary>
+    public AgentTaskDefinition ParseDefinition(string ownerUserIdFromCatalog, string fileText)
+    {
         var (yaml, body) = MarkdownFrontmatter.Split(fileText);
+        yamlCodec.RequireSchemaVersion(yaml, AgentTaskDefinitionFile.CurrentSchemaVersion);
         var file = yamlCodec.Deserialize<AgentTaskDefinitionFile>(yaml);
 
         return new AgentTaskDefinition
         {
             Id = file.Id,
             Name = file.Name,
+            RequiresHandler = file.RequiresHandler,
             Instruction = body,
+            InstructionSource = file.InstructionSource,
+            InstructionMode = file.InstructionMode,
             AgentId = file.AgentId,
             UserId = ownerUserIdFromCatalog,
             ModelOverrideId = file.ModelOverrideId,
             Schedule = MapScheduleToDomain(file.Schedule),
             IsEnabled = file.IsEnabled,
-            NotificationMode = ParseEnum(file.NotificationMode, TaskNotificationMode.Never),
+            NotifyOnCompletion = file.NotifyOnCompletion,
+            WaitForOwnerProviderIdle = file.WaitForOwnerProviderIdle,
             NotificationChannel = file.NotificationChannel,
             SessionMode = ParseEnum(file.SessionMode, TaskSessionMode.Isolated),
             MaxTokenBudget = file.MaxTokenBudget,
@@ -386,11 +442,15 @@ public sealed class AgentTaskRepository(
         {
             Id = task.Id,
             Name = task.Name,
+            InstructionSource = task.InstructionSource,
+            InstructionMode = task.InstructionMode,
+            RequiresHandler = task.RequiresHandler,
             AgentId = task.AgentId,
             ModelOverrideId = task.ModelOverrideId,
             Schedule = MapScheduleToFile(task.Schedule),
             IsEnabled = task.IsEnabled,
-            NotificationMode = TaskFileValueFormatter.ToSnakeCase(task.NotificationMode.ToString()),
+            NotifyOnCompletion = task.NotifyOnCompletion,
+            WaitForOwnerProviderIdle = task.WaitForOwnerProviderIdle,
             NotificationChannel = task.NotificationChannel,
             SessionMode = TaskFileValueFormatter.ToSnakeCase(task.SessionMode.ToString()),
             MaxTokenBudget = task.MaxTokenBudget,
@@ -406,14 +466,14 @@ public sealed class AgentTaskRepository(
         var yaml = yamlCodec.Serialize(file);
         var content = MarkdownFrontmatter.Combine(yaml, task.Instruction);
         var finalPath = GetTaskFilePath(targetDirectory);
-        FileUtil.WriteAllTextAtomic(finalPath, content);
+        EncryptedFileContent.WriteAllText(task.UserId, finalPath, content, contentProtector);
     }
 
     private AgentTaskRun? ReadLatestRun(
         string taskDirectory,
         string containingTaskId,
         string ownerUserId,
-        bool includeEncryptedContent)
+        bool includeContent)
     {
         var runsDirectory = GetRunsDirectory(taskDirectory);
         var indexPath = GetRunsIndexPath(runsDirectory);
@@ -422,9 +482,9 @@ public sealed class AgentTaskRepository(
             return null;
         }
 
-        return ReadRunIndexRows(indexPath, containingTaskId)
+        return ReadRunIndexRows(indexPath, containingTaskId, ownerUserId)
             .OrderByDescending(row => string.IsNullOrWhiteSpace(row.StartedAt) ? DateTimeOffset.MinValue : IsoTimestamp.Parse(row.StartedAt))
-            .Select(row => MapRunToDomain(row, runsDirectory, containingTaskId, ownerUserId, includeEncryptedContent))
+            .Select(row => MapRunToDomain(row, runsDirectory, containingTaskId, ownerUserId, includeContent))
             .FirstOrDefault();
     }
 
@@ -433,6 +493,7 @@ public sealed class AgentTaskRepository(
         string indexPath,
         int lineNumber,
         string containingTaskId,
+        string ownerUserId,
         out AgentTaskRunIndexFile? run)
     {
         run = null;
@@ -441,9 +502,11 @@ public sealed class AgentTaskRepository(
             return false;
         }
 
+        var opened = contentProtector.Unprotect(ownerUserId, RunIndexPurpose(containingTaskId), line)
+            ?? throw new InvalidOperationException("The encrypted task index cannot be read.");
         try
         {
-            run = JsonSerializer.Deserialize<AgentTaskRunIndexFile>(line, RunSerializerOptions)
+            run = JsonSerializer.Deserialize<AgentTaskRunIndexFile>(opened, RunSerializerOptions)
                 ?? throw new InvalidDataException("Task run index line could not be deserialized.");
             if (string.IsNullOrWhiteSpace(run.Id))
             {
@@ -479,14 +542,15 @@ public sealed class AgentTaskRepository(
         }
     }
 
-    private List<AgentTaskRunIndexFile> ReadRunIndexRows(string indexPath, string containingTaskId)
+    private List<AgentTaskRunIndexFile> ReadRunIndexRows(string indexPath, string containingTaskId, string ownerUserId)
     {
+        if (!contentProtector.IsAvailable(ownerUserId)) { return []; }
         var rows = new List<AgentTaskRunIndexFile>();
         var seenRunIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var lines = FileUtil.ReadAllLinesShared(indexPath);
         for (var index = lines.Length - 1; index >= 0; index--)
         {
-            if (TryMapRunIndexLine(lines[index], indexPath, index + 1, containingTaskId, out var row) &&
+            if (TryMapRunIndexLine(lines[index], indexPath, index + 1, containingTaskId, ownerUserId, out var row) &&
                 row is not null &&
                 seenRunIds.Add(row.Id))
             {
@@ -498,11 +562,8 @@ public sealed class AgentTaskRepository(
     }
 
     private AgentTaskRun MapRunToDomain(
-        AgentTaskRunIndexFile file,
-        string runsDirectory,
-        string containingTaskId,
-        string ownerUserId,
-        bool includeEncryptedContent)
+        AgentTaskRunIndexFile file, string runsDirectory, string containingTaskId,
+        string ownerUserId, bool includeContent)
     {
         var taskId = file.TaskId;
         if (string.IsNullOrWhiteSpace(taskId))
@@ -510,52 +571,6 @@ public sealed class AgentTaskRepository(
             taskId = containingTaskId;
             logger.LogWarning("Run '{RunId}' is missing task_id. Using containing task '{TaskId}'.", file.Id, containingTaskId);
         }
-
-        if (!includeEncryptedContent && file.IsEncrypted)
-        {
-            return new AgentTaskRun
-            {
-                Id = file.Id,
-                TaskId = taskId,
-                UserId = ownerUserId,
-                Status = ParseEnum(file.Status, AgentTaskStatus.Pending),
-                StartedAt = string.IsNullOrWhiteSpace(file.StartedAt) ? null : IsoTimestamp.Parse(file.StartedAt),
-                CompletedAt = string.IsNullOrWhiteSpace(file.CompletedAt) ? null : IsoTimestamp.Parse(file.CompletedAt),
-                TokensUsed = file.TokensUsed,
-                TriggerSource = ParseEnum(file.TriggerSource, TaskTriggerSource.Schedule),
-                IsEncrypted = true
-            };
-        }
-
-        var resultSummary = OpenRunValue(file.ResultSummary, ownerUserId, taskId, file.Id, "summary", file.IsEncrypted);
-        var error = OpenRunValue(file.Error, ownerUserId, taskId, file.Id, "error", file.IsEncrypted);
-        var systemInstruction = OpenRunValue(
-            file.SystemInstruction,
-            ownerUserId,
-            taskId,
-            file.Id,
-            "instruction",
-            file.IsEncrypted);
-        var triggerParameters = CloneParameters(file.TriggerParameters);
-        if (file.IsEncrypted && !string.IsNullOrEmpty(file.ProtectedParameters))
-        {
-            var opened = contentProtector.Unprotect(
-                ownerUserId,
-                RunPurpose(taskId, file.Id, "parameters"),
-                file.ProtectedParameters)
-                ?? throw new InvalidOperationException($"Task run '{file.Id}' is stored encrypted and cannot be read.");
-            try
-            {
-                triggerParameters = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
-                    opened,
-                    RunSerializerOptions) ?? [];
-            }
-            catch (JsonException ex)
-            {
-                throw new InvalidOperationException($"Task run '{file.Id}' has unreadable encrypted parameters.", ex);
-            }
-        }
-
         return new AgentTaskRun
         {
             Id = file.Id,
@@ -564,40 +579,23 @@ public sealed class AgentTaskRepository(
             Status = ParseEnum(file.Status, AgentTaskStatus.Pending),
             StartedAt = string.IsNullOrWhiteSpace(file.StartedAt) ? null : IsoTimestamp.Parse(file.StartedAt),
             CompletedAt = string.IsNullOrWhiteSpace(file.CompletedAt) ? null : IsoTimestamp.Parse(file.CompletedAt),
-            ResultSummary = resultSummary,
-            SessionElement = ReadRunSession(runsDirectory, file.Id, taskId, ownerUserId),
-            LiveMessages = ReadRunMessages(runsDirectory, file.Id, taskId, ownerUserId),
-            Error = error,
             TokensUsed = file.TokensUsed,
             TriggerSource = ParseEnum(file.TriggerSource, TaskTriggerSource.Schedule),
-            TriggerParameters = triggerParameters,
-            SystemInstruction = systemInstruction,
-            IsEncrypted = file.IsEncrypted
+            ResultSummary = includeContent ? file.ResultSummary : null,
+            Error = includeContent ? file.Error : null,
+            SystemInstruction = includeContent ? file.SystemInstruction : null,
+            TriggerParameters = includeContent ? CloneParameters(file.TriggerParameters) : [],
+            SessionElement = includeContent ? ReadRunSession(runsDirectory, file.Id, taskId, ownerUserId) : null,
+            LiveMessages = includeContent ? ReadRunMessages(runsDirectory, file.Id, taskId, ownerUserId) : null
         };
     }
 
-    private string? OpenRunValue(
-        string? value,
-        string ownerUserId,
-        string taskId,
-        string runId,
-        string artifact,
-        bool isEncrypted)
-    {
-        if (!isEncrypted || value is null)
-        {
-            return value;
-        }
 
-        return contentProtector.Unprotect(ownerUserId, RunPurpose(taskId, runId, artifact), value)
-            ?? throw new InvalidOperationException($"Task run '{runId}' is stored encrypted and cannot be read.");
-    }
 
     private async Task WriteRunMessagesAsync(
         string runsDirectory,
         AgentTaskRun run,
         string ownerUserId,
-        bool isEncrypted,
         CancellationToken ct)
     {
         var messages = run.LiveMessages;
@@ -615,7 +613,7 @@ public sealed class AgentTaskRepository(
                 ? run.SystemInstruction
                 : await redactionService.RedactTextAsync(run.SystemInstruction, ownerUserId, ct).ConfigureAwait(false)
         };
-        var lines = new List<string> { SerializeRunRecord(header, ownerUserId, isEncrypted) };
+        var lines = new List<string> { SerializeRunRecord(header, ownerUserId) };
 
         if (messages is not null)
         {
@@ -625,48 +623,22 @@ public sealed class AgentTaskRepository(
                 RunId = run.Id,
                 TaskId = run.TaskId,
                 Message = message
-            }, ownerUserId, isEncrypted)));
+            }, ownerUserId)));
         }
 
         await FileUtil.WriteAllTextAtomicAsync(GetRunTranscriptPath(runsDirectory, run.Id), string.Join(Environment.NewLine, lines) + Environment.NewLine, ct).ConfigureAwait(false);
     }
 
-    private string SerializeRunRecord(AgentTaskRunTranscriptFile record, string ownerUserId, bool isEncrypted)
+    private string SerializeRunRecord(AgentTaskRunTranscriptFile record, string ownerUserId)
     {
-        if (!isEncrypted)
-        {
-            return JsonSerializer.Serialize(record, RunSerializerOptions);
-        }
-
-        record.IsEncrypted = true;
-        if (string.Equals(record.Kind, "header", StringComparison.OrdinalIgnoreCase))
-        {
-            if (!string.IsNullOrWhiteSpace(record.SystemInstruction))
-            {
-                record.ProtectedPayload = contentProtector.Protect(
-                    ownerUserId,
-                    RunPurpose(record.TaskId, record.RunId, "instruction"),
-                    record.SystemInstruction);
-                record.SystemInstruction = null;
-            }
-        }
-        else if (record.Message is not null)
-        {
-            record.ProtectedPayload = contentProtector.Protect(
-                ownerUserId,
-                RunPurpose(record.TaskId, record.RunId, "transcript"),
-                JsonSerializer.Serialize(record.Message, RunSerializerOptions));
-            record.Message = null;
-        }
-
-        return JsonSerializer.Serialize(record, RunSerializerOptions);
+        return contentProtector.Protect(ownerUserId, RunPurpose(record.TaskId, record.RunId, "transcript"),
+            JsonSerializer.Serialize(record, RunSerializerOptions));
     }
 
     private async Task WriteRunSessionAsync(
         string runsDirectory,
         AgentTaskRun run,
         string ownerUserId,
-        bool isEncrypted,
         CancellationToken ct)
     {
         var sessionPath = GetRunSessionPath(runsDirectory, run.Id);
@@ -677,18 +649,7 @@ public sealed class AgentTaskRepository(
         }
 
         var raw = run.SessionElement.Value.GetRawText();
-        var content = isEncrypted
-            ? JsonSerializer.Serialize(
-                new ProtectedSessionFile
-                {
-                    IsEncrypted = true,
-                    ProtectedPayload = contentProtector.Protect(
-                        ownerUserId,
-                        RunPurpose(run.TaskId, run.Id, "session"),
-                        raw)
-                },
-                RunSerializerOptions)
-            : raw;
+        var content = contentProtector.Protect(ownerUserId, RunPurpose(run.TaskId, run.Id, "session"), raw);
         await FileUtil.WriteAllTextAtomicAsync(sessionPath, content, ct).ConfigureAwait(false);
     }
 
@@ -696,11 +657,10 @@ public sealed class AgentTaskRepository(
         string runsDirectory,
         AgentTaskRun run,
         string ownerUserId,
-        bool isEncrypted,
         CancellationToken ct)
     {
         var indexPath = GetRunsIndexPath(runsDirectory);
-        var rows = File.Exists(indexPath) ? ReadRunIndexRows(indexPath, run.TaskId) : [];
+        var rows = File.Exists(indexPath) ? ReadRunIndexRows(indexPath, run.TaskId, ownerUserId) : [];
         rows.RemoveAll(row => string.Equals(row.Id, run.Id, StringComparison.OrdinalIgnoreCase));
         var systemInstruction = run.SystemInstruction is null || redactionService is null
             ? run.SystemInstruction
@@ -734,47 +694,9 @@ public sealed class AgentTaskRepository(
             }
         }
 
-        if (isEncrypted)
-        {
-            if (indexRow.ResultSummary is not null)
-            {
-                indexRow.ResultSummary = contentProtector.Protect(
-                    ownerUserId,
-                    RunPurpose(run.TaskId, run.Id, "summary"),
-                    indexRow.ResultSummary);
-            }
-
-            if (indexRow.Error is not null)
-            {
-                indexRow.Error = contentProtector.Protect(
-                    ownerUserId,
-                    RunPurpose(run.TaskId, run.Id, "error"),
-                    indexRow.Error);
-            }
-
-            if (indexRow.SystemInstruction is not null)
-            {
-                indexRow.SystemInstruction = contentProtector.Protect(
-                    ownerUserId,
-                    RunPurpose(run.TaskId, run.Id, "instruction"),
-                    indexRow.SystemInstruction);
-            }
-
-            if (indexRow.TriggerParameters is { Count: > 0 })
-            {
-                indexRow.ProtectedParameters = contentProtector.Protect(
-                    ownerUserId,
-                    RunPurpose(run.TaskId, run.Id, "parameters"),
-                    JsonSerializer.Serialize(indexRow.TriggerParameters, RunSerializerOptions));
-                indexRow.TriggerParameters = null;
-            }
-        }
-
-        indexRow.IsEncrypted = isEncrypted;
-
         rows.Add(indexRow);
 
-        var content = string.Join(Environment.NewLine, rows.Select(row => JsonSerializer.Serialize(row, RunSerializerOptions))) + Environment.NewLine;
+        var content = string.Join(Environment.NewLine, rows.Select(row => contentProtector.Protect(ownerUserId, RunIndexPurpose(run.TaskId), JsonSerializer.Serialize(row, RunSerializerOptions)))) + Environment.NewLine;
         await FileUtil.WriteAllTextAtomicAsync(indexPath, content, ct).ConfigureAwait(false);
     }
 
@@ -816,13 +738,14 @@ public sealed class AgentTaskRepository(
         {
             try
             {
-                var record = JsonSerializer.Deserialize<AgentTaskRunTranscriptFile>(lines[index], RunSerializerOptions);
+                var record = JsonSerializer.Deserialize<AgentTaskRunTranscriptFile>(
+                    contentProtector.Unprotect(ownerUserId, RunPurpose(taskId, runId, "transcript"), lines[index])
+                        ?? throw new InvalidOperationException("The encrypted task transcript cannot be read."), RunSerializerOptions);
                 if (record is null)
                 {
                     continue;
                 }
 
-                OpenRunRecord(record, ownerUserId, taskId, runId);
                 if (record is { Message: not null } &&
                     string.Equals(record.Kind, "message", StringComparison.OrdinalIgnoreCase))
                 {
@@ -838,102 +761,24 @@ public sealed class AgentTaskRepository(
         return messages.Count == 0 ? null : messages;
     }
 
-    private void OpenRunRecord(
-        AgentTaskRunTranscriptFile record,
-        string ownerUserId,
-        string taskId,
-        string runId)
-    {
-        if (!record.IsEncrypted)
-        {
-            return;
-        }
 
-        var isHeader = string.Equals(record.Kind, "header", StringComparison.OrdinalIgnoreCase);
-        if (string.IsNullOrEmpty(record.ProtectedPayload))
-        {
-            if (isHeader)
-            {
-                return;
-            }
 
-            throw new InvalidOperationException($"Task run '{runId}' has an encrypted record with no payload.");
-        }
-
-        var artifact = isHeader ? "instruction" : "transcript";
-        var opened = contentProtector.Unprotect(
-            ownerUserId,
-            RunPurpose(taskId, runId, artifact),
-            record.ProtectedPayload)
-            ?? throw new InvalidOperationException($"Task run '{runId}' is stored encrypted and cannot be read.");
-        if (isHeader)
-        {
-            record.SystemInstruction = opened;
-            return;
-        }
-
-        try
-        {
-            record.Message = JsonSerializer.Deserialize<ChatMessage>(opened, RunSerializerOptions)
-                ?? throw new InvalidOperationException($"Task run '{runId}' has an unreadable encrypted message.");
-        }
-        catch (JsonException ex)
-        {
-            throw new InvalidOperationException($"Task run '{runId}' has an unreadable encrypted message.", ex);
-        }
-    }
-
-    private JsonElement? ReadRunSession(
-        string runsDirectory,
-        string runId,
-        string taskId,
-        string ownerUserId)
+    private JsonElement? ReadRunSession(string runsDirectory, string runId, string taskId, string ownerUserId)
     {
         var sessionPath = GetRunSessionPath(runsDirectory, runId);
-        if (!File.Exists(sessionPath))
-        {
-            return null;
-        }
-
-        JsonElement root;
+        if (!File.Exists(sessionPath)) { return null; }
+        var opened = contentProtector.Unprotect(ownerUserId, RunPurpose(taskId, runId, "session"), File.ReadAllText(sessionPath))
+            ?? throw new InvalidOperationException("The encrypted task session cannot be read.");
         try
         {
-            using var document = JsonDocument.Parse(File.ReadAllText(sessionPath));
-            root = document.RootElement.Clone();
+            using var document = JsonDocument.Parse(opened);
+            return document.RootElement.Clone();
         }
         catch (JsonException ex)
         {
             logger.LogWarning(ex, "Failed to read task run session file '{SessionPath}'.", sessionPath);
             return null;
         }
-
-        if (root.ValueKind == JsonValueKind.Object &&
-            root.TryGetProperty(nameof(ProtectedSessionFile.IsEncrypted), out var flag) &&
-            flag.ValueKind == JsonValueKind.True)
-        {
-            if (!root.TryGetProperty(nameof(ProtectedSessionFile.ProtectedPayload), out var payload) ||
-                string.IsNullOrEmpty(payload.GetString()))
-            {
-                throw new InvalidOperationException($"Session for task run '{runId}' is marked encrypted but carries no payload.");
-            }
-
-            var opened = contentProtector.Unprotect(
-                ownerUserId,
-                RunPurpose(taskId, runId, "session"),
-                payload.GetString()!)
-                ?? throw new InvalidOperationException($"Session for task run '{runId}' is stored encrypted and cannot be read.");
-            try
-            {
-                using var inner = JsonDocument.Parse(opened);
-                return inner.RootElement.Clone();
-            }
-            catch (JsonException ex)
-            {
-                throw new InvalidOperationException($"Session for task run '{runId}' has an unreadable encrypted payload.", ex);
-            }
-        }
-
-        return root;
     }
 
     private static TaskExternalTrigger MapExternalTriggerToDomain(ExternalTriggerFile? file)
@@ -1062,7 +907,7 @@ public sealed class AgentTaskRepository(
         var requestedSlug = trigger.Slug?.Trim() ?? string.Empty;
         var normalizedSlug = string.IsNullOrWhiteSpace(requestedSlug)
             ? string.Empty
-            : Slugs.ForTaskTrigger(requestedSlug);
+            : Slugs.ForUserTaskTrigger(task.UserId, requestedSlug);
 
         trigger.Parameters = NormalizeExternalParametersOrThrow(trigger.Parameters);
 
@@ -1074,10 +919,10 @@ public sealed class AgentTaskRepository(
 
         if (string.IsNullOrWhiteSpace(normalizedSlug))
         {
-            normalizedSlug = Slugs.ForTaskTrigger(task.Name);
+            normalizedSlug = Slugs.ForUserTaskTrigger(task.UserId, task.Name);
         }
 
-        var existingSlugs = GetExistingExternalTriggerSlugs(task.Id);
+        var existingSlugs = GetExistingExternalTriggerSlugs(task.UserId, task.Id);
         trigger.Slug = string.IsNullOrWhiteSpace(requestedSlug)
             ? Slugs.MakeUnique(normalizedSlug, existingSlugs)
             : normalizedSlug;
@@ -1142,14 +987,22 @@ public sealed class AgentTaskRepository(
         return true;
     }
 
-    private HashSet<string> GetExistingExternalTriggerSlugs(string taskIdToExclude)
+    private HashSet<string> GetExistingExternalTriggerSlugs(string ownerUserId, string taskIdToExclude)
     {
         var slugs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var taskFilePath in EnumerateTaskFiles())
+        var tasksRoot = GetTasksRoot(ownerUserId);
+        if (!Directory.Exists(tasksRoot)) { return slugs; }
+        foreach (var directory in Directory.EnumerateDirectories(tasksRoot))
         {
+            var taskFilePath = GetTaskFilePath(directory);
+            if (!File.Exists(taskFilePath)) { continue; }
             try
             {
-                var (yaml, _) = MarkdownFrontmatter.Split(File.ReadAllText(taskFilePath));
+                var text = EncryptedFileContent.ReadAllText(ownerUserId, taskFilePath, contentProtector)
+                    ?? throw new FileNotFoundException("Task definition not found.", taskFilePath);
+                var (yaml, _) = MarkdownFrontmatter.Split(text);
+                if (string.IsNullOrWhiteSpace(yaml)) { continue; }
+                yamlCodec.RequireSchemaVersion(yaml, AgentTaskDefinitionFile.CurrentSchemaVersion);
                 var file = yamlCodec.Deserialize<AgentTaskDefinitionFile>(yaml);
                 if (string.Equals(file.Id, taskIdToExclude, StringComparison.OrdinalIgnoreCase) ||
                     file.ExternalTrigger is not { IsEnabled: true } trigger ||
@@ -1157,15 +1010,13 @@ public sealed class AgentTaskRepository(
                 {
                     continue;
                 }
-
-                slugs.Add(Slugs.ForTaskTrigger(trigger.Slug));
+                slugs.Add(Slugs.ForUserTaskTrigger(ownerUserId, trigger.Slug));
             }
             catch (Exception ex) when (ex is IOException or InvalidDataException or FormatException or JsonException)
             {
                 logger.LogWarning(ex, "Skipping task file '{TaskFilePath}' while checking external trigger slugs.", taskFilePath);
             }
         }
-
         return slugs;
     }
 

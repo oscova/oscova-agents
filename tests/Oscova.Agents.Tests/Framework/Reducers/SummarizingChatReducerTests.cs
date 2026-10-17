@@ -1,10 +1,86 @@
 using Microsoft.Extensions.AI;
+using Microsoft.Agents.AI;
 using OscovaSummarizingChatReducer = Oscova.Agents.Reducers.SummarizingChatReducer;
 
 namespace Oscova.Agents.Tests.Framework.Reducers;
 
 public sealed class SummarizingChatReducerTests
 {
+    /// <summary>Consecutive streamed tool results retain their calls through per-service-call compaction.</summary>
+    [Theory]
+    [InlineData("first", "second")]
+    [InlineData("reused", "reused")]
+    [InlineData("", "")]
+    public async Task StreamingRun_WhenCompactionOccursBetweenCallAndResult_PreservesThePair(string firstCallId, string secondCallId)
+    {
+        var tool = AIFunctionFactory.Create((string payload) => "receipt", "lookup");
+        var providerCalls = 0;
+        using var model = new TestChatClient
+        {
+            StreamingAsync = (messages, _, cancellationToken) =>
+            {
+                providerCalls++;
+                var contents = messages.SelectMany(message => message.Contents).ToList();
+                if (providerCalls > 1)
+                {
+                    var result = Assert.Single(contents.OfType<FunctionResultContent>());
+                    var call = Assert.Single(contents.OfType<FunctionCallContent>(), call => call.CallId == result.CallId);
+                    Assert.Equal(providerCalls == 2 ? firstCallId : secondCallId, call.CallId);
+                    Assert.Equal(tool.Name, call.Name);
+                    Assert.Equal("receipt", result.Result?.ToString());
+                }
+                return TestChatClient.StreamAsync([new ChatResponseUpdate
+                {
+                    Role = ChatRole.Assistant, MessageId = providerCalls.ToString(),
+                    Contents = providerCalls <= 2
+                        ? [new FunctionCallContent(providerCalls == 1 ? firstCallId : secondCallId, tool.Name,
+                            new Dictionary<string, object?> { ["payload"] = new string('x', 8000) })]
+                        : [new TextContent("completed")]
+                }], cancellationToken);
+            }
+        };
+        using var summarizer = new TestChatClient();
+        var history = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+        {
+            ChatReducer = new OscovaSummarizingChatReducer(summarizer, maxTokenCount: 100),
+            ReducerTriggerEvent = InMemoryChatHistoryProviderOptions.ChatReducerTriggerEvent.AfterMessageAdded
+        });
+        var agent = new ChatClientAgent(model, new ChatClientAgentOptions
+        {
+            Name = "Assistant", ChatHistoryProvider = history, RequirePerServiceCallChatHistoryPersistence = true,
+            ChatOptions = new ChatOptions { Tools = [tool] }
+        });
+        var reply = string.Empty;
+        await foreach (var update in agent.RunStreamingAsync("Run the lookup")) { reply += update.Text; }
+        Assert.Equal("completed", reply);
+        Assert.Equal(3, providerCalls);
+        Assert.True(summarizer.ResponseCalls > 0);
+    }
+
+    /// <summary>Compaction retains an outstanding call until its real result can be paired with it.</summary>
+    [Theory]
+    [InlineData("pending-call")]
+    [InlineData("")]
+    public async Task ReduceAsync_WhenCurrentTurnExceedsBudget_PreservesOutstandingToolCall(string callId)
+    {
+        var inner = new TestChatClient();
+        var reducer = new OscovaSummarizingChatReducer(inner, maxTokenCount: 100);
+        var toolCall = new ChatMessage(ChatRole.Assistant,
+            [new FunctionCallContent(callId, "lookup", new Dictionary<string, object?>())]);
+        var history = new List<ChatMessage>
+        {
+            new(ChatRole.User, "Find the saved conversation"),
+            new(ChatRole.Assistant, [new FunctionCallContent(callId, "lookup", new Dictionary<string, object?>())]),
+            new(ChatRole.Tool, [new FunctionResultContent(callId, new string('x', 8000))]),
+            toolCall
+        };
+
+        var reduced = (await reducer.ReduceAsync(history, CancellationToken.None)).ToList();
+
+        Assert.Contains(reduced, message => ReferenceEquals(message, toolCall));
+        Assert.Equal(callId, reduced.SelectMany(message => message.Contents).OfType<FunctionCallContent>().Last().CallId);
+    }
+
     [Fact]
     public async Task ReduceAsync_WhenUnderThreshold_ReturnsHistoryUnchanged()
     {

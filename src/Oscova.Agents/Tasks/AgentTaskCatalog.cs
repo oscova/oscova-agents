@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Persistence;
 using Oscova.Agents.Utils;
+using YamlDotNet.Core;
 
 namespace Oscova.Agents.Tasks;
 
@@ -17,27 +18,27 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
     private readonly YamlConverter _yamlCodec;
     private readonly ILogger<AgentTaskCatalog> _logger;
     private readonly Func<string, bool> _userIdValidator;
-    private readonly HashSet<string> _builtInTaskKeys;
     private readonly Func<AgentTaskDefinitionFile, string?>? _persistedDefinitionValidator;
     private readonly Lock _writeLock = new();
 
     private AgentTaskCatalogState _state = AgentTaskCatalogState.Empty;
+
+    private readonly Oscova.Agents.Secrets.IContentProtector _protector;
 
     /// <summary>Initializes a task catalogue with caller-owned storage and classification policies.</summary>
     public AgentTaskCatalog(
         Func<string> usersRootResolver,
         YamlConverter yamlCodec,
         ILogger<AgentTaskCatalog> logger,
+        Oscova.Agents.Secrets.IContentProtector protector,
         Func<string, bool>? userIdValidator = null,
-        IEnumerable<string>? builtInTaskKeys = null,
         Func<AgentTaskDefinitionFile, string?>? persistedDefinitionValidator = null)
     {
-        _usersRootResolver = usersRootResolver
-            ?? throw new ArgumentNullException(nameof(usersRootResolver));
+        _usersRootResolver = usersRootResolver ?? throw new ArgumentNullException(nameof(usersRootResolver));
         _yamlCodec = yamlCodec;
         _logger = logger;
+        _protector = protector;
         _userIdValidator = userIdValidator ?? (static _ => true);
-        _builtInTaskKeys = new HashSet<string>(builtInTaskKeys ?? [], StringComparer.OrdinalIgnoreCase);
         _persistedDefinitionValidator = persistedDefinitionValidator;
     }
 
@@ -56,10 +57,10 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
     }
 
     /// <inheritdoc />
-    public string? TryGetBuiltInTaskKey(string taskId)
+    public string? TryGetHandlerKey(string taskId)
     {
         var state = _state;
-        return state.EntriesByTaskId.TryGetValue(taskId, out var entry) ? entry.BuiltInTaskKey : null;
+        return state.EntriesByTaskId.TryGetValue(taskId, out var entry) ? entry.HandlerKey : null;
     }
 
     /// <inheritdoc />
@@ -188,6 +189,7 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
         CancellationToken ct)
     {
         var entries = new List<AgentTaskCatalogEntry>();
+        if (!_protector.IsAvailable(ownerUserId)) { return entries; }
         var normalizedUserDirectory = Path.GetFullPath(userDirectoryPath);
         var tasksRoot = Path.Combine(normalizedUserDirectory, AgentTaskFileLayout.TasksDirectory);
         if (!Directory.Exists(tasksRoot) ||
@@ -218,8 +220,10 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
 
             try
             {
-                var fileText = File.ReadAllText(taskFilePath);
+                var fileText = Secrets.EncryptedFileContent.ReadAllText(ownerUserId, taskFilePath, _protector)
+                    ?? throw new FileNotFoundException("Task definition not found.", taskFilePath);
                 var (yaml, _) = MarkdownFrontmatter.Split(fileText);
+                _yamlCodec.RequireSchemaVersion(yaml, AgentTaskDefinitionFile.CurrentSchemaVersion);
                 var file = _yamlCodec.Deserialize<AgentTaskDefinitionFile>(yaml);
                 var taskId = file.Id;
                 if (string.IsNullOrWhiteSpace(taskId))
@@ -252,9 +256,9 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
                     ownerUserId,
                     taskDirectoryPath,
                     file.IsEnabled,
-                    ResolveBuiltInTaskKey(taskDirectoryPath)));
+                    file.RequiresHandler ? Path.GetFileName(taskDirectoryPath) : null));
             }
-            catch (Exception exception)
+            catch (Exception exception) when (exception is not InvalidDataException || exception.InnerException is YamlException)
             {
                 _logger.LogWarning(
                     exception,
@@ -264,14 +268,6 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
         }
 
         return entries;
-    }
-
-    private string? ResolveBuiltInTaskKey(string taskDirectoryPath)
-    {
-        var directoryName = Path.GetFileName(taskDirectoryPath);
-        return _builtInTaskKeys.TryGetValue(directoryName, out var configuredKey)
-            ? configuredKey
-            : null;
     }
 
     private sealed record AgentTaskCatalogState(

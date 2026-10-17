@@ -9,17 +9,15 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 using UglyToad.PdfPig.Exceptions;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Workspace;
+using Oscova.Agents.Utils;
 
 namespace Oscova.Agents.Toolsets;
 
 /// <summary>
 /// Exposes bounded PDF text discovery and page-range extraction tools.
 /// </summary>
-public sealed class PdfToolset : ICrewToolset
+public sealed class PdfToolset : IAgentToolset
 {
-    // Caps the size of a single extraction response so a huge PDF cannot blow up the agent context.
-    private const int MaxOutputChars = 200_000;
-
     // Below this many non-whitespace characters the PDF is assumed to be scanned images / unreadable.
     private const int MinMeaningfulChars = 20;
 
@@ -28,16 +26,21 @@ public sealed class PdfToolset : ICrewToolset
     private const int SearchSnippetContextChars = 180;
 
     private readonly IWorkspaceFileAccess _files;
+    private readonly IToolOutputStore? _outputStore;
+    private readonly Func<IReadOnlyList<AllowedDirectory>> _directories;
 
     /// <summary>
     /// Creates PDF tools that resolve agent-facing paths against the active run's allowed directories.
     /// </summary>
     public PdfToolset(
         Func<IReadOnlyList<AllowedDirectory>>? workspaceResolver = null,
-        IWorkspaceFileAccess? fileAccess = null)
+        IWorkspaceFileAccess? fileAccess = null,
+        IToolOutputStore? outputStore = null)
     {
         Func<IReadOnlyList<AllowedDirectory>> resolver = workspaceResolver ?? (() => []);
         _files = fileAccess ?? new WorkspaceFileAccess(resolver);
+        _outputStore = outputStore;
+        _directories = resolver;
     }
 
     /// <summary>
@@ -45,11 +48,12 @@ public sealed class PdfToolset : ICrewToolset
     /// </summary>
     /// <param name="path">The relative, agent-facing, or host PDF path the active workspace allows reading.</param>
     /// <param name="pageRange">An optional single page or range such as <c>5</c> or <c>2-7</c>.</param>
-    /// <returns>Extracted page text, a scanned/encrypted PDF message, or a truncation notice.</returns>
-    [DisplayName("extract_pdf_text")]
-    [Description("Extracts text from a PDF file. For large PDFs, use search_pdf_text first and then extract the matching page range.")]
+    /// <returns>Extracted page text, a scanned/encrypted PDF message, or a saved-output notice.</returns>
+    [DisplayName("extract_text")]
+    [AgentTool]
+    [Description("Extracts text from a PDF file. Long output shows the start and saves the full text to a file you can read or search.")]
     public string ExtractPdfText(
-        [Description("File path: relative to your working directory, or an absolute path listed under Workspace Access")]
+        [Description("File path: relative to your working directory, or an absolute path within a listed granted folder")]
         [WorkspacePath(Access = WorkspacePathAccess.Read)]
         string path,
         [Description("Optional page range. Examples: '5' for a single page, '2-7' for a range. Omit or leave empty for all pages.")]
@@ -71,7 +75,6 @@ public sealed class PdfToolset : ICrewToolset
         ParseRange(pageRange, pageCount, out var startPage, out var endPage);
 
         var builder = new StringBuilder();
-        var truncated = false;
         // Count non-whitespace characters from pageText only so our scanned-image heuristic
         // is not skewed by the "--- Page N ---" headers we inject.
         var meaningfulChars = 0;
@@ -88,31 +91,9 @@ public sealed class PdfToolset : ICrewToolset
                 }
             }
 
-            builder.Append("--- Page ").Append(pageNumber).AppendLine(" ---");
-
-            // Only append up to the remaining budget so a single huge page cannot blow past MaxOutputChars.
-            var remaining = MaxOutputChars - builder.Length;
-            if (remaining <= 0)
-            {
-                truncated = true;
-                break;
-            }
-
-            if (pageText.Length > remaining)
-            {
-                builder.Append(pageText, 0, remaining);
-                truncated = true;
-                break;
-            }
-
-            builder.AppendLine(pageText)
+            builder.Append("--- Page ").Append(pageNumber).AppendLine(" ---")
+                .AppendLine(pageText)
                 .AppendLine();
-
-            if (builder.Length >= MaxOutputChars)
-            {
-                truncated = true;
-                break;
-            }
         }
 
         var combined = builder.ToString();
@@ -125,32 +106,24 @@ public sealed class PdfToolset : ICrewToolset
                 "Use an OCR-capable tool for scanned pages.");
         }
 
-        if (truncated || combined.Length > MaxOutputChars)
-        {
-            var cutoff = Math.Min(combined.Length, MaxOutputChars);
-            return combined.Substring(0, cutoff)
-                + "\n\n[Output truncated. Re-run extract_pdf_text with a narrower pageRange.]";
-        }
-
-        return combined;
+        return ToolOutput.LimitText(_outputStore, "pdf", combined);
     }
 
     /// <summary>
-    /// Searches extractable PDF text and returns bounded, page-numbered snippets with pagination.
+    /// Searches extractable PDF text and returns bounded, page-numbered snippets.
     /// </summary>
     /// <param name="path">The relative, agent-facing, or host PDF path the active workspace allows reading.</param>
     /// <param name="query">The literal text to find, matched without case sensitivity.</param>
-    /// <param name="offset">The one-based matching-page index where the result page starts.</param>
     /// <param name="limit">The maximum number of matching pages to return.</param>
-    /// <returns>PDF page metadata and a bounded page of matching snippets.</returns>
-    [DisplayName("search_pdf_text")]
+    /// <returns>PDF page metadata and a bounded list of matching snippets.</returns>
+    [DisplayName("search_text")]
+    [AgentTool]
     [Description("Searches a PDF for literal text and returns total pages plus bounded, page-numbered snippets. Use this before extracting a large PDF.")]
     public string SearchPdfText(
-        [Description("File path: relative to your working directory, or an absolute path listed under Workspace Access")]
+        [Description("File path: relative to your working directory, or an absolute path within a listed granted folder")]
         [WorkspacePath(Access = WorkspacePathAccess.Read)]
         string path,
         [Description("Literal text to find, matched without case sensitivity")] string query,
-        [Description("1-indexed matching-page number to start from")] int offset = 1,
         [Description("Maximum number of matching pages to return, up to 20")] int limit = MaxSearchResults)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -161,11 +134,6 @@ public sealed class PdfToolset : ICrewToolset
         if (string.IsNullOrWhiteSpace(query))
         {
             throw new ToolFailureException("A PDF search query is required.");
-        }
-
-        if (offset < 1)
-        {
-            offset = 1;
         }
 
         limit = Math.Clamp(limit, 1, MaxSearchResults);
@@ -183,7 +151,7 @@ public sealed class PdfToolset : ICrewToolset
             throw new ToolFailureException("The PDF has no pages.");
         }
 
-        var matches = new List<(int PageNumber, string Snippet)>();
+        var matches = new ToolOutputResults(limit);
         var meaningfulChars = 0;
         for (var pageNumber = 1; pageNumber <= pageCount; pageNumber++)
         {
@@ -193,51 +161,27 @@ public sealed class PdfToolset : ICrewToolset
             var matchIndex = pageText.IndexOf(query, StringComparison.OrdinalIgnoreCase);
             if (matchIndex >= 0)
             {
-                matches.Add((pageNumber, BuildSearchSnippet(pageText, matchIndex, query.Length)));
+                matches.Record($"--- Page {pageNumber} ---\n{BuildSearchSnippet(pageText, matchIndex, query.Length)}");
             }
         }
 
-        if (matches.Count == 0 && meaningfulChars < MinMeaningfulChars)
+        if (matches.Total == 0 && meaningfulChars < MinMeaningfulChars)
         {
             throw new ToolFailureException(
                 "The PDF contains no extractable text.",
                 "Use an OCR-capable tool for scanned pages.");
         }
 
-        if (matches.Count == 0)
+        var directories = _directories();
+        string hostPath = PathHelper.ResolveAuthorizedHostPath(path, directories, WorkspacePathAccess.Read);
+        path = PathHelper.ResolveToAgentPath(hostPath, directories);
+        if (matches.Total == 0)
         {
             return $"PDF: {path} | Pages: {pageCount} | No matching pages.";
         }
 
-        if (matches.Count < offset)
-        {
-            return $"PDF: {path} | Pages: {pageCount} | Matching pages: {matches.Count}\nOffset {offset} is beyond the matching pages.";
-        }
-
-        var page = matches.Skip(offset - 1).Take(limit).ToList();
-        var lastMatch = offset + page.Count - 1;
-        var builder = new StringBuilder()
-            .Append("PDF: ").Append(path)
-            .Append(" | Pages: ").Append(pageCount)
-            .Append(" | Matching pages ").Append(offset).Append('-').Append(lastMatch)
-            .Append(" of ").Append(matches.Count).AppendLine();
-
-        foreach (var match in page)
-        {
-            builder.Append("--- Page ").Append(match.PageNumber).AppendLine(" ---")
-                .AppendLine(match.Snippet);
-        }
-
-        if (lastMatch < matches.Count)
-        {
-            builder.Append("[Continue with offset=")
-                .Append(lastMatch + 1)
-                .Append(" of ")
-                .Append(matches.Count)
-                .AppendLine(".]");
-        }
-
-        return builder.ToString().TrimEnd();
+        return $"PDF: {path} | Pages: {pageCount} | Matching pages: {matches.Total}\n"
+            + matches.Compose(_outputStore, "pdf-search");
     }
 
     private Stream OpenPdfStream(string path)

@@ -108,6 +108,21 @@ public sealed class WorkspacePathValidationMiddlewareTests : IDisposable
         }
     }
 
+    /// <summary>Direct executor validation uses only its supplied roots before performing IO.</summary>
+    [Fact]
+    public void DirectFunctionValidation_UsesOnlySuppliedExecutorGrants()
+    {
+        var read = CreateInvocationContext(nameof(CodingToolset.ReadFile), "file_path", Path.Combine(_workspacePath, "notes.txt"));
+        AllowedDirectory[] readOnly = [new(_workspacePath, "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly)];
+        WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(read.Function, read.Arguments, readOnly);
+        Assert.Throws<UnauthorizedAccessException>(() => WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(read.Function, read.Arguments, []));
+        read.Arguments["file_path"] = Path.Combine(_workspacePath, "..", "outside.txt");
+        Assert.Throws<UnauthorizedAccessException>(() => WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(read.Function, read.Arguments, readOnly));
+        var write = CreateInvocationContext(nameof(CodingToolset.WriteFile), "file_path", Path.Combine(_workspacePath, "notes.txt"));
+        Assert.Throws<UnauthorizedAccessException>(() => WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(write.Function, write.Arguments, readOnly));
+        Assert.False(File.Exists(Path.Combine(_workspacePath, "notes.txt")));
+    }
+
     private static FunctionInvocationContext CreateInvocationContext(
         string methodName,
         string argumentName,

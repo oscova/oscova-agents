@@ -1,0 +1,8 @@
+{
+  "id": "oscova.google-workspace",
+  "name": "Oscova Google Workspace",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.GoogleWorkspace.dll",
+  "entryType": "Oscova.Agents.Plugins.GoogleWorkspace.GoogleWorkspaceAgentPlugin"
+}

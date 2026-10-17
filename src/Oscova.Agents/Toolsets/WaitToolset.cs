@@ -7,10 +7,11 @@ using Oscova.Agents.Harness;
 namespace Oscova.Agents.Toolsets;
 
 /// <summary>Lets an agent pause its current run before rechecking external work.</summary>
-public sealed class WaitToolset : ICrewToolset
+public sealed class WaitToolset : IAgentToolset
 {
     /// <summary>Waits for a bounded duration, then tells the agent to recheck external state.</summary>
-    [DisplayName("wait")]
+    [DisplayName("sleep")]
+    [AgentTool]
     [Description("Pauses the current agent run for a bounded duration when external work has no status handle, then returns so the agent can check again.")]
     public static async Task<string> WaitAsync(
         [Description("Seconds to wait. Values below 1 use 1; values above 300 use 300.")]

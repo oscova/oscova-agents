@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Channel.Title"><value>Echo channel</value></data>
+  <data name="Channel.Description"><value>Loader registration probe.</value></data>
+  <data name="Channel.Help.Other"><value>Echo details</value></data>
+  <data name="Settings.Title"><value>إعدادات قناة Echo</value></data>
+  <data name="Settings.Note"><value>ملاحظة تجريبية</value></data>
+  <data name="Settings.Save"><value>حفظ الملاحظة</value></data>
+  <data name="Settings.Saved"><value>تم حفظ الملاحظة التجريبية.</value></data>
+</root>

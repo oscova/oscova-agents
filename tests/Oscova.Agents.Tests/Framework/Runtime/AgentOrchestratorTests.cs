@@ -12,6 +12,17 @@ namespace Oscova.Agents.Tests.Framework.Runtime;
 
 public sealed class AgentOrchestratorTests
 {
+    /// <summary>Built agents expose the injector that accepts live follow-up messages.</summary>
+    [Fact]
+    public async Task GetOrCreateAgentAsync_ComposesMessageInjection()
+    {
+        var orchestrator = new AgentOrchestrator();
+        var definition = new AgentDefinition { Id = "main", Name = "Main" };
+        var agent = await orchestrator.GetOrCreateAgentAsync(CreateRequest(definition, [definition]));
+
+        Assert.NotNull(agent.GetService<MessageInjectingChatClient>());
+    }
+
     [Fact]
     public void SyncTools_AddsToolsetsAndExternalTools()
     {
@@ -447,20 +458,23 @@ public sealed class AgentOrchestratorTests
 
     private static string ExternalSearch() => "result";
 
-    private sealed class TestToolset : ICrewToolset
+    private sealed class TestToolset : IAgentToolset
     {
+        [AgentTool]
         public static string Ping() => "pong";
     }
 
-    private sealed class CollisionToolset : ICrewToolset
+    private sealed class CollisionToolset : IAgentToolset
     {
+        [AgentTool]
         [DisplayName("write_file")]
         [ToolPolicy(ApprovalMode = ToolApprovalMode.RequireApproval)]
         public static string WriteFile() => "reflected";
     }
 
-    private sealed class EgressToolset : ICrewToolset
+    private sealed class EgressToolset : IAgentToolset
     {
+        [AgentTool]
         [DisplayName("marker")]
         [ToolNetworkScope(NetworkScope.Egress)]
         public static string Marker() => "egress";

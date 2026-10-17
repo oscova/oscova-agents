@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.MicrosoftGraph</PackageId>
+    <Version>$(MicrosoftGraphPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Microsoft account integration and Outlook and To Do tools for Oscova Agents.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;microsoft;graph;outlook;todo</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Graph" Version="6.8.0" />
+    <!-- Pin Kiota.Abstractions above the transitive 1.21.1 (GHSA-7j59-v9qr-6fq9). Remove when Microsoft.Graph upgrades it. -->
+    <PackageReference Include="Microsoft.Kiota.Abstractions" Version="2.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+
+</Project>

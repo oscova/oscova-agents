@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+  <defs>
+    <radialGradient id="background" cx="34%" cy="25%" r="86%">
+      <stop stop-color="#5b2a8c"/>
+      <stop offset=".48" stop-color="#2d124e"/>
+      <stop offset="1" stop-color="#0d0716"/>
+    </radialGradient>
+    <mask id="center-cutout" maskUnits="userSpaceOnUse">
+      <rect width="2048" height="2048" fill="white"/>
+      <circle cx="1024" cy="1104" r="190" fill="black"/>
+    </mask>
+  </defs>
+  <circle cx="1024" cy="1024" r="1010" fill="url(#background)"/>
+  <g transform="translate(1024 1024) scale(.8) translate(-1024 -1024)">
+    <g transform="translate(1024 1024) scale(1.75) translate(-1024 -1024)" mask="url(#center-cutout)">
+      <polygon fill="rgb(196,208,214)" points="1024,1104 528,1200 1024,1528"/>
+      <polygon fill="rgb(248,250,251)" points="1024,520 528,1200 1024,1104"/>
+      <polygon fill="rgb(216,226,231)" points="1024,520 1024,1104 1520,1200"/>
+      <polygon fill="rgb(122,140,151)" points="1024,1104 1520,1200 1024,1528"/>
+    </g>
+  </g>
+</svg>

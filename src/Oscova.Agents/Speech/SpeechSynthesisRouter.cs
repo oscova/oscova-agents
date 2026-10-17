@@ -47,6 +47,11 @@ public sealed class SpeechSynthesisRouter(ISpeechProviderCatalog speechProviderC
         bool requireLocalEndpoint,
         CancellationToken ct = default)
     {
+        if (!_providers.ContainsKey(config.Type))
+        {
+            return false;
+        }
+
         var provider = ResolveProvider(config, requireLocalEndpoint);
         return await provider.IsAvailableAsync(config, apiKey, ct).ConfigureAwait(false);
     }

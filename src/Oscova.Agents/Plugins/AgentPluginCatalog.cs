@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Oscova.Agents.Plugins;
 
@@ -17,12 +18,27 @@ public sealed class AgentPluginCatalog : IAgentPluginCatalog
         IReadOnlyList<AgentPluginLoadDiagnostic> diagnostics)
     {
         Plugins = plugins;
-        Diagnostics = diagnostics;
+        _diagnostics = [.. diagnostics];
     }
+
+    private readonly Lock _diagnosticGate = new();
+    private readonly List<AgentPluginLoadDiagnostic> _diagnostics;
 
     /// <inheritdoc />
     public IReadOnlyList<LoadedAgentPlugin> Plugins { get; }
 
     /// <inheritdoc />
-    public IReadOnlyList<AgentPluginLoadDiagnostic> Diagnostics { get; }
+    public IReadOnlyList<AgentPluginLoadDiagnostic> Diagnostics
+    {
+        get { lock (_diagnosticGate) { return _diagnostics.ToArray(); } }
+    }
+
+    /// <inheritdoc />
+    public void ReportDiagnostic(AgentPluginLoadDiagnostic diagnostic)
+    {
+        lock (_diagnosticGate)
+        {
+            if (!_diagnostics.Contains(diagnostic)) { _diagnostics.Add(diagnostic); }
+        }
+    }
 }

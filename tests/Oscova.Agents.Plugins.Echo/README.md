@@ -24,3 +24,5 @@ The echo tool and providers only return placeholder values. Use the source as a 
 ## License
 
 Apache-2.0
+
+The settings contribution is an independent page in Preferences. Its Save button writes `echo-note.txt` as plaintext using the supplied current-user settings path. This demonstrates plugin-owned persistence without using the optional bound store.

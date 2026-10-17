@@ -14,22 +14,20 @@ namespace Oscova.Agents.Providers;
 /// <see cref="ToolApprovalMode.RequireApproval"/> wraps the tool with approval semantics;
 /// <see cref="ToolApprovalMode.Deny"/> omits the tool entirely. When the agent is used as a
 /// tool (sub-agent), approval-required tools are omitted rather than wrapped because no approval
-/// channel exists to route the request. Reflected confidentiality markers are also enforced.
+/// channel exists to route the request.
 /// </summary>
 public class AgentToolProvider(
     IEnumerable<string> allowedToolNames,
-    CrewToolCollection tools,
+    AgentToolCollection tools,
     IEnumerable<AgentToolPolicy>? toolPolicies = null,
     bool airGapped = false,
-    bool suppressApprovalRequiredTools = false,
-    bool isConfidential = false) : AIContextProvider
+    bool suppressApprovalRequiredTools = false) : AIContextProvider
 {
     private readonly AgentToolResolver _resolver = new(
         tools,
         toolPolicies,
         airGapped,
-        suppressApprovalRequiredTools,
-        isConfidential);
+        suppressApprovalRequiredTools);
 
     /// <inheritdoc />
     protected override ValueTask<AIContext> ProvideAIContextAsync(

@@ -30,16 +30,16 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
 
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
-        var taskFile = await File.ReadAllTextAsync(Path.Combine(taskDirectory!, "task.md"));
+        var taskFile = (await Secrets.EncryptedFileContent.ReadAllTextAsync(_userId, Path.Combine(taskDirectory!, "task.md.enc"), new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector()))!;
         Assert.Contains("external_trigger:", taskFile, StringComparison.Ordinal);
-        Assert.Contains("slug: nightly-build", taskFile, StringComparison.Ordinal);
+        Assert.Contains("slug: " + _userId + "-nightly-build", taskFile, StringComparison.Ordinal);
         Assert.Contains("name: branch", taskFile, StringComparison.Ordinal);
 
-        var loaded = await repository.GetTaskByExternalTriggerSlugAsync("nightly-build");
+        var loaded = await repository.GetTaskByExternalTriggerSlugAsync(_userId + "-nightly-build");
         Assert.NotNull(loaded);
         Assert.Equal(task.Id, loaded!.Id);
         Assert.True(loaded.ExternalTrigger.IsEnabled);
-        Assert.Equal("nightly-build", loaded.ExternalTrigger.Slug);
+        Assert.Equal(_userId + "-nightly-build", loaded.ExternalTrigger.Slug);
         Assert.Equal("branch", Assert.Single(loaded.ExternalTrigger.Parameters).Name);
     }
 
@@ -55,7 +55,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
         await repository.SaveTaskAsync(first);
 
         var exception = await Assert.ThrowsAsync<DuplicateExternalTriggerSlugException>(() => repository.SaveTaskAsync(second));
-        Assert.Equal("External trigger slug 'shared-build' is already used by another task.", exception.Message);
+        Assert.Equal($"External trigger slug '{_userId}-shared-build' is already used by another task.", exception.Message);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
 
         var loaded = await repository.GetTaskAsync(_userId, task.Id);
         Assert.NotNull(loaded);
-        Assert.Equal("nightly-build", loaded!.ExternalTrigger.Slug);
+        Assert.Equal(_userId + "-nightly-build", loaded!.ExternalTrigger.Slug);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
         task.IsEnabled = false;
         await repository.SaveTaskAsync(task);
 
-        var loaded = await repository.GetTaskByExternalTriggerSlugAsync("nightly-build");
+        var loaded = await repository.GetTaskByExternalTriggerSlugAsync(_userId + "-nightly-build");
 
         Assert.NotNull(loaded);
         Assert.Equal(task.Id, loaded!.Id);
@@ -109,7 +109,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
 
         Assert.NotNull(loaded);
         Assert.False(loaded!.ExternalTrigger.IsEnabled);
-        Assert.Equal("nightly-build", loaded.ExternalTrigger.Slug);
+        Assert.Equal(_userId + "-nightly-build", loaded.ExternalTrigger.Slug);
         var parameter = Assert.Single(loaded.ExternalTrigger.Parameters);
         Assert.Equal("branch", parameter.Name);
         Assert.Equal(TaskExternalParameterKind.String, parameter.Kind);
@@ -143,6 +143,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
         Assert.NotNull(taskDirectory);
         var runsDirectory = Path.Combine(taskDirectory!, "runs");
         var line = Assert.Single(await File.ReadAllLinesAsync(Path.Combine(runsDirectory, "index.jsonl")));
+        line = new PassThroughContentProtector().Unprotect(_userId, $"task\0{task.Id}\0index", line)!;
         Assert.Contains("\"trigger_source\":\"external_webhook\"", line, StringComparison.Ordinal);
         Assert.Contains("\"trigger_parameters\"", line, StringComparison.Ordinal);
 
@@ -171,7 +172,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
         var taskDirectory = catalog.TryGetTaskDirectory(task.Id);
         Assert.NotNull(taskDirectory);
         var runsDirectory = Path.Combine(taskDirectory!, "runs");
-        await File.AppendAllTextAsync(Path.Combine(runsDirectory, "index.jsonl"), "not-json" + Environment.NewLine);
+        await File.AppendAllTextAsync(Path.Combine(runsDirectory, "index.jsonl"), new PassThroughContentProtector().Protect(_userId, $"task\0{task.Id}\0index", "not-json") + Environment.NewLine);
 
         var loaded = await repository.GetRunAsync(_userId, task.Id, run.Id);
 
@@ -194,6 +195,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
             () => _usersRoot,
             _yamlConverter,
             NullLogger<AgentTaskCatalog>.Instance,
+            new Oscova.Agents.Tests.Infrastructure.TestDoubles.PassThroughContentProtector(),
             static userId => Guid.TryParse(userId, out _));
         var repository = new AgentTaskRepository(
             () => _usersRoot,
@@ -220,7 +222,7 @@ public sealed class AgentTaskRepositoryExternalTriggerTests : IDisposable
                 IntervalMinutes = 30
             },
             IsEnabled = true,
-            NotificationMode = TaskNotificationMode.Never,
+            NotifyOnCompletion = false,
             SessionMode = TaskSessionMode.Isolated,
             ToolApprovalRunMode = ToolApprovalRunMode.AutoRejectRequired,
             CreatedAt = DateTimeOffset.UtcNow

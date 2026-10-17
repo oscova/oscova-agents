@@ -14,6 +14,9 @@ public static class ModelProviderKeys
     /// <summary>Uses Groq-hosted models.</summary>
     public const string Groq = "Groq";
 
+    /// <summary>Uses DeepSeek-hosted models.</summary>
+    public const string DeepSeek = "DeepSeek";
+
     /// <summary>Uses an OpenAI-compatible endpoint.</summary>
     public const string OpenAICompatible = "OpenAICompatible";
 

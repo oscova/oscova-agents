@@ -14,14 +14,14 @@ public sealed class TaskRunScopeResolverTests
         {
             Id = "agent-1",
             Name = "Agent",
-            AllowedToolNames = ["coding__read_file", "memory_search", "search_tools", "library_search"],
-            PinnedToolNames = ["coding__read_file", "memory_search", "search_tools", "library_index_status"],
+            AllowedToolNames = ["file__read", "memory__search", "search_tools", "library__search"],
+            PinnedToolNames = ["file__read", "memory__search", "search_tools", "library__get_index_status"],
             ToolPolicies =
             [
-                new AgentToolPolicy { ToolName = "coding__read_file", ApprovalMode = ToolApprovalMode.RequireApproval },
-                new AgentToolPolicy { ToolName = "memory_search", ApprovalMode = ToolApprovalMode.RequireApproval },
+                new AgentToolPolicy { ToolName = "file__read", ApprovalMode = ToolApprovalMode.RequireApproval },
+                new AgentToolPolicy { ToolName = "memory__search", ApprovalMode = ToolApprovalMode.RequireApproval },
                 new AgentToolPolicy { ToolName = "search_tools", ApprovalMode = ToolApprovalMode.RequireApproval },
-                new AgentToolPolicy { ToolName = "library_search", ApprovalMode = ToolApprovalMode.RequireApproval }
+                new AgentToolPolicy { ToolName = "library__search", ApprovalMode = ToolApprovalMode.RequireApproval }
             ],
             IsMemoryEnabled = true,
             IsToolSearchEnabled = true
@@ -29,10 +29,9 @@ public sealed class TaskRunScopeResolverTests
 
         var scope = TaskRunScope.FromAgent(selectedAgent);
 
-        Assert.Equal(["coding__read_file"], scope.AllowedToolNames);
-        Assert.Equal(["coding__read_file"], scope.PinnedToolNames);
-        var policy = Assert.Single(scope.ToolPolicies);
-        Assert.Equal("coding__read_file", policy.ToolName);
+        Assert.Equal(["file__read", "memory__search"], scope.AllowedToolNames);
+        Assert.Equal(["file__read", "memory__search"], scope.PinnedToolNames);
+        Assert.Equal(["file__read", "memory__search"], scope.ToolPolicies.Select(policy => policy.ToolName));
         Assert.True(scope.IsMemoryEnabled);
         Assert.True(scope.IsToolSearchEnabled);
     }
@@ -42,7 +41,7 @@ public sealed class TaskRunScopeResolverTests
     {
         var scope = new TaskRunScope
         {
-            AllowedToolNames = ["library_search"]
+            AllowedToolNames = ["library__search"]
         };
         var resolver = new TaskRunScopeResolver();
 
@@ -62,8 +61,11 @@ public sealed class TaskRunScopeResolverTests
         {
             Id = "agent-1",
             Name = "Agent",
-            AllowedToolNames = ["coding__read_file", "shell__exec_command"],
-            ToolPolicies = [new AgentToolPolicy { ToolName = "shell__exec_command", ApprovalMode = ToolApprovalMode.Deny }],
+            AllowedToolNames = ["file__read", "shell__exec"],
+            InstructionSource = "templates:agent",
+            InstructionMode = "append",
+            DefaultInstruction = "Supplied default",
+            ToolPolicies = [new AgentToolPolicy { ToolName = "shell__exec", ApprovalMode = ToolApprovalMode.Deny }],
             IsMemoryEnabled = true,
             IsTodoEnabled = true,
             IsToolSearchEnabled = false,
@@ -75,16 +77,16 @@ public sealed class TaskRunScopeResolverTests
         };
         var scope = new TaskRunScope
         {
-            AllowedToolNames = ["coding__read_file"],
-            ToolPolicies = [new AgentToolPolicy { ToolName = "coding__read_file", ApprovalMode = ToolApprovalMode.RequireApproval }],
+            AllowedToolNames = ["file__read"],
+            ToolPolicies = [new AgentToolPolicy { ToolName = "file__read", ApprovalMode = ToolApprovalMode.RequireApproval }],
             IsToolSearchEnabled = true,
-            PinnedToolNames = ["coding__read_file"],
+            PinnedToolNames = ["file__read"],
             IsMemoryEnabled = false,
             IsTodoEnabled = false,
             AllowedWorkspaces = [],
             AllowedDirectories =
             [
-                new AllowedDirectory("agents/main/data/notes", "notes", DirectorySourceKind.UserDirectory, WorkspaceAccessMode.ReadWrite)
+                new AllowedDirectory("agents/main/private/notes", "notes", DirectorySourceKind.UserDirectory, WorkspaceAccessMode.ReadWrite)
             ]
         };
         var resolver = new TaskRunScopeResolver();
@@ -96,7 +98,10 @@ public sealed class TaskRunScopeResolverTests
 
         Assert.True(surface.IsScopeApplied);
         Assert.Equal(selectedAgent.Id, surface.EffectiveAgent.Id);
-        Assert.Equal(["coding__read_file"], surface.EffectiveAgent.AllowedToolNames);
+        Assert.Equal(selectedAgent.InstructionSource, surface.EffectiveAgent.InstructionSource);
+        Assert.Equal(selectedAgent.InstructionMode, surface.EffectiveAgent.InstructionMode);
+        Assert.Equal(selectedAgent.DefaultInstruction, surface.EffectiveAgent.DefaultInstruction);
+        Assert.Equal(["file__read"], surface.EffectiveAgent.AllowedToolNames);
         Assert.False(surface.EffectiveAgent.IsMemoryEnabled);
         Assert.False(surface.EffectiveAgent.IsTodoEnabled);
         Assert.True(surface.EffectiveAgent.IsToolSearchEnabled);
@@ -106,7 +111,7 @@ public sealed class TaskRunScopeResolverTests
         var directory = Assert.Single(surface.Directories);
         Assert.Equal(DirectorySourceKind.UserDirectory, directory.Kind);
 
-        Assert.Equal(["coding__read_file", "shell__exec_command"], selectedAgent.AllowedToolNames);
+        Assert.Equal(["file__read", "shell__exec"], selectedAgent.AllowedToolNames);
         Assert.True(selectedAgent.IsMemoryEnabled);
         Assert.True(selectedAgent.IsTodoEnabled);
         Assert.Equal(["default"], selectedAgent.AllowedWorkspaces);
@@ -118,8 +123,8 @@ public sealed class TaskRunScopeResolverTests
         var selectedAgent = new AgentDefinition { Id = "agent-1" };
         var scope = new TaskRunScope
         {
-            AllowedToolNames = ["coding__read_file"],
-            PinnedToolNames = ["coding__write_file"]
+            AllowedToolNames = ["file__read"],
+            PinnedToolNames = ["file__write"]
         };
         var resolver = new TaskRunScopeResolver();
 
@@ -137,7 +142,7 @@ public sealed class TaskRunScopeResolverTests
     [Fact]
     public void Resolve_ImplicitAgentScope_RemovesToolsUnavailableToTasks()
     {
-        const string allowedTaskTool = "coding__read_file";
+        const string allowedTaskTool = "file__read";
         var selectedAgent = new AgentDefinition
         {
             Id = "agent-1",

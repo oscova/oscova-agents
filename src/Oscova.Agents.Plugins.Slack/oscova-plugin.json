@@ -1,0 +1,8 @@
+{
+  "id": "oscova.slack",
+  "name": "Oscova Slack Channel",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.Slack.dll",
+  "entryType": "Oscova.Agents.Plugins.Slack.SlackAgentPlugin"
+}

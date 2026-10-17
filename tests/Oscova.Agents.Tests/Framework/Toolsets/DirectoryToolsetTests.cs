@@ -6,6 +6,34 @@ namespace Oscova.Agents.Tests.Framework.Toolsets;
 
 public sealed class DirectoryToolsetTests
 {
+    /// <summary>A page remains directly usable when its ancestor entries are absent.</summary>
+    [Fact]
+    public void ListDirectory_PageWithoutAncestors_ReturnsUsableCompletePaths()
+    {
+        string root = Path.Combine(Path.GetTempPath(), $"oscova-directory-page-{Guid.NewGuid():N}");
+        string file = Path.Combine(root, "docs", "operations", "regions", "north", "review.md");
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+            File.WriteAllText(file, "north review");
+            var grants = new AllowedDirectory[]
+            {
+                new(root, "project", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/project", true)
+            };
+            var toolset = new DirectoryToolset(() => grants);
+            string page = toolset.ListDirectory("/project", offset: 5, limit: 1, depth: 4);
+
+            string expected = "/project/docs/operations/regions/north/review.md";
+            Assert.Contains($"[FILE] {expected} (", page, StringComparison.Ordinal);
+            string returnedPath = page.Split("[FILE] ")[1].Split(" (")[0];
+            Assert.Contains("north review", new CodingToolset(() => grants).ReadFile(returnedPath), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(root)) { Directory.Delete(root, recursive: true); }
+        }
+    }
+
     [Fact]
     public void ListDirectory_WhenDirectoryIsMissing_ThrowsSafeToolFailure()
     {

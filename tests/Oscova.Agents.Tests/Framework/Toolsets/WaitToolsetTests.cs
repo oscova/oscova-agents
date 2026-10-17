@@ -17,10 +17,10 @@ public sealed class WaitToolsetTests
     [Fact]
     public async Task ReflectedWait_WhenCancelled_StopsTheDelay()
     {
-        var tools = new CrewToolCollection();
+        var tools = new AgentToolCollection();
         tools.Add(new WaitToolset());
         var qualifiedName = ToolNaming.BuildQualifiedName(
-            ToolNaming.GetToolsetOwner(typeof(WaitToolset)), "wait");
+            ToolNaming.GetToolsetOwner(typeof(WaitToolset)), "sleep");
         var tool = Assert.IsAssignableFrom<AIFunction>(tools.Find(qualifiedName));
         Assert.Single(tools);
         using var cancellation = new CancellationTokenSource();

@@ -15,19 +15,21 @@ namespace Oscova.Agents.Plugins.Web.Toolsets;
 [CredentialSlot(
     Key = "langsearch",
     Label = "Web Search",
-    Description = "API key used by the web_search tool.",
+    Description = "API key used by the web__search tool.",
     EnvVariable = "LANGSEARCH_API_KEY")]
+[DisplayName("Web")]
 public sealed class WebSearchToolset(
     IToolCredentialResolver credentialResolver,
     HttpClient httpClient,
-    ILogger<WebSearchToolset> logger) : ICrewToolset
+    ILogger<WebSearchToolset> logger) : IAgentToolset
 {
     public const string CredentialKey = "langsearch";
 
     /// <summary>
     /// Searches the web and returns the provider response as compact JSON.
     /// </summary>
-    [DisplayName("web_search")]
+    [DisplayName("search")]
+    [AgentTool]
     [Description("Search the web for current information. Returns titles, URLs, and short snippets; set include_summary for longer per-result summaries.")]
     [ToolNetworkScope(NetworkScope.Egress)]
     public async Task<string> WebSearchAsync(

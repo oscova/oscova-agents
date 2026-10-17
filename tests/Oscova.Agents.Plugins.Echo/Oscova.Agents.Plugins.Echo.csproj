@@ -1,16 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
+		<EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
 		<RootNamespace>Oscova.Agents.Plugins.Echo</RootNamespace>
 		<AssemblyName>Oscova.Agents.Plugins.Echo</AssemblyName>
 
 		<IsPackable>true</IsPackable>
 		<PackageId>Oscova.Agents.Plugins.Echo</PackageId>
-		<Version>0.2.0</Version>
+		<Version>$(EchoPluginVersion)</Version>
 		<PackageType>OscovaPlugin</PackageType>
 		<Description>Sample Oscova Agents plugin exposing an echo tool. Used as the canonical example and to verify the plugin marketplace install flow.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -19,12 +20,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
+		<EmbeddedResource Include="Help/**/*.md" />
+		<EmbeddedResource Include="Icons/*.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Humanizer.Core" Version="3.0.10" />
-		<ProjectReference Include="..\..\src\Oscova.Agents\Oscova.Agents.csproj" Private="false" PrivateAssets="all" />
+		<PackageReference Include="Oscova.Agents" Version="[$(OscovaAgentsVersion)]" IncludeAssets="compile" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,7 +39,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.203" />
+	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.266" />
 	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
 	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
 	</ItemGroup>

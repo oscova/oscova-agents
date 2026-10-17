@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Discord.Label"><value>Discord</value></data>
+  <data name="Settings.Section.Discord.Description"><value>Configure a integração do bot do Discord e a vinculação de canais.</value></data>
+  <data name="Settings.Discord.GetTokenLink"><value>Obtenha seu token de bot no Discord Developer Portal</value></data>
+  <data name="Settings.Discord.FindUserIdLink"><value>Como encontrar seu ID de usuário do Discord</value></data>
+  <data name="Settings.Discord.UserIdPlaceholder"><value>Digite o ID de usuário do Discord (ex.: 123456789012345678)</value></data>
+  <data name="Settings.Discord.UserIdLabel"><value>ID de usuário autorizado</value></data>
+  <data name="Settings.Discord.UserIdHint"><value>Apenas este usuário poderá enviar e receber mensagens com o bot.</value></data>
+  <data name="Credential.Label"><value>Bot do Discord</value></data>
+  <data name="Credential.Description"><value>Token do bot usado para conectar o bot do Discord.</value></data>
+  <data name="Credential.BotToken.Label"><value>Token do bot</value></data>
+  <data name="Validation.AuthorizedUserId"><value>O ID do usuário autorizado deve ser um número inteiro de 1 a 18446744073709551615.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Conectar ao iniciar</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>Quando ativado, o bot se conectará automaticamente ao iniciar o aplicativo</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>Os tokens de bot são gerenciados centralmente na guia Credenciais.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>Gerenciar credenciais</value></data>
+  <data name="Settings.Section.Agent.Label"><value>Agente principal</value></data>
+  <data name="Settings.Channels.AgentHint"><value>Escolha o agente que responde neste canal.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>Salvar configurações</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>Status do bot</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Salve as alterações antes de iniciar o canal.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>Parar bot</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>Iniciar bot</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>Configurações salvas com sucesso.</value></data>
+  <data name="Common.Connected">
+		<value>Conectado</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>Desconectado</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>Carregando...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

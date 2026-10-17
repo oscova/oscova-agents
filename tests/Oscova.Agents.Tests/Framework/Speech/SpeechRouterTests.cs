@@ -5,6 +5,22 @@ namespace Oscova.Agents.Tests.Framework.Speech;
 
 public sealed class SpeechRouterTests
 {
+    /// <summary>Optional speech providers are unavailable when their plugin is not installed.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task IsAvailableAsync_WithMissingProvider_ReturnsFalse(bool synthesis)
+    {
+        var catalog = new TestSpeechProviderCatalog();
+        var config = new SpeechProviderConfig { Type = "Local" };
+
+        var available = synthesis
+            ? await new SpeechSynthesisRouter(catalog).IsAvailableAsync(config, null, true)
+            : await new SpeechRecognitionRouter(catalog).IsAvailableAsync(config, null, true);
+
+        Assert.False(available);
+    }
+
     [Fact]
     public async Task TranscribeAsync_WithPluginDefinedType_ForwardsCallerInputs()
     {
@@ -150,6 +166,7 @@ public sealed class SpeechRouterTests
     private sealed class RecordingRecognitionProvider(string type, string? defaultEndpoint) : ISpeechRecognitionProvider
     {
         public string Type { get; } = type;
+        public string? DefaultModel => null;
 
         public string? DefaultEndpoint { get; } = defaultEndpoint;
 
@@ -201,6 +218,8 @@ public sealed class SpeechRouterTests
     private sealed class RecordingSynthesisProvider(string type, string? defaultEndpoint) : ISpeechSynthesisProvider
     {
         public string Type { get; } = type;
+        public string? DefaultModel => null;
+        public string? DefaultVoiceId => null;
 
         public string? DefaultEndpoint { get; } = defaultEndpoint;
 

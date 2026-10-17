@@ -105,10 +105,30 @@ public sealed class SkillImportService : ISkillImportService
             skillsRoot,
             $"{skillName}.md",
             stream,
-            ImportConflictMode.ReplaceExistingAgentAuthored,
+            ImportConflictMode.ReplaceExisting,
             expectedSkillName: skillName,
             allowReservedOscovaMetadata: true,
             cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Installs an authorized package while preserving trusted provenance and validating its exact skill name.</summary>
+    public Task<SkillImportResult> ImportTrustedPackageAsync(
+        string userId,
+        string skillName,
+        Stream content,
+        bool replaceExisting,
+        CancellationToken cancellationToken = default)
+    {
+        // The caller authorizes distribution. Archive, path and size validation still run here.
+        skillName = ValidateSkillDirectorySegment(skillName, nameof(skillName));
+        return ImportCoreAsync(
+            ResolveSkillsRoot(userId),
+            skillName + ".zip",
+            content,
+            replaceExisting ? ImportConflictMode.ReplaceExisting : ImportConflictMode.FailIfExists,
+            skillName,
+            allowReservedOscovaMetadata: true,
+            cancellationToken);
     }
 
     /// <summary>
@@ -117,9 +137,67 @@ public sealed class SkillImportService : ISkillImportService
     private enum ImportConflictMode
     {
         FailIfExists,
-        ReplaceExistingAgentAuthored
+        ReplaceExisting
     }
 
+    /// <summary>Exports one installed skill and its support files using the importer's path and size limits.</summary>
+    public async Task<byte[]> ExportPackageAsync(string userId, string skillName, CancellationToken ct = default)
+    {
+        skillName = ValidateSkillDirectorySegment(skillName, nameof(skillName));
+        var root = ResolveSkillsRoot(userId);
+        var directory = Path.Combine(root, skillName);
+        EnsureReplaceTargetSafe(root, directory, skillName);
+        using var output = new MemoryStream();
+        long expanded = 0;
+        using (var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            var pending = new Stack<string>();
+            pending.Push(directory);
+            while (pending.TryPop(out var current))
+            {
+                foreach (var path in Directory.EnumerateFileSystemEntries(current))
+                {
+                    ct.ThrowIfCancellationRequested();
+                    if (PathHelper.HasSymlinkInPath(path, root))
+                    {
+                        throw new InvalidOperationException("Skill packages cannot contain symbolic links.");
+                    }
+                    if (Directory.Exists(path)) { pending.Push(path); continue; }
+                    var entry = archive.CreateEntry(skillName + "/" +
+                        PathHelper.ToSlashSeparatedRelativePath(Path.GetRelativePath(directory, path)));
+                    await using var input = File.OpenRead(path);
+                    await using var target = entry.Open();
+                    var buffer = new byte[81920];
+                    int count;
+                    while ((count = await input.ReadAsync(buffer, ct).ConfigureAwait(false)) != 0)
+                    {
+                        expanded += count;
+                        if (expanded > SkillImportLimits.MaxUncompressedZipSizeBytes)
+                        {
+                            throw new ArgumentException("The skill exceeds the expanded package size limit.");
+                        }
+                        await target.WriteAsync(buffer.AsMemory(0, count), ct).ConfigureAwait(false);
+                    }
+                }
+            }
+        }
+        if (output.Length > SkillImportLimits.MaxUploadSizeBytes)
+        {
+            throw new ArgumentException("The skill exceeds the compressed package size limit.");
+        }
+        return output.ToArray();
+    }
+
+    /// <summary>Removes one installed package after its owner has authorized removal.</summary>
+    public void RemoveTrustedPackage(string userId, string skillName)
+    {
+        skillName = ValidateSkillDirectorySegment(skillName, nameof(skillName));
+        var root = ResolveSkillsRoot(userId);
+        var directory = Path.Combine(root, skillName);
+        if (!Directory.Exists(directory)) { return; }
+        EnsureReplaceTargetSafe(root, directory, skillName);
+        Directory.Delete(directory, recursive: true);
+    }
     private async Task<SkillImportResult> ImportCoreAsync(
         string skillsRoot,
         string fileName,
@@ -195,7 +273,7 @@ public sealed class SkillImportService : ISkillImportService
                 throw new SkillImportConflictException(conflictMessage);
             }
 
-            if (conflictMode == ImportConflictMode.ReplaceExistingAgentAuthored)
+            if (conflictMode == ImportConflictMode.ReplaceExisting)
             {
                 EnsureReplaceTargetSafe(skillsRoot, destinationDirectory, discoveredName);
             }
@@ -203,7 +281,7 @@ public sealed class SkillImportService : ISkillImportService
             SkillImportResult result = CollectCompatibilityFacts(normalizedSkillDirectory, skillContent, discoveredSkill);
 
             Directory.CreateDirectory(Path.GetDirectoryName(destinationDirectory)!);
-            if (conflictMode == ImportConflictMode.ReplaceExistingAgentAuthored)
+            if (conflictMode == ImportConflictMode.ReplaceExisting)
             {
                 ReplaceSkillDirectory(normalizedSkillDirectory, destinationDirectory, importRoot);
             }

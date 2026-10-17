@@ -126,7 +126,11 @@ public sealed class TaskRunScopeResolver
             Name = selectedAgent.Name,
             Description = selectedAgent.Description,
             SystemInstruction = selectedAgent.SystemInstruction,
+            InstructionSource = selectedAgent.InstructionSource,
+            InstructionMode = selectedAgent.InstructionMode,
+            DefaultInstruction = selectedAgent.DefaultInstruction,
             ModelOverrideId = selectedAgent.ModelOverrideId,
+            UseCallerModelForConsultations = selectedAgent.UseCallerModelForConsultations,
             AllowedToolNames = [.. scope.AllowedToolNames],
             ToolPolicies = CloneToolPolicies(scope.ToolPolicies),
             IsToolSearchEnabled = scope.IsToolSearchEnabled,
@@ -136,7 +140,6 @@ public sealed class TaskRunScopeResolver
             IsTodoEnabled = scope.IsTodoEnabled,
             IsLocalOnly = scope.IsLocalOnly,
             // Task scope can change runtime capabilities, but it must retain the agent's storage classification.
-            IsConfidential = selectedAgent.IsConfidential,
             IsExposedAsTool = selectedAgent.IsExposedAsTool,
             AgentToolIds = [.. scope.AgentToolIds],
             AllowedSkillNames = [.. scope.AllowedSkillNames],
@@ -263,11 +266,6 @@ public sealed class TaskRunScopeResolver
             if (string.Equals(toolName, "search_tools", StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException("Do not put search_tools in allowed_tool_names; use is_tool_search_enabled instead.");
-            }
-
-            if (toolName.StartsWith("memory_", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException("Memory tools are controlled by is_memory_enabled, not allowed_tool_names.");
             }
 
             throw new InvalidOperationException("Library tools are controlled by the Library workspace grant, not allowed_tool_names.");

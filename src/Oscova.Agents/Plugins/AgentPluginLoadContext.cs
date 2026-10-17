@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 
 namespace Oscova.Agents.Plugins;
@@ -15,7 +14,7 @@ internal sealed class AgentPluginLoadContext(string pluginAssemblyPath) : Assemb
     private readonly string _nativeDirectory = Path.Combine(
         Path.GetDirectoryName(pluginAssemblyPath)!,
         "runtimes",
-        RuntimeInformation.RuntimeIdentifier,
+        AgentPluginLoader.SupportedRuntimeIdentifier,
         "native");
     private readonly AssemblyDependencyResolver _resolver = new(pluginAssemblyPath);
 
@@ -30,13 +29,20 @@ internal sealed class AgentPluginLoadContext(string pluginAssemblyPath) : Assemb
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        if (assemblyName.Name is not null && AgentPluginLoader.SharedAssemblyNames.Contains(assemblyName.Name))
+        if (assemblyName.Name is not null && (AgentPluginLoader.SharedAssemblyNames.Contains(assemblyName.Name) || assemblyName.Name.StartsWith("Microsoft.AspNetCore.Components", StringComparison.Ordinal)))
         {
             return null;
         }
 
         var assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-        return assemblyPath is null ? null : LoadFromAssemblyPath(assemblyPath);
+        if (assemblyPath is null)
+        {
+            return null;
+        }
+
+        // Stream loading avoids retaining a Windows file lock on managed dependencies.
+        using var stream = File.OpenRead(assemblyPath);
+        return LoadFromStream(stream);
     }
 
     protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)

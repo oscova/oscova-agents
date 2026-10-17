@@ -79,7 +79,7 @@ public sealed class AgentAsToolProviderTests
         var child = CreateAgent("child", "Researcher", chatClient);
         var collection = new AIAgentCollection { child };
         var parentSession = await child.CreateSessionAsync();
-        var provider = new AgentAsToolProvider([child.Id], collection);
+        var provider = new RecordingProvider(child.Id, collection);
 
         await InvokeAsync(provider, child, parentSession, "saved", "work");
         chatClient.FailNext = true;
@@ -93,6 +93,21 @@ public sealed class AgentAsToolProviderTests
         await InvokeAsync(provider, child, null, "stateless two");
 
         Assert.DoesNotContain(chatClient.Calls[^1], message => message.Text == "stateless one");
+        Assert.Equal(4, provider.Sessions.Count);
+        Assert.NotSame(provider.Sessions[^2], provider.Sessions[^1]);
+    }
+
+    private sealed class RecordingProvider(string childId, AIAgentCollection agents) : AgentAsToolProvider([childId], agents)
+    {
+        public List<AgentSession> Sessions { get; } = [];
+
+        protected override Task<AgentResponse> RunAgentAsync(ChatClientAgent agent, IEnumerable<ChatMessage> messages,
+            AgentSession session, AgentRunOptions? options, CancellationToken cancellationToken)
+        {
+            Assert.NotNull(session);
+            Sessions.Add(session);
+            return base.RunAgentAsync(agent, messages, session, options, cancellationToken);
+        }
     }
 
     private static ChatClientAgent CreateAgent(string id, string name, IChatClient chatClient) =>

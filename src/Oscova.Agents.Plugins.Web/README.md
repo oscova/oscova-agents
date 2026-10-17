@@ -4,8 +4,8 @@ First-party **web toolset** plugin for Oscova Agents. Gives agents the ability t
 
 ## Tools
 
-- **web_search** — searches the web (via LangSearch) for current information; returns titles, URLs, snippets, and summaries. Requires the **Web Search** credential (`LANGSEARCH_API_KEY`).
-- **news_search** — searches recent news articles (via GNews); returns title, source, published time, summary, and URL. Requires the **News** credential (`GNEWS_API_KEY`).
+- **web__search** — searches the web (via LangSearch) for current information; returns titles, URLs, snippets, and summaries. Requires the **Web Search** credential (`LANGSEARCH_API_KEY`).
+- **news__search** — searches recent news articles (via GNews); returns title, source, published time, summary, and URL. Requires the **News** credential (`GNEWS_API_KEY`).
 
 Both tools make outbound network calls (egress) and stay disabled until their credential is configured in **Settings → Credentials**.
 

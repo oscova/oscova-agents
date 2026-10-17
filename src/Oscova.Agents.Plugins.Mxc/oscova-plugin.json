@@ -1,0 +1,1 @@
+{"id":"oscova.mxc","name":"Microsoft MXC","version":"$version$","frameworkVersionRange":"[$frameworkVersion$]","assembly":"Oscova.Agents.Plugins.Mxc.dll","entryType":"Oscova.Agents.Plugins.Mxc.MxcAgentPlugin"}

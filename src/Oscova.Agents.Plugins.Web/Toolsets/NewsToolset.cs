@@ -17,9 +17,9 @@ namespace Oscova.Agents.Plugins.Web.Toolsets;
 [CredentialSlot(
     Key = "gnews-api-key",
     Label = "News",
-    Description = "API key used by the news_search tool.",
+    Description = "API key used by the news__search tool.",
     EnvVariable = "GNEWS_API_KEY")]
-public sealed class NewsToolset : ICrewToolset
+public sealed class NewsToolset : IAgentToolset
 {
     private const string CredentialKey = "gnews-api-key";
     private const string BaseUrl = "https://gnews.io/api/v4/";
@@ -46,7 +46,8 @@ public sealed class NewsToolset : ICrewToolset
     /// <summary>
     /// Searches recent GNews articles by keyword and returns a concise list of matches.
     /// </summary>
-    [DisplayName("news_search")]
+    [DisplayName("search")]
+    [AgentTool]
     [Description("""
         Searches recent news articles through GNews.
         Returns article title, source, published time, short summary, and the article URL.
@@ -79,13 +80,14 @@ public sealed class NewsToolset : ICrewToolset
             queryParameters.Add(new("country", normalizedCountry));
         }
 
-        return ExecuteAsync("search", queryParameters, "news_search");
+        return ExecuteAsync("search", queryParameters, "news__search");
     }
 
     /// <summary>
     /// Fetches top GNews headlines for a category or country.
     /// </summary>
-    [DisplayName("news_get_top_headlines")]
+    [DisplayName("get_top_headlines")]
+    [AgentTool]
     [Description("""
         Fetches top headlines from GNews.
         Returns article title, source, published time, short summary, and the article URL.
@@ -114,7 +116,7 @@ public sealed class NewsToolset : ICrewToolset
             queryParameters.Add(new("country", normalizedCountry));
         }
 
-        return ExecuteAsync("top-headlines", queryParameters, "news_get_top_headlines");
+        return ExecuteAsync("top-headlines", queryParameters, "news__get_top_headlines");
     }
 
     private async Task<string> ExecuteAsync(

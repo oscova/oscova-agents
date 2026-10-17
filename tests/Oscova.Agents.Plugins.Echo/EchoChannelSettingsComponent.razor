@@ -1,0 +1,35 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Oscova.Agents.Plugins
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<PluginText> Loc
+
+<div class="card custom-settings-catalog-card echo-unused-author-class">
+    <div class="card-body gap-4">
+        <h4 class="text-base font-semibold">@Loc["Settings.Title"]</h4>
+        <label class="form-control">
+            <span class="label-text">@Loc["Settings.Note"]</span>
+            <input class="input input-bordered" @bind="_note" />
+        </label>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="SaveAsync">@Loc["Settings.Save"]</button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    private string _note = string.Empty;
+    private string FilePath => Path.Combine(Context.Plugin.UserSettingsDirectory
+        ?? throw new InvalidOperationException("Echo settings require a user context."), "echo-note.txt");
+    protected override async Task OnInitializedAsync()
+    {
+        await Context.RequireAccessAsync(CancellationToken.None);
+        _note = File.Exists(FilePath) ? await File.ReadAllTextAsync(FilePath) : string.Empty;
+    }
+    private async Task SaveAsync()
+    {
+        await Context.RequireAccessAsync(CancellationToken.None);
+        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+        await File.WriteAllTextAsync(FilePath, _note);
+        Context.Ui.Notify(Loc["Settings.Saved"], PluginNotificationKind.Success);
+    }
+}

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);TELEGRAM_PLUGIN</DefineConstants>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.Telegram</PackageId>
+    <Version>$(TelegramPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Telegram channel transport and configuration for Oscova Agents.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;telegram;channels</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Telegram.Bot" Version="22.10.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Help/**/*.md" />
+    <EmbeddedResource Include="Icons/*.svg" />
+    <None Update="Icons/LICENSE.txt" Pack="true" PackagePath="licenses/Bootstrap-Icons.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../Shared/ChannelSettings/*.cs" Link="Settings/%(Filename)%(Extension)" />
+    <Content Include="../Shared/ChannelSettings/*.razor" Link="Settings/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

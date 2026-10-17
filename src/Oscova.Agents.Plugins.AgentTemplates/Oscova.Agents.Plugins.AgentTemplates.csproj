@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.AgentTemplates</PackageId>
+    <Version>$(AgentTemplatesPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Prebuilt agents for research, writing, study, planning and everyday work.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;agent-templates</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates/*.md" LogicalName="Oscova.Agents.Plugins.AgentTemplates.Templates.%(Filename)%(Extension)" />
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="/" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

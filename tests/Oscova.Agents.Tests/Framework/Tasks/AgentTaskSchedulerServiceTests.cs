@@ -10,6 +10,141 @@ namespace Oscova.Agents.Tests.Framework.Tasks;
 
 public class AgentTaskSchedulerServiceTests
 {
+    /// <summary>User cleanup drains that owner's executions and permits retry after releasing admission.</summary>
+    [Fact]
+    public async Task CancelAndAcquireUserAsync_DrainsOnlyOwnerAndBlocksStartsUntilReleased()
+    {
+        using var context = new SchedulerTestContext();
+        var target = SchedulerTestContext.CreateTask();
+        var other = SchedulerTestContext.CreateTask(userId: "user-2");
+        await context.Scheduler.TriggerTaskAsync(target);
+        await context.Scheduler.TriggerTaskAsync(other);
+        await WaitForExecutionCountAsync(context.Executor, other.Id, 1);
+
+        using (await context.Scheduler.CancelAndAcquireUserAsync(target.UserId).WaitAsync(TimeSpan.FromSeconds(2)))
+        {
+            Assert.False(context.Scheduler.IsTaskRunning(target.UserId, target.Id));
+            Assert.True(context.Scheduler.IsTaskRunning(other.UserId, other.Id));
+            var blocked = await context.Scheduler.TriggerTaskAsync(target);
+            Assert.False(blocked.Started);
+        }
+        var retry = await context.Scheduler.TriggerTaskAsync(target);
+        Assert.True(retry.Started);
+        context.Executor.Release();
+        await context.Scheduler.StopAsync(CancellationToken.None);
+    }
+
+    /// <summary>Cancellation before execution clears the running entry so the task can start again.</summary>
+    [Fact]
+    public async Task CancelAndAcquireUserAsync_WhenStartNotificationIsBlocked_ClearsPendingRun()
+    {
+        using var context = new SchedulerTestContext();
+        var task = SchedulerTestContext.CreateTask();
+        var notified = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var subscription = context.TaskStatusNotifications.Subscribe(task.UserId, async update =>
+        {
+            if (update.Status == AgentTaskStatus.Running)
+            {
+                notified.TrySetResult();
+                await release.Task;
+            }
+        });
+        try
+        {
+            await context.Scheduler.TriggerTaskAsync(task);
+            await notified.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            using (await context.Scheduler.CancelAndAcquireUserAsync(task.UserId).WaitAsync(TimeSpan.FromSeconds(2)))
+            {
+                Assert.False(context.Scheduler.IsTaskRunning(task.UserId, task.Id));
+                Assert.False(context.Executor.ExecutionStarted.Task.IsCompleted);
+            }
+            release.TrySetResult();
+            Assert.True((await context.Scheduler.TriggerTaskAsync(task)).Started);
+            context.Executor.Release();
+            await context.Scheduler.StopAsync(CancellationToken.None);
+        }
+        finally { release.TrySetResult(); }
+    }
+
+    [Theory]
+    [InlineData(TaskScheduleKind.Interval)]
+    [InlineData(TaskScheduleKind.Cron)]
+    [InlineData(TaskScheduleKind.OneShot)]
+    public async Task TickAsync_WaitsForOwnerEligibility_WithoutCreatingRunState(TaskScheduleKind kind)
+    {
+        var eligible = false;
+        using var context = new SchedulerTestContext((task, _) => Task.FromResult(task.UserId == "user-2" || eligible));
+        var blocked = SchedulerTestContext.CreateTask();
+        blocked.CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-2);
+        blocked.Schedule.Kind = kind;
+        blocked.Schedule.RunAt = blocked.CreatedAt;
+        blocked.Schedule.CronExpression = "* * * * *";
+        blocked.Schedule.TimeZoneId = "UTC";
+        context.Repository.EnabledTasks.Add(blocked);
+        var updates = new ConcurrentQueue<TaskStatusUpdate>();
+        var completed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var subscription = context.TaskStatusNotifications.Subscribe(blocked.UserId, update =>
+        {
+            updates.Enqueue(update);
+            if (update.Status == AgentTaskStatus.Completed)
+            {
+                completed.TrySetResult();
+            }
+            return Task.CompletedTask;
+        });
+
+        await context.Scheduler.TickAsync(CancellationToken.None);
+
+        Assert.Equal(0, context.Executor.ExecutionCount);
+        Assert.Empty(context.Repository.SavedRunStatuses);
+        Assert.Empty(updates);
+        Assert.False(context.Scheduler.TryGetLastRun(blocked.UserId, blocked.Id, out _));
+        Assert.True(blocked.IsEnabled);
+        Assert.DoesNotContain(context.LoggerProvider.Entries, entry => entry.Level >= LogLevel.Error);
+
+        var control = SchedulerTestContext.CreateTask(userId: "user-2");
+        context.Repository.EnabledTasks.Add(control);
+        await context.Scheduler.TickAsync(CancellationToken.None);
+        await WaitForExecutionCountAsync(context.Executor, control.Id, 1);
+        Assert.Equal(0, context.Executor.GetExecutionCount(blocked.Id));
+        Assert.Empty(updates);
+
+        eligible = true;
+        await context.Scheduler.TickAsync(CancellationToken.None);
+        await WaitForExecutionCountAsync(context.Executor, blocked.Id, 1);
+        Assert.True(context.Scheduler.TryGetLastRun(blocked.UserId, blocked.Id, out var run));
+        Assert.Equal(TaskTriggerSource.Schedule, run!.TriggerSource);
+        context.Executor.Release();
+        await completed.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await WaitForSavedRunCountAsync(context.Repository, 2);
+        await context.Scheduler.StopAsync(CancellationToken.None);
+        Assert.Equal(AgentTaskStatus.Completed, run.Status);
+    }
+
+    [Fact]
+    public async Task TickAsync_WhenEligibilityThrows_LogsFailureAndSchedulesOtherOwner()
+    {
+        using var context = new SchedulerTestContext((task, _) => task.UserId == "user-1"
+            ? throw new IOException("Cannot read owner settings.")
+            : Task.FromResult(true));
+        var blocked = SchedulerTestContext.CreateTask();
+        var control = SchedulerTestContext.CreateTask(userId: "user-2");
+        context.Repository.EnabledTasks.AddRange([blocked, control]);
+
+        await context.Scheduler.TickAsync(CancellationToken.None);
+
+        Assert.False(context.Scheduler.TryGetLastRun(blocked.UserId, blocked.Id, out _));
+        Assert.Equal(0, context.Executor.GetExecutionCount(blocked.Id));
+        await WaitForExecutionCountAsync(context.Executor, control.Id, 1);
+        var error = Assert.Single(context.LoggerProvider.Entries, entry => entry.Level == LogLevel.Error);
+        Assert.IsType<IOException>(error.Exception);
+        Assert.Contains(blocked.Id, error.Message, StringComparison.Ordinal);
+        context.Executor.Release();
+        await WaitForSavedRunCountAsync(context.Repository, 1);
+        await context.Scheduler.StopAsync(CancellationToken.None);
+    }
+
     [Fact]
     public async Task TriggerTaskAsync_StartsTaskImmediately_AndPublishesStartAndCompletionNotifications()
     {
@@ -199,10 +334,12 @@ public class AgentTaskSchedulerServiceTests
         Assert.NotEqual(firstStart.RunId, replacementStart.RunId);
     }
 
-    [Fact]
-    public async Task TriggerTaskAsync_WhenTaskCompletes_QueuesSameOwnerAfterTaskDependents()
+    [Theory]
+    [InlineData(TaskTriggerSource.Manual)]
+    [InlineData(TaskTriggerSource.ExternalWebhook)]
+    public async Task TriggerTaskAsync_WhenTaskCompletes_QueuesSameOwnerAfterTaskDependents(TaskTriggerSource source)
     {
-        using var testContext = new SchedulerTestContext();
+        using var testContext = new SchedulerTestContext((_, _) => throw new InvalidOperationException("Explicit and chained starts must bypass scheduled waiting."));
         var predecessor = SchedulerTestContext.CreateTask();
         var dependent = SchedulerTestContext.CreateTask("Dependent Task", predecessor.UserId);
         dependent.Schedule = new TaskSchedule
@@ -219,7 +356,7 @@ public class AgentTaskSchedulerServiceTests
         testContext.Repository.EnabledTasks.Add(dependent);
         testContext.Repository.EnabledTasks.Add(otherUserDependent);
 
-        await testContext.Scheduler.TriggerTaskAsync(predecessor);
+        await testContext.Scheduler.TriggerTaskAsync(predecessor, source);
         testContext.Executor.Release();
 
         var dependentRun = await WaitForLastRunAsync(testContext.Scheduler, dependent.UserId, dependent.Id);
@@ -348,6 +485,37 @@ public class AgentTaskSchedulerServiceTests
         await Task.Delay(100);
 
         Assert.False(testContext.Scheduler.TryGetLastRun(dependent.UserId, dependent.Id, out _));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task TriggerTaskAsync_WhenOneShotCompletes_PublishesFinalizedDefinition(bool deleteAfterRun)
+    {
+        using var context = new SchedulerTestContext();
+        var task = SchedulerTestContext.CreateTask();
+        task.Schedule = new TaskSchedule
+        {
+            Kind = TaskScheduleKind.OneShot,
+            RunAt = DateTimeOffset.UtcNow.AddMinutes(5),
+            DeleteAfterRun = deleteAfterRun
+        };
+        await context.Repository.SaveTaskAsync(task);
+        var finalizedAtNotification = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var subscription = context.TaskStatusNotifications.Subscribe(task.UserId, async update =>
+        {
+            if (update.TaskId == task.Id && update.Status == AgentTaskStatus.Completed)
+            {
+                var saved = await context.Repository.GetTaskAsync(task.UserId, task.Id);
+                finalizedAtNotification.TrySetResult(deleteAfterRun ? saved is null : saved?.IsEnabled == false);
+            }
+        });
+
+        var outcome = await context.Scheduler.TriggerTaskAsync(task);
+        Assert.True(outcome.Started);
+        context.Executor.Release();
+
+        Assert.True(await finalizedAtNotification.Task.WaitAsync(TimeSpan.FromSeconds(2)));
     }
 
     [Fact]
@@ -723,7 +891,7 @@ public class AgentTaskSchedulerServiceTests
     {
         public TestLoggerProvider LoggerProvider { get; } = new();
 
-        public SchedulerTestContext()
+        public SchedulerTestContext(Func<AgentTaskDefinition, CancellationToken, Task<bool>>? canScheduleTaskAsync = null)
         {
             var services = new ServiceCollection();
             services.AddLogging(builder => builder.AddProvider(LoggerProvider));
@@ -738,7 +906,9 @@ public class AgentTaskSchedulerServiceTests
             Scheduler = new AgentTaskSchedulerService(
                 provider,
                 TaskStatusNotifications,
-                provider.GetRequiredService<ILogger<AgentTaskSchedulerService>>());
+                provider.GetRequiredService<ILogger<AgentTaskSchedulerService>>(),
+                TimeProvider.System,
+                canScheduleTaskAsync);
         }
 
         public ServiceProvider ServiceProvider { get; }
@@ -833,7 +1003,7 @@ public class AgentTaskSchedulerServiceTests
             _latestRunStatus = run.Status;
             return Task.CompletedTask;
         }
-        public Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default)
+        public Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default, string? creationDirectoryName = null)
         {
             if (FailNextSaveTask)
             {
@@ -849,6 +1019,7 @@ public class AgentTaskSchedulerServiceTests
         {
             _postRunBookkeepingArmed = true;
         }
+        public AgentTaskDefinition ParseDefinition(string ownerUserIdFromCatalog, string fileText) => throw new NotSupportedException();
     }
 
     private sealed class TestAgentTaskExecutor : IAgentTaskExecutor

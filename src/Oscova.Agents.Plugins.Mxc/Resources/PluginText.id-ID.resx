@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>Perintah mengikuti izin ruang kerja dan jaringan yang ada melalui isolasi bawaan sistem operasi.</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>Perubahan pada ruang kerja yang dapat ditulis bersifat permanen. Berkas sistem operasi dan folder alat yang terpasang mungkin tetap dapat dibaca.</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>Sandbox bawaan tidak terdeteksi. Periksa prasyarat Microsoft MXC untuk mesin ini.</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC tidak dapat dimulai. Periksa dependensi native dan izin mesin ini.</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC tidak merespons dalam sepuluh detik. Periksa prasyarat dan coba lagi.</value></data>
+</root>

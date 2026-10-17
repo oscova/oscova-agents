@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Telegram.Label"><value>Telegram</value></data>
+  <data name="Settings.Section.Telegram.Description"><value>Telegram বট ইন্টিগ্রেশন এবং ব্যক্তিগত চ্যাট অ্যাক্সেস সেট আপ করুন।</value></data>
+  <data name="Settings.Telegram.GetTokenLink"><value>BotFather থেকে আপনার বট টোকেন পান</value></data>
+  <data name="Settings.Telegram.UserIdPlaceholder"><value>Telegram ব্যবহারকারী ID লিখুন</value></data>
+  <data name="Settings.Telegram.UserIdLabel"><value>অনুমোদিত Telegram ব্যবহারকারী ID</value></data>
+  <data name="Settings.Telegram.UserIdHint"><value>শুধু এই সংখ্যাসূচক Telegram ব্যবহারকারী আইডি ব্যক্তিগতভাবে চ্যাট করতে পারবে। ব্যবহারকারীর নাম লিখবেন না। প্রথমে বটের সঙ্গে কথোপকথন শুরু করুন।</value></data>
+  <data name="Credential.Label"><value>Telegram বট</value></data>
+  <data name="Credential.Description"><value>Telegram বট সংযোগের জন্য ব্যবহৃত বট টোকেন।</value></data>
+  <data name="Credential.BotToken.Label"><value>বট টোকেন</value></data>
+  <data name="Validation.AuthorizedUserId"><value>অনুমোদিত ব্যবহারকারী আইডি 1 থেকে 9223372036854775807 পর্যন্ত পূর্ণসংখ্যা হতে হবে।</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>চালু হলে সংযোগ করুন</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>সক্ষম করা হলে, অ্যাপ্লিকেশন শুরুতে বট স্বয়ংক্রিয়ভাবে সংযুক্ত হবে</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>বট টোকেনগুলি ক্রেডেনশিয়াল ট্যাবে কেন্দ্রীয়ভাবে পরিচালিত হয়।</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>ক্রেডেনশিয়াল পরিচালনা করুন</value></data>
+  <data name="Settings.Section.Agent.Label"><value>মূল এজেন্ট</value></data>
+  <data name="Settings.Channels.AgentHint"><value>এই চ্যানেলে উত্তর দেবে এমন এজেন্ট বেছে নিন।</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>সেটিংস সংরক্ষণ করুন</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>বট স্থিতি</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>চ্যানেল চালু করার আগে পরিবর্তনগুলি সংরক্ষণ করুন।</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>বট বন্ধ করুন</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>বট চালু করুন</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>সেটিংস সফলভাবে সংরক্ষিত হয়েছে।</value></data>
+  <data name="Common.Connected">
+		<value>সংযুক্ত</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>বিচ্ছিন্ন</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>লোড হচ্ছে...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

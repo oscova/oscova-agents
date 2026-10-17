@@ -1,7 +1,8 @@
 {
   "id": "oscova.llamasharp",
   "name": "Oscova LLamaSharp Provider",
-  "version": "2.0.0",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
   "assembly": "Oscova.Agents.Plugins.LlamaSharp.dll",
   "entryType": "Oscova.Agents.Plugins.LlamaSharp.LlamaSharpAgentPlugin"
 }

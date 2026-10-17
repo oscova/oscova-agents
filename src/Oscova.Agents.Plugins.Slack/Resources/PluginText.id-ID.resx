@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Slack.Label"><value>Slack</value></data>
+  <data name="Settings.Slack.ConfigurationDescription"><value>Anggota ruang kerja dapat melihat aplikasi Slack yang terpasang. Oscova hanya membalas pesan langsung dari anggota yang diizinkan.</value></data>
+  <data name="Settings.Slack.WorkspaceIdLabel"><value>ID ruang kerja Slack</value></data>
+  <data name="Settings.Slack.WorkspaceIdHint"><value>Buka Slack di browser. Salin hanya ID yang diawali T setelah /client/, berhenti sebelum garis miring berikutnya.</value></data>
+  <data name="Settings.Slack.UserIdLabel"><value>ID anggota Slack yang diizinkan</value></data>
+  <data name="Settings.Slack.IdentityHint"><value>Di profil Slack Anda, pilih Lainnya &gt; Salin ID anggota. Hanya pesan langsung dari anggota ini yang diterima.</value></data>
+  <data name="Credential.Label"><value>Slack bot</value></data>
+  <data name="Credential.Description"><value>Token OAuth Pengguna Bot dan Token Tingkat Aplikasi untuk koneksi Slack pribadi.</value></data>
+  <data name="Credential.BotToken.Label"><value>Token OAuth Pengguna Bot</value></data>
+  <data name="Credential.AppLevelToken.Label"><value>Token Tingkat Aplikasi</value></data>
+  <data name="Validation.WorkspaceId"><value>ID ruang kerja Slack diperlukan.</value></data>
+  <data name="Validation.AuthorizedUserId"><value>ID anggota Slack yang diizinkan diperlukan.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Hubungkan saat mulai</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>Jika diaktifkan, bot akan otomatis terhubung saat aplikasi dimulai</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>Token bot dikelola secara terpusat di tab Kredensial.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>Kelola kredensial</value></data>
+  <data name="Settings.Section.Agent.Label"><value>Agen Utama</value></data>
+  <data name="Settings.Channels.AgentHint"><value>Pilih agen yang membalas di saluran ini.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>Simpan Pengaturan</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>Status Bot</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Simpan perubahan sebelum memulai saluran.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>Hentikan Bot</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>Mulai Bot</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>Pengaturan berhasil disimpan.</value></data>
+  <data name="Common.Connected">
+		<value>Terhubung</value>
+
+	</data>
+  <data name="Common.Disconnected">
+		<value>Terputus</value>
+
+	</data>
+  <data name="Common.Loading">
+		<value>Memuat...</value>
+
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

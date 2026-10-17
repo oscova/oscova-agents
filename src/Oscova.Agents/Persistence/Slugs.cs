@@ -133,4 +133,14 @@ public static class Slugs
             suffix++;
         }
     }
+    /// <summary>Qualifies a task trigger name with its owner while retaining the existing URL normalization.</summary>
+    public static string ForUserTaskTrigger(string ownerUserId, string name)
+    {
+        var prefix = ForTaskTrigger(ownerUserId) + "-";
+        var trimmed = name.Trim();
+        var chosenName = trimmed.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase)
+            ? trimmed[prefix.Length..]
+            : trimmed;
+        return ForTaskTrigger(prefix + ForTaskTrigger(chosenName));
+    }
 }

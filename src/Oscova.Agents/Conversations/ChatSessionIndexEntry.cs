@@ -15,7 +15,11 @@ internal sealed class ChatSessionIndexEntry
 
     public string Title { get; set; } = string.Empty;
 
+    public ChatBranchOrigin? BranchOrigin { get; set; }
+
     public string? AgentId { get; set; }
+
+    public string? ProjectId { get; set; }
 
     public string? AgentName { get; set; }
 
@@ -27,12 +31,12 @@ internal sealed class ChatSessionIndexEntry
 
     public bool IsUnread { get; set; }
 
-    /// <summary>Gets or sets whether this thread is stored encrypted.</summary>
-    public bool IsEncrypted { get; set; }
 
     public int LastIndexedMessageCount { get; set; }
 
     public int LastSummarizedMessageCount { get; set; }
+    public int LastSummarizedMessageOffset { get; set; }
 
     public int LastReflectedMessageCount { get; set; }
+    public int LastReflectedMessageOffset { get; set; }
 }

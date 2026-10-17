@@ -57,9 +57,14 @@ public class ModelProviderConfig
     public int ContextWindowSize { get; set; }
 
     /// <summary>
-    /// Gets or sets the blended provider cost per one million tokens.
+    /// Gets or sets the standard input price in USD per million tokens.
     /// </summary>
-    public decimal? CostPerMillionTokens { get; set; }
+    public decimal? InputCostPerMillionTokens { get; set; }
+
+    /// <summary>
+    /// Gets or sets the standard output price in USD per million tokens.
+    /// </summary>
+    public decimal? OutputCostPerMillionTokens { get; set; }
 
     /// <summary>
     /// Gets or sets the Ollama model keep-alive duration to send with chat requests.
@@ -97,7 +102,8 @@ public class ModelProviderConfig
             CredentialKey = CredentialKey,
             SupportsImages = SupportsImages,
             ContextWindowSize = ContextWindowSize,
-            CostPerMillionTokens = CostPerMillionTokens,
+            InputCostPerMillionTokens = InputCostPerMillionTokens,
+            OutputCostPerMillionTokens = OutputCostPerMillionTokens,
             OllamaKeepAlive = OllamaKeepAlive,
             SupportsThinking = SupportsThinking,
             VectorDimensions = VectorDimensions,
@@ -119,7 +125,8 @@ public class ModelProviderConfig
                && string.Equals(CredentialKey, other.CredentialKey, StringComparison.Ordinal)
                && SupportsImages == other.SupportsImages
                && ContextWindowSize == other.ContextWindowSize
-               && CostPerMillionTokens == other.CostPerMillionTokens
+               && InputCostPerMillionTokens == other.InputCostPerMillionTokens
+               && OutputCostPerMillionTokens == other.OutputCostPerMillionTokens
                && string.Equals(OllamaKeepAlive, other.OllamaKeepAlive, StringComparison.Ordinal)
                && SupportsThinking == other.SupportsThinking
                && VectorDimensions == other.VectorDimensions

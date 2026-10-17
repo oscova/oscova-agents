@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Settings.Section.Slack.Label"><value>Slack</value></data>
+  <data name="Settings.Slack.ConfigurationDescription"><value>Los miembros del espacio de trabajo pueden ver la aplicación de Slack instalada. Oscova solo responde a los mensajes directos del miembro autorizado.</value></data>
+  <data name="Settings.Slack.WorkspaceIdLabel"><value>ID del espacio de trabajo de Slack</value></data>
+  <data name="Settings.Slack.WorkspaceIdHint"><value>Abre Slack en un navegador. Copia solo el ID que empieza por T después de /client/, hasta la siguiente barra.</value></data>
+  <data name="Settings.Slack.UserIdLabel"><value>ID del miembro autorizado de Slack</value></data>
+  <data name="Settings.Slack.IdentityHint"><value>En tu perfil de Slack, selecciona Más &gt; Copiar ID de miembro. Solo se aceptan los mensajes directos de este miembro.</value></data>
+  <data name="Credential.Label"><value>Slack bot</value></data>
+  <data name="Credential.Description"><value>Token OAuth del usuario bot y token de nivel de aplicación para una conexión privada de Slack.</value></data>
+  <data name="Credential.BotToken.Label"><value>Token OAuth del usuario bot</value></data>
+  <data name="Credential.AppLevelToken.Label"><value>Token de nivel de aplicación</value></data>
+  <data name="Validation.WorkspaceId"><value>Se requiere el ID del espacio de trabajo de Slack.</value></data>
+  <data name="Validation.AuthorizedUserId"><value>Se requiere el ID del miembro autorizado de Slack.</value></data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Conectar al iniciar</value></data>
+  <data name="Settings.Channels.EnableAtStartupHint"><value>Cuando está activado, el bot se conectará automáticamente al iniciar la aplicación</value></data>
+  <data name="Settings.Channels.TokensManagedDescription"><value>Los tokens de bot se administran de forma centralizada en la pestaña Credenciales.</value></data>
+  <data name="Settings.Channels.NewCredentialButton"><value>Administrar credenciales</value></data>
+  <data name="Settings.Section.Agent.Label"><value>Agente principal</value></data>
+  <data name="Settings.Channels.AgentHint"><value>Elige el agente que responde en este canal.</value></data>
+  <data name="Settings.Channels.SaveSettingsButton"><value>Guardar configuración</value></data>
+  <data name="Settings.Channels.StatusTitle"><value>Estado del bot</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Guarda los cambios antes de iniciar el canal.</value></data>
+  <data name="Settings.Channels.StopBotButton"><value>Detener bot</value></data>
+  <data name="Settings.Channels.StartBotButton"><value>Iniciar bot</value></data>
+  <data name="Settings.Shared.SaveSettingsToast"><value>Configuración guardada correctamente.</value></data>
+  <data name="Common.Connected">
+		<value>Conectado</value>
+	</data>
+  <data name="Common.Disconnected">
+		<value>Desconectado</value>
+	</data>
+  <data name="Common.Loading">
+		<value>Cargando...</value>
+	</data>
+  <data name="Dialog.LogLevelError"><value>Error</value></data>
+</root>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Execution.Title" xml:space="preserve"><value>Microsoft MXC</value></data>
+  <data name="Execution.Description" xml:space="preserve"><value>命令通过操作系统的原生隔离遵循现有的工作区和网络权限。</value></data>
+  <data name="Execution.Limits" xml:space="preserve"><value>可写工作区中的更改是永久性的。操作系统文件和已安装工具的目录可能仍可读取。</value></data>
+  <data name="Availability.BackendUnavailable" xml:space="preserve"><value>未检测到原生沙箱。请检查此计算机的 Microsoft MXC 前提条件。</value></data>
+  <data name="Availability.LaunchFailed" xml:space="preserve"><value>Microsoft MXC 无法启动。请检查其原生依赖项和此计算机的权限。</value></data>
+  <data name="Availability.Timeout" xml:space="preserve"><value>Microsoft MXC 在十秒内未响应。请检查前提条件并重试。</value></data>
+</root>

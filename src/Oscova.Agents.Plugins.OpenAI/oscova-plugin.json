@@ -1,0 +1,9 @@
+{
+  "id": "oscova.openai",
+  "name": "Oscova OpenAI",
+  "description": "OpenAI speech recognition and synthesis using a saved OpenAI credential.",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.OpenAI.dll",
+  "entryType": "Oscova.Agents.Plugins.OpenAI.OpenAiAgentPlugin"
+}

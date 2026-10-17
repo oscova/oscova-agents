@@ -103,17 +103,17 @@ public sealed class TaskRunScope
     /// <summary>
     /// Returns whether a tool name is controlled by dedicated task-scope flags instead of allowed_tool_names.
     /// </summary>
-    public static bool IsManagedToolName(string? toolName)
-    {
-        if (string.IsNullOrWhiteSpace(toolName))
+    /// <summary>Identifies tools controlled exclusively by task-scope flags.</summary>
+        public static bool IsManagedToolName(string? toolName)
         {
-            return false;
-        }
+            if (string.IsNullOrWhiteSpace(toolName))
+            {
+                return false;
+            }
 
-        return string.Equals(toolName, "search_tools", StringComparison.OrdinalIgnoreCase)
-            || toolName.StartsWith("memory_", StringComparison.OrdinalIgnoreCase)
-            || toolName.StartsWith("library_", StringComparison.OrdinalIgnoreCase);
-    }
+            return string.Equals(toolName, "search_tools", StringComparison.OrdinalIgnoreCase)
+                || toolName.StartsWith("library_", StringComparison.OrdinalIgnoreCase);
+        }
 
     /// <summary>
     /// Creates a mutable deep copy so callers can edit a scope without mutating the source.

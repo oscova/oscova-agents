@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Settings.Skills.SandboxImageTitle">
+    <value>Image de bac à sable</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageDescription">
+    <value>Gérez l'image de bac à sable Docker utilisée par les scripts de compétences exécutés en conteneur isolé.</value>
+  </data>
+  <data name="Settings.Skills.SandboxDockerfileLabel">
+    <value>Dockerfile</value>
+  </data>
+  <data name="Settings.Skills.SandboxNoCacheLabel">
+    <value>Sans cache</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildButton">
+    <value>Créer l'image</value>
+  </data>
+  <data name="Settings.Skills.SandboxRebuildButton">
+    <value>Reconstruire l'image</value>
+  </data>
+  <data name="Settings.Skills.SandboxCancelButton">
+    <value>Annuler</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetButton">
+    <value>Utiliser les valeurs par défaut</value>
+  </data>
+  <data name="Settings.Skills.SandboxEditDockerfileButton">
+    <value>Modifier le Dockerfile</value>
+  </data>
+  <data name="Settings.Skills.SandboxDefaultImageBadge">
+    <value>Image par défaut</value>
+  </data>
+  <data name="Settings.Skills.SandboxCustomImageBadge">
+    <value>Image personnalisée</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuiltBadge">
+    <value>Compilée</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageNotBuiltBadge">
+    <value>Non compilée</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuildingBadge">
+    <value>Compilation en cours</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputLabel">
+    <value>Sortie de compilation</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputEmpty">
+    <value>La sortie de compilation apparaîtra ici.</value>
+  </data>
+  <data name="Settings.Skills.SandboxClearOutputButton">
+    <value>Effacer</value>
+  </data>
+  <data name="Settings.Skills.SandboxOfflineTooltip">
+    <value>Désactivez le mode hors ligne avant de compiler l'image du bac à sable.</value>
+  </data>
+  <data name="Settings.Skills.SandboxSavedToast">
+    <value>Dockerfile du bac à sable enregistré.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildStartedToast">
+    <value>La compilation de l'image du bac à sable a commencé.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildSucceededToast">
+    <value>La compilation de l'image du bac à sable a réussi.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildFailedToast">
+    <value>Échec de la compilation de l'image du bac à sable.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildCancelledToast">
+    <value>La compilation de l'image du bac à sable a été annulée.</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmTitle">
+    <value>Utiliser le Dockerfile par défaut</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmMessage">
+    <value>Utiliser le Dockerfile par défaut et reconstruire l'image de bac à sable partagée ?</value>
+  </data>
+  <data name="Execution.Title" xml:space="preserve">
+    <value>Docker</value>
+  </data>
+  <data name="Execution.Description" xml:space="preserve">
+    <value>Les commandes s’exécutent dans Docker avec les dossiers autorisés montés. Les outils de l’hôte ne sont pas disponibles automatiquement.</value>
+  </data>
+  <data name="Availability.Unavailable" xml:space="preserve"><value>Docker est indisponible. Vérifiez son installation, la connexion au service et les autorisations du compte, puis sélectionnez-le à nouveau.</value></data>
+</root>

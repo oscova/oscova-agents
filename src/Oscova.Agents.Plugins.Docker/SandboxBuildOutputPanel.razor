@@ -1,0 +1,35 @@
+@inject IStringLocalizer<PluginText> Loc
+
+<div class="space-y-2 pt-2">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 pt-4">
+        <h5 class="text-sm font-medium">@Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildOutputLabel, "Build output")</h5>
+        <button type="button"
+                class="btn btn-ghost btn-xs ml-auto"
+                disabled="@(Lines.Count == 0)"
+                @onclick="OnClear">
+            <span class="iconify lucide--eraser size-3" aria-hidden="true"></span>
+            @Loc.GetOrDefault(PluginTextKeys.SkillsSandboxClearOutputButton, "Clear")
+        </button>
+    </div>
+    <div class="mockup-code max-h-72 overflow-y-auto text-xs">
+        @if (Lines.Count == 0)
+        {
+            <pre data-prefix=">"><code>@Loc.GetOrDefault(PluginTextKeys.SkillsSandboxBuildOutputEmpty, "Build output will appear here.")</code></pre>
+        }
+        else
+        {
+            @foreach (SandboxBuildOutputLine line in Lines)
+            {
+                <pre class="@(line.IsError ? "text-error" : string.Empty)" data-prefix=">"><code>@line.Text</code></pre>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<SandboxBuildOutputLine> Lines { get; set; } = [];
+
+    [Parameter]
+    public EventCallback OnClear { get; set; }
+}

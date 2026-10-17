@@ -54,17 +54,11 @@ public sealed class AgentTaskRunIndexFile
     [JsonPropertyName("trigger_parameters")]
     public IDictionary<string, JsonElement>? TriggerParameters { get; set; }
 
-    /// <summary>Gets or sets protected trigger parameters for the run.</summary>
-    [JsonPropertyName("protected_parameters")]
-    public string? ProtectedParameters { get; set; }
 
     /// <summary>Gets or sets the first captured system instruction for the run.</summary>
     [JsonPropertyName("system_instruction")]
     public string? SystemInstruction { get; set; }
 
-    /// <summary>Gets or sets whether this run is stored encrypted.</summary>
-    [JsonPropertyName("is_encrypted")]
-    public bool IsEncrypted { get; set; }
 
 }
 
@@ -97,11 +91,5 @@ public sealed class AgentTaskRunTranscriptFile
     [JsonPropertyName("message")]
     public ChatMessage? Message { get; set; }
 
-    /// <summary>Gets or sets whether this record is stored encrypted.</summary>
-    [JsonPropertyName("is_encrypted")]
-    public bool IsEncrypted { get; set; }
 
-    /// <summary>Gets or sets the protected content for this record.</summary>
-    [JsonPropertyName("protected_payload")]
-    public string? ProtectedPayload { get; set; }
 }

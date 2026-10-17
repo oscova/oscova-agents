@@ -331,7 +331,7 @@ public sealed partial class WorkspaceFileAccess
     private static SafeFileHandle OpenWindowsRoot(string path)
     {
         SafeFileHandle handle = CreateFile(
-            ToExtendedWindowsPath(path),
+            FileUtil.ToExtendedWindowsPath(path),
             WindowsReadData | WindowsReadAttributes | WindowsSynchronize,
             WindowsShareRead | WindowsShareWrite,
             IntPtr.Zero,
@@ -566,14 +566,6 @@ public sealed partial class WorkspaceFileAccess
         if (error is ErrorFileNotFound or ErrorPathNotFound) return new FileNotFoundException(message, path);
         if (error == ErrorAccessDenied) return new UnauthorizedAccessException(message);
         return new IOException(message, unchecked((int)(0x80070000u | (uint)error)));
-    }
-
-    private static string ToExtendedWindowsPath(string path)
-    {
-        if (path.StartsWith("\\\\?\\", StringComparison.Ordinal)) return path;
-        return path.StartsWith("\\\\", StringComparison.Ordinal)
-            ? "\\\\?\\UNC\\" + path[2..]
-            : "\\\\?\\" + path;
     }
 
     private sealed class WindowsOpenedParent(SafeFileHandle directoryHandle, string targetName) : IDisposable

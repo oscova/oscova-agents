@@ -1,0 +1,74 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Oscova.Agents.Plugins
+
+@if (Credential && CredentialAbove) { @CredentialField }
+<div class="@(Model ? "grid gap-4 md:grid-cols-2" : string.Empty)">
+    @if (Credential && !CredentialAbove) { @CredentialField }
+    @if (Model)
+    {
+        <div class="form-control">
+            <label class="label pl-0" for="@($"{Prefix}-model")"><span class="label-text font-medium">@Text(PluginTextKeys.SpeechModelLabel)</span></label>
+            <input id="@($"{Prefix}-model")" class="input input-bordered w-full" placeholder="@Speech.DefaultModel" value="@Speech.Draft.ModelId" @onchange="ModelChangedAsync" />
+        </div>
+    }
+    @if (Voice)
+    {
+        <div class="form-control">
+            <label for="voice-select" class="label block mb-1 pl-0"><span class="label-text font-medium">@Text(PluginTextKeys.SpeechVoiceLabel)</span></label>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <select id="voice-select" class="select select-bordered w-full sm:max-w-xs" value="@Speech.Draft.VoiceId" @onchange="VoiceChangedAsync" disabled="@Speech.VoiceSelectionDisabled">
+                    @if (Speech.Voices.Count == 0)
+                    {
+                        <option disabled>@Text(PluginTextKeys.SpeechNoVoicesOption)</option>
+                    }
+                    @foreach (var voice in Speech.Voices)
+                    {
+                        <option value="@voice.Id">@string.Join(" · ", new[] { voice.DisplayName, voice.Gender, voice.Language }.Where(value => !string.IsNullOrWhiteSpace(value)))</option>
+                    }
+                </select>
+            </div>
+            <p class="text-xs mt-2 opacity-60">@Text(PluginTextKeys.SpeechVoiceHelperText)</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<string, string> Text { get; set; } = default!;
+    [Parameter, EditorRequired] public string Prefix { get; set; } = string.Empty;
+    [Parameter] public bool Credential { get; set; }
+    [Parameter] public bool CredentialAbove { get; set; }
+    [Parameter] public bool Model { get; set; }
+    [Parameter] public bool Voice { get; set; }
+    private PluginSpeechSettingsContext Speech => Context.GetSpeechSettings!();
+
+    private RenderFragment CredentialField => @<div class="form-control">
+        <label class="label pl-0" for="@($"{Prefix}-credential")"><span class="label-text font-medium">@Text(PluginTextKeys.SpeechCredentialLabel)</span></label>
+        <select id="@($"{Prefix}-credential")" class="select select-bordered w-full" value="@Speech.Draft.CredentialKey" @onchange="CredentialChangedAsync">
+            <option value="">@Text(PluginTextKeys.SpeechCredentialPlaceholder)</option>
+            @foreach (var credential in Speech.Credentials)
+            {
+                <option value="@credential.Key">@CredentialLabel(credential)</option>
+            }
+        </select>
+        <span class="label-text-alt text-xs opacity-70">@Text(PluginTextKeys.SpeechCredentialHelp)</span>
+    </div>;
+
+    private string CredentialLabel(PluginSpeechCredential credential)
+    {
+        var label = $"{credential.Alias} [{credential.Key}]";
+        return credential.IsSet ? label : $"{label} - {Text(PluginTextKeys.CredentialsMissingStatus)}";
+    }
+    private async Task CredentialChangedAsync(ChangeEventArgs args)
+    {
+        Speech.Draft.CredentialKey = args.Value?.ToString();
+        await Speech.ChangedAsync();
+    }
+    private async Task ModelChangedAsync(ChangeEventArgs args)
+    {
+        Speech.Draft.ModelId = args.Value?.ToString();
+        await Speech.ChangedAsync();
+    }
+    private Task VoiceChangedAsync(ChangeEventArgs args) => Speech.SelectVoiceAsync(args.Value?.ToString() ?? string.Empty);
+}

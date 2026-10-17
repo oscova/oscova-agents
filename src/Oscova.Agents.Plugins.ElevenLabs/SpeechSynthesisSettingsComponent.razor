@@ -1,0 +1,7 @@
+@inject IStringLocalizer<PluginText> Loc
+
+<OfficialSpeechFields Context="@Context" Prefix="speech-synthesis" Text="@(key => Loc[key].Value)" Credential="true" CredentialAbove="true" Model="true" Voice="true" />
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+}

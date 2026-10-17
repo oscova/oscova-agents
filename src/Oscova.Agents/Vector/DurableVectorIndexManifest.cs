@@ -6,6 +6,10 @@ namespace Oscova.Agents.Vector;
 /// <summary>Tracks durable vector generations without persisting source content or host paths.</summary>
 internal sealed class DurableVectorIndexManifest
 {
+    internal const int CurrentVersion = 1;
+
+    public int Version { get; set; }
+
     internal static StringComparer SourceComparer { get; } = StringComparer.Ordinal;
 
     public string? Fingerprint { get; set; }
@@ -40,5 +44,5 @@ internal sealed record DurableVectorIndexManifestLoadResult(
     bool Exists,
     bool IsMalformed)
 {
-    public bool IsTrusted => Exists && !IsMalformed;
+    public bool IsTrusted => Exists && !IsMalformed && Manifest.Version == DurableVectorIndexManifest.CurrentVersion;
 }

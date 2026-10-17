@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Oscova.Agents.Policies;
 using System.Text.Json;
 
@@ -19,10 +19,19 @@ namespace Oscova.Agents.Tasks
         /// </summary>
         public string Name { get; set; } = string.Empty;
 
+        /// <summary>Gets or sets whether execution requires a handler registered for the task directory.</summary>
+        public bool RequiresHandler { get; set; }
+
         /// <summary>
         /// Gets or sets the instruction submitted when the task executes.
         /// </summary>
         public string Instruction { get; set; } = string.Empty;
+
+        /// <summary>Gets or sets the opaque source assigned during task provisioning.</summary>
+        public string? InstructionSource { get; set; }
+
+        /// <summary>Gets or sets the saved instruction composition mode.</summary>
+        public string? InstructionMode { get; set; }
 
         /// <summary>
         /// Gets or sets the agent identifier that executes the task.
@@ -54,14 +63,13 @@ namespace Oscova.Agents.Tasks
         /// </summary>
         public bool IsEnabled { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets when completion notifications are sent.
-        /// </summary>
-        public TaskNotificationMode NotificationMode { get; set; } = TaskNotificationMode.Never;
+        /// <summary>Gets or sets whether scheduled starts wait for the owner's foreground provider requests to finish.</summary>
+        public bool WaitForOwnerProviderIdle { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets the channel identifier used for task notifications or handoffs.
-        /// </summary>
+        /// <summary>Gets or sets whether a successful task run emits an automatic completion notice.</summary>
+        public bool NotifyOnCompletion { get; set; }
+
+        /// <summary>Gets or sets the channel used by agent-initiated notifications and handoffs.</summary>
         public string? NotificationChannel { get; set; }
 
         /// <summary>
@@ -93,6 +101,14 @@ namespace Oscova.Agents.Tasks
         /// Gets or sets the agent that created this task through a tool call, or null when user-created.
         /// </summary>
         public string? CreatedByAgentId { get; set; }
+
+        /// <summary>Creates a run-local view with the selected instruction without changing the stored snapshot.</summary>
+        public AgentTaskDefinition WithInstruction(string instruction)
+        {
+            var copy = (AgentTaskDefinition)MemberwiseClone();
+            copy.Instruction = instruction;
+            return copy;
+        }
 
         /// <summary>Returns whether another snapshot has the same serializable task definition.</summary>
         public bool HasSameContentAs(AgentTaskDefinition other)

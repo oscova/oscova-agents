@@ -1,0 +1,8 @@
+{
+  "id": "oscova.telegram",
+  "name": "Oscova Telegram Channel",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "assembly": "Oscova.Agents.Plugins.Telegram.dll",
+  "entryType": "Oscova.Agents.Plugins.Telegram.TelegramAgentPlugin"
+}

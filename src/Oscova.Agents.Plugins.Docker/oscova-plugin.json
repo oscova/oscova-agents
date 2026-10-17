@@ -1,0 +1,1 @@
+{"id":"oscova.docker","name":"Oscova Docker Execution","version":"$version$","frameworkVersionRange":"[$frameworkVersion$]","assembly":"Oscova.Agents.Plugins.Docker.dll","entryType":"Oscova.Agents.Plugins.Docker.DockerAgentPlugin"}

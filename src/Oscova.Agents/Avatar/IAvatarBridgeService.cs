@@ -128,8 +128,9 @@ namespace Oscova.Agents.Avatar
         /// </summary>
         /// <param name="emotionName">A case-sensitive name returned by <see cref="ListEmotionsAsync"/>.</param>
         /// <param name="blendSpeed">Duration in seconds for the emotion transition. Must be greater than zero. A value of 0.25 is recommended.</param>
-        /// <returns>Response indicating success, description, selected emotion, and blend speed applied.</returns>
-        Task<AvatarEmotionResponse> SetEmotionAsync(string emotionName, float blendSpeed);
+        /// <param name="intensity">Finite strength from 0 to 1. Defaults to 1. Zero removes emotion influence.</param>
+        /// <returns>Response indicating success, description, selected emotion, blend speed and accepted intensity.</returns>
+        Task<AvatarEmotionResponse> SetEmotionAsync(string emotionName, float blendSpeed, float intensity = 1f);
 
         /// <summary>
         /// Changes the background color using RGB components.
@@ -142,57 +143,20 @@ namespace Oscova.Agents.Avatar
         Task<AvatarBackgroundColorResponse> ChangeBackgroundColorAsync(int red, int green, int blue);
 
         /// <summary>
-        /// Sets the avatar message font size.
-        /// </summary>
-        /// <param name="fontSize">Message font size from 8 through 120.</param>
-        /// <returns>Response indicating success, description, and the applied font size.</returns>
-        Task<AvatarMessageFontSizeResponse> SetMessageFontSizeAsync(int fontSize);
-
-        /// <summary>
-        /// Sets the avatar message color and opacity using normalized RGBA values.
-        /// </summary>
-        /// <param name="red">Normalized red component from 0.0 through 1.0.</param>
-        /// <param name="green">Normalized green component from 0.0 through 1.0.</param>
-        /// <param name="blue">Normalized blue component from 0.0 through 1.0.</param>
-        /// <param name="alpha">Normalized alpha component from 0.0 through 1.0.</param>
-        /// <returns>Response indicating success, description, and the applied normalized RGBA values.</returns>
-        Task<AvatarMessageColorAndOpacityResponse> SetMessageColorAndOpacityAsync(float red, float green, float blue, float alpha);
-
-        /// <summary>
         /// Shows text on the avatar message panel without playing audio.
         /// </summary>
         /// <param name="message">The non-empty text to display.</param>
         /// <returns>Response indicating success, description, and the displayed text.</returns>
         Task<AvatarMessageTextResponse> ShowMessageAsync(string message);
 
+        /// <summary>Applies both layouts, selection mode and message duration as one configuration.</summary>
+        Task<AvatarPresentationSettingsResponse> SetPresentationSettingsAsync(AvatarPresentationSettingsRequest settings);
+
         /// <summary>
         /// Clears the avatar message panel immediately.
         /// </summary>
         /// <returns>Response indicating success, description, and whether the panel was cleared.</returns>
         Task<AvatarMessageClearResponse> ClearMessageAsync();
-
-        /// <summary>
-        /// Sets the avatar message box position while preserving its current size.
-        /// </summary>
-        /// <param name="positionX">Horizontal message box position as a screen fraction from 0.0 through 1.0.</param>
-        /// <param name="positionY">Vertical message box position as a screen fraction from 0.0 through 1.0.</param>
-        /// <returns>Response indicating success, description, and the applied message box position.</returns>
-        Task<AvatarMessageBoxPositionResponse> SetMessageBoxPositionAsync(float positionX, float positionY);
-
-        /// <summary>
-        /// Sets the avatar message box size while preserving its current position.
-        /// </summary>
-        /// <param name="width">Message box width as a screen fraction greater than 0.0 through 1.0.</param>
-        /// <param name="height">Message box height as a screen fraction greater than 0.0 through 1.0.</param>
-        /// <returns>Response indicating success, description, and the applied message box size.</returns>
-        Task<AvatarMessageBoxSizeResponse> SetMessageBoxSizeAsync(float width, float height);
-
-        /// <summary>
-        /// Sets how long avatar messages remain visible.
-        /// </summary>
-        /// <param name="durationSeconds">Message display duration in seconds. The avatar bridge accepts 0.0 or greater.</param>
-        /// <returns>Response indicating success, description, and the applied display duration.</returns>
-        Task<AvatarMessageDisplayDurationResponse> SetMessageDisplayDurationAsync(float durationSeconds);
 
         /// <summary>
         /// Changes the engine/window resolution and fullscreen mode.
@@ -217,15 +181,6 @@ namespace Oscova.Agents.Avatar
         /// </summary>
         /// <returns>Response containing success status, engine status, version, and port.</returns>
         Task<AvatarHealthCheckResponse> CheckHealthAsync();
-
-        /// <summary>
-        /// Adjusts camera yaw (rotation around vertical axis).
-        /// The avatar engine expects a value from -5.0 through 5.0.
-        /// Negative values rotate the camera left, positive values rotate right.
-        /// </summary>
-        /// <param name="yaw">Engine yaw value from -5.0 through 5.0.</param>
-        /// <returns>Response indicating success, description, and the applied yaw value.</returns>
-        Task<AvatarCameraYawResponse> SetCameraYawAsync(float yaw);
 
         /// <summary>
         /// Requests a shutdown of the avatar engine.

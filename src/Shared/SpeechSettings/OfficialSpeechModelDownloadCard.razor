@@ -1,0 +1,106 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Logging
+@using Oscova.Agents.Plugins
+@implements IDisposable
+@inject ILogger<OfficialSpeechModelDownloadCard> Logger
+
+@if (_download is not null)
+{
+    <div class="card bg-base-200/40 mb-4">
+        <div class="card-body p-4">
+            <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0">
+                    <h3 class="font-medium">@(_download.Title ?? Title)</h3>
+                    <p class="text-xs opacity-70">@StatusLabel</p>
+                </div>
+                <div class="flex w-full items-center gap-2 sm:w-auto">
+                    @if (_status.Downloading)
+                    {
+                        <button type="button" class="btn btn-outline btn-error btn-sm w-full sm:w-auto" @onclick="CancelAsync"><span class="iconify lucide--x size-4" aria-hidden="true"></span><span>@Text(PluginTextKeys.CancelDownloadButton)</span></button>
+                    }
+                    else if (!_status.Ready)
+                    {
+                        <button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" @onclick="DownloadAsync"><span class="iconify lucide--download size-4" aria-hidden="true"></span><span>@Text(PluginTextKeys.DownloadModelButton)</span></button>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">@Text(PluginTextKeys.ModelReadyLabel)</span>
+                    }
+                </div>
+            </div>
+            @if (_status.Downloading)
+            {
+                <progress class="progress progress-primary w-full mt-3" value="@_status.Percent" max="100" aria-label="@(_download.Title ?? Title)"></progress>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    [Parameter, EditorRequired] public Func<string, string> Text { get; set; } = default!;
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    private PluginSpeechModelDownload? _download;
+    private PluginSpeechDownloadStatus _status = new(false, false, null);
+    private IDisposable? _subscription;
+    private bool _disposed;
+    private string StatusLabel => _status.Ready ? Text(PluginTextKeys.ModelReadyLabel)
+        : !_status.Downloading ? Text(PluginTextKeys.ModelMissingLabel)
+        : _status.Percent is null ? Text(PluginTextKeys.SkillsInstallStageDownloading)
+        : string.Format(Text(PluginTextKeys.DownloadingLabel), _status.Percent);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var download = Context.GetSpeechSettings!().ModelDownload;
+        if (ReferenceEquals(download, _download)) { return; }
+        _subscription?.Dispose();
+        _download = download;
+        _subscription = download?.Subscribe(OnChanged);
+        await RefreshAsync();
+    }
+    private async Task RefreshAsync()
+    {
+        if (_download is null) { return; }
+        try { _status = await _download.ReadAsync(); }
+        catch (Exception ex) { Logger.LogWarning(ex, "Failed to refresh speech model status."); }
+    }
+    private async Task DownloadAsync()
+    {
+        if (_download is null || _status.Downloading || _status.Ready) { return; }
+        try
+        {
+            await Context.RequireAccessAsync(CancellationToken.None);
+            await _download.StartAsync();
+        }
+        catch (Exception ex) { Logger.LogError(ex, "Failed to start speech model download."); }
+        await RefreshAsync();
+    }
+    private async Task CancelAsync()
+    {
+        if (_download is null || !_status.Downloading) { return; }
+        try
+        {
+            await Context.RequireAccessAsync(CancellationToken.None);
+            await _download.CancelAsync();
+        }
+        catch (Exception ex) { Logger.LogError(ex, "Failed to cancel speech model download."); }
+        await RefreshAsync();
+    }
+    private void OnChanged() => _ = UpdateAsync();
+    private async Task UpdateAsync()
+    {
+        try
+        {
+            await InvokeAsync(async () =>
+            {
+                if (_disposed) { return; }
+                await RefreshAsync();
+                if (!_disposed) { StateHasChanged(); }
+            });
+        }
+        catch (OperationCanceledException) { }
+        catch (ObjectDisposedException) when (_disposed) { }
+    }
+    public void Dispose() { _disposed = true; _subscription?.Dispose(); }
+}

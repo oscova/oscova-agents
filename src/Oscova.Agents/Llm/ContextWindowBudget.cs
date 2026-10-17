@@ -24,6 +24,15 @@ public static class ContextWindowBudget
 
     private const double HistoryBudgetShare = 0.6;
 
+    /// <summary>Derives evidence room after the rest of the input and output reserve, without a minimum floor.</summary>
+    public static int DeriveEvidenceBudget(int contextWindowSize, int otherInputTokens, int? maxOutputTokens)
+    {
+        if (contextWindowSize <= 0) { return DefaultHistoryBudget; }
+        var remaining = Math.Max(0, contextWindowSize - otherInputTokens - DeriveOutputReserve(contextWindowSize, maxOutputTokens));
+        // Keep 40% of the remaining input room for later tool results and estimation error.
+        return (int)(remaining * HistoryBudgetShare);
+    }
+
     /// <summary>
     /// Derives the output token reserve for a context-window fit check.
     /// </summary>

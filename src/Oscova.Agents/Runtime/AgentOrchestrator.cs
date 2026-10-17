@@ -3,6 +3,8 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Definitions;
 using Oscova.Agents.Collections;
+using Oscova.Agents.Conversations;
+using Oscova.Agents.Providers;
 using Oscova.Agents.Middleware;
 using Oscova.Agents.Workspace;
 using OscovaSummarizingChatReducer = Oscova.Agents.Reducers.SummarizingChatReducer;
@@ -25,7 +27,7 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
     private readonly SemaphoreSlim _agentBuildGate = new(1, 1);
 
     /// <inheritdoc />
-    public CrewToolCollection Tools { get; } = [];
+    public AgentToolCollection Tools { get; } = [];
 
     /// <inheritdoc />
     public AIAgentCollection AIAgents { get; } = [];
@@ -34,16 +36,15 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
     public void SyncTools(
         IEnumerable<ToolsetRegistration> toolsets,
         IReadOnlyList<AIFunction> externalTools,
-        IReadOnlyDictionary<string, ExternalToolMetadata> externalToolMetadata)
+        IReadOnlyDictionary<string, ExternalToolMetadata> externalToolMetadata,
+        Func<AIFunction, AIFunction>? decorate = null)
     {
         // Publish a complete replacement so active readers never observe a partial tool rebuild.
-        var rebuiltTools = new CrewToolCollection();
-
+        var rebuiltTools = new AgentToolCollection();
         foreach (var registration in toolsets)
         {
             rebuiltTools.Add(registration.Toolset, registration.Origin);
         }
-
         foreach (var tool in externalTools)
         {
             if (externalToolMetadata.TryGetValue(tool.Name, out var metadata))
@@ -51,10 +52,9 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
                 rebuiltTools.Add(tool, metadata.ServerName, metadata.OriginalName, metadata.NetworkScope);
                 continue;
             }
-
             rebuiltTools.Add(tool);
         }
-
+        if (decorate is not null) { rebuiltTools.Decorate(decorate); }
         Tools.ReplaceWith(rebuiltTools);
     }
 
@@ -181,22 +181,21 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
         var options = definition.ToChatClientAgentOptions(providers);
         options.ChatOptions = request.ChatOptionsResolver?.Invoke(definition)?.Clone();
 
+        IChatReducer? reducer = null;
         if (definition.IsCompactionEnabled)
         {
-            var reducer = request.ChatReducerFactory is null
+            reducer = request.ChatReducerFactory is null
                 ? new OscovaSummarizingChatReducer(chatClient)
                 : await request.ChatReducerFactory(definition, chatClient, cancellationToken).ConfigureAwait(false);
-
-            if (reducer is not null)
-            {
-                options.ChatHistoryProvider = new InMemoryChatHistoryProvider(
-                    new InMemoryChatHistoryProviderOptions
-                    {
-                        ChatReducer = reducer,
-                        ReducerTriggerEvent = InMemoryChatHistoryProviderOptions.ChatReducerTriggerEvent.AfterMessageAdded
-                    });
-            }
         }
+
+        // Preserve stored origin before history retrieval stamps its outgoing message copies.
+        options.ChatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+        {
+            ChatReducer = reducer,
+            ReducerTriggerEvent = InMemoryChatHistoryProviderOptions.ChatReducerTriggerEvent.AfterMessageAdded,
+            ProvideOutputMessageFilter = ChatMessageOrigin.CopyHistoryMetadata
+        });
 
         if (applyRequestCustomizers)
         {
@@ -228,7 +227,9 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
                     configure(fic);
                 }
                 return fic;
-            });
+            })
+            // Below the shared FICC so every model call in the tool loop drains pending steered messages.
+            .UseMessageInjection();
 
         // Validation and ambient host resolution must use the same built-agent workspace policy.
         Func<IReadOnlyList<AllowedDirectory>> workspaceResolver = () => request.WorkspaceResolver(definition);
@@ -253,6 +254,17 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
             }
         }
 
+        if (options.ChatHistoryProvider is InMemoryChatHistoryProvider { ChatReducer: OscovaSummarizingChatReducer summarizingReducer } &&
+            options.AIContextProviders?.OfType<TodoProvider>().FirstOrDefault() is { } todos)
+        {
+            var restoration = new TodoRestorationProvider(todos);
+            summarizingReducer.OnHistoryReduced += restoration.MarkPending;
+            builder = builder.UseAIContextProviders(restoration);
+        }
+
+        // Persist restored todo context as well as injected messages for subsequent tool iterations.
+        builder = builder.UsePerServiceCallChatHistoryPersistence();
+
         if (runScopeFactory is not null)
         {
             builder = runScopeFactory.Apply(
@@ -260,6 +272,14 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
                 definition,
                 workspaceResolver);
         }
+
+        // The agent takes this pipeline as-is, so the approval middleware it would add is composed here.
+        var composed = builder;
+        builder = new ChatClientBuilder(services => composed.Build(services))
+            .UseApprovalResponseBinding()
+            .UseApprovalNotRequiredFunctionBypassing();
+        options.UseProvidedChatClientAsIs = true;
+        options.RequirePerServiceCallChatHistoryPersistence = true;
 
         var agent = builder.BuildAIAgent(options);
         if (!cacheAgent)

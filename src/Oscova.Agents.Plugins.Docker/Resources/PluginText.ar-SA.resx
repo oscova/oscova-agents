@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Settings.Skills.SandboxImageTitle">
+    <value>صورة الحاوية المعزولة</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageDescription">
+    <value>إدارة صورة حاوية Docker المعزولة المستخدمة بواسطة النصوص البرمجية للمهارات في الحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxDockerfileLabel">
+    <value>Dockerfile</value>
+  </data>
+  <data name="Settings.Skills.SandboxNoCacheLabel">
+    <value>بدون ذاكرة تخزين مؤقت</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildButton">
+    <value>بناء الصورة</value>
+  </data>
+  <data name="Settings.Skills.SandboxRebuildButton">
+    <value>إعادة بناء الصورة</value>
+  </data>
+  <data name="Settings.Skills.SandboxCancelButton">
+    <value>إلغاء</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetButton">
+    <value>استخدام الافتراضي</value>
+  </data>
+  <data name="Settings.Skills.SandboxEditDockerfileButton">
+    <value>تحرير Dockerfile</value>
+  </data>
+  <data name="Settings.Skills.SandboxDefaultImageBadge">
+    <value>الصورة الافتراضية</value>
+  </data>
+  <data name="Settings.Skills.SandboxCustomImageBadge">
+    <value>صورة مخصصة</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuiltBadge">
+    <value>تم البناء</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageNotBuiltBadge">
+    <value>لم يتم البناء</value>
+  </data>
+  <data name="Settings.Skills.SandboxImageBuildingBadge">
+    <value>جاري البناء</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputLabel">
+    <value>مخرجات البناء</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildOutputEmpty">
+    <value>ستظهر مخرجات البناء هنا.</value>
+  </data>
+  <data name="Settings.Skills.SandboxClearOutputButton">
+    <value>مسح</value>
+  </data>
+  <data name="Settings.Skills.SandboxOfflineTooltip">
+    <value>أوقف تشغيل وضع عدم الاتصال قبل بناء صورة الحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxSavedToast">
+    <value>تم حفظ Dockerfile الخاص بالحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildStartedToast">
+    <value>بدأ بناء صورة الحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildSucceededToast">
+    <value>نجح بناء صورة الحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildFailedToast">
+    <value>فشل بناء صورة الحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxBuildCancelledToast">
+    <value>تم إلغاء بناء صورة الحاوية المعزولة.</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmTitle">
+    <value>استخدام ملف Dockerfile الافتراضي</value>
+  </data>
+  <data name="Settings.Skills.SandboxResetConfirmMessage">
+    <value>هل ترغب في استخدام Dockerfile الافتراضي وإعادة بناء صورة الحاوية المعزولة المشتركة؟</value>
+  </data>
+  <data name="Execution.Title" xml:space="preserve">
+    <value>Docker</value>
+  </data>
+  <data name="Execution.Description" xml:space="preserve">
+    <value>تعمل الأوامر داخل Docker مع تركيب المجلدات المصرح بها. أدوات المضيف غير متاحة تلقائيًا.</value>
+  </data>
+  <data name="Availability.Unavailable" xml:space="preserve"><value>Docker غير متاح. تحقق من التثبيت والاتصال بالخدمة وأذونات الحساب، ثم حدده مجدداً.</value></data>
+</root>
