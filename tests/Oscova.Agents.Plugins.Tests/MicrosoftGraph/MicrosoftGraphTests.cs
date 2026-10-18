@@ -19,6 +19,46 @@ namespace Oscova.Agents.Plugins.Tests.MicrosoftGraph;
 /// <summary>Checks Microsoft account metadata, tool guards and Graph request authentication.</summary>
 public sealed class MicrosoftGraphTests
 {
+    /// <summary>Releases each operation's transport after successful and failed SDK requests.</summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    public async Task Operations_DisposeOwnedTransport(int index)
+    {
+        foreach (var status in new[] { HttpStatusCode.OK, HttpStatusCode.BadRequest })
+        {
+            using var handler = new StubHttpMessageHandler(_ => new HttpResponseMessage(status)
+            { Content = new StringContent("{\"id\":\"item\",\"value\":[]}", Encoding.UTF8, "application/json") });
+            var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+                (_, _) => Task.FromResult<string?>("access-token"), () => handler);
+            var outlook = new OutlookToolset(context);
+            var todo = new MicrosoftTodoToolset(context);
+            Func<Task<string>> operation = index switch
+            {
+                0 => () => outlook.ListEmailsAsync(),
+                1 => () => outlook.ReadEmailAsync("message-1"),
+                2 => () => outlook.SearchEmailsAsync("subject:test"),
+                3 => () => outlook.SendEmailAsync("recipient@example.test", "Subject", "Body"),
+                4 => () => todo.ListTaskListsAsync(),
+                5 => () => todo.ListTasksAsync("list-1"),
+                6 => () => todo.CreateTaskAsync("list-1", "Task"),
+                7 => () => todo.UpdateTaskAsync("list-1", "task-1", title: "Updated"),
+                8 => () => todo.DeleteTaskAsync("list-1", "task-1", confirmDelete: true),
+                _ => throw new ArgumentOutOfRangeException(nameof(index))
+            };
+            if (status == HttpStatusCode.OK) { await operation(); }
+            else { await Assert.ThrowsAsync<ToolFailureException>(operation); }
+            Assert.True(handler.IsDisposed);
+        }
+    }
+
     /// <summary>Loads the real package declaration and preserves Microsoft account and tool metadata.</summary>
     [Fact]
     public void Loader_PreservesAccountMetadataAndSharedFrameworkIdentity()

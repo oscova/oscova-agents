@@ -50,15 +50,17 @@ namespace Oscova.Agents.Avatar
         /// </summary>
         /// <param name="url">The remote audio URL to download and play.</param>
         /// <param name="message">The text message corresponding to the speech.</param>
+        /// <param name="expectedBaseUrl">When supplied, the connected Engine must match this URL before queueing.</param>
         /// <returns>Response indicating success, description, and saved local file path.</returns>
-        Task<AvatarSpeechQueueResponse> QueueSpeechAsync(string url, string message);
+        Task<AvatarSpeechQueueResponse> QueueSpeechAsync(string url, string message, string? expectedBaseUrl = null);
 
         /// <summary>
         /// Stops ongoing speech playback and lip-sync animation.
         /// </summary>
         /// <param name="forcedStop">True to interrupt immediately. False to stop gracefully (recommended).</param>
+        /// <param name="baseUrl">A previously queued Engine URL to stop, or null for the current connection.</param>
         /// <returns>Response indicating whether the stop request was processed.</returns>
-        Task<AvatarSpeechStopResponse> StopSpeechAsync(bool forcedStop = false);
+        Task<AvatarSpeechStopResponse> StopSpeechAsync(bool forcedStop = false, string? baseUrl = null);
 
         /// <summary>
         /// Sets the speech playback volume.
@@ -186,9 +188,10 @@ namespace Oscova.Agents.Avatar
         /// Requests a shutdown of the avatar engine.
         /// The response is sent before the engine terminates.
         /// </summary>
+        /// <param name="expectedBaseUrl">The connected Engine URL the caller confirmed.</param>
         /// <param name="forceShutdown">If true, immediately terminates the engine. If false, allows graceful cleanup before shutdown.</param>
         /// <param name="ct">Cancellation token for the active run.</param>
         /// <returns>Response indicating success, description, and whether shutdown was initiated.</returns>
-        Task<AvatarShutdownResponse> ShutdownAsync(bool forceShutdown = false, CancellationToken ct = default);
+        Task<AvatarShutdownResponse> ShutdownAsync(string expectedBaseUrl, bool forceShutdown = false, CancellationToken ct = default);
     }
 }

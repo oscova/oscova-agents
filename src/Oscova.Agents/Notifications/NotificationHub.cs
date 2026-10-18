@@ -36,17 +36,8 @@ public sealed class NotificationHub<T>(ILogger<NotificationHub<T>> logger)
         var handlers = _subscriptions.GetOrAdd(userId, static _ => []);
         handlers[subscriptionId] = handler;
 
-        return new Subscription(() =>
-        {
-            if (_subscriptions.TryGetValue(userId, out var userHandlers))
-            {
-                userHandlers.TryRemove(subscriptionId, out _);
-                if (userHandlers.IsEmpty)
-                {
-                    _subscriptions.TryRemove(userId, out _);
-                }
-            }
-        });
+        // Keep the user bucket stable so concurrent subscriptions cannot be detached by removal.
+        return new Subscription(() => handlers.TryRemove(subscriptionId, out _));
     }
 
     /// <summary>

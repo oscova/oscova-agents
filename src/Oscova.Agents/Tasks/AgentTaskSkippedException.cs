@@ -9,7 +9,7 @@ public sealed class AgentTaskSkippedException(
     string fallbackMessage,
     NotificationPriority priority = NotificationPriority.Normal) : Exception(fallbackMessage)
 {
-    /// <summary>Identifies the localized reason for skipping the run.</summary>
+    /// <summary>Identifies the localized stock reason shown in the inbox, which must not contain user content.</summary>
     public string MessageKey { get; } = messageKey;
     /// <summary>Indicates how prominently the skip notification should be announced.</summary>
     public NotificationPriority Priority { get; } = priority;

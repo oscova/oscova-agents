@@ -255,7 +255,7 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
         }
 
         if (options.ChatHistoryProvider is InMemoryChatHistoryProvider { ChatReducer: OscovaSummarizingChatReducer summarizingReducer } &&
-            options.AIContextProviders?.OfType<TodoProvider>().FirstOrDefault() is { } todos)
+            options.AIContextProviders?.Select(provider => provider.GetService<TodoProvider>()).FirstOrDefault(provider => provider is not null) is { } todos)
         {
             var restoration = new TodoRestorationProvider(todos);
             summarizingReducer.OnHistoryReduced += restoration.MarkPending;

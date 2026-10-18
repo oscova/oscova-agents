@@ -1003,6 +1003,7 @@ public class AgentTaskSchedulerServiceTests
             _latestRunStatus = run.Status;
             return Task.CompletedTask;
         }
+        public void ValidateTask(AgentTaskDefinition task) { }
         public Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default, string? creationDirectoryName = null)
         {
             if (FailNextSaveTask)

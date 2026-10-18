@@ -69,16 +69,16 @@ public sealed partial class WorkspaceFileAccess
         }
     }
 
-    private static void WriteWindows(ResolvedWorkspacePath path, Action<Stream> write, bool append)
+    private static void WriteWindows(ResolvedWorkspacePath path, Action<Stream> write, bool append, bool createNew)
     {
-        using WindowsOpenedParent parent = OpenParentWindows(path, createParents: true);
-        if (append)
+        using WindowsOpenedParent parent = OpenParentWindows(path, createParents: !createNew);
+        if (append || createNew)
         {
             using SafeFileHandle handle = OpenRelativeWindows(
                 parent.DirectoryHandle,
                 parent.TargetName,
-                WindowsAppendData | WindowsReadAttributes | WindowsSynchronize,
-                WindowsOpenIf,
+                (createNew ? WindowsWriteData : WindowsAppendData) | WindowsReadAttributes | WindowsSynchronize,
+                createNew ? WindowsCreate : WindowsOpenIf,
                 WindowsNonDirectoryFile | WindowsOpenReparsePoint | WindowsSynchronousIo,
                 WindowsShareRead | WindowsShareWrite | WindowsShareDelete,
                 path.FullPath);

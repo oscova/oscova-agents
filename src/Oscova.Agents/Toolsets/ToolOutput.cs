@@ -37,19 +37,23 @@ public static class ToolOutput
 
         int head = SafeStartCut(text, InlineTextChars / 2);
         int tail = SafeEndCut(text, text.Length - InlineTextChars / 2);
-        string? path = store?.Save(label, BoundedPayload(text));
+        string payload = BoundedPayload(text);
+        string? path = store?.Save(label, payload);
+        string saved = payload.Length != text.Length
+            ? $"First {payload.Length} characters saved to {path}"
+            : alreadyTruncated ? $"Captured output saved to {path}" : $"Full output saved to {path}";
         string notice;
         if (alreadyTruncated)
         {
             notice = path is null
                 ? $"[Showing the first {head} and last {text.Length - tail} of {text.Length} captured characters. The shell may have dropped part of the original output before capture.]"
-                : $"[Showing the first {head} and last {text.Length - tail} of {text.Length} captured characters. Captured output saved to {path}. The shell may have dropped part of the original output before capture, and that part is not in the file.]";
+                : $"[Showing the first {head} and last {text.Length - tail} of {text.Length} captured characters. {saved}. The shell may have dropped part of the original output before capture, and that part is not in the file.]";
         }
         else
         {
             notice = path is null
                 ? $"[Showing the first {head} and last {text.Length - tail} of {text.Length} characters.]"
-                : $"[Showing the first {head} and last {text.Length - tail} of {text.Length} characters. Full output saved to {path}]";
+                : $"[Showing the first {head} and last {text.Length - tail} of {text.Length} characters. {saved}]";
         }
 
         return text[..head] + "\n\n" + notice + "\n\n" + text[tail..];

@@ -99,10 +99,14 @@ public class SummarizingChatReducer(
     public async Task<IEnumerable<ChatMessage>> ReduceAsync(IEnumerable<ChatMessage> messages, CancellationToken cancellationToken)
     {
         var original = messages.ToList();
-        var reduced = (await ReduceCoreAsync(original, force: false, cancellationToken).ConfigureAwait(false)).ToList();
+        var (reduced, summarized) = await ReduceCoreAsync(original, force: false, cancellationToken).ConfigureAwait(false);
         if (!original.SequenceEqual(reduced, ReferenceEqualityComparer.Instance))
         {
             OnHistoryReduced?.Invoke();
+        }
+        if (summarized)
+        {
+            OnHistorySummarized?.Invoke();
         }
         return reduced;
     }
@@ -110,17 +114,21 @@ public class SummarizingChatReducer(
     /// <summary>Notifies per-call context restoration only after automatic reduction successfully changes history.</summary>
     internal Action? OnHistoryReduced { get; set; }
 
+    /// <summary>Invoked after automatic reduction replaced older messages with a summary.</summary>
+    public Action? OnHistorySummarized { get; set; }
+
     /// <summary>
     /// Compacts older conversation history even when the automatic threshold has not been reached.
     /// </summary>
-    public Task<IEnumerable<ChatMessage>> CompactAsync(
+    public async Task<IEnumerable<ChatMessage>> CompactAsync(
         IEnumerable<ChatMessage> messages,
         CancellationToken cancellationToken = default)
     {
-        return ReduceCoreAsync(messages, force: true, cancellationToken);
+        return (await ReduceCoreAsync(messages, force: true, cancellationToken).ConfigureAwait(false)).Messages;
     }
 
-    private async Task<IEnumerable<ChatMessage>> ReduceCoreAsync(
+    // Summarized is true only when a summary message replaced older history.
+    private async Task<(IReadOnlyList<ChatMessage> Messages, bool Summarized)> ReduceCoreAsync(
         IEnumerable<ChatMessage> messages,
         bool force,
         CancellationToken cancellationToken)
@@ -133,13 +141,13 @@ public class SummarizingChatReducer(
 
         if (!force && !ShouldCompact(conversationMessages))
         {
-            return messageList;
+            return (messageList, false);
         }
 
         var tailStart = force ? FindTailStart(conversationMessages, userTurnsToKeep: 2) : -1;
         if (force && tailStart == 0)
         {
-            return messageList;
+            return (messageList, false);
         }
 
         // Tool calls can be persisted before their results arrive, protect them before any destructive stage.
@@ -178,11 +186,11 @@ public class SummarizingChatReducer(
             pendingCallStart -= conversationMessages.Count - strippedMessages.Count;
             if (!force && FitsBudget(strippedMessages))
             {
-                return [.. systemMessages, .. strippedMessages];
+                return ([.. systemMessages, .. strippedMessages], false);
             }
 
             var summarized = await SummarizeWithTailAsync(systemMessages, strippedMessages, tailStart, cancellationToken).ConfigureAwait(false);
-            if (FitsBudget(summarized))
+            if (FitsBudget(summarized.Messages))
             {
                 return summarized;
             }
@@ -191,7 +199,7 @@ public class SummarizingChatReducer(
             if (lastTurnTailStart != tailStart)
             {
                 summarized = await SummarizeWithTailAsync(systemMessages, strippedMessages, lastTurnTailStart, cancellationToken).ConfigureAwait(false);
-                if (FitsBudget(summarized))
+                if (FitsBudget(summarized.Messages))
                 {
                     return summarized;
                 }
@@ -220,7 +228,7 @@ public class SummarizingChatReducer(
         return AgentTokenCounter.CountTokens(FormatMessages(messages));
     }
 
-    private async Task<IReadOnlyList<ChatMessage>> SummarizeWithTailAsync(
+    private async Task<(IReadOnlyList<ChatMessage> Messages, bool Summarized)> SummarizeWithTailAsync(
         IReadOnlyList<ChatMessage> systemMessages,
         IReadOnlyList<ChatMessage> conversationMessages,
         int tailStart,
@@ -230,11 +238,11 @@ public class SummarizingChatReducer(
         var tail = conversationMessages.Skip(tailStart).ToList();
         if (middle.Count == 0)
         {
-            return [.. systemMessages, .. tail];
+            return ([.. systemMessages, .. tail], false);
         }
 
         var summaryMessage = await CreateSummaryMessageAsync(middle, cancellationToken).ConfigureAwait(false);
-        return [.. systemMessages, summaryMessage, .. tail];
+        return ([.. systemMessages, summaryMessage, .. tail], true);
     }
 
     private async Task<ChatMessage> CreateSummaryMessageAsync(

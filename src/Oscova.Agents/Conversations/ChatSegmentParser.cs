@@ -126,7 +126,7 @@ public class ChatSegmentParser : IToolTrackingObserver
     /// <summary>Marks the matching tool-call segment as executing.</summary>
     public void OnToolStarted(FunctionCallContent functionCall)
     {
-        var seg = FindSegmentForFunction(functionCall.Name);
+        var seg = FindSegmentForInvocation(functionCall.CallId);
         if (seg != null)
         {
             seg.ExecutionState = ToolExecutionState.Executing;
@@ -137,7 +137,7 @@ public class ChatSegmentParser : IToolTrackingObserver
     /// <summary>Marks the matching tool-call segment as completed.</summary>
     public void OnToolCompleted(FunctionCallContent functionCall)
     {
-        var seg = FindSegmentForFunction(functionCall.Name, ToolExecutionState.Executing);
+        var seg = FindSegmentForInvocation(functionCall.CallId, ToolExecutionState.Executing);
         if (seg != null)
         {
             seg.ExecutionState = ToolExecutionState.Completed;
@@ -149,7 +149,7 @@ public class ChatSegmentParser : IToolTrackingObserver
     /// <summary>Marks the matching tool-call segment as failed.</summary>
     public void OnToolFailed(FunctionCallContent functionCall)
     {
-        var seg = FindSegmentForFunction(functionCall.Name, ToolExecutionState.Executing);
+        var seg = FindSegmentForInvocation(functionCall.CallId, ToolExecutionState.Executing);
         if (seg != null)
         {
             seg.ExecutionState = ToolExecutionState.Failed;
@@ -158,13 +158,13 @@ public class ChatSegmentParser : IToolTrackingObserver
         }
     }
 
-    private ChatSegment? FindSegmentForFunction(string functionName, ToolExecutionState expectedState = ToolExecutionState.Pending)
+    private ChatSegment? FindSegmentForInvocation(string callId, ToolExecutionState expectedState = ToolExecutionState.Pending)
     {
         for (var i = _segments.Count - 1; i >= 0; i--)
         {
             var seg = _segments[i];
             if (seg.Type == ChatSegmentType.ToolCall &&
-                seg.FunctionCall?.Name == functionName &&
+                seg.FunctionCall?.CallId == callId &&
                 seg.ExecutionState == expectedState)
             {
                 return seg;
@@ -175,9 +175,9 @@ public class ChatSegmentParser : IToolTrackingObserver
         for (var i = _detachedToolSegments.Count - 1; i >= 0; i--)
         {
             var seg = _detachedToolSegments[i];
-            if (seg.FunctionCall?.Name == functionName && seg.ExecutionState == expectedState)
+            if (seg.FunctionCall?.CallId == callId && seg.ExecutionState == expectedState)
             {
-                _detachedToolSegments.RemoveAt(i);
+                // Keep the segment until its streamed result supplies the result content.
                 return seg;
             }
         }

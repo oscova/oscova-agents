@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/oscova/oscova-agents/security/advisories/new
+    about: Please report security problems privately, never in a public issue.
+  - name: Documentation
+    url: https://oscova.ai/docs/
+    about: Setup, agents, tasks, plugins and troubleshooting guides.

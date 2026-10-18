@@ -196,7 +196,9 @@ public sealed partial class BrowserToolset(AgentPluginContext context) : IAgentT
             return isolated;
         }
         if (context.UserDataDirectory is null) { throw new InvalidOperationException("A user-owned data directory is required for browsing."); }
-        _regular = await _playwright.Chromium.LaunchPersistentContextAsync(Path.Combine(context.UserDataDirectory, "browser-profile"),
+        // Also clears traces a crashed browser left behind.
+        DeleteBrowsingTraces();
+        _regular = await _playwright.Chromium.LaunchPersistentContextAsync(ProfileDirectory,
             new() { Headless = true, Channel = "chromium", ViewportSize = new() { Width = 1000, Height = 650 }, AcceptDownloads = true }).ConfigureAwait(false);
         _regular.SetDefaultTimeout(PageActionTimeoutMilliseconds);
         _regular.SetDefaultNavigationTimeout(30000);
@@ -424,10 +426,42 @@ public sealed partial class BrowserToolset(AgentPluginContext context) : IAgentT
     private async Task StopIfEmptyAsync()
     {
         if (!_pages.IsEmpty) { return; }
-        if (_regular is not null) { await _regular.CloseAsync().ConfigureAwait(false); _regular = null; }
+        if (_regular is not null) { await _regular.CloseAsync().ConfigureAwait(false); _regular = null; DeleteBrowsingTraces(); }
         if (_privateBrowser is not null) { await _privateBrowser.CloseAsync().ConfigureAwait(false); _privateBrowser = null; }
         _privateContexts.Clear();
     }
+
+    private string ProfileDirectory => Path.Combine(context.UserDataDirectory!, "browser-profile");
+
+    /// <summary>Removes Chromium's plaintext record of visited pages while keeping cookies and site storage for website sign-in.</summary>
+    private void DeleteBrowsingTraces()
+    {
+        foreach (var trace in BrowsingTraces)
+        {
+            var path = Path.Combine(ProfileDirectory, trace);
+            var parent = new DirectoryInfo(Path.GetDirectoryName(path)!);
+            try
+            {
+                if (!parent.Exists) { continue; }
+                // Prefix matching also covers SQLite journals and variants such as Sessions_Encrypted.
+                foreach (var entry in parent.EnumerateFileSystemInfos(Path.GetFileName(path) + "*"))
+                {
+                    if (entry is DirectoryInfo directory) { directory.Delete(recursive: true); }
+                    else { entry.Delete(); }
+                }
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            { _logger.LogWarning("Could not clear browser history store {Store}: {FailureType}.", trace, exception.GetType().Name); }
+        }
+    }
+
+    // History, tabs, caches and the usage-metrics database all record visited URLs.
+    private static readonly string[] BrowsingTraces =
+    [
+        "Default/History", "Default/Sessions", "Default/Favicons", "Default/Top Sites", "Default/Visited Links",
+        "Default/Shortcuts", "Default/Network Action Predictor", "Default/Cache", "Default/Code Cache", "Default/GPUCache",
+        "segmentation_platform"
+    ];
 
     /// <summary>Lets interrupted website actions observe the completed intentional page closure.</summary>
     private static async Task ClosePageAsync(PageState page)

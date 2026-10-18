@@ -1,6 +1,8 @@
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.VectorData;
+using System.Text.Json;
+using Oscova.Agents.Secrets;
 using Oscova.Agents.Vector;
 
 namespace Oscova.Agents.Tests.Framework.Vector;
@@ -15,6 +17,61 @@ public sealed class DurableVectorIndexTests : IDisposable
         Path.GetTempPath(),
         "oscova-durable-vector-index-tests",
         Guid.NewGuid().ToString("N"));
+
+    /// <summary>Distinct source and generation pairs never overwrite each other's chunks.</summary>
+    [Fact]
+    public async Task ReplaceAsync_SeparatorBearingIdentifiers_PreserveBothSources()
+    {
+        using var index = CreateIndex();
+        await index.ReplaceAsync(Space, "a\nb", "c", [CreateChunk("first", new float[] { 1, 0, 0 })]);
+        await index.ReplaceAsync(Space, "a", "b\nc", [CreateChunk("second", new float[] { 0, 1, 0 })]);
+
+        Assert.Equal("first", Assert.Single(await index.BrowseAsync(Space, null, "a\nb")).Content);
+        Assert.Equal("second", Assert.Single(await index.BrowseAsync(Space, null, "a")).Content);
+    }
+
+    /// <summary>Unpublished rows do not consume the requested page of visible records.</summary>
+    [Theory]
+    [InlineData(0, "source-1")]
+    [InlineData(1, "source-0")]
+    public async Task BrowseAsync_DuringPublication_PagesVisibleRecords(int skip, string expectedSource)
+    {
+        var publicationReached = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var releasePublication = new ManualResetEventSlim();
+        var protector = new CallbackProtector(_protector, plaintext =>
+        {
+            using var json = JsonDocument.Parse(plaintext);
+            if (json.RootElement.GetProperty("sources").TryGetProperty("publishing", out var source) &&
+                source.GetProperty("state").GetInt32() == (int)DurableVectorSourceState.Committed)
+            {
+                publicationReached.TrySetResult();
+                if (!releasePublication.Wait(TimeSpan.FromSeconds(10))) { throw new TimeoutException(); }
+            }
+        });
+        using var index = CreateIndex(protector);
+        for (int i = 0; i < 2; i++)
+        {
+            await index.ReplaceAsync(Space, $"source-{i}", "generation",
+                [new DurableVectorChunk($"content-{i}", new float[] { 1, 0, 0 }, 0,
+                    Timestamp: DateTimeOffset.UnixEpoch.AddMinutes(i))]);
+        }
+
+        // Pause the final manifest publication after the real database rows have been written.
+        var publication = Task.Run(() => index.ReplaceAsync(Space, "publishing", "generation",
+            [new DurableVectorChunk("pending", new float[] { 1, 0, 0 }, 0,
+                Timestamp: DateTimeOffset.UnixEpoch.AddMinutes(2))]));
+        try
+        {
+            await publicationReached.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            var page = await index.BrowseAsync(Space, null, null, skip, take: 1);
+            Assert.Equal(expectedSource, Assert.Single(page).SourceId);
+        }
+        finally
+        {
+            releasePublication.Set();
+            await publication;
+        }
+    }
 
     [Fact]
     public async Task AppendAsync_IsIdempotent_AndRejectsOverlappingRange()
@@ -274,12 +331,23 @@ public sealed class DurableVectorIndexTests : IDisposable
 
     private string ManifestPath => Path.Combine(_root, "index.json.enc");
 
-    private DurableVectorIndex CreateIndex() =>
-        new(DatabasePath, ManifestPath, "durable", NullLogger.Instance, _protector, "vector-test",
+    private DurableVectorIndex CreateIndex(IContentProtector? protector = null) =>
+        new(DatabasePath, ManifestPath, "durable", NullLogger.Instance, protector ?? _protector, "vector-test",
             () => new VectorStoreService(DatabasePath, new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString()), _ => Task.FromResult<IDisposable>(new NoopAccess()));
 
     private static DurableVectorChunk CreateChunk(string content, ReadOnlyMemory<float> vector) =>
         new(content, vector, 0, Metadata: "opaque", Timestamp: DateTimeOffset.UnixEpoch);
+
+    private sealed class CallbackProtector(IContentProtector inner, Action<string> beforeProtect) : IContentProtector
+    {
+        public bool IsAvailable(string userId) => inner.IsAvailable(userId);
+        public string? Unprotect(string userId, string purpose, string ciphertext) => inner.Unprotect(userId, purpose, ciphertext);
+        public string Protect(string userId, string purpose, string plaintext)
+        {
+            beforeProtect(plaintext);
+            return inner.Protect(userId, purpose, plaintext);
+        }
+    }
 
     private static async Task<DurableVectorAppendResult> AppendAfterBarrierAsync(
         DurableVectorIndex index,

@@ -6,7 +6,7 @@ Start a matching installed Oscova version, then point the sample at that origin:
 
 ```powershell
 $env:OscovaResourcesBaseUrl = "http://localhost:11317/"
-dotnet watch --project src/oscova-agents/samples/Oscova.Agents.PluginSettingsPreview --urls http://0.0.0.0:5180
+dotnet watch --project samples/Oscova.Agents.PluginSettingsPreview --urls http://0.0.0.0:5180
 ```
 
 For phone preview, set `OscovaResourcesBaseUrl` to the installed Oscova LAN origin so the phone can fetch its assets. Open the sample using the developer computer's LAN address and port 5180. Choose light or dark theme, then compare the panel at the same viewport size as Oscova.

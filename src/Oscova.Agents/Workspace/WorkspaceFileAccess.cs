@@ -35,6 +35,14 @@ public sealed partial class WorkspaceFileAccess : IWorkspaceFileAccess
         WritePlatform(resolved, write, append);
     }
 
+    /// <summary>Creates a new file in an existing authorized directory, failing if the destination already exists.</summary>
+    public void WriteNew(string path, Action<Stream> write)
+    {
+        ArgumentNullException.ThrowIfNull(write);
+        ResolvedWorkspacePath resolved = Resolve(path, WorkspacePathAccess.Write);
+        WritePlatform(resolved, write, append: false, createNew: true);
+    }
+
     /// <inheritdoc />
     public void Delete(string path)
     {
@@ -92,17 +100,17 @@ public sealed partial class WorkspaceFileAccess : IWorkspaceFileAccess
         throw new PlatformNotSupportedException("Contained workspace access supports Windows, Linux, and macOS.");
     }
 
-    private static void WritePlatform(ResolvedWorkspacePath path, Action<Stream> write, bool append)
+    private static void WritePlatform(ResolvedWorkspacePath path, Action<Stream> write, bool append, bool createNew = false)
     {
         if (OperatingSystem.IsWindows())
         {
-            WriteWindows(path, write, append);
+            WriteWindows(path, write, append, createNew);
             return;
         }
 
         if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
         {
-            WriteUnix(path, write, append);
+            WriteUnix(path, write, append, createNew);
             return;
         }
 

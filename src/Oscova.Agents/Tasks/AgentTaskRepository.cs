@@ -49,7 +49,8 @@ public sealed class AgentTaskRepository(
     {
         var tasks = catalog.GetAllEnabledTasks()
             .Where(entry => contentProtector.IsAvailable(entry.OwnerUserId))
-            .Select(entry => ReadFromDisk(GetTaskFilePath(entry.DirectoryPath), entry.OwnerUserId))
+            .Select(entry => ReadExistingTask(GetTaskFilePath(entry.DirectoryPath), entry.OwnerUserId))
+            .OfType<AgentTaskDefinition>()
             .ToList();
 
         return Task.FromResult<IReadOnlyList<AgentTaskDefinition>>(tasks);
@@ -60,7 +61,8 @@ public sealed class AgentTaskRepository(
     {
         var tasks = catalog.GetTasksForUser(userId)
             .Where(entry => contentProtector.IsAvailable(entry.OwnerUserId))
-            .Select(entry => ReadFromDisk(GetTaskFilePath(entry.DirectoryPath), entry.OwnerUserId))
+            .Select(entry => ReadExistingTask(GetTaskFilePath(entry.DirectoryPath), entry.OwnerUserId))
+            .OfType<AgentTaskDefinition>()
             .OrderBy(task => task.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
@@ -77,7 +79,7 @@ public sealed class AgentTaskRepository(
             return Task.FromResult<AgentTaskDefinition?>(null);
         }
 
-        return Task.FromResult<AgentTaskDefinition?>(ReadFromDisk(GetTaskFilePath(taskDirectory), ownerUserId));
+        return Task.FromResult(ReadExistingTask(GetTaskFilePath(taskDirectory), ownerUserId));
     }
 
     /// <inheritdoc />
@@ -393,6 +395,14 @@ public sealed class AgentTaskRepository(
         }, ct).ConfigureAwait(false);
     }
 
+    private AgentTaskDefinition? ReadExistingTask(string taskFilePath, string ownerUserId)
+    {
+        // A catalog snapshot can outlive a concurrently deleted task definition.
+        try { return ReadFromDisk(taskFilePath, ownerUserId); }
+        catch (FileNotFoundException) { return null; }
+        catch (DirectoryNotFoundException) { return null; }
+    }
+
     private AgentTaskDefinition ReadFromDisk(string taskFilePath, string ownerUserIdFromCatalog)
     {
         var text = EncryptedFileContent.ReadAllText(ownerUserIdFromCatalog, taskFilePath, contentProtector)
@@ -435,7 +445,7 @@ public sealed class AgentTaskRepository(
 
     private void WriteToDisk(string targetDirectory, AgentTaskDefinition task)
     {
-        NormalizeExternalTriggerOrThrow(task);
+        ValidateTask(task);
         Directory.CreateDirectory(targetDirectory);
 
         var file = new AgentTaskDefinitionFile
@@ -899,7 +909,8 @@ public sealed class AgentTaskRepository(
         };
     }
 
-    private void NormalizeExternalTriggerOrThrow(AgentTaskDefinition task)
+    /// <inheritdoc />
+    public void ValidateTask(AgentTaskDefinition task)
     {
         task.ExternalTrigger ??= new TaskExternalTrigger();
         var trigger = task.ExternalTrigger;

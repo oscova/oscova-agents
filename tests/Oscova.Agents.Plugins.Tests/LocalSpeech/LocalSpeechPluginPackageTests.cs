@@ -38,9 +38,10 @@ public sealed class LocalSpeechPluginPackageTests
         Assert.True(new FileInfo(path).Length <= 26_214_400);
         if (cuda)
         {
-            Assert.DoesNotContain(files, file => file.StartsWith("lib/", StringComparison.Ordinal));
+            Assert.All(files.Where(file => file.StartsWith("lib/", StringComparison.Ordinal)),
+                file => Assert.EndsWith($"/{cpuId}.resources.dll", file, StringComparison.Ordinal));
             Assert.Equal(new[] { $"runtimes/linux-x64/lib/net10.0/{cpuId}.dll", $"runtimes/win-x64/lib/net10.0/{cpuId}.dll" },
-                files.Where(file => file.EndsWith(".dll", StringComparison.Ordinal)).Order(StringComparer.Ordinal));
+                files.Where(file => file.EndsWith($"/{cpuId}.dll", StringComparison.Ordinal)).Order(StringComparer.Ordinal));
         }
         else { Assert.Contains($"lib/net10.0/{cpuId}.dll", files); }
         if (capability == "LocalSpeechRecognition")
@@ -69,7 +70,7 @@ public sealed class LocalSpeechPluginPackageTests
         else
         {
             AssertExactDependency(dependencies, "KokoroSharp", "0.8.4");
-            AssertExactDependency(dependencies, cuda ? "Microsoft.ML.OnnxRuntime.Gpu" : "Microsoft.ML.OnnxRuntime", "1.29.0");
+            AssertExactDependency(dependencies, cuda ? "Microsoft.ML.OnnxRuntime.Gpu" : "Microsoft.ML.OnnxRuntime", "1.31.0");
             Assert.DoesNotContain(dependencies, dependency => dependency.Id == "NAudio" || dependency.Id.Contains("Whisper", StringComparison.OrdinalIgnoreCase));
         }
     }

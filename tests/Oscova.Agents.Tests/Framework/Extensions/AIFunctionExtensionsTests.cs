@@ -1,3 +1,4 @@
+using Microsoft.Extensions.AI;
 using Oscova.Agents.Collections;
 using Oscova.Agents.Extensions;
 using Oscova.Agents.Tests.Framework.TestTools;
@@ -6,6 +7,17 @@ namespace Oscova.Agents.Tests.Framework.Extensions
 {
     public class AIFunctionExtensionsTests
     {
+        [Fact]
+        public void GetSchemaSummary_NullableParameter_DescribesBothTypes()
+        {
+            var function = AIFunctionFactory.Create((int? count) => count);
+
+            var summary = function.GetSchemaSummary();
+
+            Assert.Contains("integer", summary);
+            Assert.Contains("null", summary);
+        }
+
         [Fact]
         public void GetSchemaSummary_Subtract_ProducesExpectedSummary()
         {

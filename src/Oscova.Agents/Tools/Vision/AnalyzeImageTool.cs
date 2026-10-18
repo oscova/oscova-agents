@@ -1,6 +1,5 @@
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Toolsets;
-using Oscova.Agents.Utils;
 using Oscova.Agents.Workspace;
 using System;
 using System.Collections.Generic;
@@ -26,6 +25,7 @@ public sealed class AnalyzeImageTool(
     public const string ToolName = "analyze_image";
 
     private const long MaxImageBytes = 10L * 1024 * 1024;
+    private readonly IWorkspaceFileAccess _files = new WorkspaceFileAccess(workspaceResolver);
 
     /// <summary>
     /// Creates the AI function wrapper for image analysis.
@@ -52,26 +52,31 @@ public sealed class AnalyzeImageTool(
         [Description("The question to answer about the image.")] string question,
         CancellationToken ct)
     {
-        // Invocation middleware authorizes the requested path, then this maps it for host IO.
-        var hostPath = PathHelper.ResolveToHostPath(path, workspaceResolver);
-        if (!File.Exists(hostPath))
+        // Physical reads enforce the grants even when the function is invoked without middleware.
+        var entry = _files.GetEntry(path);
+        if (entry is null || (entry.Attributes & FileAttributes.Directory) != 0)
         {
             return $"Image not found at '{path}'.";
         }
 
-        var mediaType = MediaTypeFromExtension(Path.GetExtension(hostPath));
+        var mediaType = MediaTypeFromExtension(Path.GetExtension(entry.Path));
         if (mediaType is null)
         {
             return $"Unsupported image type for '{path}'.";
         }
 
-        var size = new FileInfo(hostPath).Length;
-        if (size > MaxImageBytes)
+        byte[] bytes;
+        using (var stream = _files.OpenRead(path))
         {
-            return $"Image '{path}' exceeds the {MaxImageBytes / (1024 * 1024)} MB size limit.";
-        }
+            var size = stream.Length;
+            if (size > MaxImageBytes)
+            {
+                return $"Image '{path}' exceeds the {MaxImageBytes / (1024 * 1024)} MB size limit.";
+            }
 
-        var bytes = await File.ReadAllBytesAsync(hostPath, ct).ConfigureAwait(false);
+            bytes = new byte[(int)size];
+            await stream.ReadExactlyAsync(bytes, ct).ConfigureAwait(false);
+        }
         var message = new ChatMessage(ChatRole.User,
         [
             new TextContent(question),

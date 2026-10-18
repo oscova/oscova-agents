@@ -21,10 +21,13 @@ public sealed class WorkspaceFileAccessTests : IDisposable
         _files = new WorkspaceFileAccess(() => grants);
     }
 
-    [Fact]
-    public void Operations_PreserveOrdinaryFileContract()
+    [Theory]
+    [InlineData("nested", "notes.txt")]
+    [InlineData("nested", "..notes.txt")]
+    [InlineData("..cache", "notes.txt")]
+    public void Operations_PreserveOrdinaryFileContract(string directory, string fileName)
     {
-        string path = Path.Combine(_workspace, "nested", "notes.txt");
+        string path = Path.Combine(_workspace, directory, fileName);
 
         WriteText(path, "alpha");
         WriteText(path, "\nbeta", append: true);
@@ -42,6 +45,17 @@ public sealed class WorkspaceFileAccessTests : IDisposable
 
         _files.Delete(path);
         Assert.Null(_files.GetEntry(path));
+    }
+
+    [Fact]
+    public void WriteNew_PreservesExistingFilesAndRequiresAnExistingParent()
+    {
+        var path = Path.Combine(_workspace, "new.txt");
+        _files.WriteNew(path, stream => stream.Write(Encoding.UTF8.GetBytes("original")));
+        Assert.ThrowsAny<IOException>(() => _files.WriteNew(path, stream => stream.WriteByte(9)));
+        Assert.Equal("original", File.ReadAllText(path));
+        Assert.ThrowsAny<IOException>(() => _files.WriteNew(Path.Combine(_workspace, "missing", "new.txt"), stream => stream.WriteByte(9)));
+        Assert.False(Directory.Exists(Path.Combine(_workspace, "missing")));
     }
 
     [Fact]

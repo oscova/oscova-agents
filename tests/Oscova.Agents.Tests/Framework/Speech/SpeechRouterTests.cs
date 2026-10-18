@@ -5,6 +5,34 @@ namespace Oscova.Agents.Tests.Framework.Speech;
 
 public sealed class SpeechRouterTests
 {
+    /// <summary>An active session remains bound to its original provider when the selected configuration changes.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ActiveSession_ProviderChangePreservesSynthesisAndCleanupOwner(bool changeDuringStart)
+    {
+        var original = new RecordingSynthesisProvider("original", "https://original.example");
+        var replacement = new RecordingSynthesisProvider("replacement", "https://replacement.example");
+        var router = new SpeechSynthesisRouter(new TestSpeechProviderCatalog(synthesis: [original, replacement]));
+        var config = new SpeechProviderConfig { Type = "original", ModelId = "first" };
+        if (changeDuringStart) { original.StartGate = new(TaskCreationOptions.RunContinuationsAsynchronously); }
+        var starting = router.StartSessionAsync(config, "original-key", "owner:session", "voice", false);
+        if (!changeDuringStart) { await starting; }
+        config.Type = "replacement";
+        config.ModelId = "second";
+        original.StartGate?.SetResult();
+        await starting;
+        await router.SynthesizeAsync(config, "replacement-key", "owner:session", new() { Text = "Use the started session.", VoiceId = "replacement-voice" }, false);
+        await router.StopSessionAsync(config, "owner:session", false);
+        Assert.Equal(1, original.InvocationCount);
+        Assert.Equal("first", original.Config?.ModelId);
+        Assert.Equal("original-key", original.ApiKey);
+        Assert.Equal("voice", original.Request?.VoiceId);
+        Assert.Equal(1, original.StopCount);
+        Assert.Equal(0, replacement.InvocationCount);
+        Assert.Equal(0, replacement.StopCount);
+    }
+
     /// <summary>Optional speech providers are unavailable when their plugin is not installed.</summary>
     [Theory]
     [InlineData(false)]
@@ -96,28 +124,34 @@ public sealed class SpeechRouterTests
         Assert.Equal(0, provider.InvocationCount);
     }
 
-    [Fact]
-    public async Task RecognitionDownload_WithPublicModelUrlWhileOffline_BlocksBeforeInvocation()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(" ")]
+    [InlineData("https://example.com/models/asr")]
+    public async Task RecognitionDownload_WithoutExplicitLocalUrlWhileOffline_BlocksBeforeInvocation(string? url)
     {
         var provider = new RecordingRecognitionProvider("custom-asr", "http://127.0.0.1");
         var router = new SpeechRecognitionRouter(new TestSpeechProviderCatalog(recognition: [provider]));
         var config = new SpeechProviderConfig { Type = "custom-asr" };
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => router.StartDownloadAsync(config, "https://example.com/models/asr", true));
+            () => router.StartDownloadAsync(config, url, true));
 
         Assert.Null(provider.DownloadConfig);
     }
 
-    [Fact]
-    public async Task SynthesisDownload_WithPublicModelUrlWhileOffline_BlocksBeforeInvocation()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(" ")]
+    [InlineData("https://example.com/models/tts")]
+    public async Task SynthesisDownload_WithoutExplicitLocalUrlWhileOffline_BlocksBeforeInvocation(string? url)
     {
         var provider = new RecordingSynthesisProvider("custom-tts", "http://127.0.0.1");
         var router = new SpeechSynthesisRouter(new TestSpeechProviderCatalog(synthesis: [provider]));
         var config = new SpeechProviderConfig { Type = "custom-tts" };
 
         await Assert.ThrowsAsync<InvalidOperationException>(
-            () => router.StartDownloadAsync(config, "https://example.com/models/tts", true));
+            () => router.StartDownloadAsync(config, url, true));
 
         Assert.Null(provider.DownloadConfig);
     }
@@ -182,6 +216,7 @@ public sealed class SpeechRouterTests
 
         public int InvocationCount { get; private set; }
 
+
         public SpeechProviderConfig? DownloadConfig { get; private set; }
 
         public string? ModelDownloadUrl { get; private set; }
@@ -217,6 +252,8 @@ public sealed class SpeechRouterTests
 
     private sealed class RecordingSynthesisProvider(string type, string? defaultEndpoint) : ISpeechSynthesisProvider
     {
+        public TaskCompletionSource? StartGate { get; set; }
+        public int StopCount { get; private set; }
         public string Type { get; } = type;
         public string? DefaultModel => null;
         public string? DefaultVoiceId => null;
@@ -250,10 +287,13 @@ public sealed class SpeechRouterTests
             SpeechProviderConfig config,
             string? apiKey,
             string? voiceId,
-            CancellationToken ct = default) => Task.CompletedTask;
+            CancellationToken ct = default) => StartGate?.Task ?? Task.CompletedTask;
 
         public Task StopSessionAsync(string userId, SpeechProviderConfig config, CancellationToken ct = default)
-            => Task.CompletedTask;
+        {
+            StopCount++;
+            return Task.CompletedTask;
+        }
 
         public Task<bool> IsAvailableAsync(SpeechProviderConfig config, string? apiKey, CancellationToken ct = default)
             => Task.FromResult(true);

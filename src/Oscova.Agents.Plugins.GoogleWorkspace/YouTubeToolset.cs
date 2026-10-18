@@ -46,7 +46,8 @@ public sealed class YouTubeToolset : IAgentToolset
     {
         return await GoogleWorkspaceExecution.ExecuteAsync(async () =>
         {
-            var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var transport = service?.HttpClient.MessageHandler;
             if (service is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -150,7 +151,8 @@ public sealed class YouTubeToolset : IAgentToolset
     {
         return await GoogleWorkspaceExecution.ExecuteAsync(async () =>
         {
-            var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var transport = service?.HttpClient.MessageHandler;
             if (service is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -280,7 +282,8 @@ public sealed class YouTubeToolset : IAgentToolset
 
         return await GoogleWorkspaceExecution.ExecuteAsync(async () =>
         {
-            var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var transport = service?.HttpClient.MessageHandler;
             if (service is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);

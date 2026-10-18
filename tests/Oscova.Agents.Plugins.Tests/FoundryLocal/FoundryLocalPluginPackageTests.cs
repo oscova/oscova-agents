@@ -40,7 +40,7 @@ public sealed class FoundryLocalPluginPackageTests
             dependencies.Select(dependency => dependency.Id).Order(StringComparer.Ordinal));
         var foundry = Assert.Single(dependencies, dependency => dependency.Id == "Microsoft.AI.Foundry.Local");
         Assert.Equal("Microsoft.AI.Foundry.Local", foundry.Id);
-        var foundryVersion = NuGetVersion.Parse("1.2.4");
+        var foundryVersion = NuGetVersion.Parse("2.1.0");
         Assert.Equal(foundryVersion, foundry.VersionRange.MinVersion);
         Assert.Equal(foundryVersion, foundry.VersionRange.MaxVersion);
         Assert.True(foundry.VersionRange.IsMinInclusive);

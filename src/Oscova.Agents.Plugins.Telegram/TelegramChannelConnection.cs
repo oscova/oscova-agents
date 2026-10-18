@@ -41,7 +41,7 @@ public sealed class TelegramChannelConnection : IChannelConnection
     {
         var token = await _services.CredentialResolver.ResolveAsync(
             TelegramChannel.Credential.Key, TelegramChannel.BotToken, cancellationToken).ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(token)) { throw new InvalidOperationException("Telegram bot token is not configured."); }
+        if (string.IsNullOrWhiteSpace(token)) { throw new InvalidOperationException("Save the Telegram bot token in Credentials before starting."); }
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _lifetime.Token);
         try
         {
@@ -139,9 +139,19 @@ public sealed class TelegramChannelConnection : IChannelConnection
     private async Task ReplyAsync(long chatId, string text, CancellationToken ct)
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _lifetime.Token);
-        foreach (var chunk in TextChannelReplyChunker.Split(text, MessageLimit))
+        try
         {
-            await _client!.SendMessage(chatId, chunk, cancellationToken: linked.Token).ConfigureAwait(false);
+            foreach (var chunk in TextChannelReplyChunker.Split(text, MessageLimit))
+            {
+                await _client!.SendMessage(chatId, chunk, cancellationToken: linked.Token).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException) when (linked.IsCancellationRequested) { throw; }
+        catch (Exception ex)
+        {
+            LogFailure(ex, "reply", chatId.ToString(CultureInfo.InvariantCulture));
+            // Reply errors cross the host logging boundary, so omit token-bearing vendor details.
+            throw new IOException("Telegram reply could not be sent. Check connectivity and the bot's chat access.");
         }
     }
 

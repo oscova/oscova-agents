@@ -67,7 +67,7 @@ public sealed class SpeechProviderConfig
         return Id == other.Id
             && string.Equals(Name, other.Name, StringComparison.Ordinal)
             && string.Equals(Type, other.Type, StringComparison.Ordinal)
-            && string.Equals(BaseUrl, other.BaseUrl, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(BaseUrl, other.BaseUrl, StringComparison.Ordinal)
             && string.Equals(ModelId, other.ModelId, StringComparison.Ordinal)
             && string.Equals(CredentialKey, other.CredentialKey, StringComparison.Ordinal)
             && string.Equals(VoiceId, other.VoiceId, StringComparison.Ordinal);

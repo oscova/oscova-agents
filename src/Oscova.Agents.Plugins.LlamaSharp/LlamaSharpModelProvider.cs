@@ -152,17 +152,10 @@ public sealed class LlamaSharpModelProvider : IModelProvider, IDisposable
             _logger.LogInformation("Loaded local GGUF model: {ModelPath}", modelPath);
             return entry;
         }
-        catch
-        {
-            _loadGate.Release();
-            throw;
-        }
         finally
         {
-            if (_loadGate.CurrentCount == 0)
-            {
-                _loadGate.Release();
-            }
+            // Each load owns exactly one permit, including when native loading fails.
+            _loadGate.Release();
         }
     }
 

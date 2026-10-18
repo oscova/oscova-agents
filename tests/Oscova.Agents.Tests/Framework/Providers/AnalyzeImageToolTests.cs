@@ -47,6 +47,27 @@ public sealed class AnalyzeImageToolTests : IDisposable
     }
 
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task AnalyzeAsync_DirectInvocation_RejectsUngrantedImage(bool emptyGrants)
+    {
+        var allowed = Path.Combine(_workspacePath, "allowed");
+        Directory.CreateDirectory(allowed);
+        var outside = Path.Combine(_workspacePath, "outside.png");
+        await File.WriteAllBytesAsync(outside, ImageBytes);
+        var chatClient = new TestChatClient();
+        var tool = new AnalyzeImageTool(chatClient, () => emptyGrants ? [] :
+            [new(allowed, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly)]).AsAITool();
+
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => tool.InvokeAsync(new AIFunctionArguments
+        {
+            ["path"] = outside,
+            ["question"] = "what?"
+        }).AsTask());
+        Assert.Empty(chatClient.ResponseMessages);
+    }
+
+    [Theory]
     [InlineData("relative", WorkspaceAccessMode.ReadWrite)]
     [InlineData("sandbox", WorkspaceAccessMode.ReadWrite)]
     [InlineData("absolute", WorkspaceAccessMode.ReadOnly)]

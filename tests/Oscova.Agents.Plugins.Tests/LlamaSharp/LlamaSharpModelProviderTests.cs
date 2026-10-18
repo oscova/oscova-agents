@@ -6,6 +6,33 @@ namespace Oscova.Agents.Plugins.Tests.LlamaSharp;
 
 public sealed class LlamaSharpModelProviderTests : IDisposable
 {
+    [Fact]
+    public async Task ConcurrentFailedLoads_PreserveTheModelFailure()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "oscova-llama-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            await File.WriteAllBytesAsync(Path.Combine(directory, "invalid.gguf"), [0]);
+            using var provider = new LlamaSharpModelProvider(NullLogger<LlamaSharpModelProvider>.Instance, directory);
+            var config = new ModelProviderConfig { ModelId = "invalid.gguf" };
+            var calls = Enumerable.Range(0, 256).Select(_ => Task.Run(async () =>
+            {
+                for (var attempt = 0; attempt < 8; attempt++)
+                {
+                    var error = await Record.ExceptionAsync(async () =>
+                    {
+                        using var client = await provider.CreateClientAsync(config);
+                    });
+                    Assert.NotNull(error);
+                    Assert.IsNotType<SemaphoreFullException>(error);
+                }
+            }));
+            await Task.WhenAll(calls).WaitAsync(TimeSpan.FromSeconds(30));
+        }
+        finally { Directory.Delete(directory, recursive: true); }
+    }
+
     private readonly string _modelsDirectory = Path.Combine(
         Path.GetTempPath(),
         "oscova-llamasharp-provider-tests",

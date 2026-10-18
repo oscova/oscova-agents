@@ -109,6 +109,9 @@ public static class EgressClassifier
 
     private static bool IsLocalAddress(IPAddress address)
     {
+        // Mapped addresses use the same destination and policy as their IPv4 form.
+        if (address.IsIPv4MappedToIPv6) { address = address.MapToIPv4(); }
+
         if (IPAddress.IsLoopback(address))
         {
             return true;

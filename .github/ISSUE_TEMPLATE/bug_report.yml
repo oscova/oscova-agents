@@ -1,0 +1,101 @@
+name: Bug report
+description: Report something in Oscova that does not work as expected.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please search [existing issues](https://github.com/oscova/oscova-agents/issues) first.
+        Do not report security problems here. Follow [SECURITY.md](https://github.com/oscova/oscova-agents/blob/main/SECURITY.md) instead.
+        Remove API keys, passwords, personal data and private file contents from everything you paste.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of Oscova is affected?
+      options:
+        - Oscova application (web interface)
+        - oscova command line
+        - Avatar Engine
+        - Oscova.Agents framework
+        - A plugin
+        - Documentation or website
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Oscova version
+      description: Run `oscova version` and paste the output. For the Avatar Engine, run `oscova avatar status`. For a package, give its name and version.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: os-version
+    attributes:
+      label: Operating system version
+      placeholder: e.g. Windows 11 24H2, macOS 15, Ubuntu 24.04
+  - type: input
+    id: model-provider
+    attributes:
+      label: Model provider and model
+      description: The provider and model the agent was using, if relevant.
+      placeholder: e.g. Ollama with llama3.2
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The exact steps that make the bug happen, starting from a fresh start if you can.
+      placeholder: |
+        1. Run `oscova start`
+        2. Open Settings > ...
+        3. Click ...
+        4. See the error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or error output
+      description: Paste relevant log lines or terminal output. They are formatted as code automatically.
+      render: text
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or recordings
+      description: Drag images or videos here if they help explain the problem.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this has not been reported.
+          required: true
+        - label: I removed keys, passwords and personal data from this report.
+          required: true

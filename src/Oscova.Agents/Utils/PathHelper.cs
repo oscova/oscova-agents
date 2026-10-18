@@ -44,7 +44,10 @@ public static class PathHelper
     public static bool IsPathWithinDirectory(string fullPath, string normalizedDirectoryPath)
     {
         string relative = Path.GetRelativePath(normalizedDirectoryPath, fullPath);
-        return !relative.StartsWith("..", StringComparison.Ordinal) && !Path.IsPathRooted(relative);
+        // Only a complete parent segment escapes the root, names such as '..cache' remain children.
+        return relative != ".." &&
+               !relative.StartsWith(".." + Path.DirectorySeparatorChar, StringComparison.Ordinal) &&
+               !Path.IsPathRooted(relative);
     }
 
     /// <summary>
@@ -220,18 +223,20 @@ public static class PathHelper
             return selected;
         }
 
-        AllowedDirectory? defaultWorkspace = allowedDirectories.FirstOrDefault(directory =>
-            string.Equals(directory.Label, "default", StringComparison.OrdinalIgnoreCase) &&
+        // Fallback selection honors the same effective permissions as an explicitly selected root.
+        var writableDirectories = allowedDirectories.Where(directory =>
             directory.Kind == DirectorySourceKind.LocalPath &&
-            directory.AccessMode == WorkspaceAccessMode.ReadWrite);
+            directory.AccessMode == WorkspaceAccessMode.ReadWrite &&
+            TryGetContainingDirectory(directory.Value, allowedDirectories, out var effective) &&
+            effective?.AccessMode == WorkspaceAccessMode.ReadWrite);
+        AllowedDirectory? defaultWorkspace = writableDirectories.FirstOrDefault(directory =>
+            string.Equals(directory.Label, "default", StringComparison.OrdinalIgnoreCase));
         if (!string.IsNullOrWhiteSpace(defaultWorkspace?.Value))
         {
             return defaultWorkspace;
         }
 
-        AllowedDirectory? writableDirectory = allowedDirectories.FirstOrDefault(directory =>
-            directory.Kind == DirectorySourceKind.LocalPath &&
-            directory.AccessMode == WorkspaceAccessMode.ReadWrite);
+        AllowedDirectory? writableDirectory = writableDirectories.FirstOrDefault();
 
         return string.IsNullOrWhiteSpace(writableDirectory?.Value) ? null : writableDirectory;
     }

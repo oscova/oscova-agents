@@ -5,6 +5,19 @@ namespace Oscova.Agents.Tests.Framework.Utilities;
 
 public sealed class PathHelperTests
 {
+    /// <summary>Containment distinguishes parent traversal from ordinary names beginning with dots.</summary>
+    [Theory]
+    [InlineData("..notes.txt", true)]
+    [InlineData("..cache/notes.txt", true)]
+    [InlineData("../notes.txt", false)]
+    [InlineData("..", false)]
+    [InlineData("../workspace-other/notes.txt", false)]
+    public void IsPathWithinDirectory_RecognizesOnlyParentSegmentsAsTraversal(string relativePath, bool expected)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "workspace");
+        Assert.Equal(expected, PathHelper.IsPathWithinDirectory(Path.GetFullPath(Path.Combine(root, relativePath)), root));
+    }
+
     /// <summary>Alias ownership remains lexical when native roots belong to another operating system.</summary>
     [Fact]
     public void GetAgentPathRoots_MatchesNormalizedLongestAliasAcrossPlatforms()
@@ -40,6 +53,21 @@ public sealed class PathHelperTests
         Assert.Same(grants[3], variables["ROOT_EXTRA_3"]);
     }
 
+    [Theory]
+    [InlineData("default")]
+    [InlineData("project")]
+    public void WorkingDirectoryFallback_RespectsEffectiveReadOnlyGrants(string label)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "working-grant");
+        var protectedGrant = new AllowedDirectory(root, label, DirectorySourceKind.LocalPath,
+            WorkspaceAccessMode.ReadWrite, "/workspace/project");
+        var readOnly = protectedGrant with { AccessMode = WorkspaceAccessMode.ReadOnly };
+        var writable = protectedGrant with { Value = root + "-other", Label = "other", AgentPath = "/workspace/other" };
+
+        Assert.Equal(writable.Value, PathHelper.ResolveWorkingDirectoryHostPath([protectedGrant, readOnly, writable]));
+        Assert.Equal(writable.AgentPath, PathHelper.ResolveWorkingDirectoryAgentPath([protectedGrant, readOnly, writable]));
+        Assert.Null(PathHelper.ResolveWorkingDirectoryHostPath([protectedGrant, readOnly]));
+    }
     [Fact]
     public void WorkingDirectoryMarker_OverridesDefaultAndNeverFallsBackWhenUnavailable()
     {

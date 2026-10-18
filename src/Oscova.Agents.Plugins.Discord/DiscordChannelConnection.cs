@@ -31,7 +31,7 @@ public sealed class DiscordChannelConnection : IChannelConnection
                 GatewayIntents.DirectMessages | GatewayIntents.MessageContent
         });
         _client.MessageReceived += OnMessageReceivedAsync;
-        _client.Ready += OnReadyAsync;
+        _client.Connected += OnConnectedAsync;
         _client.Disconnected += OnDisconnectedAsync;
         _client.Log += OnLogAsync;
     }
@@ -41,7 +41,7 @@ public sealed class DiscordChannelConnection : IChannelConnection
     {
         var token = await _services.CredentialResolver.ResolveAsync(
             DiscordChannel.Credential.Key, DiscordChannel.BotToken, cancellationToken).ConfigureAwait(false);
-        if (string.IsNullOrWhiteSpace(token)) { throw new InvalidOperationException("Discord bot token is not configured."); }
+        if (string.IsNullOrWhiteSpace(token)) { throw new InvalidOperationException("Save the Discord bot token in Credentials before starting."); }
         cancellationToken.ThrowIfCancellationRequested();
         await _client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
@@ -100,7 +100,8 @@ public sealed class DiscordChannelConnection : IChannelConnection
         }
     }
 
-    private Task OnReadyAsync() => _connection.Sink.StatusChangedAsync(
+    // Connected follows both a fresh session and a gateway resume, while Ready follows only a fresh session.
+    private Task OnConnectedAsync() => _connection.Sink.StatusChangedAsync(
         new(ChannelConnectionState.Connected, _client.CurrentUser?.Username));
 
     private Task OnDisconnectedAsync(Exception? exception)
@@ -128,7 +129,7 @@ public sealed class DiscordChannelConnection : IChannelConnection
     public async ValueTask DisposeAsync()
     {
         _client.MessageReceived -= OnMessageReceivedAsync;
-        _client.Ready -= OnReadyAsync;
+        _client.Connected -= OnConnectedAsync;
         _client.Disconnected -= OnDisconnectedAsync;
         _client.Log -= OnLogAsync;
         await _lifetime.CancelAsync().ConfigureAwait(false);

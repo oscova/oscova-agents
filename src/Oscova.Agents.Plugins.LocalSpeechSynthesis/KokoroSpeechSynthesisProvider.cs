@@ -61,7 +61,8 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
             _ => new UserEntry(ModelPath, selectedVoice),
             (_, existing) =>
             {
-                existing.SetVoice(selectedVoice);
+                // Validate every selection without retaining per-request voice state.
+                KokoroVoiceManager.GetVoice(selectedVoice);
                 return existing;
             });
         return Task.CompletedTask;
@@ -149,7 +150,9 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
         }
 
         var voiceId = string.IsNullOrWhiteSpace(request.VoiceId) ? DefaultVoice : request.VoiceId;
-        entry.SetVoice(voiceId);
+        // Keep the requested voice local while other utterances wait for the session.
+        var voice = KokoroVoiceManager.GetVoice(voiceId);
+        using var stopped = CancellationTokenSource.CreateLinkedTokenSource(ct, entry.StopToken);
         var stopwatch = Stopwatch.StartNew();
         List<short> pcm16 = [];
         var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -162,11 +165,11 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
             }
         }
 
-        await entry.Gate.WaitAsync(ct).ConfigureAwait(false);
+        await entry.Gate.WaitAsync(stopped.Token).ConfigureAwait(false);
         try
         {
-            entry.Synthesizer.Synthesize(request.Text, entry.Voice, OnProgress, () => completion.TrySetResult());
-            await completion.Task.WaitAsync(ct).ConfigureAwait(false);
+            entry.Synthesizer.Synthesize(request.Text, voice, OnProgress, () => completion.TrySetResult());
+            await completion.Task.WaitAsync(stopped.Token).ConfigureAwait(false);
         }
         finally
         {
@@ -228,6 +231,8 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
 
     private sealed class UserEntry : IDisposable
     {
+        private readonly CancellationTokenSource _stop;
+
         public UserEntry(string modelPath, string voiceId)
         {
 #if LOCAL_SPEECH_CUDA
@@ -253,9 +258,11 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
 #else
             Synthesizer = new KokoroWavSynthesizer(modelPath);
 #endif
+            _stop = new();
+            StopToken = _stop.Token;
             try
             {
-                SetVoice(voiceId);
+                KokoroVoiceManager.GetVoice(voiceId);
             }
             catch
             {
@@ -266,27 +273,17 @@ internal sealed class KokoroSpeechSynthesisProvider : ISpeechSynthesisProvider, 
 
         public KokoroWavSynthesizer Synthesizer { get; }
 
-        public KokoroVoice Voice { get; private set; } = null!;
-
-        public string VoiceId { get; private set; } = string.Empty;
-
         public SemaphoreSlim Gate { get; } = new(1, 1);
 
-        public void SetVoice(string voiceId)
-        {
-            if (string.Equals(VoiceId, voiceId, StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            VoiceId = voiceId;
-            Voice = KokoroVoiceManager.GetVoice(voiceId);
-        }
+        public CancellationToken StopToken { get; }
 
         public void Dispose()
         {
+            // Kokoro cancels queued work without notifying its completion callback.
+            _stop.Cancel();
             Synthesizer.Dispose();
-            Gate.Dispose();
+            _stop.Dispose();
+            // Admitted calls can still release Gate after their cancellation continuation runs.
         }
     }
 }

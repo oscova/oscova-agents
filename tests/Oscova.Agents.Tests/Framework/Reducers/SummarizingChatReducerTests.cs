@@ -147,6 +147,8 @@ public sealed class SummarizingChatReducerTests
     {
         var inner = new TestChatClient();
         var reducer = new OscovaSummarizingChatReducer(inner, maxTokenCount: 2000, compactionThreshold: 0.01);
+        var summarizedCalls = 0;
+        reducer.OnHistorySummarized = () => summarizedCalls++;
         var messages = CreateToolHeavyHistory(new string('s', 9000));
 
         var reduced = (await reducer.ReduceAsync(messages, CancellationToken.None)).ToList();
@@ -154,6 +156,7 @@ public sealed class SummarizingChatReducerTests
         Assert.Contains(reduced, message => message.Text.Contains("[Tool calls omitted: search]", StringComparison.Ordinal));
         Assert.DoesNotContain(reduced, message => message.Text.StartsWith("[Conversation Summary]", StringComparison.Ordinal));
         Assert.Equal(0, inner.ResponseCalls);
+        Assert.Equal(0, summarizedCalls);
     }
 
     [Fact]
@@ -181,9 +184,13 @@ public sealed class SummarizingChatReducerTests
             latestAssistant
         };
 
+        var summarizedCalls = 0;
+        reducer.OnHistorySummarized = () => summarizedCalls++;
+
         var reduced = (await reducer.ReduceAsync(messages, CancellationToken.None)).ToList();
 
         Assert.Equal(1, inner.ResponseCalls);
+        Assert.Equal(1, summarizedCalls);
         Assert.Same(system, reduced[0]);
         Assert.Equal("[Conversation Summary]\nsummary text", reduced[1].Text);
         AssertEndsWith([recentUser, recentAssistant, latestUser, latestAssistant], reduced);

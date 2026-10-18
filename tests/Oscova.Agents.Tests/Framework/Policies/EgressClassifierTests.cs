@@ -14,6 +14,12 @@ public sealed class EgressClassifierTests
     [InlineData("http://172.16.0.5:11434", true)]
     [InlineData("http://172.31.255.5:11434", true)]
     [InlineData("http://169.254.1.5:11434", true)]
+    [InlineData("http://[::ffff:192.168.1.20]:11434", true)]
+    [InlineData("http://[::ffff:10.0.0.5]:11434", true)]
+    [InlineData("http://[::ffff:172.16.0.5]:11434", true)]
+    [InlineData("http://[::ffff:169.254.1.5]:11434", true)]
+    [InlineData("http://[::ffff:8.8.8.8]", false)]
+    [InlineData("http://[::ffff:172.32.0.5]", false)]
     [InlineData("http://8.8.8.8", false)]
     [InlineData("https://api.openai.com", false)]
     public void IsLocalHost_ClassifiesExpectedAddresses(string uri, bool expected)

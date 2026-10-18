@@ -36,6 +36,9 @@ namespace Oscova.Agents.Tasks
         /// </summary>
         Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default, string? creationDirectoryName = null);
 
+        /// <summary>Normalizes and validates a definition before related state is changed.</summary>
+        void ValidateTask(AgentTaskDefinition task);
+
         /// <summary>
         /// Permanently deletes the specified task definition and its run history.
         /// </summary>

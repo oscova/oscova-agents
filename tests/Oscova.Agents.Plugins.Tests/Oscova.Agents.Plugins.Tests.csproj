@@ -25,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/Oscova.Agents.Plugins.Browser/Oscova.Agents.Plugins.Browser.csproj" />
+    <ProjectReference Include="../../src/Oscova.Agents.Plugins.Docker/Oscova.Agents.Plugins.Docker.csproj" />
+    <ProjectReference Include="../../src/Oscova.Agents.Plugins.OpenAI/Oscova.Agents.Plugins.OpenAI.csproj" />
     <ProjectReference Include="../../src/Oscova.Agents.Plugins.GoogleWorkspace/Oscova.Agents.Plugins.GoogleWorkspace.csproj" />
     <ProjectReference Include="../../src/Oscova.Agents.Plugins.MicrosoftGraph/Oscova.Agents.Plugins.MicrosoftGraph.csproj" />
     <ProjectReference Include="..\..\src\Oscova.Agents\Oscova.Agents.csproj" />
@@ -35,7 +38,7 @@
     <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LlamaSharp\Oscova.Agents.Plugins.LlamaSharp.csproj" />
     <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.FoundryLocal\Oscova.Agents.Plugins.FoundryLocal.csproj" ReferenceOutputAssembly="false" Private="false" />
     <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LocalSpeechRecognition\Oscova.Agents.Plugins.LocalSpeechRecognition.csproj" ReferenceOutputAssembly="false" Private="false" />
-    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LocalSpeechSynthesis\Oscova.Agents.Plugins.LocalSpeechSynthesis.csproj" ReferenceOutputAssembly="false" Private="false" />
+    <ProjectReference Include="..\..\src\Oscova.Agents.Plugins.LocalSpeechSynthesis\Oscova.Agents.Plugins.LocalSpeechSynthesis.csproj" />
     <Compile Include="..\TestSupport\TestPlugin\TestPluginRoot.cs" Link="TestSupport\TestPlugin\TestPluginRoot.cs" />
     <Compile Include="..\TestSupport\PackageVersions.cs" Link="TestSupport\PackageVersions.cs" />
     <Compile Include="..\TestSupport\ReleasePackages.cs" Link="TestSupport\ReleasePackages.cs" />

@@ -322,7 +322,11 @@ public sealed class SkillImportService : ISkillImportService
     {
         string parent = Path.GetDirectoryName(skillsRoot)
             ?? throw new ArgumentException("The skills root must have a parent directory.");
-        string stagingRoot = Path.Combine(parent, TempStagingDirectoryName);
+        // Validate before abandoned-staging cleanup can follow a linked directory.
+        if (!PathHelper.TryResolveContainedPath(parent, TempStagingDirectoryName, out string stagingRoot))
+        {
+            throw new UnauthorizedAccessException("The skill import staging path contains a symbolic link or reparse point.");
+        }
 
         lock (ImportRootLock)
         {

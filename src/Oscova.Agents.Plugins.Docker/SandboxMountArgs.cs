@@ -13,10 +13,13 @@ internal static class SandboxMountArgs
     public static void AppendDirectoryMounts(
         List<string> args,
         IEnumerable<AllowedDirectory> directories,
-        ILogger? logger)
+        ILogger? logger,
+        string? primaryMountTarget = null)
     {
+        var grants = directories.ToArray();
         var mountTargets = new HashSet<string>(StringComparer.Ordinal);
-        foreach (AllowedDirectory directory in directories)
+        var mounted = grants.Where(directory => directory.Kind == DirectorySourceKind.LocalPath && Directory.Exists(directory.Value)).ToArray();
+        foreach (AllowedDirectory directory in grants)
         {
             if (directory.Kind != DirectorySourceKind.LocalPath)
             {
@@ -38,9 +41,31 @@ internal static class SandboxMountArgs
                 throw new InvalidOperationException($"Workspace directory label '{directory.Label}' resolves to duplicate mount target '{mountTarget}'.");
             }
 
-            string accessMode = directory.AccessMode == WorkspaceAccessMode.ReadWrite ? "rw" : "ro";
+            // Aliases of the same root retain the workspace owner's read-only precedence.
+            if (mountTarget == primaryMountTarget) { continue; }
+            string accessMode = IsWritable(directory) ? "rw" : "ro";
             args.Add("-v");
             args.Add($"{directory.Value}:{mountTarget}:{accessMode}");
         }
+
+        // Protect a read-only child through every writable ancestor alias, including the primary mount.
+        foreach (var parent in mounted.Where(IsWritable))
+        {
+            var parentTarget = PathHelper.ResolveToAgentPath(parent.Value, [parent]).TrimEnd('/');
+            foreach (var child in mounted.Where(directory => !IsWritable(directory)))
+            {
+                if (PathHelper.ArePathsEqual(parent.Value, child.Value) ||
+                    !PathHelper.IsPathWithinDirectory(child.Value, parent.Value)) { continue; }
+                var relative = PathHelper.ToSlashSeparatedRelativePath(Path.GetRelativePath(parent.Value, child.Value));
+                var target = parentTarget + "/" + relative;
+                if (!mountTargets.Add(target)) { continue; }
+                args.Add("-v");
+                args.Add($"{child.Value}:{target}:ro");
+            }
+        }
+
+        bool IsWritable(AllowedDirectory directory) =>
+            PathHelper.TryGetContainingDirectory(directory.Value, grants, out var effective) &&
+            effective?.AccessMode == WorkspaceAccessMode.ReadWrite;
     }
 }
