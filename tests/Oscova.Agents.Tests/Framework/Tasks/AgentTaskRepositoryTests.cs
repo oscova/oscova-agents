@@ -17,6 +17,25 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         $"oscova-task-repository-tests-{Guid.NewGuid():N}");
     private readonly YamlConverter _yamlConverter = new();
 
+    /// <summary>A task deleted after catalog enumeration cannot hide the remaining task list.</summary>
+    [Fact]
+    public async Task GetTasksByUser_AfterConcurrentDeletion_ReturnsRemainingDefinitions()
+    {
+        var (repository, catalog) = CreateRepository();
+        var deleted = CreateTask("Deleted task");
+        var retained = CreateTask("Retained task");
+        await repository.SaveTaskAsync(deleted);
+        await repository.SaveTaskAsync(retained);
+        var snapshotCatalog = new CancelOnReloadAgentTaskCatalog(catalog)
+        {
+            TasksEnumerated = () => repository.DeleteTaskAsync(_userId, deleted.Id).GetAwaiter().GetResult()
+        };
+        var reader = CreateRepository(snapshotCatalog);
+        var remaining = await reader.GetTasksByUserAsync(_userId);
+        Assert.Equal(retained.Id, Assert.Single(remaining).Id);
+        Assert.Null(await repository.GetTaskAsync(_userId, deleted.Id));
+    }
+
     [Fact]
     public async Task EnsureTask_PreservesEditedDefinitionAndHistory()
     {
@@ -1134,6 +1153,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
     private sealed class CancelOnReloadAgentTaskCatalog(IAgentTaskCatalog inner) : IAgentTaskCatalog
     {
         private CancellationTokenSource? _cancellation;
+        public Action? TasksEnumerated { get; init; }
 
         public string? TryGetTaskDirectory(string taskId) => inner.TryGetTaskDirectory(taskId);
 
@@ -1141,7 +1161,12 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         public string? TryGetHandlerKey(string taskId) => inner.TryGetHandlerKey(taskId);
 
-        public IReadOnlyCollection<AgentTaskCatalogEntry> GetTasksForUser(string userId) => inner.GetTasksForUser(userId);
+        public IReadOnlyCollection<AgentTaskCatalogEntry> GetTasksForUser(string userId)
+        {
+            var snapshot = inner.GetTasksForUser(userId);
+            TasksEnumerated?.Invoke();
+            return snapshot;
+        }
 
         public IReadOnlyCollection<AgentTaskCatalogEntry> GetAllEnabledTasks() => inner.GetAllEnabledTasks();
 

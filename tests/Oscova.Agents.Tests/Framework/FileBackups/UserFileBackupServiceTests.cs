@@ -237,6 +237,34 @@ public sealed class UserFileBackupServiceTests : IDisposable
             () => _service.ListBackupsAsync(_userId, "../outside.md"));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task BackupAccess_WhenBackupIsAnOutsideSymlink_Throws(bool restore)
+    {
+        await WriteUserFileTextAsync("memory/index.md", "current");
+        var capture = await _service.CaptureBeforeMutationAsync(_userId, "memory/index.md");
+        string backupPath = GetBackupFilePath("memory/index.md", capture.Entry!.Id);
+        string outsidePath = Path.Combine(_testRoot, "outside.md");
+        await File.WriteAllTextAsync(outsidePath, "outside secret");
+        File.Delete(backupPath);
+        File.CreateSymbolicLink(backupPath, outsidePath);
+
+        await Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+        {
+            if (restore)
+            {
+                await _service.RestoreBackupAsync(_userId, "memory/index.md", capture.Entry.Id);
+            }
+            else
+            {
+                await _service.ReadBackupAsync(_userId, "memory/index.md", capture.Entry.Id);
+            }
+        });
+        Assert.Equal("current", await ReadUserFileTextAsync("memory/index.md"));
+        Assert.Equal("outside secret", await File.ReadAllTextAsync(outsidePath));
+    }
+
     private async Task WriteUserFileTextAsync(string relativePath, string content, string? userRoot = null)
     {
         var path = Path.Combine(userRoot ?? _userDir, relativePath.Replace('/', Path.DirectorySeparatorChar));

@@ -91,6 +91,31 @@ public sealed class SkillImportServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task ImportAsync_LinkedStagingRoot_PreservesOutsideDirectory()
+    {
+        string outside = Path.Combine(_tempRootPath, "outside");
+        string sentinel = Path.Combine(outside, "keep", "sentinel.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(sentinel)!);
+        await File.WriteAllTextAsync(sentinel, "preserve");
+        string staging = Path.Combine(Path.GetDirectoryName(_skillsRootPath)!, ".import-staging");
+        Directory.CreateDirectory(Path.GetDirectoryName(staging)!);
+        Directory.CreateSymbolicLink(staging, outside);
+        try
+        {
+            await using var stream = CreateUtf8Stream("---\nname: safe-skill\ndescription: Test skill\n---\nBody");
+            var error = await Record.ExceptionAsync(() => _service.ImportAsync(UserId, "skill.md", stream));
+
+            Assert.True(File.Exists(sentinel), "Import cleanup deleted content outside its staging directory.");
+            Assert.Equal("preserve", await File.ReadAllTextAsync(sentinel));
+            Assert.IsType<UnauthorizedAccessException>(error);
+        }
+        finally
+        {
+            Directory.Delete(staging);
+        }
+    }
+
+    [Fact]
     public async Task ImportAsync_ZipSkillWithWrapperDirectory_InstallsToWrapperDirectoryName()
     {
         await using MemoryStream zipStream = CreateZipStream(

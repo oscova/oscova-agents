@@ -159,7 +159,7 @@ public sealed class UserFileBackupService : IUserFileBackupService
                 backupId,
                 target.RelativePath,
                 createdUtc,
-                new FileInfo(backupPath).Length));
+                new FileInfo(GetBackupPath(target.UserRoot, target.RelativePath, backupId)).Length));
         }
 
         entries.Sort((left, right) =>
@@ -342,7 +342,14 @@ public sealed class UserFileBackupService : IUserFileBackupService
     {
         var historyDirectory = GetHistoryDirectory(userRoot, relativePath);
         var backupFileName = $"{Path.GetFileName(relativePath)}.{backupId}{BackupExtension}";
-        return Path.Combine(historyDirectory, backupFileName);
+        var backupPath = Path.Combine(historyDirectory, backupFileName);
+        // Backup files obey the same no-symlink boundary as their source files.
+        if (PathHelper.HasSymlinkInPath(backupPath, userRoot))
+        {
+            throw new UnauthorizedAccessException("Access denied.");
+        }
+
+        return backupPath;
     }
 
     private static void EnsureHistoryDirectorySafe(string userRoot, string historyDirectory)

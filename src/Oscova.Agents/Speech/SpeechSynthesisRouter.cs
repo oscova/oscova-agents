@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ public sealed class SpeechSynthesisRouter(ISpeechProviderCatalog speechProviderC
 {
     private readonly IReadOnlyDictionary<string, ISpeechSynthesisProvider> _providers =
         speechProviderCatalog.Synthesis.GroupBy(provider => provider.Type).ToDictionary(group => group.Key, group => group.First());
+    private readonly ConcurrentDictionary<string, (SpeechProviderConfig Config, string? ApiKey, string? VoiceId)> _sessions = new(StringComparer.Ordinal);
 
     /// <summary>Starts a synthesis session through the configured provider.</summary>
     public async Task StartSessionAsync(
@@ -25,8 +27,11 @@ public sealed class SpeechSynthesisRouter(ISpeechProviderCatalog speechProviderC
         bool requireLocalEndpoint,
         CancellationToken ct = default)
     {
+        config = config.Clone();
         var provider = ResolveProvider(config, requireLocalEndpoint);
         await provider.StartSessionAsync(userId, config, apiKey, voiceId, ct).ConfigureAwait(false);
+        // A session keeps its provider identity when the caller changes its selected settings.
+        _sessions[userId] = (config, apiKey, voiceId);
     }
 
     /// <summary>Stops a synthesis session through the configured provider.</summary>
@@ -36,8 +41,11 @@ public sealed class SpeechSynthesisRouter(ISpeechProviderCatalog speechProviderC
         bool requireLocalEndpoint,
         CancellationToken ct = default)
     {
-        var provider = ResolveProvider(config, requireLocalEndpoint);
-        await provider.StopSessionAsync(userId, config, ct).ConfigureAwait(false);
+        var hasSession = _sessions.TryGetValue(userId, out var session);
+        var sessionConfig = hasSession ? session.Config : config;
+        var provider = ResolveProvider(sessionConfig, !hasSession && requireLocalEndpoint);
+        await provider.StopSessionAsync(userId, sessionConfig, ct).ConfigureAwait(false);
+        _sessions.TryRemove(userId, out _);
     }
 
     /// <summary>Determines whether the configured provider is available.</summary>
@@ -76,6 +84,18 @@ public sealed class SpeechSynthesisRouter(ISpeechProviderCatalog speechProviderC
         bool requireLocalEndpoint,
         CancellationToken ct = default)
     {
+        if (_sessions.TryGetValue(userId, out var session))
+        {
+            config = session.Config;
+            apiKey = session.ApiKey;
+            request = new SpeechSynthesisRequest
+            {
+                Text = request.Text,
+                VoiceId = session.VoiceId,
+                ModelPath = request.ModelPath,
+                IncludeWavHeader = request.IncludeWavHeader
+            };
+        }
         var provider = ResolveProvider(config, requireLocalEndpoint);
         return await provider.SynthesizeAsync(userId, config, apiKey, request, ct).ConfigureAwait(false);
     }
@@ -88,8 +108,12 @@ public sealed class SpeechSynthesisRouter(ISpeechProviderCatalog speechProviderC
         CancellationToken ct = default)
     {
         var provider = ResolveProvider(config, requireLocalEndpoint);
-        if (requireLocalEndpoint && EgressClassifier.ClassifySpeech(modelDownloadUrl, null) == EgressClass.Cloud)
-            throw new InvalidOperationException("Offline mode is on: this speech model download uses a non-local endpoint and is blocked.");
+        // An omitted URL lets the provider choose a download source whose locality is unknown here.
+        if (requireLocalEndpoint && (string.IsNullOrWhiteSpace(modelDownloadUrl) ||
+            EgressClassifier.ClassifySpeech(modelDownloadUrl, null) == EgressClass.Cloud))
+        {
+            throw new InvalidOperationException("Offline mode is on: speech model downloads require an explicit local URL.");
+        }
 
         await provider.StartDownloadAsync(config, modelDownloadUrl, ct).ConfigureAwait(false);
     }

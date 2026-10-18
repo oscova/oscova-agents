@@ -1,5 +1,7 @@
+using System.Buffers.Text;
 using System.ComponentModel;
 using System.Globalization;
+using System.Net.Mail;
 using System.Text;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
@@ -10,7 +12,7 @@ using Oscova.Agents.Toolsets;
 
 namespace Oscova.Agents.Plugins.GoogleWorkspace;
 
-/// <summary>Exposes Gmail reads through the connected Google account.</summary>
+/// <summary>Exposes Gmail reads and sends through the connected Google account.</summary>
 public sealed class GmailToolset : IAgentToolset
 {
     private const string NotConnectedMessage = "Gmail is not connected. Ask the user to connect their Google account.";
@@ -42,7 +44,8 @@ public sealed class GmailToolset : IAgentToolset
     {
         return await GoogleWorkspaceExecution.ExecuteAsync(async () =>
         {
-            var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var transport = service?.HttpClient.MessageHandler;
             if (service is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -138,7 +141,8 @@ public sealed class GmailToolset : IAgentToolset
 
         return await GoogleWorkspaceExecution.ExecuteAsync(async () =>
         {
-            var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var transport = service?.HttpClient.MessageHandler;
             if (service is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -169,6 +173,135 @@ public sealed class GmailToolset : IAgentToolset
 
             return builder.ToString().TrimEnd();
         }, _logger, "Gmail", NotConnectedMessage).ConfigureAwait(false);
+    }
+
+    /// <summary>Sends an email from the connected Gmail account.</summary>
+    [DisplayName("send_email")]
+    [ToolNetworkScope(NetworkScope.Egress)]
+    [ToolPolicy(ApprovalMode = ToolApprovalMode.RequireApproval)]
+    [AgentTool]
+    [Description("""
+        Sends an email from the connected Gmail account.
+        Provide one or more recipients in the to field. Separate multiple addresses with commas.
+        Optional cc recipients may also be comma separated.
+        """)]
+    public async Task<string> SendEmailAsync(
+        [Description("One or more recipient email addresses separated by commas.")] string to,
+        [Description("The email subject.")] string subject,
+        [Description("The email body content.")] string body,
+        [Description("Optional cc recipient email addresses separated by commas.")] string? cc = null,
+        [Description("When true, send the body as HTML. Defaults to false for plain text.")] bool isHtml = false,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(to))
+        {
+            throw new ToolFailureException("At least one email recipient is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            throw new ToolFailureException("An email subject is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            throw new ToolFailureException("An email body is required.");
+        }
+
+        var toRecipients = ParseRecipients(to);
+        if (toRecipients.Count == 0)
+        {
+            throw new ToolFailureException("At least one email recipient is required.");
+        }
+
+        var ccRecipients = ParseRecipients(cc);
+        // Header values are written raw into the MIME message, so line breaks must never reach them.
+        var cleanSubject = string.Join(' ', subject.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
+        var mime = new StringBuilder()
+            .Append("To: ").Append(string.Join(", ", toRecipients)).Append("\r\n");
+        if (ccRecipients.Count > 0)
+        {
+            mime.Append("Cc: ").Append(string.Join(", ", ccRecipients)).Append("\r\n");
+        }
+
+        mime.Append("Subject: ").Append(EncodeHeaderWords(cleanSubject)).Append("\r\n")
+            .Append("MIME-Version: 1.0\r\n")
+            .Append("Content-Type: ").Append(isHtml ? "text/html" : "text/plain").Append("; charset=UTF-8\r\n")
+            .Append("Content-Transfer-Encoding: base64\r\n\r\n")
+            .Append(Convert.ToBase64String(Encoding.UTF8.GetBytes(body), Base64FormattingOptions.InsertLineBreaks));
+
+        return await GoogleWorkspaceExecution.ExecuteAsync(async () =>
+        {
+            using var service = await CreateServiceAsync(ct).ConfigureAwait(false);
+            using var transport = service?.HttpClient.MessageHandler;
+            if (service is null)
+            {
+                throw new ToolFailureException(NotConnectedMessage);
+            }
+
+            var message = new Message { Raw = Base64Url.EncodeToString(Encoding.UTF8.GetBytes(mime.ToString())) };
+            await service.Users.Messages.Send(message, "me").ExecuteAsync(ct).ConfigureAwait(false);
+
+            var builder = new StringBuilder();
+            builder.AppendLine("Email sent.")
+                .AppendLine($"To: {string.Join(", ", toRecipients)}")
+                .AppendLine($"Subject: {cleanSubject}");
+
+            if (ccRecipients.Count > 0)
+            {
+                builder.AppendLine($"Cc: {string.Join(", ", ccRecipients)}");
+            }
+
+            return builder.ToString().TrimEnd();
+        }, _logger, "Gmail", NotConnectedMessage).ConfigureAwait(false);
+    }
+
+    // Encoded words may not exceed 75 characters, so the value folds into 45-byte chunks that never split a character.
+    private static string EncodeHeaderWords(string value)
+    {
+        var words = new List<string>();
+        var chunk = new List<byte>();
+        Span<byte> buffer = stackalloc byte[4];
+        foreach (var rune in value.EnumerateRunes())
+        {
+            var length = rune.EncodeToUtf8(buffer);
+            if (chunk.Count + length > 45)
+            {
+                words.Add($"=?UTF-8?B?{Convert.ToBase64String([.. chunk])}?=");
+                chunk.Clear();
+            }
+
+            chunk.AddRange(buffer[..length]);
+        }
+
+        words.Add($"=?UTF-8?B?{Convert.ToBase64String([.. chunk])}?=");
+        return string.Join("\r\n ", words);
+    }
+
+    // Each address must parse on its own, which also rejects CR/LF header injection.
+    private static List<string> ParseRecipients(string? recipients)
+    {
+        if (string.IsNullOrWhiteSpace(recipients))
+        {
+            return [];
+        }
+
+        var addresses = new List<string>();
+        foreach (var entry in recipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (!MailAddress.TryCreate(entry, out var parsed) || entry.AsSpan().IndexOfAny('\r', '\n') >= 0)
+            {
+                throw new ToolFailureException($"'{entry}' is not a valid email address.", "Use plain addresses separated by commas.");
+            }
+
+            if (!addresses.Contains(parsed.Address, StringComparer.OrdinalIgnoreCase))
+            {
+                addresses.Add(parsed.Address);
+            }
+        }
+
+        return addresses;
     }
 
     private async Task<GmailService?> CreateServiceAsync(CancellationToken ct)

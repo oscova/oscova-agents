@@ -35,8 +35,8 @@
             </div>
         </div>
     }
-    @if (_error is not null) { <p class="text-sm text-error" role="alert">@_error</p> }
-    @if (_loadError is not null) { <p class="text-sm text-error" role="alert">@_loadError</p> }
+    @if (_error is not null) { <div role="alert" class="alert alert-error alert-soft"><span class="min-w-0 wrap-anywhere">@_error</span></div> }
+    @if (_loadError is not null) { <div role="alert" class="alert alert-error alert-soft"><span class="min-w-0 wrap-anywhere">@_loadError</span></div> }
     @if (_control is not null)
     {
         <div class="card custom-settings-catalog-card">

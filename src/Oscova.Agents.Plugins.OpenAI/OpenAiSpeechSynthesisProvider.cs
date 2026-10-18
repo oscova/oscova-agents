@@ -2,11 +2,9 @@ using OpenAI;
 using OpenAI.Audio;
 using Oscova.Agents.Speech;
 using Oscova.Agents.Speech.Contracts;
-using System.Buffers.Binary;
+using Oscova.Agents.Plugins.Shared.Speech;
 using System.ClientModel;
 using System.ClientModel.Primitives;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Oscova.Agents.Plugins.OpenAI;
 
@@ -85,24 +83,23 @@ public sealed class OpenAiSpeechSynthesisProvider(HttpClient http) : ISpeechSynt
         var startedAt = DateTimeOffset.UtcNow;
         var options = new SpeechGenerationOptions
         {
-            ResponseFormat = GeneratedSpeechFormat.Wav
+            ResponseFormat = GeneratedSpeechFormat.Pcm
         };
 
         var speech = await client.GenerateSpeechAsync(request.Text, voice, options, ct).ConfigureAwait(false);
-        var wavBytes = speech.Value.ToArray();
-        var metadata = TryReadWavMetadata(wavBytes, out var parsed)
-            ? parsed
-            : new WavMetadata(DefaultSampleRate, DefaultChannels, DefaultBitsPerSample, Math.Max(0, wavBytes.Length - 44) / 2);
-
-        var audio = request.IncludeWavHeader ? wavBytes : StripWavHeader(wavBytes);
+        // PCM avoids treating optional WAV metadata chunks as audio samples.
+        var pcm = speech.Value.ToArray();
+        var audio = request.IncludeWavHeader
+            ? PcmWaveWriter.Write(pcm, DefaultSampleRate, DefaultChannels, DefaultBitsPerSample)
+            : pcm;
 
         return new SpeechSynthesisResponse
         {
             Audio = audio,
-            SampleRate = metadata.SampleRate,
-            Channels = metadata.Channels,
-            BitsPerSample = metadata.BitsPerSample,
-            TotalSamples = metadata.TotalSamples,
+            SampleRate = DefaultSampleRate,
+            Channels = DefaultChannels,
+            BitsPerSample = DefaultBitsPerSample,
+            TotalSamples = pcm.Length / sizeof(short),
             VoiceId = voiceId,
             DurationMs = (DateTimeOffset.UtcNow - startedAt).TotalMilliseconds
         };
@@ -148,42 +145,4 @@ public sealed class OpenAiSpeechSynthesisProvider(HttpClient http) : ISpeechSynt
             : new GeneratedSpeechVoice(voiceId.Trim());
     }
 
-    private static byte[] StripWavHeader(byte[] wavBytes)
-    {
-        if (wavBytes.Length <= 44)
-        {
-            return [];
-        }
-
-        var raw = new byte[wavBytes.Length - 44];
-        Buffer.BlockCopy(wavBytes, 44, raw, 0, raw.Length);
-        return raw;
-    }
-
-    private static bool TryReadWavMetadata(byte[] wavBytes, out WavMetadata metadata)
-    {
-        metadata = default;
-        if (wavBytes.Length < 44)
-        {
-            return false;
-        }
-
-        var span = wavBytes.AsSpan();
-        if (!string.Equals(Encoding.ASCII.GetString(span[..4]), "RIFF", StringComparison.Ordinal) ||
-            !string.Equals(Encoding.ASCII.GetString(span.Slice(8, 4)), "WAVE", StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        var channels = BinaryPrimitives.ReadInt16LittleEndian(span.Slice(22, 2));
-        var sampleRate = BinaryPrimitives.ReadInt32LittleEndian(span.Slice(24, 4));
-        var bitsPerSample = BinaryPrimitives.ReadInt16LittleEndian(span.Slice(34, 2));
-        var dataBytes = BinaryPrimitives.ReadInt32LittleEndian(span.Slice(40, 4));
-        var bytesPerSample = Math.Max(1, channels * bitsPerSample / 8);
-        metadata = new WavMetadata(sampleRate, channels, bitsPerSample, dataBytes / bytesPerSample);
-        return true;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private readonly record struct WavMetadata(int SampleRate, short Channels, short BitsPerSample, int TotalSamples);
 }

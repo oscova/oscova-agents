@@ -1,5 +1,6 @@
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Oscova.Agents.Providers;
 using Oscova.Agents.Runtime;
 using OscovaSummarizingChatReducer = Oscova.Agents.Reducers.SummarizingChatReducer;
 
@@ -30,6 +31,7 @@ public sealed class SessionTodoContextTests
         };
         var agent = await BuildAsync(model, todos, compaction, [tool]);
         var session = await agent.CreateSessionAsync();
+        await AddTodoAsync(todos, agent, session);
         var request = new ChatMessage(ChatRole.User, "Compare the quotes")
         {
             AdditionalProperties = new() { ["request-label"] = "customer" }
@@ -47,6 +49,24 @@ public sealed class SessionTodoContextTests
         var restored = await agent.DeserializeSessionAsync(await agent.SerializeSessionAsync(session));
         var restoredGenerated = Assert.Single(history.GetMessages(restored), message => message.Text == generated.Text);
         Assert.Contains("AIContextProvider", restoredGenerated.AdditionalProperties![AgentRequestMessageSourceAttribution.AdditionalPropertiesKey]!.ToString(), StringComparison.Ordinal);
+    }
+
+    /// <summary>An empty todo list adds no model message, and the list appears once a todo is saved.</summary>
+    [Fact]
+    public async Task EmptyTodoList_AddsNoMessageUntilTodoIsSaved()
+    {
+        using var todos = new TodoProvider();
+        using var model = new TestChatClient();
+        var agent = await BuildAsync(model, todos, false, []);
+        var session = await agent.CreateSessionAsync();
+
+        await agent.RunAsync("Hello", session);
+
+        Assert.DoesNotContain(model.ResponseMessages[^1], message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider);
+        await AddTodoAsync(todos, agent, session);
+        await agent.RunAsync("What is left?", session);
+        Assert.Single(model.ResponseMessages[^1], message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider
+            && message.Text.Contains("Check quote totals", StringComparison.Ordinal));
     }
 
     /// <summary>The next model call receives current saved todos after automatic compaction and a todo mutation.</summary>
@@ -123,11 +143,10 @@ public sealed class SessionTodoContextTests
 
         // A compaction at the end of one run must not refresh another run or another session twice.
         await agent.RunAsync("Next question", session);
-        Assert.Single(requests[3], message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider);
+        Assert.Equal(removeTodo ? 0 : 1, requests[3].Count(message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider));
         var independentSession = await agent.CreateSessionAsync();
         await agent.RunAsync("Independent question", independentSession);
-        Assert.Single(requests[4], message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider);
-        if (!removeTodo) { Assert.DoesNotContain(requests[4], message => message.Text == expected); }
+        Assert.DoesNotContain(requests[4], message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider);
     }
 
     /// <summary>Generated user-role context cannot consume the two submitted-request retention slots.</summary>
@@ -189,6 +208,7 @@ public sealed class SessionTodoContextTests
         Assert.NotNull(failure);
         Assert.IsType(cancelled ? typeof(OperationCanceledException) : typeof(InvalidOperationException), failure);
         var nextSession = await agent.CreateSessionAsync();
+        await AddTodoAsync(todos, agent, nextSession);
         await agent.RunAsync("Hello", nextSession);
         Assert.Single(model.ResponseMessages[^1], message => message.GetAgentRequestMessageSourceType() == AgentRequestMessageSourceType.AIContextProvider);
     }
@@ -199,9 +219,16 @@ public sealed class SessionTodoContextTests
         var definition = new AgentDefinition { Id = "main", Name = "Main", IsTodoEnabled = true, IsCompactionEnabled = compaction };
         return new AgentOrchestrator().GetOrCreateAgentAsync(new AgentBuildRequest(
             (_, _) => Task.FromResult(model), definition, [definition],
-            (_, _) => Task.FromResult<IReadOnlyList<AIContextProvider>>([todos]), _ => [],
+            (_, _) => Task.FromResult<IReadOnlyList<AIContextProvider>>([new OmitEmptyTodoListProvider(todos)]), _ => [],
             ConfigureOptions: options => options.ChatOptions = new() { Tools = tools },
             ChatReducerFactory: (_, _, _) => Task.FromResult<IChatReducer?>(reducer ?? new OscovaSummarizingChatReducer(model))));
+    }
+
+    private static async Task AddTodoAsync(TodoProvider todos, AIAgent agent, AgentSession session)
+    {
+        var context = await ReadContextAsync(todos, agent, session);
+        var add = context.Tools!.OfType<AIFunction>().Single(tool => tool.Name == "todos_add");
+        await add.InvokeAsync(new AIFunctionArguments { ["todos"] = new[] { new { title = "Check quote totals", description = "Confirm arithmetic" } } });
     }
 
     private static ValueTask<AIContext> ReadContextAsync(TodoProvider todos, AIAgent agent, AgentSession session)

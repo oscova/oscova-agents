@@ -52,8 +52,12 @@ public sealed class SpeechRecognitionRouter(ISpeechProviderCatalog speechProvide
         CancellationToken ct = default)
     {
         var provider = ResolveProvider(config, requireLocalEndpoint);
-        if (requireLocalEndpoint && EgressClassifier.ClassifySpeech(modelDownloadUrl, null) == EgressClass.Cloud)
-            throw new InvalidOperationException("Offline mode is on: this speech model download uses a non-local endpoint and is blocked.");
+        // An omitted URL lets the provider choose a download source whose locality is unknown here.
+        if (requireLocalEndpoint && (string.IsNullOrWhiteSpace(modelDownloadUrl) ||
+            EgressClassifier.ClassifySpeech(modelDownloadUrl, null) == EgressClass.Cloud))
+        {
+            throw new InvalidOperationException("Offline mode is on: speech model downloads require an explicit local URL.");
+        }
 
         await provider.StartDownloadAsync(config, modelDownloadUrl, ct).ConfigureAwait(false);
     }

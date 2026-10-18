@@ -124,6 +124,12 @@ dotnet pack src/Oscova.Agents -c Release -o artifacts/nuget
 dotnet build Oscova.Agents.sln -c Release --source artifacts/nuget --source https://api.nuget.org/v3/index.json
 ```
 
+## Report a bug or request a feature
+
+Open a [new issue](https://github.com/oscova/oscova-agents/issues/new/choose) and choose **Bug report** or **Feature request**. Each form asks for what we need, such as your Oscova version (`oscova version`), operating system and the steps to reproduce. Bugs and ideas for the closed-source application, CLI and Avatar Engine are welcome here too.
+
+Pull requests are limited to maintainers. If you would like to contribute a change, open an issue to discuss it first.
+
 ## Security
 
 Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).

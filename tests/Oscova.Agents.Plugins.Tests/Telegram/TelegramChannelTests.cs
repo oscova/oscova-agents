@@ -1,3 +1,6 @@
+using System.Net;
+using System.Text;
+using Oscova.Agents.Plugins.Tests.TestSupport;
 using System.Reflection;
 using NuGet.Packaging;
 using Oscova.Agents.Channels;
@@ -15,6 +18,40 @@ namespace Oscova.Agents.Plugins.Tests.Telegram;
 /// <summary>Checks Telegram declarations, protocol translation, and package boundaries.</summary>
 public sealed class TelegramChannelTests
 {
+    [Fact]
+    public async Task Reply_TransportFailureDoesNotExposeBotToken()
+    {
+        const string token = "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi";
+        var received = new TaskCompletionSource<ChannelMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var updates = 0;
+        using var handler = new StubHttpMessageHandler(async (request, ct) =>
+        {
+            var method = request.RequestUri!.Segments[^1];
+            if (method == "sendMessage")
+            {
+                throw new HttpRequestException($"Request failed: {request.RequestUri}");
+            }
+            if (method == "getUpdates" && Interlocked.Increment(ref updates) > 1)
+            {
+                await Task.Delay(Timeout.Infinite, ct);
+            }
+            var json = method == "getMe"
+                ? """{"ok":true,"result":{"id":123456789,"is_bot":true,"first_name":"Fixture","username":"fixture_bot"}}"""
+                : """{"ok":true,"result":[{"update_id":1,"message":{"message_id":1,"date":1,"chat":{"id":42,"type":"private"},"from":{"id":42,"is_bot":false,"first_name":"Sender"},"text":"hello"}}]}""";
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+        });
+        await using var connection = new TelegramChannelConnection(
+            PluginTestContext.Create(new MissingCredentials(token), Path.GetTempPath(), Path.GetTempPath()),
+            PluginTestContext.Channel((message, _) => { received.TrySetResult(message); return Task.CompletedTask; },
+                transport: new HttpClient(handler)), new TelegramSettings { AuthorizedUserId = "42" });
+        await connection.StartAsync(CancellationToken.None);
+        var message = await received.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        var error = await Record.ExceptionAsync(() => message.ReplyAsync("reply", CancellationToken.None));
+
+        Assert.NotNull(error);
+        Assert.DoesNotContain(token, error.ToString(), StringComparison.Ordinal);
+    }
     [Fact]
     public async Task SuccessfulUpdateAfterPollingError_ReportsConnected()
     {
@@ -146,7 +183,8 @@ public sealed class TelegramChannelTests
             settings: PluginTestContext.Settings(new TelegramSettings { AuthorizedUserId = "42" }));
         var snapshot = await contribution.Channel.ReadConfigurationAsync(services, true);
         await using var connection = snapshot.CreateConnection(PluginTestContext.Channel());
-        await Assert.ThrowsAsync<InvalidOperationException>(() => connection.StartAsync(CancellationToken.None));
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => connection.StartAsync(CancellationToken.None));
+        Assert.Contains("in Credentials", error.Message, StringComparison.Ordinal);
     }
 
     /// <summary>Checks the package includes its manifest and vendor dependency without private assemblies.</summary>
@@ -174,9 +212,9 @@ public sealed class TelegramChannelTests
         PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath()),
         PluginTestContext.Channel((message, _) => { receive(message); return Task.CompletedTask; }, _ => Task.CompletedTask), new TelegramSettings { AuthorizedUserId = "42" });
 
-    private sealed class MissingCredentials : IToolCredentialResolver
+    private sealed class MissingCredentials(string? token = null) : IToolCredentialResolver
     {
-        public Task<string?> ResolveAsync(string key, CancellationToken ct = default) => Task.FromResult<string?>(null);
+        public Task<string?> ResolveAsync(string key, CancellationToken ct = default) => Task.FromResult(token);
         public Task<string?> ResolveAsync(string key, string field, CancellationToken ct = default) => ResolveAsync(key, ct);
     }
 

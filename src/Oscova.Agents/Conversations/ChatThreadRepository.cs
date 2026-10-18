@@ -455,7 +455,7 @@ public sealed class ChatThreadRepository(
                     lastReflectedMessageCount.Value, lastReflectedMessageOffset ?? 0);
             }
 
-            row.UpdatedAt = DateTimeOffset.UtcNow;
+            // Background progress keeps UpdatedAt so the thread list stays ordered by conversation activity.
             await WriteIndexAsync(userId, rows, cancellationToken).ConfigureAwait(false);
         }, ct).ConfigureAwait(false);
     }
@@ -1182,6 +1182,7 @@ public sealed class ChatThreadRepository(
             AgentName = message.AgentName,
             RecipientAgentId = message.RecipientAgentId,
             IsInteractionResponse = message.IsInteractionResponse,
+            HistorySummarized = message.HistorySummarized,
             Text = await redactionService.RedactTextAsync(message.Text, userId, ct).ConfigureAwait(false),
             Segments = await RedactSegmentsAsync(userId, message.Segments, ct).ConfigureAwait(false),
             Elicitation = message.Elicitation,

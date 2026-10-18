@@ -70,6 +70,27 @@ public sealed class ToolOutputTests
         Assert.Equal(text, store.Saved);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void LimitCommandOutput_ReportsWhenSavedCaptureIsBounded(bool alreadyTruncated)
+    {
+        var store = new RecordingToolOutputStore();
+        string text = new('界', 500_000);
+
+        string result = ToolOutput.LimitCommandOutput(store, "stdout", text, alreadyTruncated);
+
+        Assert.True(Encoding.UTF8.GetByteCount(store.Saved!) <= BoundedOutputBuffer.DefaultCapacityBytes);
+        Assert.Equal(text[..store.Saved!.Length], store.Saved);
+        Assert.Contains($"First {store.Saved.Length} characters saved", result);
+        Assert.DoesNotContain("Full output saved", result);
+        Assert.DoesNotContain("Captured output saved", result);
+        if (alreadyTruncated)
+        {
+            Assert.Contains("shell may have dropped", result);
+        }
+    }
+
     [Fact]
     public void LimitText_OmitsPathWhenStoreReturnsNull()
     {

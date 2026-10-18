@@ -77,4 +77,25 @@ public sealed class ToolApprovalReview
 
     /// <summary>Gets or sets the requested run mode.</summary>
     public string? RunMode { get; set; }
+
+    /// <summary>Gets or sets the registry server name being installed.</summary>
+    public string? ServerName { get; set; }
+
+    /// <summary>Gets or sets the publisher of the installed item.</summary>
+    public string? Publisher { get; set; }
+
+    /// <summary>Gets or sets the installed item version.</summary>
+    public string? Version { get; set; }
+
+    /// <summary>Gets or sets the source repository URL of the installed item.</summary>
+    public string? SourceRepository { get; set; }
+
+    /// <summary>Gets or sets the connection transport of the installed server.</summary>
+    public string? Transport { get; set; }
+
+    /// <summary>Gets or sets the command line or endpoint the installed server runs.</summary>
+    public string? Command { get; set; }
+
+    /// <summary>Gets or sets the declared network scope of the installed server.</summary>
+    public string? NetworkScope { get; set; }
 }

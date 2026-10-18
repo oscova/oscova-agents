@@ -1,11 +1,13 @@
 using Oscova.Agents.Plugins.Tests.TestSupport;
 using Microsoft.Extensions.AI;
 using System.Text;
+using System.IO.Compression;
 using System.Net;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
 using NuGet.Packaging;
+using Oscova.Agents.Collections;
 using Oscova.Agents.Credentials;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Plugins.GoogleWorkspace;
@@ -18,6 +20,42 @@ namespace Oscova.Agents.Plugins.Tests.GoogleWorkspace;
 /// <summary>Proves Google registration, disconnected failures and package ownership.</summary>
 public sealed class GoogleWorkspaceTests
 {
+    /// <summary>Every Google operation releases its per-call transport on success and provider failure.</summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public async Task Reads_DisposeOwnedTransport(int index)
+    {
+        foreach (var status in new[] { HttpStatusCode.OK, HttpStatusCode.BadRequest })
+        {
+            using var handler = new StubHttpMessageHandler(_ => new HttpResponseMessage(status)
+            {
+                Content = new StringContent(status == HttpStatusCode.OK
+                    ? "{\"items\":[{\"id\":\"item-1\"}]}"
+                    : "{\"error\":{\"code\":400,\"message\":\"invalid request\"}}", Encoding.UTF8, "application/json")
+            });
+            var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+                (_, _) => Task.FromResult<string?>("access-token"), () => handler);
+            var (target, method, arguments, _) = CreateRead(index, context);
+            var function = AIFunctionFactory.Create(target.GetType().GetMethod(method)!, target);
+            if (status == HttpStatusCode.OK)
+            {
+                await function.InvokeAsync(arguments);
+            }
+            else
+            {
+                await Assert.ThrowsAsync<ToolFailureException>(() => function.InvokeAsync(arguments).AsTask());
+            }
+
+            Assert.True(handler.IsDisposed);
+        }
+    }
+
     /// <summary>Loads the real assembly and retains its provider and tool declarations.</summary>
     [Fact]
     public void Loader_PreservesAccountMetadataAndSharedFrameworkIdentity()
@@ -44,9 +82,55 @@ public sealed class GoogleWorkspaceTests
         Assert.Equal(3, plugin.Toolsets.Count);
         var tools = plugin.Toolsets.SelectMany(toolset => toolset.ToolsetType.GetMethods())
             .Where(method => method.GetCustomAttribute<DisplayNameAttribute>() is not null).ToArray();
-        Assert.Equal(7, tools.Length);
+        Assert.Equal(8, tools.Length);
         Assert.All(tools, method => Assert.NotNull(method.GetCustomAttribute<ToolNetworkScopeAttribute>()));
-        Assert.DoesNotContain(tools, method => method.Name.Contains("Send", StringComparison.Ordinal));
+        var collection = new AgentToolCollection();
+        collection.Add(new GmailToolset(PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath())), plugin.Manifest.Id);
+        Assert.Equal(ToolApprovalMode.RequireApproval, collection.GetDefaultApprovalMode(
+            Assert.Single(collection, tool => tool.Name.EndsWith("__send_email", StringComparison.Ordinal)).Name));
+    }
+
+    /// <summary>Sends one encoded Gmail message and rejects recipients that would add headers.</summary>
+    [Fact]
+    public async Task SendEmail_SendsEncodedMessageAndRejectsHeaderInjection()
+    {
+        string? raw = null;
+        var requests = 0;
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"),
+            () => new StubHttpMessageHandler(async (request, ct) =>
+            {
+                requests++;
+                Assert.Equal(HttpMethod.Post, request.Method);
+                Assert.EndsWith("/users/me/messages/send", request.RequestUri!.AbsolutePath, StringComparison.Ordinal);
+                // The Google client gzips request bodies.
+                await using var gzip = new GZipStream(await request.Content!.ReadAsStreamAsync(ct), CompressionMode.Decompress);
+                using var json = await JsonDocument.ParseAsync(gzip, cancellationToken: ct);
+                raw = json.RootElement.GetProperty("raw").GetString();
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"sent-1\"}", Encoding.UTF8, "application/json") };
+            }));
+        var gmail = new GmailToolset(context);
+
+        const string Subject = "Café plans for the whole team offsite next week ✓ with lunch and travel details";
+        var result = await gmail.SendEmailAsync("a@example.test, b@example.test", Subject + "\r\nBcc: x@example.test", "Hello ✓", cc: "c@example.test");
+
+        Assert.Equal($"Email sent.\nTo: a@example.test, b@example.test\nSubject: {Subject} Bcc: x@example.test\nCc: c@example.test", result.ReplaceLineEndings("\n"));
+        var message = Encoding.UTF8.GetString(System.Buffers.Text.Base64Url.DecodeFromChars(raw));
+        var (headers, body) = (message[..message.IndexOf("\r\n\r\n", StringComparison.Ordinal)], message[(message.IndexOf("\r\n\r\n", StringComparison.Ordinal) + 4)..]);
+        // Long subjects fold into encoded words of at most 75 characters each.
+        var words = System.Text.RegularExpressions.Regex.Matches(headers, @"=\?UTF-8\?B\?([^?]*)\?=").Select(match => match.Value).ToList();
+        Assert.True(words.Count > 1);
+        Assert.All(words, word => Assert.True(word.Length <= 75, word));
+        Assert.Equal(Subject + " Bcc: x@example.test", string.Concat(words.Select(word => Encoding.UTF8.GetString(Convert.FromBase64String(word[10..^2])))));
+        Assert.Contains("To: a@example.test, b@example.test\r\n", headers, StringComparison.Ordinal);
+        Assert.Contains("Cc: c@example.test\r\n", headers, StringComparison.Ordinal);
+        Assert.DoesNotContain("\r\nBcc:", headers, StringComparison.Ordinal);
+        Assert.Contains("Content-Type: text/plain; charset=UTF-8", headers, StringComparison.Ordinal);
+        Assert.Equal("Hello ✓", Encoding.UTF8.GetString(Convert.FromBase64String(body)));
+        var failure = await Assert.ThrowsAsync<ToolFailureException>(() => gmail.SendEmailAsync("a@example.test\r\nBcc: x@example.test", "Subject", "Body"));
+        Assert.Contains("a@example.test\r\nBcc: x@example.test", failure.Message, StringComparison.Ordinal);
+        await Assert.ThrowsAsync<ToolFailureException>(() => gmail.SendEmailAsync(", ,", "Subject", "Body", cc: "c@example.test"));
+        Assert.Equal(1, requests);
     }
 
     /// <summary>Preserves actionable failures and propagates cancellation without remote requests.</summary>

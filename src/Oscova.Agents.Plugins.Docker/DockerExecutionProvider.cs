@@ -52,7 +52,7 @@ public sealed class DockerExecutionProvider : IExecutionEnvironmentProvider, ICo
         await _builder.EnsureDockerReadyAsync(ct).ConfigureAwait(false);
         if (request.Offline) { await _builder.EnsureOfflineImageAsync(ct).ConfigureAwait(false); }
         else { await _builder.EnsureImageAsync(ct).ConfigureAwait(false); }
-        var args = BuildSessionArguments(request.SkillsDirectory, request.Directories, request.WorkingDirectory, _logger);
+        var args = BuildSessionArguments(request.SkillsDirectory, request.Directories, _logger);
         var primary = PathHelper.ResolveWorkingDirectoryAgentPath(request.Directories);
         var executor = new DockerShellExecutor(new DockerShellExecutorOptions
         {
@@ -75,14 +75,12 @@ public sealed class DockerExecutionProvider : IExecutionEnvironmentProvider, ICo
         return new("docker", args, request.Environment);
     }
     private static IReadOnlyList<string> BuildSessionArguments(string? skillsDirectory, IReadOnlyList<AllowedDirectory> directories,
-        string workingDirectory, ILogger? logger)
+        ILogger? logger)
     {
         var args = new List<string>();
         if (Directory.Exists(skillsDirectory)) { args.Add("-v"); args.Add($"{skillsDirectory}:/skills:ro"); }
         var primary = PathHelper.ResolveWorkingDirectoryAgentPath(directories);
-        SandboxMountArgs.AppendDirectoryMounts(args, directories.Where(directory =>
-            !(PathHelper.ArePathsEqual(directory.Value, workingDirectory) &&
-              PathHelper.ResolveToAgentPath(directory.Value, [directory]) == primary)), logger);
+        SandboxMountArgs.AppendDirectoryMounts(args, directories, logger, primary);
         return args;
     }
     private static IReadOnlyList<string> BuildContainerArguments(ContainerProcessRequest request, ILogger logger)

@@ -54,7 +54,7 @@ public static class AIFunctionExtensions
                     : string.Empty;
 
                 var type = paramInfo.TryGetProperty("type", out var paramType)
-                    ? paramType.GetString()
+                    ? paramType.ToString()
                     : "Unknown type";
 
                 var isRequired = jsonSchema.TryGetProperty("required", out var required) &&

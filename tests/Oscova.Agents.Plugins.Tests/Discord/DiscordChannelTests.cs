@@ -67,6 +67,27 @@ public sealed class DiscordChannelTests
     }
 
     [Fact]
+    public async Task GatewayResume_RestoresConnectedStatus()
+    {
+        var statuses = new List<ChannelConnectionStatus>();
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath());
+        await using var connection = new DiscordChannelConnection(context, PluginTestContext.Channel(status: status =>
+        {
+            statuses.Add(status);
+            return Task.CompletedTask;
+        }), new DiscordSettings { AuthorizedUserId = "123" });
+        var client = (DiscordSocketClient)typeof(DiscordChannelConnection)
+            .GetField("_client", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(connection)!;
+
+        await RaiseClientEventAsync<Func<Exception, Task>>(client, "_disconnectedEvent", handler => handler(new TimeoutException()));
+        Assert.Equal(ChannelConnectionState.Error, statuses[^1].State);
+        // A gateway RESUMED dispatch raises only Connected, never Ready.
+        await RaiseClientEventAsync<Func<Task>>(client, "_connectedEvent", handler => handler());
+
+        Assert.Equal(ChannelConnectionState.Connected, statuses[^1].State);
+    }
+
+    [Fact]
     public async Task LoadedPlugin_DeclaresChannelAndCredentials_AndFailsWithoutToken()
     {
         using var root = TestPluginRoot.Create();
@@ -83,7 +104,8 @@ public sealed class DiscordChannelTests
             settings: PluginTestContext.Settings(new DiscordSettings { AuthorizedUserId = "123" }));
         var snapshot = await contribution.Channel.ReadConfigurationAsync(services, true);
         await using var connection = snapshot.CreateConnection(PluginTestContext.Channel());
-        await Assert.ThrowsAsync<InvalidOperationException>(() => connection.StartAsync(CancellationToken.None));
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => connection.StartAsync(CancellationToken.None));
+        Assert.Contains("in Credentials", error.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -109,6 +131,14 @@ public sealed class DiscordChannelTests
 
     private static void SetField(Type type, object instance, string name, object value) =>
         type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(instance, value);
+
+    // The SDK raises gateway events internally. Invoke the adapter's real subscriptions on the client.
+    private static async Task RaiseClientEventAsync<THandler>(DiscordSocketClient client, string field, Func<THandler, Task> raise)
+    {
+        var asyncEvent = typeof(DiscordSocketClient).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(client)!;
+        var handlers = (IReadOnlyList<THandler>)asyncEvent.GetType().GetProperty("Subscriptions")!.GetValue(asyncEvent)!;
+        foreach (var handler in handlers) { await raise(handler); }
+    }
 
     private sealed class MissingCredentials : IToolCredentialResolver
     {

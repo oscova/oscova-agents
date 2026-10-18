@@ -30,6 +30,9 @@ public class ChatDisplayMessage
     /// <summary>Gets or sets whether the message continues an active interaction.</summary>
     public bool IsInteractionResponse { get; set; }
 
+    /// <summary>Gets or sets whether earlier history was automatically summarized while producing this reply.</summary>
+    public bool HistorySummarized { get; set; }
+
     /// <summary>Gets or sets direct message text.</summary>
     public string Text { get; set; } = string.Empty;
 

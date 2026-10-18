@@ -29,6 +29,8 @@ public static class FileUtil
     /// </summary>
     public static async Task WriteAllTextAtomicAsync(string path, string content, CancellationToken cancellationToken = default)
     {
+        // Resolve bare filenames before creating their parent directory.
+        path = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         string tempPath = CreateSiblingTempPath(path);
         try
@@ -52,6 +54,7 @@ public static class FileUtil
     /// <summary>Writes a stream to <paramref name="path"/> atomically by staging beside the target before replacing it.</summary>
     public static async Task WriteStreamAtomicAsync(string path, Stream content, CancellationToken cancellationToken = default)
     {
+        path = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         string tempPath = CreateSiblingTempPath(path);
         try
@@ -76,6 +79,7 @@ public static class FileUtil
     /// </summary>
     public static void WriteAllTextAtomic(string path, string content)
     {
+        path = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         string tempPath = CreateSiblingTempPath(path);
         try
@@ -101,6 +105,7 @@ public static class FileUtil
     /// </summary>
     public static async Task AppendLineSharedAsync(string path, string line, CancellationToken cancellationToken = default)
     {
+        path = Path.GetFullPath(path);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         byte[] bytes = Encoding.UTF8.GetBytes(line + Environment.NewLine);
         var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);

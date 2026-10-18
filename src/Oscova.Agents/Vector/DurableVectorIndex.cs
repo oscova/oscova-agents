@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -631,16 +631,16 @@ public sealed class DurableVectorIndex : IDisposable
                 BuildCollectionDefinition(space.VectorDimensions)).ConfigureAwait(false);
         var options = new FilteredRecordRetrievalOptions<DurableVectorRecord>
         {
-            Skip = skip,
             OrderBy = orderBy => orderBy
                 .Descending(static record => record.Timestamp)
                 .Descending(static record => record.ChunkIndex)
         };
-        List<DurableVectorRecord> records = await collection
-            .GetAsync(filter, take, options, cancellationToken)
+        // Unpublished rows do not consume a visible page, and streaming stops after that page is filled.
+        var visibleRecords = collection.GetAsync(filter, int.MaxValue, options, cancellationToken)
+            .Where(record => IsVisible(record, load.Manifest));
+        return await visibleRecords.Skip(skip).Take(take)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
-        return [.. records.Where(record => IsVisible(record, load.Manifest))];
     }
 
     private async Task<int> DeleteRecordsAsync(
@@ -706,8 +706,9 @@ public sealed class DurableVectorIndex : IDisposable
         int endPosition,
         IReadOnlyList<DurableVectorChunk> chunks)
     {
+        // Encode each identifier separately so embedded separators cannot collide across sources.
         string keyPrefix = Convert.ToHexString(SHA256.HashData(
-            Encoding.UTF8.GetBytes($"{sourceId}\n{generationId}")));
+            JsonSerializer.SerializeToUtf8Bytes(new[] { sourceId, generationId })));
         var records = new List<DurableVectorRecord>(chunks.Count);
         foreach (DurableVectorChunk chunk in chunks)
         {

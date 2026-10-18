@@ -12,6 +12,7 @@ internal static class GoogleWorkspaceClientFactory
         return string.IsNullOrWhiteSpace(token) ? null : new BaseClientService.Initializer
         {
             HttpClientInitializer = GoogleCredential.FromAccessToken(token),
+            // The invoking tool owns both the service and this factory's non-owned handler chain.
             HttpClientFactory = new Google.Apis.Http.HttpClientFromMessageHandlerFactory(_ =>
                 new Google.Apis.Http.HttpClientFromMessageHandlerFactory.ConfiguredHttpMessageHandler(
                     context.Services.CreateHttpMessageHandler(), performsAutomaticDecompression: false, handlesRedirect: false)),

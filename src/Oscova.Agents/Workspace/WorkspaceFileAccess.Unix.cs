@@ -57,22 +57,22 @@ public sealed partial class WorkspaceFileAccess
         }
     }
 
-    private static void WriteUnix(ResolvedWorkspacePath path, Action<Stream> write, bool append)
+    private static void WriteUnix(ResolvedWorkspacePath path, Action<Stream> write, bool append, bool createNew)
     {
-        using UnixOpenedParent parent = OpenParentUnix(path, createParents: true);
-        if (append)
+        using UnixOpenedParent parent = OpenParentUnix(path, createParents: !createNew);
+        if (append || createNew)
         {
             int descriptor = OpenAt(
                 parent.DirectoryDescriptor,
                 parent.TargetName,
-                UnixWriteOnly | UnixCreate | UnixAppend | UnixNoFollow | UnixCloseOnExec,
+                UnixWriteOnly | UnixCreate | (createNew ? UnixExclusive : UnixAppend) | UnixNoFollow | UnixCloseOnExec,
                 DefaultCreateMode);
             if (descriptor < 0) throw CreateUnixException("Open", path.FullPath, Marshal.GetLastPInvokeError());
 
             using var handle = new SafeFileHandle((IntPtr)descriptor, ownsHandle: true);
             using var stream = new FileStream(handle, FileAccess.Write);
             // Positioned writes do not honor O_APPEND on macOS.
-            stream.Seek(0, SeekOrigin.End);
+            if (append) { stream.Seek(0, SeekOrigin.End); }
             write(stream);
             stream.Flush();
             return;

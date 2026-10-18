@@ -2,13 +2,16 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Tasks;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace Oscova.Agents.Tests.Framework.Tasks;
 
 public sealed class AgentTaskRunObserverTests
 {
-    [Fact]
-    public async Task OnRequest_CapturesCurrentUserMessageAndFirstSystemInstruction()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task OnRequest_CapturesCurrentUserMessageAndFirstSystemInstruction(bool restoredContext)
     {
         var changeCount = 0;
         var run = new AgentTaskRun
@@ -20,8 +23,14 @@ public sealed class AgentTaskRunObserverTests
         var history = new ChatMessage(ChatRole.User, "Earlier input")
             .WithAgentRequestMessageSource(AgentRequestMessageSourceType.ChatHistory);
         var current = new ChatMessage(ChatRole.User, "Current input");
+        var context = new ChatMessage(ChatRole.User, "Generated context")
+            .WithAgentRequestMessageSource(AgentRequestMessageSourceType.AIContextProvider);
+        if (restoredContext)
+        {
+            context = JsonSerializer.Deserialize<ChatMessage>(JsonSerializer.Serialize(context))!;
+        }
 
-        await observer.OnRequestAsync([history, current], new ChatOptions { Instructions = "First instruction" });
+        await observer.OnRequestAsync([history, context, current], new ChatOptions { Instructions = "First instruction" });
         await observer.OnRequestAsync(
             [new ChatMessage(ChatRole.User, "Later input")],
             new ChatOptions { Instructions = "Later instruction" });

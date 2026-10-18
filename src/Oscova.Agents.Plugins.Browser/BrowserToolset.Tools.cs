@@ -96,13 +96,18 @@ public sealed partial class BrowserToolset
         await ResolveSessionAsync(cancellationToken).ConfigureAwait(false);
         if (paths.Length is < 1 or > 8) { throw new ToolFailureException("paths must contain 1 to 8 files."); }
         List<BrowserUpload> uploads = [];
+        var files = new WorkspaceFileAccess(context.GetAllowedDirectories);
         long total = 0;
         foreach (var path in paths)
         {
-            var file = PathHelper.ResolveAuthorizedHostPath(path, context.GetAllowedDirectories(), WorkspacePathAccess.Read);
-            total += new FileInfo(file).Length;
+            // Authorization, sizing and reads share one held file handle.
+            await using var input = files.OpenRead(path);
+            var length = input.Length;
+            total += length;
             if (total > 32 * 1024 * 1024) { throw new ToolFailureException("Combined upload size exceeds 32 MiB."); }
-            uploads.Add(new(Path.GetFileName(file), "application/octet-stream", await File.ReadAllBytesAsync(file, cancellationToken).ConfigureAwait(false)));
+            var data = new byte[checked((int)length)];
+            await input.ReadExactlyAsync(data, cancellationToken).ConfigureAwait(false);
+            uploads.Add(new(Path.GetFileName(path), "application/octet-stream", data));
         }
         return await RunToolAsync(new("upload", pageId, Reference: reference, Files: uploads), cancellationToken).ConfigureAwait(false);
     }
@@ -116,7 +121,7 @@ public sealed partial class BrowserToolset
         if (downloadId is null) { return await RunToolAsync(new("downloads", pageId), cancellationToken).ConfigureAwait(false); }
         var session = await ResolveSessionAsync(cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(destination)) { throw new ToolFailureException("destination is required when saving a download."); }
-        var path = PathHelper.ResolveAuthorizedHostPath(destination, context.GetAllowedDirectories(), WorkspacePathAccess.Write);
+        _ = PathHelper.ResolveAuthorizedHostPath(destination, context.GetAllowedDirectories(), WorkspacePathAccess.Write);
         await using var input = await OpenDownloadAsync(session.Id, pageId, downloadId, cancellationToken).ConfigureAwait(false);
         using var data = new MemoryStream();
         var buffer = new byte[81920];
@@ -126,9 +131,9 @@ public sealed partial class BrowserToolset
             if (data.Length + read > 32 * 1024 * 1024) { throw new ToolFailureException("Download exceeds 32 MiB."); }
             data.Write(buffer, 0, read);
         }
-        await using var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
-        data.Position = 0;
-        await data.CopyToAsync(output, cancellationToken).ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        // Revalidate the original agent path and create through a held parent without replacing existing files.
+        new WorkspaceFileAccess(context.GetAllowedDirectories).WriteNew(destination, data.WriteTo);
         return JsonSerializer.Serialize(new { path = destination, bytes = data.Length });
     }
 

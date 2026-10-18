@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Oscova.Agents.Conversations;
 using Oscova.Agents.Middleware;
 
 namespace Oscova.Agents.Tasks;
@@ -31,7 +32,7 @@ public sealed class AgentTaskRunObserver(AgentTaskRun run) : IAgentRunObserver
 
             var results = message.Contents.OfType<FunctionResultContent>().ToList();
             if (!_capturedInitialUserMessage &&
-                message.Role == ChatRole.User &&
+                message.IsSubmittedRequest() &&
                 results.Count == 0)
             {
                 run.AddLiveMessage(message);

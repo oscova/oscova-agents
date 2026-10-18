@@ -6,7 +6,7 @@ namespace Oscova.Agents.Plugins.MicrosoftGraph;
 /// <summary>Creates Graph clients that resolve a current Microsoft token for each request.</summary>
 internal static class MicrosoftGraphClientFactory
 {
-    internal static async Task<GraphServiceClient?> CreateAsync(AgentPluginContext context, CancellationToken ct = default)
+    internal static async Task<GraphServiceClient?> CreateAsync(AgentPluginContext context, HttpClient transport, CancellationToken ct = default)
     {
         // Probe first so disconnected accounts fail before the SDK builds a request.
         var token = await context.ResolveAccessTokenAsync(MicrosoftGraphProvider.Id, ct).ConfigureAwait(false);
@@ -16,7 +16,8 @@ internal static class MicrosoftGraphClientFactory
         }
 
         var authProvider = new BaseBearerTokenAuthenticationProvider(new MicrosoftGraphAccessTokenProvider(context));
-        return new GraphServiceClient(context.CreateHttpClient(), authProvider);
+        // The SDK leaves supplied transports owned by the operation that created them.
+        return new GraphServiceClient(transport, authProvider);
     }
 
     /// <summary>Supplies current bearer tokens for Graph requests through the scoped host callback.</summary>

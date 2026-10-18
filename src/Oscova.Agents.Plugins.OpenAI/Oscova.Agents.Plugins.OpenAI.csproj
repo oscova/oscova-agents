@@ -34,6 +34,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Compile Include="../Shared/SpeechSettings/*.cs" Link="Settings/%(Filename)%(Extension)" />
+    <Compile Include="../Shared/Speech/PcmWaveWriter.cs" Link="Speech/PcmWaveWriter.cs" />
     <Content Include="../Shared/SpeechSettings/*.razor" Link="Settings/%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

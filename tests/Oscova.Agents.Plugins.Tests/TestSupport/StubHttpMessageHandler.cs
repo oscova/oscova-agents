@@ -7,6 +7,14 @@ internal sealed class StubHttpMessageHandler(
     public StubHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responder)
         : this((request, _) => Task.FromResult(responder(request))) { }
 
+    public bool IsDisposed { get; private set; }
+
+    protected override void Dispose(bool disposing)
+    {
+        IsDisposed = true;
+        base.Dispose(disposing);
+    }
+
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken) => responder(request, cancellationToken);

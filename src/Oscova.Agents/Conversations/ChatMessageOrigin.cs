@@ -18,9 +18,11 @@ public static class ChatMessageOrigin
         // Session serialization restores object-valued metadata as JSON rather than typed attribution.
         if (message.AdditionalProperties?.TryGetValue(AgentRequestMessageSourceAttribution.AdditionalPropertiesKey, out var origin) == true &&
             origin is JsonElement { ValueKind: JsonValueKind.Object } json &&
-            json.TryGetProperty(JsonNamingPolicy.CamelCase.ConvertName(nameof(AgentRequestMessageSourceAttribution.SourceType)), out var source) &&
+            (json.TryGetProperty(nameof(AgentRequestMessageSourceAttribution.SourceType), out var source) ||
+             json.TryGetProperty(JsonNamingPolicy.CamelCase.ConvertName(nameof(AgentRequestMessageSourceAttribution.SourceType)), out source)) &&
             source.ValueKind == JsonValueKind.Object &&
-            source.TryGetProperty(JsonNamingPolicy.CamelCase.ConvertName(nameof(AgentRequestMessageSourceType.Value)), out var value) &&
+            (source.TryGetProperty(nameof(AgentRequestMessageSourceType.Value), out var value) ||
+             source.TryGetProperty(JsonNamingPolicy.CamelCase.ConvertName(nameof(AgentRequestMessageSourceType.Value)), out value)) &&
             value.ValueKind == JsonValueKind.String)
         {
             return !string.Equals(value.GetString(), AgentRequestMessageSourceType.AIContextProvider.Value, StringComparison.Ordinal);

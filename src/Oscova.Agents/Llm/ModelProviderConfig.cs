@@ -119,7 +119,7 @@ public class ModelProviderConfig
         return Id == other.Id
                && string.Equals(Type, other.Type, StringComparison.Ordinal)
                && string.Equals(Name, other.Name, StringComparison.Ordinal)
-               && string.Equals(BaseUrl, other.BaseUrl, StringComparison.OrdinalIgnoreCase)
+               && string.Equals(BaseUrl, other.BaseUrl, StringComparison.Ordinal)
                && IsLocalEndpoint == other.IsLocalEndpoint
                && string.Equals(ModelId, other.ModelId, StringComparison.Ordinal)
                && string.Equals(CredentialKey, other.CredentialKey, StringComparison.Ordinal)

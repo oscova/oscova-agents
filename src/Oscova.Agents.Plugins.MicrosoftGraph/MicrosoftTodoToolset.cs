@@ -47,7 +47,8 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
         {
             maxResults = Math.Clamp(maxResults, 1, 50);
 
-            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, ct).ConfigureAwait(false);
+            using var transport = _context.CreateHttpClient();
+            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, transport, ct).ConfigureAwait(false);
             if (client is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -118,7 +119,8 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
         {
             maxResults = Math.Clamp(maxResults, 1, 50);
 
-            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, ct).ConfigureAwait(false);
+            using var transport = _context.CreateHttpClient();
+            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, transport, ct).ConfigureAwait(false);
             if (client is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -211,7 +213,8 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
 
         return await MicrosoftGraphExecution.ExecuteAsync(async () =>
         {
-            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, ct).ConfigureAwait(false);
+            using var transport = _context.CreateHttpClient();
+            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, transport, ct).ConfigureAwait(false);
             if (client is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -313,7 +316,8 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
 
         return await MicrosoftGraphExecution.ExecuteAsync(async () =>
         {
-            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, ct).ConfigureAwait(false);
+            using var transport = _context.CreateHttpClient();
+            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, transport, ct).ConfigureAwait(false);
             if (client is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
@@ -393,7 +397,8 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
 
         return await MicrosoftGraphExecution.ExecuteAsync(async () =>
         {
-            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, ct).ConfigureAwait(false);
+            using var transport = _context.CreateHttpClient();
+            using var client = await MicrosoftGraphClientFactory.CreateAsync(_context, transport, ct).ConfigureAwait(false);
             if (client is null)
             {
                 throw new ToolFailureException(NotConnectedMessage);
