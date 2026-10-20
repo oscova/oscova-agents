@@ -37,4 +37,10 @@
     <Compile Include="../Shared/Speech/*.cs" Link="Speech/%(Filename)%(Extension)" />
     <Content Include="../Shared/SpeechSettings/*.razor" Link="Settings/%(Filename)%(Extension)" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
+  </ItemGroup>
 </Project>

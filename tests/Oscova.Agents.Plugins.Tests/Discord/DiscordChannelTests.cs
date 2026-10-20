@@ -126,7 +126,7 @@ public sealed class DiscordChannelTests
             dependencies.Select(dependency => dependency.Id).Order(StringComparer.Ordinal));
         var dependency = Assert.Single(dependencies, dependency => dependency.Id == "Discord.Net.WebSocket");
         Assert.Equal("Discord.Net.WebSocket", dependency.Id);
-        Assert.Equal("3.20.1", dependency.VersionRange.MinVersion!.ToNormalizedString());
+        Assert.Equal(PackageVersions.GetReferenced(typeof(DiscordSocketClient)), dependency.VersionRange.MinVersion!.ToNormalizedString());
     }
 
     private static void SetField(Type type, object instance, string name, object value) =>

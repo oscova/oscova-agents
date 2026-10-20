@@ -110,6 +110,7 @@ public sealed class TaskRunScopeResolver
             IsCompactionEnabled = scope.IsCompactionEnabled,
             IsMemoryEnabled = scope.IsMemoryEnabled,
             IsTodoEnabled = scope.IsTodoEnabled,
+            IsSubagentDelegationEnabled = scope.IsSubagentDelegationEnabled,
             IsLocalOnly = scope.IsLocalOnly,
             AgentToolIds = agentToolIds,
             AllowedSkillNames = allowedSkillNames,
@@ -139,6 +140,7 @@ public sealed class TaskRunScopeResolver
             IsMemoryEnabled = scope.IsMemoryEnabled,
             IsTodoEnabled = scope.IsTodoEnabled,
             IsLocalOnly = scope.IsLocalOnly,
+            IsSubagentDelegationEnabled = scope.IsSubagentDelegationEnabled,
             // Task scope can change runtime capabilities, but it must retain the agent's storage classification.
             IsExposedAsTool = selectedAgent.IsExposedAsTool,
             AgentToolIds = [.. scope.AgentToolIds],

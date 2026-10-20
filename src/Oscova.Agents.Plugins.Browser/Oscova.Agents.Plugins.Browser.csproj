@@ -21,4 +21,10 @@
     <None Include="oscova-plugin.json" Pack="true" PackagePath="\" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
+  </ItemGroup>
 </Project>

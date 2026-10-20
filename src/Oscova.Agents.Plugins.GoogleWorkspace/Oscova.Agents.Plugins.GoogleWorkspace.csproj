@@ -19,9 +19,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.75.0.4225" />
-    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.75.0.4206" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.76.0.4262" />
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.77.0.4295" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.77.0.4285" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.77.0.4302" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +30,12 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
     <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
   </ItemGroup>
 
 

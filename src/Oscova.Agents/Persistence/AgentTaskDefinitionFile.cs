@@ -142,6 +142,11 @@ public sealed class TaskRunScopeFile
     public bool IsTodoEnabled { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the task run may start same-agent subagents.
+    /// </summary>
+    public bool IsSubagentDelegationEnabled { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the task run is local-only.
     /// </summary>
     public bool IsLocalOnly { get; set; }

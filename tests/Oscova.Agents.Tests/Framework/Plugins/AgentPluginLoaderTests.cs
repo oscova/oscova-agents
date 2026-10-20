@@ -291,10 +291,11 @@ public sealed class AgentPluginLoaderTests
     }
 
     [Fact]
-    public void InspectDirectory_IgnoresInstallerStagingDirectories()
+    public void InspectDirectory_IgnoresInstallerDotDirectories()
     {
         using var pluginRoot = TestPluginRoot.Create();
         pluginRoot.AddTestPlugin(".staging-plugin-leftover");
+        pluginRoot.AddTestPlugin(".pending-updates");
 
         var inspections = AgentPluginLoader.InspectDirectory(pluginRoot.RootPath);
 

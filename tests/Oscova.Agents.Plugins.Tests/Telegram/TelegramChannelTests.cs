@@ -205,7 +205,7 @@ public sealed class TelegramChannelTests
             dependencies.Select(dependency => dependency.Id).Order(StringComparer.Ordinal));
         var dependency = Assert.Single(dependencies, dependency => dependency.Id == "Telegram.Bot");
         Assert.Equal("Telegram.Bot", dependency.Id);
-        Assert.Equal("22.10.3.1", dependency.VersionRange.MinVersion!.ToNormalizedString());
+        Assert.Equal(PackageVersions.GetReferenced(typeof(TelegramBotClient)), dependency.VersionRange.MinVersion!.ToNormalizedString());
     }
 
     private static TelegramChannelConnection CreateConnection(Action<ChannelMessage> receive) => new(

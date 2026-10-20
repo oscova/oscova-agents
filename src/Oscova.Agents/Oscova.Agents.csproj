@@ -24,26 +24,26 @@
 
 	<ItemGroup>
 		<PackageReference Include="Cronos" Version="0.13.0" />
-		<PackageReference Include="Microsoft.Agents.AI" Version="1.24.0" />
-		<PackageReference Include="Microsoft.Agents.AI.Tools.Shell" Version="1.24.0-preview.261006.1" />
-		<PackageReference Include="Microsoft.Bcl.Memory" Version="10.0.12" />
-		<PackageReference Include="Microsoft.Extensions.AI" Version="10.10.0" />
-		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.12" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
-		<PackageReference Include="Microsoft.Extensions.VectorData.Abstractions" Version="10.10.0" />
-		<PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="2.0.0" />
+		<PackageReference Include="Microsoft.Agents.AI" Version="1.25.0" />
+		<PackageReference Include="Microsoft.Agents.AI.Tools.Shell" Version="1.25.0-preview.261014.1" />
+		<PackageReference Include="Microsoft.Bcl.Memory" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.AI" Version="10.11.0" />
+		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+		<PackageReference Include="Microsoft.Extensions.VectorData.Abstractions" Version="10.11.0" />
+		<PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="2.0.1" />
 		<PackageReference Include="CommunityToolkit.VectorData.SqliteVec" Version="1.0.3-preview" />
 		<PackageReference Include="PdfPig" Version="0.1.16" />
-		<PackageReference Include="Scriban" Version="7.4.0" />
+		<PackageReference Include="Scriban" Version="7.5.1" />
 		<PackageReference Include="Syn.Utilities" Version="1.7.7" />
-		<PackageReference Include="TimeZoneConverter" Version="7.2.0" />
+		<PackageReference Include="TimeZoneConverter" Version="8.0.0" />
 		<PackageReference Include="YamlDotNet" Version="18.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.266" />
-	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
+	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
 	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
 	</ItemGroup>
 
