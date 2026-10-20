@@ -78,6 +78,9 @@ public class AgentDefinition
     /// </summary>
     public bool IsTodoEnabled { get; set; }
 
+    /// <summary>Gets or sets whether this agent may delegate tasks to separate instances of itself.</summary>
+    public bool IsSubagentDelegationEnabled { get; set; } = true;
+
     /// <summary>
     /// Gets or sets whether this agent may use only loopback and local-network endpoints.
     /// </summary>

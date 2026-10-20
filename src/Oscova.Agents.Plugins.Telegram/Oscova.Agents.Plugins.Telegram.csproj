@@ -19,7 +19,7 @@
   </PropertyGroup>
   <ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /></ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Telegram.Bot" Version="22.10.3.1" />
+    <PackageReference Include="Telegram.Bot" Version="22.10.3.3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
@@ -36,5 +36,10 @@
   <ItemGroup>
     <Compile Include="../Shared/ChannelSettings/*.cs" Link="Settings/%(Filename)%(Extension)" />
     <Content Include="../Shared/ChannelSettings/*.razor" Link="Settings/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
   </ItemGroup>
 </Project>

@@ -7,4 +7,6 @@ namespace Oscova.Agents.Providers;
 public sealed record AgentToolConversation(
     string AgentId,
     string? Name,
+    string Handle,
+    DelegatedWorkerStatus Status,
     IReadOnlyList<ChatMessage> Messages);

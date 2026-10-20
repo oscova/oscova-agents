@@ -24,11 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Mxc.Sdk" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Mxc.Sdk" Version="1.0.1" />
     <PackageReference Remove="Microsoft.Extensions.Logging.Abstractions" />
     <EmbeddedResource Include="Help/**/*.md" />
     <None Include="oscova-plugin.json" Pack="true" PackagePath="\" CopyToOutputDirectory="PreserveNewest" />
     <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
   </ItemGroup>
 
 </Project>

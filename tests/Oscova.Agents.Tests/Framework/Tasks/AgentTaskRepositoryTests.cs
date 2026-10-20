@@ -785,6 +785,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             IsCompactionEnabled = false,
             IsMemoryEnabled = false,
             IsTodoEnabled = true,
+            IsSubagentDelegationEnabled = true,
             IsLocalOnly = true,
             AgentToolIds = ["agent-tool-1"],
             AllowedSkillNames = ["note-review"],
@@ -815,6 +816,7 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         Assert.True(loaded.RunScope.IsToolSearchEnabled);
         Assert.False(loaded.RunScope.IsMemoryEnabled);
         Assert.True(loaded.RunScope.IsTodoEnabled);
+        Assert.True(loaded.RunScope.IsSubagentDelegationEnabled);
         Assert.True(loaded.RunScope.IsLocalOnly);
         Assert.Equal(["file__read"], loaded.RunScope.PinnedToolNames);
         Assert.Equal(["agent-tool-1"], loaded.RunScope.AgentToolIds);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -1188,6 +1188,7 @@ public sealed class ChatThreadRepository(
             Elicitation = message.Elicitation,
             ToolApproval = message.ToolApproval,
             Attachments = message.Attachments,
+            WorkspaceFiles = message.WorkspaceFiles,
             InputTokens = message.InputTokens,
             OutputTokens = message.OutputTokens,
             TotalTokens = message.TotalTokens

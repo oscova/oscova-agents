@@ -73,4 +73,11 @@
     <Compile Include="../Shared/SpeechSettings/*.cs" Link="Settings/%(Filename)%(Extension)" />
     <Content Include="../Shared/SpeechSettings/*.razor" Link="Settings/%(Filename)%(Extension)" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
+  </ItemGroup>
 </Project>

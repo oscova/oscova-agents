@@ -118,7 +118,7 @@ public sealed class ShellToolset(
     /// </summary>
     [DisplayName("start")]
     [AgentTool]
-    [Description("Launches a separate shell command and returns a job id immediately.\nUse workdir to select a granted folder.\nUse relative paths or the listed root environment variables inside the command.\nUse for dev servers, watchers, or long builds.\nRead output with shell__read_output and stop it with shell__kill.")]
+    [Description("Launches a separate shell command and returns a job id immediately.\nUse workdir to select a granted folder.\nUse relative paths or the listed root environment variables inside the command.\nUse for dev servers, watchers, or long builds.\nA job started by a subagent stops when that subagent finishes.\nRead output with shell__read_output and stop it with shell__kill.")]
     [ToolPolicy(ApprovalMode = ToolApprovalMode.RequireApproval)]
     [ToolNetworkScope(NetworkScope.Incidental)]
     public async Task<object> StartCommandAsync(

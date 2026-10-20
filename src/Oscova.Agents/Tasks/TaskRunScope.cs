@@ -48,6 +48,11 @@ public sealed class TaskRunScope
     public bool IsTodoEnabled { get; set; }
 
     /// <summary>
+    /// Gets or sets whether this task run may start subagents that are copies of the task's agent.
+    /// </summary>
+    public bool IsSubagentDelegationEnabled { get; set; }
+
+    /// <summary>
     /// Gets or sets whether this task run may use only local endpoints.
     /// </summary>
     public bool IsLocalOnly { get; set; }
@@ -92,6 +97,7 @@ public sealed class TaskRunScope
             IsCompactionEnabled = agent.IsCompactionEnabled,
             IsMemoryEnabled = agent.IsMemoryEnabled,
             IsTodoEnabled = agent.IsTodoEnabled,
+            IsSubagentDelegationEnabled = agent.IsSubagentDelegationEnabled,
             IsLocalOnly = agent.IsLocalOnly,
             AgentToolIds = [.. agent.AgentToolIds],
             AllowedSkillNames = [.. agent.AllowedSkillNames],
@@ -129,6 +135,7 @@ public sealed class TaskRunScope
             IsCompactionEnabled = IsCompactionEnabled,
             IsMemoryEnabled = IsMemoryEnabled,
             IsTodoEnabled = IsTodoEnabled,
+            IsSubagentDelegationEnabled = IsSubagentDelegationEnabled,
             IsLocalOnly = IsLocalOnly,
             AgentToolIds = [.. AgentToolIds],
             AllowedSkillNames = [.. AllowedSkillNames],

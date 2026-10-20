@@ -48,6 +48,9 @@ public class ChatDisplayMessage
     /// <summary>Gets or sets the user-supplied attachments staged for this message.</summary>
     public IReadOnlyList<ChatAttachment> Attachments { get; set; } = [];
 
+    /// <summary>Gets or sets existing files selected as context separately from the user's text.</summary>
+    public IReadOnlyList<WorkspaceFileReference> WorkspaceFiles { get; set; } = [];
+
     /// <summary>Gets or sets the reported input-token count.</summary>
     public long? InputTokens { get; set; }
 

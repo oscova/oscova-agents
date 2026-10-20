@@ -104,6 +104,7 @@ public sealed class TaskRunScopeResolverTests
         Assert.Equal(["file__read"], surface.EffectiveAgent.AllowedToolNames);
         Assert.False(surface.EffectiveAgent.IsMemoryEnabled);
         Assert.False(surface.EffectiveAgent.IsTodoEnabled);
+        Assert.False(surface.EffectiveAgent.IsSubagentDelegationEnabled);
         Assert.True(surface.EffectiveAgent.IsToolSearchEnabled);
         Assert.Empty(surface.EffectiveAgent.AllowedWorkspaces);
         var policy = Assert.Single(surface.EffectiveAgent.ToolPolicies);

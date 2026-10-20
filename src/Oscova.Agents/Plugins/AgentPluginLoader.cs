@@ -76,9 +76,13 @@ public sealed class AgentPluginLoader
         string[] manifestPaths;
         try
         {
-            manifestPaths = [.. Directory
-                .EnumerateFiles(pluginRoot, ManifestFileName, SearchOption.AllDirectories)
-                .Where(path => !Path.GetRelativePath(pluginRoot, path).StartsWith(".staging-", StringComparison.OrdinalIgnoreCase))
+            // Dot folders hold install staging, pending updates and backups, which are never loadable and are
+            // moved concurrently: an open enumeration there makes that move fail on Windows.
+            var pluginDirectories = Directory.EnumerateDirectories(pluginRoot)
+                .Where(directory => !Path.GetFileName(directory).StartsWith('.'));
+            manifestPaths = [.. Directory.EnumerateFiles(pluginRoot, ManifestFileName)
+                .Concat(pluginDirectories.SelectMany(directory =>
+                    Directory.EnumerateFiles(directory, ManifestFileName, SearchOption.AllDirectories)))
                 .Order(StringComparer.OrdinalIgnoreCase)];
         }
         catch (Exception ex)
