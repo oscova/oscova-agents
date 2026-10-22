@@ -65,9 +65,6 @@ public sealed class AgentTaskDefinitionFile
     /// <summary>Gets or sets whether a successful task run emits an automatic completion notice.</summary>
     public bool NotifyOnCompletion { get; set; }
 
-    /// <summary>Gets or sets the channel used by agent-initiated notifications and handoffs.</summary>
-    public string? NotificationChannel { get; set; }
-
     /// <summary>
     /// Gets or sets the serialized session mode.
     /// </summary>
@@ -77,6 +74,10 @@ public sealed class AgentTaskDefinitionFile
     /// Gets or sets an optional token budget for the task.
     /// </summary>
     public int? MaxTokenBudget { get; set; }
+
+    /// <summary>Gets or sets how many of the newest saved runs to keep, omitted to keep every run.</summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public int? KeepLastRuns { get; set; }
 
     /// <summary>
     /// Gets or sets the serialized tool approval run mode.

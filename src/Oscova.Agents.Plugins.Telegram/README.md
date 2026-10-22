@@ -5,7 +5,7 @@ Provides Telegram private-chat transport through the Oscova.Agents channel API. 
 - Install `Oscova.Agents.Plugins.Telegram` and enable `oscova.telegram`. Oscova installs this plugin by default.
 - Configure `telegram-bot` with the secret `botToken` field. Create the bot through [BotFather](https://t.me/BotFather).
 - Set `authorized_user_id` to a numeric Telegram user ID from 1 through 9223372036854775807, not a username. Start a conversation with the bot in Telegram first.
-- The channel accepts private messages from that sender, including text, captions, documents, and photos. It does not offer task notifications.
+- The channel accepts private messages from that sender, including text, captions, documents, and photos. Task notifications go to that sender's private chat with the bot.
 
 The host renders the declared settings fields and chooses their storage directory. In Oscova, nonsecret settings use `oscova.telegram.yaml` in the user's settings directory. Tokens stay in Credentials. Save explicitly after editing startup options. Saving restarts a running connection and leaves a stopped connection stopped. If reconnection fails, saved settings remain intact.
 

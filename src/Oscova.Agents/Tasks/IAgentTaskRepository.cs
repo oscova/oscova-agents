@@ -70,8 +70,8 @@ namespace Oscova.Agents.Tasks
             GetRunAsync(userId, taskId, runId, ct);
 
         /// <summary>
-        /// Returns the most recent run for each of the given task IDs in a single query.
-        /// Tasks that have never run are absent from the returned dictionary.
+        /// Returns the most recent run's status, times, result and error for each of the given task IDs,
+        /// without transcripts or sessions. Tasks that have never run are absent from the returned dictionary.
         /// </summary>
         Task<IReadOnlyDictionary<string, AgentTaskRun>> GetLatestRunsAsync(IEnumerable<string> taskIds, CancellationToken ct = default);
 
@@ -80,10 +80,20 @@ namespace Oscova.Agents.Tasks
         /// </summary>
         Task<IReadOnlyList<AgentTaskRun>> GetRunsAsync(string userId, string taskId, int limit = 20, CancellationToken ct = default);
 
+        /// <summary>Returns the most recent runs with their result and error, newest first, without opening transcripts or sessions.</summary>
+        Task<IReadOnlyList<AgentTaskRun>> GetRunSummariesAsync(string userId, string taskId, int limit = 20, CancellationToken ct = default) =>
+            GetRunsAsync(userId, taskId, limit, ct);
+
         /// <summary>
         /// Creates or updates the given run record.
         /// </summary>
         Task SaveRunAsync(AgentTaskRun run, CancellationToken ct = default);
+
+        /// <summary>
+        /// Deletes one run with its transcript and session. Returns <see langword="false"/> when the user owns no such run.
+        /// </summary>
+        Task<bool> DeleteRunAsync(string userId, string taskId, string runId, CancellationToken ct = default);
+
         /// <summary>Parses caller-owned task markdown before validation and saving.</summary>
         AgentTaskDefinition ParseDefinition(string ownerUserIdFromCatalog, string fileText);
     }

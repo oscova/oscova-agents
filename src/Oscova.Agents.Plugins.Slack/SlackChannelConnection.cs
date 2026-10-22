@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
@@ -17,6 +18,7 @@ internal sealed class SlackChannelConnection : IChannelConnection
     private readonly HashSet<string> _activeApps;
     private readonly Microsoft.Extensions.Logging.ILogger _logger;
     private readonly string _workspaceId;
+    private readonly string _authorizedUserId;
     private readonly SlackEventGuard _eventGuard;
     private readonly Lock _gate = new();
     private readonly CancellationTokenSource _lifetime = new();
@@ -47,10 +49,12 @@ internal sealed class SlackChannelConnection : IChannelConnection
         _activeApps = activeApps;
         _logger = services.LoggerFactory.CreateLogger<SlackChannelConnection>();
         _workspaceId = settings.WorkspaceId.Trim();
-        _eventGuard = new(_workspaceId, settings.AuthorizedUserId.Trim());
+        _authorizedUserId = settings.AuthorizedUserId.Trim();
+        _eventGuard = new(_workspaceId, _authorizedUserId);
     }
 
     /// <inheritdoc />
+    [SuppressMessage("Design", "MA0054", Justification = "Vendor exceptions can carry tokens, so only a safe message leaves the plugin.")]
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         try
@@ -155,6 +159,7 @@ internal sealed class SlackChannelConnection : IChannelConnection
         return attachments;
     }
 
+    [SuppressMessage("Design", "MA0054", Justification = "Vendor exceptions can carry tokens, so only a safe message leaves the plugin.")]
     private async Task<Stream> OpenReadAsync(Uri uri, CancellationToken ct)
     {
         if (!TryGetSafeFileUri(uri.AbsoluteUri, out var safeUri)) { throw new IOException("Slack attachment URL is not allowed."); }
@@ -266,7 +271,7 @@ internal sealed class SlackChannelConnection : IChannelConnection
 
     /// <inheritdoc />
     public Task SendNotificationAsync(string text, CancellationToken cancellationToken) =>
-        throw new NotSupportedException("Slack supports private chat only.");
+        _sender!.SendAsync(_authorizedUserId, null, text, cancellationToken);
 
     /// <inheritdoc />
     public ValueTask DisposeAsync() => new(StopAsync(CancellationToken.None));

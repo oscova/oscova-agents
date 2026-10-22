@@ -628,13 +628,21 @@ public sealed class ChatThreadRepository(
         CancellationToken ct)
     {
         var transcriptPath = GetTranscriptPath(userId, thread.Id);
-        var existingCount = CountTranscriptMessages(userId, thread.Id, transcriptPath);
+        var persistedIds = ReadTranscriptMessageIds(userId, thread.Id, transcriptPath);
+        var existingCount = persistedIds.Count;
         if (existingCount > thread.DisplayMessages.Count)
         {
             logger.LogWarning(
                 "Thread {ThreadId} for user {UserId} has fewer supplied messages than persisted transcript rows. Rewriting transcript.",
                 thread.Id,
                 userId);
+            await RewriteTranscriptAsync(userId, thread, existing, ct).ConfigureAwait(false);
+            return;
+        }
+
+        // A message inserted before saved rows shifts them, so appending by count would save a row twice.
+        if (!persistedIds.SequenceEqual(thread.DisplayMessages.Take(existingCount).Select(message => message.MessageId), StringComparer.Ordinal))
+        {
             await RewriteTranscriptAsync(userId, thread, existing, ct).ConfigureAwait(false);
             return;
         }
@@ -1065,14 +1073,14 @@ public sealed class ChatThreadRepository(
         return (messages, systemInstruction);
     }
 
-    private int CountTranscriptMessages(string userId, string threadId, string transcriptPath)
+    private List<string> ReadTranscriptMessageIds(string userId, string threadId, string transcriptPath)
     {
+        var ids = new List<string>();
         if (!File.Exists(transcriptPath))
         {
-            return 0;
+            return ids;
         }
 
-        var count = 0;
         var lines = FileUtil.ReadAllLinesShared(transcriptPath);
         for (var index = 0; index < lines.Length; index++)
         {
@@ -1084,7 +1092,7 @@ public sealed class ChatThreadRepository(
                     string.Equals(record.Kind, MessageKind, StringComparison.OrdinalIgnoreCase) &&
                     record.Message is not null)
                 {
-                    count++;
+                    ids.Add(record.Message.MessageId);
                 }
             }
             catch (JsonException ex)
@@ -1093,7 +1101,7 @@ public sealed class ChatThreadRepository(
             }
         }
 
-        return count;
+        return ids;
     }
 
     /// <summary>Keeps current and historical native state inside one encrypted session artifact.</summary>

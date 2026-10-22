@@ -27,11 +27,6 @@ public class AgentTaskContext
     public string AgentId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the channel used for task notifications or handoff.
-    /// </summary>
-    public string? NotificationChannel { get; set; }
-
-    /// <summary>
     /// Gets or sets serialized session state available to the task run.
     /// </summary>
     public JsonElement? SessionElement { get; set; }

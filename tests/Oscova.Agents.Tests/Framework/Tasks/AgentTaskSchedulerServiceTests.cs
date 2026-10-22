@@ -1003,6 +1003,7 @@ public class AgentTaskSchedulerServiceTests
             _latestRunStatus = run.Status;
             return Task.CompletedTask;
         }
+        public Task<bool> DeleteRunAsync(string userId, string taskId, string runId, CancellationToken ct = default) => throw new NotSupportedException();
         public void ValidateTask(AgentTaskDefinition task) { }
         public Task SaveTaskAsync(AgentTaskDefinition task, CancellationToken ct = default, string? creationDirectoryName = null)
         {

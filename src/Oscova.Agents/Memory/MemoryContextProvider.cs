@@ -39,6 +39,7 @@ public sealed class MemoryContextProvider(
         - Save detail first, then link its returned reference from the summary.
         - Use memory__search/get for past conversations.
         - Skip routine progress and details recoverable from project files.
+        - Make no write when nothing is worth saving; never record that nothing happened.
         - Do not infer verification from requests or assistant claims.
 
         {{ agent_memory }}

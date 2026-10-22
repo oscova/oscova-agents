@@ -6,7 +6,7 @@ Provides Slack private-chat transport through the Oscova.Agents channel API. Reg
 - Configure `slack-bot` with both required secret fields: `botToken` (Bot User OAuth Token) and `appLevelToken` (App-Level Token).
 - Set `workspace_id` and `authorized_user_id` to the Slack workspace and member IDs. These are case-sensitive IDs, not display names.
 - Enable Socket Mode, App Home messages, the `message.im` bot event, bot scopes `im:history`, `chat:write`, `files:read`, and app scope `connections:write`.
-- Only the authorized member's direct messages in the configured workspace are accepted. Replies preserve Slack threads. Task notifications are unsupported.
+- Only the authorized member's direct messages in the configured workspace are accepted. Replies preserve Slack threads. Task notifications arrive as a direct message to the authorized member.
 
 The host renders the declared fields and chooses their storage directory. In Oscova, nonsecret settings use `oscova.slack.yaml` in the user's settings directory. Tokens stay in Credentials. Save explicitly after editing startup options. Saving restarts a running connection and leaves a stopped connection stopped. A failed reconnect preserves saved values.
 

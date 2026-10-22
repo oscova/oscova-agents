@@ -138,7 +138,7 @@ public sealed class SlackChannelTests
         Assert.Equal(["slack-bot"], plugin.DeclaredCredentialKeys);
         var channel = Assert.Single(plugin.Channels);
         Assert.Single(plugin.SettingsPanels);
-        Assert.False(channel.Definition.SupportsNotifications);
+        Assert.True(channel.Definition.SupportsNotifications);
         Assert.All(Assert.Single(plugin.Credentials).Fields, field => { Assert.True(field.IsSecret); Assert.True(field.IsRequired); });
         Assert.Empty(new SlackSettings().Validate(false));
         Assert.Equal(2, new SlackSettings().Validate(true).Count);
@@ -147,7 +147,29 @@ public sealed class SlackChannelTests
         var snapshot = await channel.Channel.ReadConfigurationAsync(services, true);
         await using var connection = snapshot.CreateConnection(Context());
         await Assert.ThrowsAsync<InvalidOperationException>(() => connection.StartAsync(CancellationToken.None));
-        await Assert.ThrowsAsync<NotSupportedException>(() => connection.SendNotificationAsync("notice", CancellationToken.None));
+    }
+
+    /// <summary>Sends task notifications as an unthreaded direct message to the authorized member.</summary>
+    [Fact]
+    public async Task Notification_PostsDirectMessageToAuthorizedMember()
+    {
+        var posts = new List<JsonElement>();
+        using var api = new HttpClient(new Handler(async (request, _) =>
+        {
+            using var body = JsonDocument.Parse(await request.Content!.ReadAsStringAsync());
+            posts.Add(body.RootElement.Clone());
+            return Json(new { ok = true, channel = "D_OWNER", ts = "123.1" });
+        }));
+        var builder = new SlackServiceBuilder()
+            .UseApiToken("xoxb-test")
+            .UseHttp(sp => Default.Http(sp.GetJsonSettings(), () => api, sp.GetLogger()));
+        await using var connection = await CreateConnection();
+        Set(connection, "_sender", Activator.CreateInstance(PluginType("SlackReplySender"), builder.GetApiClient(), CancellationToken.None)!);
+        await connection.SendNotificationAsync("Task ready", CancellationToken.None);
+        var post = Assert.Single(posts);
+        Assert.Equal("U_OWNER", post.GetProperty("channel").GetString());
+        Assert.Equal("Task ready", post.GetProperty("text").GetString());
+        Assert.False(post.TryGetProperty("thread_ts", out var thread) && thread.ValueKind != JsonValueKind.Null);
     }
 
     /// <summary>Checks the package boundary and exact vendor dependency.</summary>
