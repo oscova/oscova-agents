@@ -117,12 +117,14 @@ Plugins are NuGet packages that Oscova installs, enables and loads at runtime.
 
 ## Build from source
 
-Plugins compile against the `Oscova.Agents` package at the exact version in [Versions.props](Versions.props). That version can be ahead of the one published on NuGet.org, so pack the framework locally first:
+Plugins compile against the `Oscova.Agents` package at the exact version in [Versions.props](Versions.props). Between releases `main` carries a development version such as `5.2.0-dev.1`, so pack the framework locally first:
 
 ```bash
 dotnet pack src/Oscova.Agents -c Release -o artifacts/nuget
-dotnet build Oscova.Agents.sln -c Release --source artifacts/nuget --source https://api.nuget.org/v3/index.json
+dotnet build Oscova.Agents.sln -c Release -p:RestoreAdditionalProjectSources="$(pwd)/artifacts/nuget"
 ```
+
+To build the latest release instead, check out its tag, for example `git checkout v3.4.1`.
 
 ## Report a bug or request a feature
 
