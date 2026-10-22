@@ -22,7 +22,7 @@ Choose an agent you are authorized to use. Unlock your Vault Password in Oscova 
 - If reconnection fails, saved settings remain intact. Fix the error, then start again.
 - Save pending changes before **Start Bot** becomes available.
 - Disabling the plugin removes its panel after restart and preserves its settings.
-- Telegram supports chat only, with no task notifications.
+- Task notifications go to your private chat with the bot while it runs. Message the bot once first.
 - Use **Start Bot** to connect or **Stop Bot** to disconnect.
 - Startup needs credentials and network access.
 - After a temporary polling error, the next Telegram update restores the connected status.

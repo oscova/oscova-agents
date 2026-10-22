@@ -11,6 +11,17 @@ namespace Oscova.Agents.Tests.Framework.Providers;
 public sealed class EnvironmentContextProviderTests
 {
 
+    /// <summary>Notify channel ids appear only when the host supplies them.</summary>
+    [Fact]
+    public async Task ProvideAIContextAsync_ListsNotificationChannelsWhenSupplied()
+    {
+        var provider = new EnvironmentContextProvider();
+        Assert.DoesNotContain("notification_channels", (await InvokeProviderAsync(provider)).Instructions);
+
+        provider.NotificationChannels = ["web", "discord"];
+        Assert.Contains("notification_channels: web, discord", (await InvokeProviderAsync(provider)).Instructions);
+    }
+
     /// <summary>Private ownership is described separately using the clean alias in every runtime.</summary>
     [Theory]
     [InlineData(true)]

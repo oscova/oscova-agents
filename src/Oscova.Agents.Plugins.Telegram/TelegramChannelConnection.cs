@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Channels;
@@ -37,6 +38,7 @@ public sealed class TelegramChannelConnection : IChannelConnection
     }
 
     /// <inheritdoc />
+    [SuppressMessage("Design", "MA0054", Justification = "Vendor exceptions can carry tokens, so only a safe message leaves the plugin.")]
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var token = await _services.CredentialResolver.ResolveAsync(
@@ -74,7 +76,7 @@ public sealed class TelegramChannelConnection : IChannelConnection
 
     /// <inheritdoc />
     public Task SendNotificationAsync(string text, CancellationToken cancellationToken) =>
-        throw new NotSupportedException("Telegram supports private chat only.");
+        ReplyAsync(_authorizedUserId, text, cancellationToken);
 
     private async Task OnUpdateAsync(Update update, CancellationToken ct)
     {
@@ -119,6 +121,7 @@ public sealed class TelegramChannelConnection : IChannelConnection
         return attachments;
     }
 
+    [SuppressMessage("Design", "MA0054", Justification = "Vendor exceptions can carry tokens, so only a safe message leaves the plugin.")]
     private async Task<Stream> OpenReadAsync(string fileId, CancellationToken ct)
     {
         try
@@ -136,6 +139,7 @@ public sealed class TelegramChannelConnection : IChannelConnection
         }
     }
 
+    [SuppressMessage("Design", "MA0054", Justification = "Vendor exceptions can carry tokens, so only a safe message leaves the plugin.")]
     private async Task ReplyAsync(long chatId, string text, CancellationToken ct)
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _lifetime.Token);

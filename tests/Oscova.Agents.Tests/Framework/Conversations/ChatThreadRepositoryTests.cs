@@ -768,6 +768,22 @@ public sealed class ChatThreadRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task SaveThreadAsync_WhenMessageIsInsertedBeforeSavedRow_SavesEachMessageOnce()
+    {
+        var thread = new ChatThread { AgentId = "agent-1" };
+        thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.User, Text = "question" });
+        thread.DisplayMessages.Add(new ChatDisplayMessage { From = MessageOwner.Bot, Text = "card" });
+        await _repository.CreateThreadAsync("user-1", thread);
+
+        thread.DisplayMessages.Insert(1, new ChatDisplayMessage { From = MessageOwner.Bot, Text = "before card" });
+        thread.DisplayMessages[2].Text = "answered card";
+        await _repository.SaveThreadAsync("user-1", thread);
+
+        var reloaded = await _repository.GetThreadAsync("user-1", thread.Id);
+        Assert.Equal(["question", "before card", "answered card"], reloaded!.DisplayMessages.Select(message => message.Text));
+    }
+
+    [Fact]
     public async Task SaveThreadAsync_WhenTranscriptRewriteIsRequired_BackfillsBotAgentId()
     {
         var thread = new ChatThread

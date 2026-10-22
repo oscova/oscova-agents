@@ -69,9 +69,6 @@ namespace Oscova.Agents.Tasks
         /// <summary>Gets or sets whether a successful task run emits an automatic completion notice.</summary>
         public bool NotifyOnCompletion { get; set; }
 
-        /// <summary>Gets or sets the channel used by agent-initiated notifications and handoffs.</summary>
-        public string? NotificationChannel { get; set; }
-
         /// <summary>
         /// Gets or sets whether task runs use an isolated or persistent session.
         /// </summary>
@@ -81,6 +78,9 @@ namespace Oscova.Agents.Tasks
         /// Gets or sets an optional token budget for the task run.
         /// </summary>
         public int? MaxTokenBudget { get; set; }
+
+        /// <summary>Gets or sets how many of the newest saved runs to keep, or null to keep every run.</summary>
+        public int? KeepLastRuns { get; set; }
 
         /// <summary>
         /// Gets or sets how approval-required tools are handled during unattended execution.

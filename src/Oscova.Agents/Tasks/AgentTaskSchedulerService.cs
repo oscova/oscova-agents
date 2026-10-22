@@ -474,6 +474,19 @@ public sealed class AgentTaskSchedulerService(
     public bool TryGetLastRun(string userId, string taskId, out AgentTaskRun? run)
         => _lastRunPerTask.TryGetValue(new TaskOwnerKey(userId, taskId), out run);
 
+    /// <summary>Forgets the tracked last run when it is the deleted run, so run lists do not show it again.</summary>
+    /// <param name="userId">The task owner's user identifier.</param>
+    /// <param name="taskId">The task identifier.</param>
+    /// <param name="runId">The deleted run identifier.</param>
+    public void ForgetLastRun(string userId, string taskId, string runId)
+    {
+        var taskKey = new TaskOwnerKey(userId, taskId);
+        if (_lastRunPerTask.TryGetValue(taskKey, out var run) && string.Equals(run.Id, runId, StringComparison.OrdinalIgnoreCase))
+        {
+            _lastRunPerTask.TryRemove(new KeyValuePair<TaskOwnerKey, AgentTaskRun>(taskKey, run));
+        }
+    }
+
     /// <summary>
     /// Returns whether a task currently has an active running entry.
     /// </summary>

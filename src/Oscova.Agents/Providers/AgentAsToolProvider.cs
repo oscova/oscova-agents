@@ -40,9 +40,6 @@ public class AgentAsToolProvider : AIContextProvider
     private const int MaxNameLength = 40;
     private const int MaxMessageLength = 1000;
 
-    // ApprovalResponseBindingChatClient.StateBagKey, which Agent Framework keeps internal.
-    private const string PendingApprovalsStateKey = "_pendingApprovalRequests";
-
     // Workers store snapshots concurrently with the parent, so state is replaced, never mutated in place.
     private static readonly Lock s_stateGate = new();
 
@@ -492,11 +489,8 @@ public class AgentAsToolProvider : AIContextProvider
                 inputClosed = true;
                 inputGate.Release();
                 var pending = injector is null ? [] : await injector.GetPendingMessagesAsync(childSession, CancellationToken.None).ConfigureAwait(false);
-                childSession.SetInMemoryChatHistory(
+                InterruptedHistory.Restore(childSession,
                     [.. InterruptedHistory.Build(history, [input], updates), .. delivered.Where(message => !pending.Contains(message))]);
-                // The rebuilt history drops an approved call that never finished. Agent Framework still records it
-                // as pending and would reject it on the next continue.
-                childSession.StateBag.TryRemoveValue(PendingApprovalsStateKey);
                 var status = ct.IsCancellationRequested && ex is OperationCanceledException
                     ? DelegatedWorkerStatus.Interrupted
                     : DelegatedWorkerStatus.Failed;

@@ -6,6 +6,7 @@ using System.Net;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using NuGet.Packaging;
 using Oscova.Agents.Collections;
 using Oscova.Agents.Credentials;
@@ -118,7 +119,7 @@ public sealed class GoogleWorkspaceTests
         var message = Encoding.UTF8.GetString(System.Buffers.Text.Base64Url.DecodeFromChars(raw));
         var (headers, body) = (message[..message.IndexOf("\r\n\r\n", StringComparison.Ordinal)], message[(message.IndexOf("\r\n\r\n", StringComparison.Ordinal) + 4)..]);
         // Long subjects fold into encoded words of at most 75 characters each.
-        var words = System.Text.RegularExpressions.Regex.Matches(headers, @"=\?UTF-8\?B\?([^?]*)\?=").Select(match => match.Value).ToList();
+        var words = Regex.Matches(headers, @"=\?UTF-8\?B\?[^?]*\?=", RegexOptions.None, TimeSpan.FromSeconds(1)).Select(match => match.Value).ToList();
         Assert.True(words.Count > 1);
         Assert.All(words, word => Assert.True(word.Length <= 75, word));
         Assert.Equal(Subject + " Bcc: x@example.test", string.Concat(words.Select(word => Encoding.UTF8.GetString(Convert.FromBase64String(word[10..^2])))));

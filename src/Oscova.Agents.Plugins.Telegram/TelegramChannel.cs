@@ -32,7 +32,7 @@ public sealed class TelegramChannel : IAgentChannel
         DescriptionKey = "Settings.Section.Telegram.Description",
         IconResourceName = "Oscova.Agents.Plugins.Telegram.Icons.channel.svg",
         Help = new PluginHelpTopic("settings", "Oscova.Agents.Plugins.Telegram.Help.settings.md"),
-        SupportsNotifications = false,
+        SupportsNotifications = true,
         CredentialKeys = [Credential.Key]
     };
 

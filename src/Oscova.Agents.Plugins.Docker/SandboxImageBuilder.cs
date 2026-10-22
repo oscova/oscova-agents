@@ -237,9 +237,9 @@ public sealed class SandboxImageBuilder : IAsyncDisposable
 
                 return result.ExitCode == 0;
             }
-            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
             {
-                throw new TimeoutException("Docker sandbox image build timed out.");
+                throw new TimeoutException("Docker sandbox image build timed out.", ex);
             }
             catch (Win32Exception ex)
             {

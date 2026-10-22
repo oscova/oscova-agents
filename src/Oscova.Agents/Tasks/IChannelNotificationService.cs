@@ -5,19 +5,14 @@ using System.Threading.Tasks;
 namespace Oscova.Agents.Tasks;
 
 /// <summary>
-/// Routes task notifications and session handoffs to a specific channel.
+/// Hands off a task session to a specific channel and notifies the user there.
 /// </summary>
 public interface IChannelNotificationService
 {
     /// <summary>
-    /// Channel identifier matched against <see cref="AgentTaskDefinition.NotificationChannel"/>.
+    /// Channel identifier the agent names when it notifies the user.
     /// </summary>
     string Channel { get; }
-
-    /// <summary>
-    /// Sends a fire-and-forget notification message to the user.
-    /// </summary>
-    Task NotifyAsync(string userId, string agentId, string message, CancellationToken ct = default);
 
     /// <summary>
     /// Hands off the current agent session to this channel, creating a new

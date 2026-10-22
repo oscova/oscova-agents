@@ -23,7 +23,8 @@ Answer direct Slack messages from one authorized member in one workspace. The Sl
 - Saving restarts a running connection and leaves a stopped connection stopped. A failed reconnect keeps the saved settings.
 - Stop and start the bot after replacing a token.
 - Slack remains connected to its external servers even for local-only agents. Local-only runs skip file downloads.
-- Group and shared-channel messages are ignored. Slack is not a task-notification destination.
+- Group and shared-channel messages are ignored.
+- Task notifications arrive as a direct message to the authorized member while the bot runs.
 - Disabling or removing the plugin removes this panel after restart and keeps its saved configuration.
 
 ## Related

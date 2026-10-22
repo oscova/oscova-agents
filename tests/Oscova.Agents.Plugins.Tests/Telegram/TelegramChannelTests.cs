@@ -134,9 +134,20 @@ public sealed class TelegramChannelTests
             Assert.Equal("telegram-photo-12.jpg", received.Attachments[1].FileName);
             Assert.Equal(30, received.Attachments[1].Size);
         }
-        await Assert.ThrowsAsync<NotSupportedException>(() => connection.SendNotificationAsync("notice", CancellationToken.None));
         await connection.StopAsync(CancellationToken.None);
         await connection.DisposeAsync();
+    }
+
+    /// <summary>Sends task notifications to the authorized user's private chat.</summary>
+    [Fact]
+    public async Task Notification_SendsToAuthorizedPrivateChat()
+    {
+        await using var connection = CreateConnection(_ => { });
+        var client = new RecordingClient();
+        typeof(TelegramChannelConnection).GetField("_client", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(connection, client);
+        await connection.SendNotificationAsync("Task ready", CancellationToken.None);
+        Assert.Equal(["Task ready"], client.Chunks);
+        Assert.Equal([42L], client.ChatIds);
     }
 
     /// <summary>Exercises the reply callback and preserves all Unicode text within Telegram's limit.</summary>
@@ -167,7 +178,7 @@ public sealed class TelegramChannelTests
 
     /// <summary>Loads the real plugin without connecting and respects disabled-plugin absence.</summary>
     [Fact]
-    public async Task LoadedPlugin_DeclaresChatOnlyChannelAndRequiresTokenAtStart()
+    public async Task LoadedPlugin_DeclaresNotifyingChannelAndRequiresTokenAtStart()
     {
         using var root = TestPluginRoot.Create();
         root.AddPluginFromProjectOutput(Path.Combine("src", "Oscova.Agents.Plugins.Telegram"), "oscova.telegram");
@@ -177,7 +188,7 @@ public sealed class TelegramChannelTests
         var plugin = Assert.Single(catalog.Plugins);
         Assert.Equal("telegram-bot", Assert.Single(plugin.DeclaredCredentialKeys));
         var contribution = Assert.Single(plugin.Channels);
-        Assert.False(contribution.Definition.SupportsNotifications);
+        Assert.True(contribution.Definition.SupportsNotifications);
         Assert.Single(plugin.SettingsPanels);
         var services = PluginTestContext.Create(new MissingCredentials(), plugin.PluginDirectory, Path.GetTempPath(),
             settings: PluginTestContext.Settings(new TelegramSettings { AuthorizedUserId = "42" }));
@@ -221,9 +232,12 @@ public sealed class TelegramChannelTests
     private sealed class RecordingClient() : TelegramBotClient("123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi")
     {
         public List<string> Chunks { get; } = [];
+        public List<long?> ChatIds { get; } = [];
         public override Task<TResponse> SendRequest<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
         {
-            Chunks.Add(Assert.IsType<SendMessageRequest>(request).Text);
+            var send = Assert.IsType<SendMessageRequest>(request);
+            Chunks.Add(send.Text);
+            ChatIds.Add(send.ChatId.Identifier);
             return Task.FromResult((TResponse)(object)new Message { Id = Chunks.Count, Chat = new Chat { Id = 7, Type = ChatType.Private } });
         }
     }

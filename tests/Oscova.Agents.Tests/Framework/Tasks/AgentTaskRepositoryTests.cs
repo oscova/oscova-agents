@@ -329,6 +329,116 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         Assert.Equal("abc", loaded.SessionElement.Value.GetProperty("conversation").GetString());
     }
 
+    /// <summary>Latest runs for task lists come from the run index without opening transcripts or sessions.</summary>
+    [Fact]
+    public async Task GetLatestRunsAsync_ReturnsIndexSummaryWithoutTranscriptOrSession()
+    {
+        // Arrange
+        var (repository, _) = CreateRepository();
+        var task = CreateTask("Daily Inbox Triage");
+        await repository.SaveTaskAsync(task);
+        await repository.SaveRunAsync(new AgentTaskRun
+        {
+            Id = "latest",
+            TaskId = task.Id,
+            UserId = task.UserId,
+            Status = AgentTaskStatus.Failed,
+            StartedAt = DateTimeOffset.UtcNow.AddMinutes(-2),
+            CompletedAt = DateTimeOffset.UtcNow,
+            ResultSummary = "Partly done.",
+            Error = "Mailbox offline.",
+            SessionElement = JsonDocument.Parse("{\"conversation\":\"abc\"}").RootElement.Clone(),
+            LiveMessages = [new ChatMessage(ChatRole.Assistant, "Task response.")]
+        });
+
+        // Act
+        var latest = (await repository.GetLatestRunsAsync([task.Id]))[task.Id];
+
+        // Assert
+        Assert.Equal("latest", latest.Id);
+        Assert.Equal(AgentTaskStatus.Failed, latest.Status);
+        Assert.Equal("Partly done.", latest.ResultSummary);
+        Assert.Equal("Mailbox offline.", latest.Error);
+        Assert.Null(latest.LiveMessages);
+        Assert.Null(latest.SessionElement);
+    }
+
+    /// <summary>Keep last runs keeps the newest runs and deletes older index rows, transcripts and sessions.</summary>
+    [Fact]
+    public async Task SaveRunAsync_WhenKeepLastRunsIsSet_DeletesOlderRunsAndTheirFiles()
+    {
+        // Arrange
+        var (repository, catalog) = CreateRepository();
+        var task = CreateTask("Hourly sweep");
+        task.KeepLastRuns = 2;
+        await repository.SaveTaskAsync(task);
+        var runsDirectory = Path.Combine(catalog.TryGetTaskDirectory(task.Id)!, "runs");
+        var start = DateTimeOffset.UtcNow.AddHours(-4);
+
+        // Act
+        for (var hour = 0; hour < 4; hour++)
+        {
+            await repository.SaveRunAsync(CreateFinishedRun(task, $"run-{hour}", start.AddHours(hour)));
+        }
+
+        // Assert
+        var kept = await repository.GetRunsAsync(_userId, task.Id);
+        Assert.Equal(["run-3", "run-2"], kept.Select(run => run.Id));
+        Assert.Equal(2, (await File.ReadAllLinesAsync(Path.Combine(runsDirectory, "index.jsonl"))).Length);
+        foreach (var deleted in new[] { "run-0", "run-1" })
+        {
+            Assert.False(File.Exists(Path.Combine(runsDirectory, deleted + ".jsonl")));
+            Assert.False(File.Exists(Path.Combine(runsDirectory, deleted + ".session.json.enc")));
+        }
+
+        Assert.True(File.Exists(Path.Combine(runsDirectory, "run-2.jsonl")));
+        Assert.True(File.Exists(Path.Combine(runsDirectory, "run-2.session.json.enc")));
+    }
+
+    /// <summary>Deleting a run removes only that run's row and files, and only for its owner.</summary>
+    [Fact]
+    public async Task DeleteRunAsync_RemovesOwnedRunRowAndFiles()
+    {
+        // Arrange
+        var (repository, catalog) = CreateRepository();
+        var task = CreateTask("Daily Inbox Triage");
+        await repository.SaveTaskAsync(task);
+        var runsDirectory = Path.Combine(catalog.TryGetTaskDirectory(task.Id)!, "runs");
+        var start = DateTimeOffset.UtcNow.AddHours(-2);
+        await repository.SaveRunAsync(CreateFinishedRun(task, "older", start));
+        await repository.SaveRunAsync(CreateFinishedRun(task, "newer", start.AddHours(1)));
+
+        // Act
+        var deletedByOtherUser = await repository.DeleteRunAsync(Guid.NewGuid().ToString(), task.Id, "older");
+        var deleted = await repository.DeleteRunAsync(_userId, task.Id, "older");
+        var deletedAgain = await repository.DeleteRunAsync(_userId, task.Id, "older");
+
+        // Assert
+        Assert.False(deletedByOtherUser);
+        Assert.True(deleted);
+        Assert.False(deletedAgain);
+        Assert.Equal("newer", Assert.Single(await repository.GetRunsAsync(_userId, task.Id)).Id);
+        Assert.False(File.Exists(Path.Combine(runsDirectory, "older.jsonl")));
+        Assert.False(File.Exists(Path.Combine(runsDirectory, "older.session.json.enc")));
+        Assert.True(File.Exists(Path.Combine(runsDirectory, "newer.jsonl")));
+    }
+
+    private static AgentTaskRun CreateFinishedRun(AgentTaskDefinition task, string runId, DateTimeOffset startedAt)
+    {
+        return new AgentTaskRun
+        {
+            Id = runId,
+            TaskId = task.Id,
+            UserId = task.UserId,
+            Status = AgentTaskStatus.Completed,
+            StartedAt = startedAt,
+            CompletedAt = startedAt.AddMinutes(1),
+            ResultSummary = "Done.",
+            SessionElement = JsonDocument.Parse("{\"conversation\":\"abc\"}").RootElement.Clone(),
+            LiveMessages = [new ChatMessage(ChatRole.Assistant, "Task response.")]
+        };
+    }
+
     [Fact]
     public async Task SaveRunAsync_WhenConfidential_ProtectsEveryArtifactAndRoundTrips()
     {
@@ -455,14 +565,50 @@ public sealed class AgentTaskRepositoryTests : IDisposable
             ResultSummary = "hidden-summary"
         };
         await repository.SaveRunAsync(run);
+        var callsBeforeRead = protector.UnprotectCalls.Count;
 
         var metadata = await repository.GetRunMetadataAsync(_userId, task.Id, run.Id);
 
         Assert.NotNull(metadata);
         Assert.Null(metadata.ResultSummary);
         Assert.Null(metadata.Error);
-        var opened = Assert.Single(protector.UnprotectCalls);
+        var opened = Assert.Single(protector.UnprotectCalls.Skip(callsBeforeRead));
         Assert.Equal($"task\0{task.Id}\0index", opened.Purpose);
+    }
+
+    /// <summary>Run summaries carry the result and error from the index without opening transcripts or sessions.</summary>
+    [Fact]
+    public async Task GetRunSummariesAsync_ReturnsResultAndErrorWithoutOpeningTranscripts()
+    {
+        // Arrange
+        var protector = new PassThroughContentProtector();
+        var (repository, _) = CreateRepository(contentProtector: protector);
+        var task = CreateTask("Run Summaries");
+        await repository.SaveTaskAsync(task);
+        var startedAt = DateTimeOffset.UtcNow;
+        await repository.SaveRunAsync(new AgentTaskRun
+        {
+            Id = "older", TaskId = task.Id, UserId = task.UserId, Status = AgentTaskStatus.Failed,
+            StartedAt = startedAt, Error = "disk full", LiveMessages = [new(ChatRole.Assistant, "older transcript")]
+        });
+        await repository.SaveRunAsync(new AgentTaskRun
+        {
+            Id = "newer", TaskId = task.Id, UserId = task.UserId, Status = AgentTaskStatus.Completed,
+            StartedAt = startedAt.AddMinutes(1), ResultSummary = "wrote report.md",
+            LiveMessages = [new(ChatRole.Assistant, "newer transcript")]
+        });
+        var callsBeforeRead = protector.UnprotectCalls.Count;
+
+        // Act
+        var runs = await repository.GetRunSummariesAsync(_userId, task.Id, limit: 10);
+
+        // Assert
+        Assert.Equal(["newer", "older"], runs.Select(run => run.Id));
+        Assert.Equal("wrote report.md", runs[0].ResultSummary);
+        Assert.Equal("disk full", runs[1].Error);
+        Assert.All(runs, run => Assert.Null(run.LiveMessages));
+        Assert.All(protector.UnprotectCalls.Skip(callsBeforeRead), opened => Assert.Equal($"task\0{task.Id}\0index", opened.Purpose));
+        Assert.Empty(await repository.GetRunSummariesAsync("someone-else", task.Id, limit: 10));
     }
 
     [Theory]

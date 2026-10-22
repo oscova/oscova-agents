@@ -136,8 +136,7 @@ public sealed class DiscordChannelTests
     private static async Task RaiseClientEventAsync<THandler>(DiscordSocketClient client, string field, Func<THandler, Task> raise)
     {
         var asyncEvent = typeof(DiscordSocketClient).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(client)!;
-        var handlers = (IReadOnlyList<THandler>)asyncEvent.GetType().GetProperty("Subscriptions")!.GetValue(asyncEvent)!;
-        foreach (var handler in handlers) { await raise(handler); }
+        foreach (var handler in (IReadOnlyList<THandler>)asyncEvent.GetType().GetProperty("Subscriptions")!.GetValue(asyncEvent)!) { await raise(handler); }
     }
 
     private sealed class MissingCredentials : IToolCredentialResolver

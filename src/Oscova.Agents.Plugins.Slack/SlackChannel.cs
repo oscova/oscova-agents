@@ -42,7 +42,7 @@ public sealed class SlackChannel : IAgentChannel
         DescriptionKey = "Settings.Slack.ConfigurationDescription",
         IconResourceName = "Oscova.Agents.Plugins.Slack.Icons.channel.svg",
         Help = new PluginHelpTopic("settings", "Oscova.Agents.Plugins.Slack.Help.settings.md"),
-        SupportsNotifications = false,
+        SupportsNotifications = true,
         CredentialKeys = [Credential.Key]
     };
 

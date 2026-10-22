@@ -240,8 +240,7 @@ public sealed class AgentTaskRepository(
 
         // A skipped occurrence with no session must not erase the last execution's context.
         var row = ReadRunIndexRows(indexPath, taskId, ownerUserId!)
-            .OrderByDescending(run => string.IsNullOrWhiteSpace(run.StartedAt)
-                ? DateTimeOffset.MinValue : IsoTimestamp.Parse(run.StartedAt))
+            .OrderByDescending(RunStartedAt)
             .FirstOrDefault(run => ParseEnum(run.Status, AgentTaskStatus.Pending) != AgentTaskStatus.Skipped ||
                 File.Exists(GetRunSessionPath(runsDirectory, run.Id)));
         return Task.FromResult(row is null ? null : ReadRunSession(runsDirectory, row.Id, taskId, ownerUserId!));
@@ -329,10 +328,11 @@ public sealed class AgentTaskRepository(
                 continue;
             }
 
-            var run = ReadLatestRun(taskDirectory, taskId, ownerUserId, includeContent: true);
-            if (run is not null)
+            var runsDirectory = GetRunsDirectory(taskDirectory);
+            var row = ReadLatestRunIndexRow(runsDirectory, taskId, ownerUserId);
+            if (row is not null)
             {
-                runs[taskId] = run;
+                runs[taskId] = MapRunSummary(row, runsDirectory, taskId, ownerUserId);
             }
         }
 
@@ -341,28 +341,35 @@ public sealed class AgentTaskRepository(
 
     /// <inheritdoc />
     public Task<IReadOnlyList<AgentTaskRun>> GetRunsAsync(string userId, string taskId, int limit = 20, CancellationToken ct = default)
+        => Task.FromResult(ReadRuns(userId, taskId, limit, includeTranscripts: true));
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<AgentTaskRun>> GetRunSummariesAsync(string userId, string taskId, int limit = 20, CancellationToken ct = default)
+        => Task.FromResult(ReadRuns(userId, taskId, limit, includeTranscripts: false));
+
+    private IReadOnlyList<AgentTaskRun> ReadRuns(string userId, string taskId, int limit, bool includeTranscripts)
     {
         var taskDirectory = catalog.TryGetTaskDirectory(taskId);
         var ownerUserId = catalog.TryGetOwnerUserId(taskId);
         if (taskDirectory is null || !IsOwnedBy(ownerUserId, userId) || limit <= 0)
         {
-            return Task.FromResult<IReadOnlyList<AgentTaskRun>>([]);
+            return [];
         }
 
         var runsDirectory = GetRunsDirectory(taskDirectory);
         var indexPath = GetRunsIndexPath(runsDirectory);
         if (!File.Exists(indexPath))
         {
-            return Task.FromResult<IReadOnlyList<AgentTaskRun>>([]);
+            return [];
         }
 
-        var runs = ReadRunIndexRows(indexPath, taskId, ownerUserId!)
-            .OrderByDescending(row => string.IsNullOrWhiteSpace(row.StartedAt) ? DateTimeOffset.MinValue : IsoTimestamp.Parse(row.StartedAt))
+        return ReadRunIndexRows(indexPath, taskId, ownerUserId!)
+            .OrderByDescending(RunStartedAt)
             .Take(limit)
-            .Select(row => MapRunToDomain(row, runsDirectory, taskId, ownerUserId!, includeContent: true))
+            .Select(row => includeTranscripts
+                ? MapRunToDomain(row, runsDirectory, taskId, ownerUserId!, includeContent: true)
+                : MapRunSummary(row, runsDirectory, taskId, ownerUserId!))
             .ToList();
-
-        return Task.FromResult<IReadOnlyList<AgentTaskRun>>(runs);
     }
 
     /// <inheritdoc />
@@ -387,12 +394,45 @@ public sealed class AgentTaskRepository(
         {
             throw new InvalidOperationException("Unlock your Vault Password before continuing.");
         }
+        var keepLastRuns = ReadExistingTask(GetTaskFilePath(taskDirectory), ownerUserId)?.KeepLastRuns;
         await indexCoordinator.RunForTaskAsync(ownerUserId, run.TaskId, async cancellationToken =>
         {
             await WriteRunMessagesAsync(runDirectory, run, ownerUserId, cancellationToken).ConfigureAwait(false);
             await WriteRunSessionAsync(runDirectory, run, ownerUserId, cancellationToken).ConfigureAwait(false);
-            await UpsertRunIndexAsync(runDirectory, run, ownerUserId, cancellationToken).ConfigureAwait(false);
+            await UpsertRunIndexAsync(runDirectory, run, ownerUserId, keepLastRuns, cancellationToken).ConfigureAwait(false);
         }, ct).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> DeleteRunAsync(string userId, string taskId, string runId, CancellationToken ct = default)
+    {
+        var taskDirectory = catalog.TryGetTaskDirectory(taskId);
+        var ownerUserId = catalog.TryGetOwnerUserId(taskId);
+        if (taskDirectory is null || !IsOwnedBy(ownerUserId, userId) || string.IsNullOrWhiteSpace(runId))
+        {
+            return false;
+        }
+
+        if (!contentProtector.IsAvailable(ownerUserId!))
+        {
+            throw new InvalidOperationException("Unlock your Vault Password before continuing.");
+        }
+
+        var runsDirectory = GetRunsDirectory(taskDirectory);
+        var indexPath = GetRunsIndexPath(runsDirectory);
+        var deleted = false;
+        await indexCoordinator.RunForTaskAsync(ownerUserId!, taskId, async cancellationToken =>
+        {
+            var rows = File.Exists(indexPath) ? ReadRunIndexRows(indexPath, taskId, ownerUserId!) : [];
+            var row = rows.FirstOrDefault(row => string.Equals(row.Id, runId, StringComparison.OrdinalIgnoreCase));
+            if (row is null) { return; }
+
+            rows.Remove(row);
+            await WriteRunIndexAsync(indexPath, taskId, rows, ownerUserId!, cancellationToken).ConfigureAwait(false);
+            DeleteRunFiles(runsDirectory, row.Id);
+            deleted = true;
+        }, ct).ConfigureAwait(false);
+        return deleted;
     }
 
     private AgentTaskDefinition? ReadExistingTask(string taskFilePath, string ownerUserId)
@@ -432,9 +472,9 @@ public sealed class AgentTaskRepository(
             IsEnabled = file.IsEnabled,
             NotifyOnCompletion = file.NotifyOnCompletion,
             WaitForOwnerProviderIdle = file.WaitForOwnerProviderIdle,
-            NotificationChannel = file.NotificationChannel,
             SessionMode = ParseEnum(file.SessionMode, TaskSessionMode.Isolated),
             MaxTokenBudget = file.MaxTokenBudget,
+            KeepLastRuns = file.KeepLastRuns,
             ToolApprovalRunMode = ParseEnum(file.ToolApprovalRunMode, ToolApprovalRunMode.AutoRejectRequired),
             RunScope = MapRunScopeToDomain(file.RunScope),
             CreatedAt = string.IsNullOrWhiteSpace(file.CreatedAt) ? DateTimeOffset.UtcNow : IsoTimestamp.Parse(file.CreatedAt),
@@ -461,9 +501,9 @@ public sealed class AgentTaskRepository(
             IsEnabled = task.IsEnabled,
             NotifyOnCompletion = task.NotifyOnCompletion,
             WaitForOwnerProviderIdle = task.WaitForOwnerProviderIdle,
-            NotificationChannel = task.NotificationChannel,
             SessionMode = TaskFileValueFormatter.ToSnakeCase(task.SessionMode.ToString()),
             MaxTokenBudget = task.MaxTokenBudget,
+            KeepLastRuns = task.KeepLastRuns,
             ToolApprovalRunMode = TaskFileValueFormatter.ToSnakeCase(task.ToolApprovalRunMode.ToString()),
             RunScope = MapRunScopeToFile(task.RunScope),
             CreatedAt = IsoTimestamp.FormatSeconds(task.CreatedAt),
@@ -486,16 +526,25 @@ public sealed class AgentTaskRepository(
         bool includeContent)
     {
         var runsDirectory = GetRunsDirectory(taskDirectory);
-        var indexPath = GetRunsIndexPath(runsDirectory);
-        if (!File.Exists(indexPath))
-        {
-            return null;
-        }
+        var row = ReadLatestRunIndexRow(runsDirectory, containingTaskId, ownerUserId);
+        return row is null ? null : MapRunToDomain(row, runsDirectory, containingTaskId, ownerUserId, includeContent);
+    }
 
-        return ReadRunIndexRows(indexPath, containingTaskId, ownerUserId)
-            .OrderByDescending(row => string.IsNullOrWhiteSpace(row.StartedAt) ? DateTimeOffset.MinValue : IsoTimestamp.Parse(row.StartedAt))
-            .Select(row => MapRunToDomain(row, runsDirectory, containingTaskId, ownerUserId, includeContent))
-            .FirstOrDefault();
+    private AgentTaskRunIndexFile? ReadLatestRunIndexRow(string runsDirectory, string containingTaskId, string ownerUserId)
+    {
+        var indexPath = GetRunsIndexPath(runsDirectory);
+        return File.Exists(indexPath)
+            ? ReadRunIndexRows(indexPath, containingTaskId, ownerUserId).OrderByDescending(RunStartedAt).FirstOrDefault()
+            : null;
+    }
+
+    // The result and error live in the already opened index row, so no transcript or session is read.
+    private AgentTaskRun MapRunSummary(AgentTaskRunIndexFile row, string runsDirectory, string containingTaskId, string ownerUserId)
+    {
+        var run = MapRunToDomain(row, runsDirectory, containingTaskId, ownerUserId, includeContent: false);
+        run.ResultSummary = row.ResultSummary;
+        run.Error = row.Error;
+        return run;
     }
 
     private bool TryMapRunIndexLine(
@@ -667,6 +716,7 @@ public sealed class AgentTaskRepository(
         string runsDirectory,
         AgentTaskRun run,
         string ownerUserId,
+        int? keepLastRuns,
         CancellationToken ct)
     {
         var indexPath = GetRunsIndexPath(runsDirectory);
@@ -706,8 +756,38 @@ public sealed class AgentTaskRepository(
 
         rows.Add(indexRow);
 
-        var content = string.Join(Environment.NewLine, rows.Select(row => contentProtector.Protect(ownerUserId, RunIndexPurpose(run.TaskId), JsonSerializer.Serialize(row, RunSerializerOptions)))) + Environment.NewLine;
+        // Keep last runs: only finished runs are saved, so the newest N rows are the runs to keep.
+        var expiredRows = keepLastRuns is > 0
+            ? rows.OrderByDescending(RunStartedAt).Skip(keepLastRuns.Value).ToList()
+            : [];
+        rows.RemoveAll(expiredRows.Contains);
+        await WriteRunIndexAsync(indexPath, run.TaskId, rows, ownerUserId, ct).ConfigureAwait(false);
+        foreach (var expiredRow in expiredRows)
+        {
+            DeleteRunFiles(runsDirectory, expiredRow.Id);
+        }
+    }
+
+    private async Task WriteRunIndexAsync(
+        string indexPath,
+        string taskId,
+        List<AgentTaskRunIndexFile> rows,
+        string ownerUserId,
+        CancellationToken ct)
+    {
+        var content = string.Join(Environment.NewLine, rows.Select(row => contentProtector.Protect(ownerUserId, RunIndexPurpose(taskId), JsonSerializer.Serialize(row, RunSerializerOptions)))) + Environment.NewLine;
         await FileUtil.WriteAllTextAtomicAsync(indexPath, content, ct).ConfigureAwait(false);
+    }
+
+    private static void DeleteRunFiles(string runsDirectory, string runId)
+    {
+        File.Delete(GetRunTranscriptPath(runsDirectory, runId));
+        File.Delete(GetRunSessionPath(runsDirectory, runId));
+    }
+
+    private static DateTimeOffset RunStartedAt(AgentTaskRunIndexFile row)
+    {
+        return string.IsNullOrWhiteSpace(row.StartedAt) ? DateTimeOffset.MinValue : IsoTimestamp.Parse(row.StartedAt);
     }
 
     private static AgentTaskRunIndexFile MapRunToIndexFile(AgentTaskRun run, string? systemInstruction)
