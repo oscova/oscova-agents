@@ -1,7 +1,7 @@
 <Project>
   <!-- The only owner of first-party package versions. Change them only with the package version bump script. -->
   <PropertyGroup>
-    <OscovaAgentsVersion>5.1.0</OscovaAgentsVersion>
+    <OscovaAgentsVersion>5.2.0-dev.1</OscovaAgentsVersion>
     <AgentTemplatesPluginVersion>4.4.1</AgentTemplatesPluginVersion>
     <DiscordPluginVersion>4.4.1</DiscordPluginVersion>
     <FoundryLocalPluginVersion>4.4.1</FoundryLocalPluginVersion>
