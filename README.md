@@ -2,7 +2,7 @@
   <img src="assets/branding/oscova-logo.svg" alt="Oscova logo" width="112" />
 </p>
 
-<h1 align="center">Oscova Agents: Self-Hosted AI Agent OS</h1>
+<h1 align="center">Oscova Agents: Private AI Agent OS, Encrypted Under Your Password</h1>
 
 <p align="center">
   <strong>Private AI agents. Encrypted by default.</strong><br />
@@ -21,7 +21,7 @@
 </p>
 
 > ⭐ **Star and watch Oscova so you never miss what's new:**
-> - **New avatars** for your agent, or for your own app through the Oscova Avatar Engine
+> - **New avatars** for the Oscova Avatar Engine, the free 3D avatar app that gives your agent, or your own app, a face
 > - **New plugins** for channels, tools, speech and models
 > - **Framework changes** that plugin builders need to know about
 > - **Regular updates** to the agent OS itself
@@ -30,9 +30,9 @@
 
 ## What is Oscova Agents?
 
-Oscova Agents is a self-hosted AI agent OS that keeps your agents' data encrypted. Chats, memory, instructions and settings are encrypted on disk under a Vault Password only you hold. An Egress Audit shows every call that leaves your machine. The Oscova Avatar Engine gives your agent a realistic 3D avatar that speaks. It runs on hardware you own, at home or in the office, with local models such as Ollama.
+Oscova Agents is a private AI agent OS: your agents' chats, memory, instructions and settings are encrypted under a Vault Password only you hold. An Egress Audit shows every call that leaves your machine. It runs on hardware you own, at home or in the office, with local models such as Ollama. On Windows, the free Oscova Avatar Engine app gives your agent a realistic 3D avatar that speaks on your screen.
 
-Agents run as durable services. They keep working on scheduled tasks while you sleep, answer from any browser on your network, and can put a face in the room through the Oscova Avatar Engine.
+Agents run as durable services. They keep working on scheduled tasks while you sleep and answer from any browser on your network.
 
 - **Confidential by design.** Every agent's chats, tool calls, task runs and memory are encrypted on disk under your Vault Password. Incognito chats never touch disk.
 - **Local by default.** Run local models such as Ollama, LLamaSharp and Foundry Local. Cloud providers are opt-in, and the Egress Audit lists every moment data left the machine.
@@ -47,7 +47,7 @@ Agents run as durable services. They keep working on scheduled tasks while you s
 |---|---|
 | Models | Ollama, LLamaSharp (GGUF), Microsoft Foundry Local, and opt-in cloud providers |
 | Voice | Offline Whisper recognition and Kokoro synthesis, plus optional ElevenLabs and OpenAI speech |
-| Avatar | Oscova Avatar Engine: realistic Unreal Engine avatars streamed to any browser on your network, with subtitles |
+| Avatar | Oscova Avatar Engine: a separate Windows app that renders realistic Unreal Engine avatars on your PC, with lip sync and subtitles. Browser streaming needs extra setup |
 | Channels | Discord, Telegram and Slack private chats |
 | Workspace | Gmail, Google Calendar and YouTube. Outlook mail and Microsoft To Do |
 | Tools | Web and news search, a visible browser, MCP servers, skills and file tools |
