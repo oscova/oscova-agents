@@ -13,24 +13,6 @@ public sealed class AgentTaskCatalogTests : IDisposable
     private readonly YamlConverter _yamlConverter = new();
 
     [Fact]
-    public async Task Reload_RequiredHandlerRetainsDirectoryKeyWithoutRegistration()
-    {
-        var root = Path.Combine(_temporaryRoot, "users");
-        const string userId = "saved-user";
-        await WriteTaskAsync(root, userId, "plugin-example.record-run", "required", requiresHandler: true);
-        await WriteTaskAsync(root, userId, "ordinary", "plain");
-        var catalog = CreateCatalog(root);
-
-        await catalog.ReloadAsync();
-        Assert.Equal("plugin-example.record-run", catalog.TryGetHandlerKey("required"));
-        Assert.Null(catalog.TryGetHandlerKey("plain"));
-
-        await catalog.ReloadUserAsync(userId);
-        Assert.Equal("plugin-example.record-run", catalog.TryGetHandlerKey("required"));
-        Assert.Null(catalog.TryGetHandlerKey("plain"));
-    }
-
-    [Fact]
     public async Task ReloadAsync_ReevaluatesRootAndAppliesCallerPolicies()
     {
         var firstRoot = Path.Combine(_temporaryRoot, "first-users");
@@ -59,7 +41,6 @@ public sealed class AgentTaskCatalogTests : IDisposable
         await catalog.ReloadAsync();
 
         Assert.Equal("accepted-first", catalog.TryGetOwnerUserId(firstTaskId));
-        Assert.Equal("RESERVED", catalog.TryGetHandlerKey(firstTaskId));
         Assert.Null(catalog.TryGetTaskDirectory(rejectedTaskId));
         Assert.Single(catalog.GetAllEnabledTasks());
 
@@ -278,8 +259,7 @@ public sealed class AgentTaskCatalogTests : IDisposable
         string usersRoot,
         string userId,
         string taskDirectoryName,
-        string taskId,
-        bool requiresHandler = false)
+        string taskId)
     {
         var taskDirectory = Path.Combine(usersRoot, userId, "tasks", taskDirectoryName);
         Directory.CreateDirectory(taskDirectory);
@@ -288,7 +268,6 @@ public sealed class AgentTaskCatalogTests : IDisposable
         {
             Id = taskId,
             Name = taskId,
-            RequiresHandler = taskDirectoryName == "RESERVED" || requiresHandler,
             AgentId = "agent-id",
             Schedule = new ScheduleFile
             {

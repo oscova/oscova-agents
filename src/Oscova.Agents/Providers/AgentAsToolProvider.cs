@@ -37,6 +37,9 @@ public class AgentAsToolProvider : AIContextProvider
     /// <summary>Continues a retained subagent history.</summary>
     public const string ContinueToolName = "continue_subagent";
 
+    /// <summary>The agent-as-tool function property holding the called agent's id, so records never need its name.</summary>
+    public const string AgentIdProperty = "oscova.agentId";
+
     private const int MaxNameLength = 40;
     private const int MaxMessageLength = 1000;
 
@@ -203,7 +206,8 @@ public class AgentAsToolProvider : AIContextProvider
         return AIFunctionFactory.Create(InvokeAgentAsync, new AIFunctionFactoryOptions
         {
             Name = agent.Name is null ? null : AgentCallableName.Normalize(agent.Name),
-            Description = agent.Description
+            Description = agent.Description,
+            AdditionalProperties = new Dictionary<string, object?> { [AgentIdProperty] = agent.Id }
         });
     }
 

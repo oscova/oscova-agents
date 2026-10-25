@@ -22,11 +22,13 @@ Choose an agent you are authorized to use. Unlock your Vault Password in Oscova 
 - If reconnection fails, saved settings remain intact. Fix the error, then start again.
 - Save pending changes before **Start Bot** becomes available.
 - Disabling the plugin removes its panel after restart and preserves its settings.
-- Task notifications go to your private chat with the bot while it runs. Message the bot once first.
+- Chat and task notifications reach your private chat while the bot runs, after you have messaged it once.
 - Use **Start Bot** to connect or **Stop Bot** to disconnect.
 - Startup needs credentials and network access.
 - After a temporary polling error, the next Telegram update restores the connected status.
-- Messages use the selected agent's current conversation, tools, privacy, and approvals.
+- Notifications temporarily route replies to the notified conversation's agent and project for your chat resume window.
+- Send `/new` to continue with the selected agent in a fresh conversation.
+- If an approval or question is waiting, `/new` cancels that run and its pending prompt first.
 - Missing or unavailable selections use the main agent.
 - Telegram stays networked even when the agent is local-only.
 - Messages accept 50 supported attachments.

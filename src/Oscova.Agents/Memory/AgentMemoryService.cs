@@ -40,7 +40,11 @@ public sealed class AgentMemoryService(
 
     /// <inheritdoc />
     public Task<string?> ReadDailyLogForDateAsync(string userId, DateOnly date, CancellationToken ct = default) =>
-        GetStore(userId).ReadAsync($"{DailyDirectoryName}/{date.ToString(DateFormat, CultureInfo.InvariantCulture)}", ct);
+        GetStore(userId).ReadAsync(DailyConceptId(date), ct);
+
+    /// <summary>Names the daily-log concept for a local date.</summary>
+    internal static string DailyConceptId(DateOnly date) =>
+        $"{DailyDirectoryName}/{date.ToString(DateFormat, CultureInfo.InvariantCulture)}";
 
     /// <inheritdoc />
     public Task AppendDailyLogAsync(string userId, string logEntry, TimeZoneInfo? timeZone = null, CancellationToken ct = default)

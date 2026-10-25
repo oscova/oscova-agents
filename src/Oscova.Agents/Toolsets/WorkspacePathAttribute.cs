@@ -4,7 +4,7 @@ using Oscova.Agents.Workspace;
 namespace Oscova.Agents.Toolsets;
 
 /// <summary>
-/// Marks a tool parameter as a workspace path so agent-level directory policy can validate it.
+/// Marks a tool parameter that holds one workspace path or an array of them so agent-level directory policy can validate it.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter)]
 public sealed class WorkspacePathAttribute : Attribute

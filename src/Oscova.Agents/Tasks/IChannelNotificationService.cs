@@ -17,6 +17,8 @@ public interface IChannelNotificationService
     /// <summary>
     /// Hands off the current agent session to this channel, creating a new
     /// conversation thread seeded with the serialized session.
+    /// A null or blank title keeps the channel's default thread title.
     /// </summary>
-    Task HandoffAsync(string userId, string agentId, JsonElement sessionElement, string message, CancellationToken ct = default);
+    Task HandoffAsync(string userId, string agentId, JsonElement sessionElement, string message, string? title,
+        CancellationToken ct = default);
 }

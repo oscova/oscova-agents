@@ -1,5 +1,6 @@
 using Oscova.Agents.Utils;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,13 +19,22 @@ public static class EncryptedFileContent
     public static bool IsEncryptedPath(string path) =>
         path.EndsWith(FileExtension, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>Returns whether stored content starts with the encrypted envelope's version marker, such as <c>v1.</c>.</summary>
+    public static bool HasEnvelopeMarker(ReadOnlySpan<byte> content)
+    {
+        var markerEnd = content.IndexOf((byte)'.');
+        return markerEnd > 1 && content[0] == (byte)'v' &&
+            int.TryParse(content[1..markerEnd], NumberStyles.None, CultureInfo.InvariantCulture, out var version) && version > 0;
+    }
+
     /// <summary>Attempts to decrypt an encrypted-file payload, leaving raw content unchanged on failure.</summary>
     public static bool TryDecrypt(
         string userId,
         string path,
         string content,
         IContentProtector protector,
-        out string plaintext)
+        out string plaintext,
+        string purpose = ProtectionPurpose)
     {
         plaintext = content;
         if (!IsEncryptedPath(path))
@@ -32,7 +42,7 @@ public static class EncryptedFileContent
             return false;
         }
 
-        var decrypted = protector.Unprotect(userId, ProtectionPurpose, content);
+        var decrypted = protector.Unprotect(userId, purpose, content);
         if (decrypted is null)
         {
             return false;

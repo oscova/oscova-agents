@@ -3,6 +3,7 @@ using System.Text.Json;
 using Oscova.Agents.Browsing;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Policies;
+using Oscova.Agents.Toolsets;
 using Oscova.Agents.Utils;
 using Oscova.Agents.Workspace;
 
@@ -90,7 +91,7 @@ public sealed partial class BrowserToolset
     /// <summary>Uploads files authorized by the active run's existing directory grants.</summary>
     [AgentTool, DisplayName("upload"), ToolNetworkScope(NetworkScope.Egress)]
     [Description("Upload files to a website.\npageId must belong to this chat.\npaths must contain 1 to 8 readable files in this run's allowed directories.\nCombined file size must not exceed 32 MiB.\nreference must identify a file input from the last observation, or omit it when a website file chooser is open.\nObtain user confirmation before disclosing sensitive files.")]
-    public async Task<string> Upload([Description("Tab ID from tabs.")] string pageId, [Description("1 to 8 authorized agent-facing file paths, at most 32 MiB total.")] string[] paths,
+    public async Task<string> Upload([Description("Tab ID from tabs.")] string pageId, [Description("1 to 8 authorized agent-facing file paths, at most 32 MiB total.")][WorkspacePath(Access = WorkspacePathAccess.Read)] string[] paths,
         [Description("File-input reference, or omit for an open file chooser.")] string? reference = null, CancellationToken cancellationToken = default)
     {
         await ResolveSessionAsync(cancellationToken).ConfigureAwait(false);
@@ -116,7 +117,7 @@ public sealed partial class BrowserToolset
     [AgentTool, DisplayName("downloads"), ToolNetworkScope(NetworkScope.Egress)]
     [Description("List a tab's downloads or save a completed download.\npageId must belong to this chat.\nTo save, supply downloadId from the list and a new destination file in this run's writable directories.\nExisting files are never overwritten.\nDownloaded files must not exceed 32 MiB.")]
     public async Task<string> Downloads([Description("Tab ID from tabs.")] string pageId, [Description("Completed download ID, or omit to list.")] string? downloadId = null,
-        [Description("New writable agent-facing file path, required with downloadId.")] string? destination = null, CancellationToken cancellationToken = default)
+        [Description("New writable agent-facing file path, required with downloadId.")][WorkspacePath(Access = WorkspacePathAccess.Write)] string? destination = null, CancellationToken cancellationToken = default)
     {
         if (downloadId is null) { return await RunToolAsync(new("downloads", pageId), cancellationToken).ConfigureAwait(false); }
         var session = await ResolveSessionAsync(cancellationToken).ConfigureAwait(false);

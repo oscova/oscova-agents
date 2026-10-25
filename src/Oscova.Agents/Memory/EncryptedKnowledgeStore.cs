@@ -87,6 +87,14 @@ public sealed class EncryptedKnowledgeStore
         return result;
     }
 
+    /// <summary>Reports whether a saved concept has body text, since a formatted read also carries its metadata.</summary>
+    internal async Task<bool> HasBodyAsync(string conceptId, CancellationToken ct = default)
+    {
+        var id = ResolveConceptId(conceptId);
+        var text = await ReadTextAsync(id, ct).ConfigureAwait(false);
+        return text is not null && !string.IsNullOrWhiteSpace(ParseConcept(id, text).Body);
+    }
+
     /// <summary>Searches saved metadata and bodies without embedding calls or a separate index database.</summary>
     public async Task<string> FindAsync(string query, string? excludedDirectory = null, CancellationToken ct = default)
     {
@@ -97,12 +105,7 @@ public sealed class EncryptedKnowledgeStore
         var concepts = new List<Concept>();
         foreach (var id in EnumerateConceptIds())
         {
-            if (excludedDirectory is not null &&
-                (PathHelper.ArePathsEqual(ResolveFile(id), ResolveFile(excludedDirectory)) ||
-                 PathHelper.IsPathWithinDirectory(ResolveFile(id), ResolveDirectory(excludedDirectory))))
-            {
-                continue;
-            }
+            if (IsExcluded(id, excludedDirectory)) { continue; }
             ct.ThrowIfCancellationRequested();
             concepts.Add(ParseConcept(id, (await ReadTextAsync(id, ct).ConfigureAwait(false))!));
         }
@@ -127,6 +130,31 @@ public sealed class EncryptedKnowledgeStore
         var fields = existing is null ? new Dictionary<string, object?>() : ParseConcept(id, existing).Metadata;
         ApplyMetadata(fields, frontmatter);
         return await CommitConceptAsync(id, fields, content, existing is not null).ConfigureAwait(false);
+    }, ct);
+
+    /// <summary>Reads one saved concept's parsed metadata and body, or null when it is absent.</summary>
+    public async Task<(IReadOnlyDictionary<string, object?> Metadata, string Body)?> ReadConceptAsync(string conceptId,
+        CancellationToken ct = default)
+    {
+        var id = ResolveConceptId(conceptId);
+        var text = await ReadTextAsync(id, ct).ConfigureAwait(false);
+        if (text is null) { return null; }
+        var concept = ParseConcept(id, text);
+        return (concept.Metadata, concept.Body);
+    }
+
+    /// <summary>Changes an existing concept's metadata under the store gate, keeping its body and never creating it.</summary>
+    /// <param name="conceptId">Existing concept ID.</param>
+    /// <param name="mutate">Edits the metadata in place and returns null to save, or a message to return without saving.</param>
+    /// <param name="ct">Cancels the wait for the store gate.</param>
+    public Task<string> UpdateAsync(string conceptId, Func<IDictionary<string, object?>, string?> mutate,
+        CancellationToken ct = default) => MutateAsync(async () =>
+    {
+        var id = ResolveConceptId(conceptId);
+        var existing = await ReadTextAsync(id, CancellationToken.None).ConfigureAwait(false);
+        if (existing is null) { return $"Concept not found: {id}."; }
+        var concept = ParseConcept(id, existing);
+        return mutate(concept.Metadata) ?? await CommitConceptAsync(id, concept.Metadata, concept.Body, existed: true).ConfigureAwait(false);
     }, ct);
 
     /// <summary>Appends body text while retaining an existing concept's metadata and complete body.</summary>
@@ -157,6 +185,47 @@ public sealed class EncryptedKnowledgeStore
         await RebuildIndexesCoreAsync(id, new Dictionary<string, string>()).ConfigureAwait(false);
         return $"Deleted concept: {id}.\n" + (references.Count == 0
             ? "No remaining inbound links." : "Remaining inbound links: " + string.Join(", ", references));
+    }, ct);
+
+    /// <summary>Deletes every concept outside an excluded directory and rebuilds the entry index once.</summary>
+    /// <param name="excludedDirectory">Directory kept untouched, such as daily memory, or null for the whole store.</param>
+    /// <param name="snapshot">Replaces the sibling <c>.bak</c> folder with the store's files before deleting.</param>
+    /// <param name="ct">Cancels the wait for the store gate.</param>
+    public Task<string> DeleteAllAsync(string? excludedDirectory, bool snapshot, CancellationToken ct = default) => MutateAsync(async () =>
+    {
+        // Only files the store owns are copied or deleted. Foreign files such as the conversation vector database stay.
+        var ids = EnumerateConceptIds(includeReserved: true).Where(id => !IsExcluded(id, excludedDirectory)).ToArray();
+        if (snapshot)
+        {
+            // The sibling snapshot is a support-only safety net for this bulk delete, so it holds one copy and no versions.
+            if (!PathHelper.TryResolveContainedPath(_userRoot, Path.GetRelativePath(_userRoot, _root) + ".bak", out var target))
+            {
+                throw new UnauthorizedAccessException("Knowledge snapshot is outside the user's directory or contains a linked path.");
+            }
+            if (Directory.Exists(target)) { Directory.Delete(target, recursive: true); }
+            foreach (var id in ids)
+            {
+                var destination = Path.Combine(target, Path.GetRelativePath(_root, ResolveFile(id)));
+                Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+                File.Copy(ResolveFile(id), destination);
+            }
+        }
+
+        // The root index is rewritten below, so only concepts and subdirectory indexes are removed.
+        var removed = ids.Where(id => ParentDirectory(id).Length > 0 || !IsReserved(id)).ToArray();
+        foreach (var id in removed)
+        {
+            await CaptureAsync(id).ConfigureAwait(false);
+            File.Delete(ResolveFile(id));
+        }
+
+        foreach (var directory in removed.SelectMany(Ancestors).Distinct(StringComparer.Ordinal).OrderByDescending(directory => directory.Length))
+        {
+            var path = ResolveDirectory(directory);
+            if (Directory.Exists(path) && !Directory.EnumerateFileSystemEntries(path).Any()) { Directory.Delete(path); }
+        }
+        await RebuildIndexesCoreAsync("index", new Dictionary<string, string>()).ConfigureAwait(false);
+        return $"Deleted {ids.Count(id => !IsReserved(id))} concepts.";
     }, ct);
 
     /// <summary>Validates a complete user-edited concept before committing its encrypted file and indexes.</summary>
@@ -292,7 +361,7 @@ public sealed class EncryptedKnowledgeStore
         return index.ToString();
     }
 
-    private IEnumerable<string> EnumerateConceptIds(string directory = "")
+    private IEnumerable<string> EnumerateConceptIds(string directory = "", bool includeReserved = false)
     {
         var path = ResolveDirectory(directory);
         if (!Directory.Exists(path)) { yield break; }
@@ -300,13 +369,22 @@ public sealed class EncryptedKnowledgeStore
         {
             var id = FileId(file);
             _ = ResolveFile(id);
-            if (!IsReserved(id)) { yield return id; }
+            if (includeReserved || !IsReserved(id)) { yield return id; }
         }
         foreach (var child in Directory.EnumerateDirectories(path))
         {
             var relative = Path.GetRelativePath(_root, child).Replace('\\', '/');
-            foreach (var id in EnumerateConceptIds(relative)) { yield return id; }
+            foreach (var id in EnumerateConceptIds(relative, includeReserved)) { yield return id; }
         }
+    }
+
+    private bool IsExcluded(string id, string? excludedDirectory) => excludedDirectory is not null &&
+        (PathHelper.ArePathsEqual(ResolveFile(id), ResolveFile(excludedDirectory)) ||
+         PathHelper.IsPathWithinDirectory(ResolveFile(id), ResolveDirectory(excludedDirectory)));
+
+    private static IEnumerable<string> Ancestors(string id)
+    {
+        for (var directory = ParentDirectory(id); directory.Length > 0; directory = ParentDirectory(directory)) { yield return directory; }
     }
 
     private Concept ParseConcept(string id, string text)

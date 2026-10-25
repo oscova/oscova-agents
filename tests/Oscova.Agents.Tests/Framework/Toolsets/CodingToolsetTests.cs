@@ -422,13 +422,13 @@ public sealed class CodingToolsetTests : IDisposable
         [
             new(defaultPath, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
             new(researchPath, "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/research"),
-            new(dataPath, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/private"),
+            new(dataPath, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/self"),
             new(referencePath, "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/mnt/reference")
         ]);
 
         toolset.WriteFile("workspace/default/poem.txt", "default");
         toolset.WriteFile("workspace/research/report.txt", "research");
-        toolset.WriteFile("private/drafts/note.txt", "private");
+        toolset.WriteFile("self/drafts/note.txt", "private");
         toolset.WriteFile("mnt/reference/result.txt", "reference");
         toolset.ApplyPatch("""
             *** Begin Patch
@@ -444,7 +444,7 @@ public sealed class CodingToolsetTests : IDisposable
         Assert.Equal("private", File.ReadAllText(Path.Combine(dataPath, "drafts", "note.txt")));
         Assert.Equal("reference", File.ReadAllText(Path.Combine(referencePath, "result.txt")));
         Assert.False(Directory.Exists(Path.Combine(defaultPath, "workspace")));
-        Assert.False(Directory.Exists(Path.Combine(defaultPath, "private")));
+        Assert.False(Directory.Exists(Path.Combine(defaultPath, "self")));
         Assert.False(Directory.Exists(Path.Combine(defaultPath, "mnt")));
     }
 

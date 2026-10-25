@@ -12,6 +12,7 @@ using Oscova.Agents.Plugins.Slack;
 using Oscova.Agents.Tests.TestSupport.TestPlugin;
 using SlackNet;
 using SlackNet.Events;
+using SlackNet.Interaction;
 using Oscova.Agents.Tests.TestSupport;
 
 namespace Oscova.Agents.Plugins.Tests.Slack;
@@ -19,6 +20,45 @@ namespace Oscova.Agents.Plugins.Tests.Slack;
 /// <summary>Checks Slack declarations, protocol boundaries and transport ownership.</summary>
 public sealed class SlackChannelTests
 {
+    [Fact]
+    public async Task NewSlashCommand_AdmitsOnlyOwnersDirectMessageToSharedSink()
+    {
+        var messages = new List<ChannelMessage>();
+        await using var connection = await CreateConnection(receive: messages.Add);
+        var handler = Assert.IsAssignableFrom<ISlashCommandHandler>(connection);
+        SlashCommand Command() => new()
+        {
+            Command = "/new", TeamId = "T_OWNER", ApiAppId = "A_APP", UserId = "U_OWNER", ChannelId = "D_OWNER"
+        };
+        await handler.Handle(Command());
+        Assert.Empty(messages);
+        Ready(connection);
+
+        foreach (var change in new Action<SlashCommand>[]
+        {
+            command => command.TeamId = "T_OTHER", command => command.ApiAppId = "A_OTHER",
+            command => command.UserId = "U_OTHER", command => command.ChannelId = "C_PUBLIC",
+            command => command.Command = "/other", command => command.Text = "extra"
+        })
+        {
+            var command = Command();
+            change(command);
+            await handler.Handle(command);
+        }
+
+        Assert.Empty(messages);
+        await handler.Handle(Command());
+        var admitted = Assert.Single(messages);
+        Assert.Equal("/new", admitted.Text);
+        Assert.Equal("U_OWNER", admitted.SenderId);
+        Assert.Equal("D_OWNER", admitted.ConversationId);
+        Assert.Null(admitted.ThreadId);
+
+        await connection.StopAsync(CancellationToken.None);
+        await handler.Handle(Command());
+        Assert.Single(messages);
+    }
+
     /// <summary>Rejects wrong owners, bot messages, and duplicate Slack event deliveries.</summary>
     [Fact]
     public void EventGuard_AcceptsOnlyAuthorizedOwnerMessageOnce()

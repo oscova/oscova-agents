@@ -113,6 +113,12 @@ public class AgentDefinition
     public IList<AllowedDirectory> AllowedDirectories { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets whether the owner chose to grant this agent the host-wide shared folder.
+    /// The grant applies only while the owner also holds the shared folder permission.
+    /// </summary>
+    public bool IsSharedFolderEnabled { get; set; }
+
+    /// <summary>
     /// Gets or sets whether the definition is visible beyond its owner.
     /// </summary>
     public bool IsShared { get; set; }

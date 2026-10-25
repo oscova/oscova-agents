@@ -19,9 +19,6 @@ namespace Oscova.Agents.Tasks
         /// </summary>
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets whether execution requires a handler registered for the task directory.</summary>
-        public bool RequiresHandler { get; set; }
-
         /// <summary>
         /// Gets or sets the instruction submitted when the task executes.
         /// </summary>

@@ -7,6 +7,7 @@ Answer direct Slack messages from one authorized member in one workspace. The Sl
 ## Configure access
 
 - Create a Slack app with Socket Mode, App Home messages, and the `message.im` bot event.
+- Register `/new` under Slack's **Slash Commands**, add the `commands` bot scope, and reinstall the app.
 - Save its **Bot User OAuth Token** and **App-Level Token** in the plugin-declared **Slack Bot** credential.
 - Open Slack in a browser and copy only the `T`-prefixed workspace ID after `/client/`, stopping at the next slash.
 - In your Slack profile, choose **More > Copy member ID**. Enter it as the **Authorized Slack member ID**.
@@ -19,12 +20,14 @@ Answer direct Slack messages from one authorized member in one workspace. The Sl
 
 ## Use the channel
 
-- Messages, supported files, approvals, and follow-up questions use the selected agent's current conversation.
+- Notifications temporarily route replies to the notified conversation's agent and project for your chat resume window.
+- Send `/new` without arguments in the app's DM to continue with the selected agent in a fresh conversation.
+- If an approval or question is waiting, `/new` cancels that run and its pending prompt first.
 - Saving restarts a running connection and leaves a stopped connection stopped. A failed reconnect keeps the saved settings.
 - Stop and start the bot after replacing a token.
 - Slack remains connected to its external servers even for local-only agents. Local-only runs skip file downloads.
 - Group and shared-channel messages are ignored.
-- Task notifications arrive as a direct message to the authorized member while the bot runs.
+- Chat and task notifications arrive as a direct message to the authorized member while the bot runs.
 - Disabling or removing the plugin removes this panel after restart and keeps its saved configuration.
 
 ## Related

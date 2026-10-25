@@ -40,14 +40,14 @@ public sealed class PathHelperTests
         var path = Path.GetTempPath();
         AllowedDirectory[] grants =
         [
-            new(path, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/private"),
+            new(path, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/self"),
             new(path, "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/research"),
             new(path, "other", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/RESEARCH"),
             new(path, "試験", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/試験")
         ];
         var variables = PathHelper.GetShellRootVariables(grants);
         Assert.Equal(grants.Length, variables.Count);
-        Assert.Same(grants[0], variables["ROOT_PRIVATE"]);
+        Assert.Same(grants[0], variables["ROOT_SELF"]);
         Assert.Same(grants[1], variables["ROOT_WORKSPACE_RESEARCH"]);
         Assert.Same(grants[2], variables["ROOT_EXTRA_2"]);
         Assert.Same(grants[3], variables["ROOT_EXTRA_3"]);
@@ -249,11 +249,11 @@ public sealed class PathHelperTests
         string dataPath = Path.Combine(Path.GetTempPath(), "agent-data");
         AllowedDirectory[] allowedDirectories =
         [
-            new(dataPath, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/private")
+            new(dataPath, "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/self")
         ];
 
         bool resolved = PathHelper.TryResolveToHostPath(
-            "/private/notes.md",
+            "/self/notes.md",
             allowedDirectories,
             dataPath,
             out string hostPath);
@@ -296,7 +296,7 @@ public sealed class PathHelperTests
     [InlineData("workspace/research/out.txt", "research", "out.txt")]
     [InlineData("./workspace/research/out.txt", "research", "out.txt")]
     [InlineData("/workspace//research/./drafts/out.txt", "research", "drafts/out.txt")]
-    [InlineData("private/notes/out.txt", "private", "notes/out.txt")]
+    [InlineData("self/notes/out.txt", "private", "notes/out.txt")]
     [InlineData("/mnt/reference/out.txt", "reference", "out.txt")]
     public void TryResolveToHostPath_MapsLogicalAliasesInEveryMode(
         string requestedPath,
@@ -308,7 +308,7 @@ public sealed class PathHelperTests
         [
             new(Path.Combine(root, "default"), "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
             new(Path.Combine(root, "research"), "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/research"),
-            new(Path.Combine(root, "private"), "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/private"),
+            new(Path.Combine(root, "private"), "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/self"),
             new(Path.Combine(root, "reference"), "reference", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, AgentPath: "/mnt/reference")
         ];
 
@@ -326,10 +326,34 @@ public sealed class PathHelperTests
     }
 
     [Theory]
+    [InlineData("/shared/types.ts", true)]
+    [InlineData("shared/types.ts", false)]
+    [InlineData("./shared/types.ts", false)]
+    public void TryResolveToHostPath_MapsOnlyRootedSharedPathsToTheSharedFolder(string requestedPath, bool expectsShared)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "shared-routes");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new(Path.Combine(root, "project"), "project", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
+            new(Path.Combine(root, "host-shared"), "shared", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: PathHelper.SharedAgentPath)
+        ];
+
+        bool resolved = PathHelper.TryResolveToHostPath(requestedPath, allowedDirectories, allowedDirectories[0].Value, out string hostPath);
+
+        Assert.True(resolved);
+        string expected = expectsShared
+            ? Path.Combine(allowedDirectories[1].Value, "types.ts")
+            : Path.Combine(allowedDirectories[0].Value, "shared", "types.ts");
+        Assert.Equal(Path.GetFullPath(expected), hostPath);
+        Assert.Equal(expectsShared ? 1 : 0, PathHelper.GetAgentPathRoots(requestedPath, allowedDirectories).Count);
+    }
+
+    [Theory]
     [InlineData("workspace/missing/out.txt")]
     [InlineData("workspace/research-copy/out.txt")]
+    [InlineData("self/out.txt")]
     [InlineData("private/out.txt")]
-    [InlineData("/private/../workspace/default/out.txt")]
+    [InlineData("/self/../workspace/default/out.txt")]
     [InlineData("mnt/reference/../../out.txt")]
     public void TryResolveToHostPath_RejectsUnknownOrEscapingLogicalAliases(string requestedPath)
     {
@@ -374,6 +398,48 @@ public sealed class PathHelperTests
             Assert.Equal(hostPath, PathHelper.ResolveAuthorizedHostPath(
                 "mnt/archive/out.txt", allowedDirectories, WorkspacePathAccess.Read));
         }
+    }
+
+    /// <summary>Proves the retired /private root refuses old paths while a granted native folder under the real /private still resolves.</summary>
+    [SkippableTheory]
+    [InlineData("private/notes/out.txt", false)]
+    [InlineData("/private/notes/out.txt", false)]
+    [InlineData("/private/var/tmp/oscova/workspace/default/out.txt", true)]
+    public void TryResolveToHostPath_OnUnixRefusesRetiredPrivateRootOutsideNativeGrants(string requestedPath, bool expected)
+    {
+        Skip.If(OperatingSystem.IsWindows(), "Rooted native paths under /private require Unix path semantics.");
+        AllowedDirectory[] allowedDirectories =
+        [
+            new("/private/var/tmp/oscova/workspace/default", "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: "/workspace/default"),
+            new("/private/var/tmp/oscova/agents/main/private", "private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, AgentPath: PathHelper.SelfAgentPath)
+        ];
+
+        bool resolved = PathHelper.TryResolveToHostPath(
+            requestedPath,
+            allowedDirectories,
+            allowedDirectories[0].Value,
+            out string hostPath);
+
+        Assert.Equal(expected, resolved);
+        Assert.Equal(expected ? requestedPath : string.Empty, hostPath);
+    }
+
+    /// <summary>Proves stored paths under the retired own-folder root map to /self and every other path passes through.</summary>
+    [Theory]
+    [InlineData("private", "/self")]
+    [InlineData("/private", "/self")]
+    [InlineData("/private/report.md", "/self/report.md")]
+    [InlineData("private/notes/a.md", "/self/notes/a.md")]
+    [InlineData("/private/var/tmp/x/agents/main/private/report.md", "/self/var/tmp/x/agents/main/private/report.md")]
+    [InlineData("/self/report.md", "/self/report.md")]
+    [InlineData("/private-archive/x", "/private-archive/x")]
+    [InlineData("privatex/a.md", "privatex/a.md")]
+    [InlineData("/workspace/default/private/x", "/workspace/default/private/x")]
+    [InlineData("/project/private/x", "/project/private/x")]
+    [InlineData("C:/Users/owner/private/a.md", "C:/Users/owner/private/a.md")]
+    public void MapRetiredSelfAgentPath_MapsOnlyTheRetiredRoot(string path, string expected)
+    {
+        Assert.Equal(expected, PathHelper.MapRetiredSelfAgentPath(path));
     }
 
     [Theory]

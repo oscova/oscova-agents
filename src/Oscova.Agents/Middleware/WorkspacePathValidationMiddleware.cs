@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.Extensions.AI;
@@ -54,30 +55,31 @@ public static class WorkspacePathValidationMiddleware
         {
             WorkspacePathAttribute? workspaceAttribute = parameter.GetCustomAttribute<WorkspacePathAttribute>();
             if (workspaceAttribute is null || string.IsNullOrWhiteSpace(parameter.Name)) { continue; }
-            ValidatePath(GetPathArgument(parameter.Name, arguments), workspaceAttribute.Access, allowedDirectories);
+            foreach (string path in GetPathArguments(parameter.Name, arguments))
+            {
+                ValidatePath(path, workspaceAttribute.Access, allowedDirectories);
+            }
         }
     }
 
-    private static string? GetPathArgument(string parameterName, AIFunctionArguments arguments)
+    /// <summary>Reads the nonblank paths passed to a workspace path parameter, which may hold one path or an array of paths.</summary>
+    public static IEnumerable<string> GetPathArguments(string parameterName, IReadOnlyDictionary<string, object?> arguments)
     {
         if (!arguments.TryGetValue(parameterName, out object? rawValue) || rawValue is null)
         {
-            return null;
+            return [];
         }
 
-        if (rawValue is string stringValue)
+        IEnumerable<string?> paths = rawValue switch
         {
-            return stringValue;
-        }
-
-        if (rawValue is JsonElement jsonElement)
-        {
-            return jsonElement.ValueKind == JsonValueKind.Null
-                ? null
-                : jsonElement.GetString();
-        }
-
-        return rawValue.ToString();
+            string stringValue => [stringValue],
+            JsonElement { ValueKind: JsonValueKind.Null } => [],
+            JsonElement { ValueKind: JsonValueKind.Array } array => array.EnumerateArray().Select(item => item.GetString()),
+            JsonElement jsonElement => [jsonElement.GetString()],
+            IEnumerable<string?> values => values,
+            _ => [rawValue.ToString()]
+        };
+        return paths.Where(path => !string.IsNullOrWhiteSpace(path)).Select(path => path!);
     }
 
     private static void ValidatePath(

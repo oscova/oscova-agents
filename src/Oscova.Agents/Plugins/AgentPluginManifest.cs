@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Oscova.Agents.Plugins;
 
@@ -24,6 +26,13 @@ public sealed class AgentPluginManifest
 
     /// <summary>Gets the declared supported framework package range for admission by the harness.</summary>
     public string FrameworkVersionRange { get; init; } = string.Empty;
+
+    /// <summary>Gets the supported release runtime identifiers. An absent list permits every release platform.</summary>
+    public IReadOnlyList<string>? SupportedRuntimeIdentifiers { get; init; }
+
+    /// <summary>Checks whether the plugin declares support for the supplied release runtime identifier.</summary>
+    public bool SupportsRuntimeIdentifier(string runtimeIdentifier) =>
+        SupportedRuntimeIdentifiers?.Contains(runtimeIdentifier, StringComparer.Ordinal) ?? true;
 
     /// <summary>
     /// Gets the plugin assembly path relative to the manifest directory.

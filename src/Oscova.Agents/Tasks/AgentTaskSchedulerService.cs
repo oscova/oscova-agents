@@ -151,7 +151,7 @@ public sealed class AgentTaskSchedulerService(
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Error evaluating/starting task '{TaskName}' (ID: {TaskId})", task.Name, task.Id);
+                    logger.LogError(ex, "Error evaluating/starting task {TaskId}", task.Id);
                 }
             }
         }
@@ -241,8 +241,7 @@ public sealed class AgentTaskSchedulerService(
                     runPersisted = await PersistRunAsync(run).ConfigureAwait(false);
                 }
                 logger.LogDebug(
-                    "Task '{TaskName}' (ID: {TaskId}) finished with status {Status}",
-                    task.Name,
+                    "Task {TaskId} finished with status {Status}",
                     task.Id,
                     run.Status);
 
@@ -316,14 +315,13 @@ public sealed class AgentTaskSchedulerService(
             if (executorReturned)
             {
                 logger.LogWarning(
-                    "Task scheduler stopped while finalizing task '{TaskName}' (ID: {TaskId}); preserving its returned status.",
-                    task.Name,
+                    "Task scheduler stopped while finalizing task {TaskId}; preserving its returned status.",
                     task.Id);
                 await PreserveReturnedRunAsync(task, statusNotificationSent).ConfigureAwait(false);
                 return;
             }
 
-            logger.LogDebug("Task '{TaskName}' (ID: {TaskId}) was cancelled.", task.Name, task.Id);
+            logger.LogDebug("Task {TaskId} was cancelled.", task.Id);
 
             if (_runningTasks.TryGetValue(taskKey, out var cancelledRun))
             {
@@ -342,14 +340,13 @@ public sealed class AgentTaskSchedulerService(
             {
                 logger.LogError(
                     ex,
-                    "Task '{TaskName}' (ID: {TaskId}) returned a terminal status, but post-execution bookkeeping failed.",
-                    task.Name,
+                    "Task {TaskId} returned a terminal status, but post-execution bookkeeping failed.",
                     task.Id);
                 await PreserveReturnedRunAsync(task, statusNotificationSent).ConfigureAwait(false);
                 return;
             }
 
-            logger.LogError(ex, "Error executing task '{TaskName}' (ID: {TaskId})", task.Name, task.Id);
+            logger.LogError(ex, "Error executing task {TaskId}", task.Id);
 
             if (_runningTasks.TryGetValue(taskKey, out var failedRun))
             {
@@ -756,7 +753,7 @@ public sealed class AgentTaskSchedulerService(
                     t => logger.LogWarning(t.Exception, "Failed to send task status notification for task '{TaskId}'.", task.Id),
                     TaskContinuationOptions.OnlyOnFaulted);
 
-                logger.LogDebug("Starting task '{TaskName}' (ID: {TaskId}) via {Source}", task.Name, task.Id, source);
+                logger.LogDebug("Starting task {TaskId} via {Source}", task.Id, source);
 
                 var executionCancellation = CancellationTokenSource.CreateLinkedTokenSource(
                     _executionLifetimeCancellation.Token, userRun.CancellationToken);

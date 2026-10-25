@@ -104,7 +104,6 @@ public sealed class EnvironmentContextProvider : AIContextProvider
 
         Use `working_directory` as the default base for relative paths.
         Use the exact directory paths listed above; user workspace labels identify the user's files.
-        User facts, decisions, and preferences belong in memory tools.
         Only read or modify files inside the directories listed above.
         A path that resolves outside those directories is unavailable: tell the user it is outside your workspace instead of trying other spellings.
         When asked to write, create, or save a file, always use your available file tools; do not output file content as text.
@@ -181,7 +180,7 @@ public sealed class EnvironmentContextProvider : AIContextProvider
             };
         }
         string prompt = SystemPrompt ?? DefaultEnvironmentPrompt;
-        var privateDirectories = workspaceDirectories.Where(static directory => directory.AgentPath == "/private").ToArray();
+        var privateDirectories = workspaceDirectories.Where(static directory => directory.AgentPath == PathHelper.SelfAgentPath).ToArray();
         var shellRoots = PathHelper.GetShellRootVariables(ShellDirectories ?? workspaceDirectories);
         string workingDirectory = runtimeEnvironment.WorkingDirectory;
         if (workspaceDirectories.Count > 0 &&
@@ -203,7 +202,7 @@ public sealed class EnvironmentContextProvider : AIContextProvider
             host_architecture = hostEnvironment.Architecture,
             host_shell = hostEnvironment.Shell,
             host_path_separator = hostEnvironment.PathSeparator,
-            workspace_directories = BuildWorkspaceDirectoryList(workspaceDirectories.Where(static directory => directory.AgentPath != "/private").ToArray()),
+            workspace_directories = BuildWorkspaceDirectoryList(workspaceDirectories.Where(static directory => directory.AgentPath != PathHelper.SelfAgentPath).ToArray()),
             private_directories = BuildWorkspaceDirectoryList(privateDirectories),
             has_private_directory = privateDirectories.Length > 0,
             workspace_has_aliases = workspaceDirectories.Any(static directory => !string.IsNullOrWhiteSpace(directory.AgentPath)),

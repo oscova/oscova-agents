@@ -31,9 +31,6 @@ public sealed class AgentTaskDefinitionFile
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? InstructionMode { get; set; }
 
-    /// <summary>Gets or sets whether execution requires a handler registered for the task directory.</summary>
-    public bool RequiresHandler { get; set; }
-
     /// <summary>
     /// Gets or sets the agent identifier that executes the task.
     /// </summary>

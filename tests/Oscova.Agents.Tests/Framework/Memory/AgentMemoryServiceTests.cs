@@ -196,6 +196,39 @@ public sealed class AgentMemoryServiceTests : IDisposable
         }
         finally { if (Directory.Exists(memoryPath)) { Directory.Delete(memoryPath); } }
     }
+    /// <summary>Proves a scoped delete keeps daily memory and foreign files, captures each deleted file, and overwrites its one sibling snapshot.</summary>
+    [Fact]
+    public async Task DeleteAll_ReplacesSnapshotAndKeepsDailyAndForeignFiles()
+    {
+        var backups = new RecordingBackupService();
+        var service = CreateService(backups);
+        var store = service.GetStore(_userId);
+        await store.SaveAsync("first", Metadata("First"), "one");
+        await store.SaveAsync("topic/second", Metadata("Second"), "two");
+        await store.SaveAsync("daily/2026-08-02", new Dictionary<string, object?> { ["type"] = "Daily Memory" }, "Kept daily entry.");
+        await File.WriteAllTextAsync(GetUserPath("memory/vectors.db"), "foreign");
+
+        backups.Paths.Clear();
+        Assert.Equal("Deleted 2 concepts.", await store.DeleteAllAsync(AgentMemoryService.DailyDirectoryName, snapshot: true).WaitAsync(TimeSpan.FromSeconds(30)));
+        Assert.Single(backups.Paths, path => path == "memory/first.md.enc");
+        Assert.Single(backups.Paths, path => path == "memory/topic/second.md.enc");
+
+        await store.SaveAsync("third", Metadata("Third"), "three");
+        Assert.Equal("Deleted 1 concepts.", await store.DeleteAllAsync(AgentMemoryService.DailyDirectoryName, snapshot: true).WaitAsync(TimeSpan.FromSeconds(30)));
+
+        var snapshot = GetUserPath("memory.bak");
+        var copied = Directory.EnumerateFiles(snapshot, "*", SearchOption.AllDirectories)
+            .Select(file => Path.GetRelativePath(snapshot, file).Replace('\\', '/')).ToArray();
+        Assert.Contains("third.md.enc", copied);
+        Assert.DoesNotContain(copied, file => file.StartsWith("first", StringComparison.Ordinal) || file.StartsWith("topic/", StringComparison.Ordinal) ||
+            file.StartsWith("daily/", StringComparison.Ordinal) || file == "vectors.db");
+        Assert.Equal("foreign", await File.ReadAllTextAsync(GetUserPath("memory/vectors.db")));
+        Assert.Contains("Kept daily entry.", (await service.ReadDailyLogAsync(_userId)).Content);
+        Assert.False(Directory.Exists(GetUserPath("memory/topic")));
+        Assert.DoesNotContain(store.ListConceptIds(string.Empty), id => !id.StartsWith("daily/", StringComparison.Ordinal));
+        Assert.DoesNotContain("third", await store.ReadAsync());
+    }
+
     private AgentMemoryService CreateService(
         IUserFileBackupService? backups = null,
         Func<string, string>? rootResolver = null,
@@ -233,6 +266,26 @@ public sealed class AgentMemoryServiceTests : IDisposable
     {
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         await File.WriteAllTextAsync(path, _protector.Protect(_userId, EncryptedFileContent.ProtectionPurpose, content));
+    }
+
+    private sealed class RecordingBackupService : IUserFileBackupService
+    {
+        public List<string> Paths { get; } = [];
+
+        public Task<UserFileBackupCaptureResult> CaptureBeforeMutationAsync(string userId, string relativePath, CancellationToken ct = default)
+        {
+            Paths.Add(relativePath);
+            return Task.FromResult(new UserFileBackupCaptureResult(UserFileBackupCaptureStatus.SkippedMissing, null));
+        }
+
+        public Task<IReadOnlyList<UserFileBackupEntry>> ListBackupsAsync(string userId, string relativePath, CancellationToken ct = default) =>
+            Task.FromResult<IReadOnlyList<UserFileBackupEntry>>([]);
+
+        public Task<UserFileBackupContent> ReadBackupAsync(string userId, string relativePath, string backupId, CancellationToken ct = default) =>
+            throw new FileNotFoundException();
+
+        public Task<UserFileBackupEntry> RestoreBackupAsync(string userId, string relativePath, string backupId, CancellationToken ct = default) =>
+            throw new FileNotFoundException();
     }
 
     private sealed class CoordinatedBackupService : IUserFileBackupService
