@@ -127,6 +127,11 @@ public sealed class AgentDefinitionFile
     /// Gets or sets explicit directory access entries allowed for the agent.
     /// </summary>
     public IList<AllowedDirectoryFile> AllowedDirectories { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets whether the owner granted the agent the host-wide shared folder. Missing means off.
+    /// </summary>
+    public bool IsSharedFolderEnabled { get; set; }
 }
 
 /// <summary>

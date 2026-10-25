@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Middleware;
 using Oscova.Agents.Toolsets;
@@ -121,6 +122,24 @@ public sealed class WorkspacePathValidationMiddlewareTests : IDisposable
         var write = CreateInvocationContext(nameof(CodingToolset.WriteFile), "file_path", Path.Combine(_workspacePath, "notes.txt"));
         Assert.Throws<UnauthorizedAccessException>(() => WorkspacePathValidationMiddleware.ValidateWorkspaceArguments(write.Function, write.Arguments, readOnly));
         Assert.False(File.Exists(Path.Combine(_workspacePath, "notes.txt")));
+    }
+
+    /// <summary>A path array, as a model sends it or as a direct caller passes it, yields every nonblank path.</summary>
+    [Fact]
+    public void GetPathArguments_ReadsEachPathOfAnArray()
+    {
+        Dictionary<string, object?> arguments = new()
+        {
+            ["json"] = JsonDocument.Parse("""["/shared/a.txt", "", "b.txt"]""").RootElement,
+            ["array"] = new[] { "/shared/a.txt", " ", "b.txt" },
+            ["single"] = "c.txt",
+            ["missing"] = null
+        };
+
+        Assert.Equal(["/shared/a.txt", "b.txt"], WorkspacePathValidationMiddleware.GetPathArguments("json", arguments));
+        Assert.Equal(["/shared/a.txt", "b.txt"], WorkspacePathValidationMiddleware.GetPathArguments("array", arguments));
+        Assert.Equal(["c.txt"], WorkspacePathValidationMiddleware.GetPathArguments("single", arguments));
+        Assert.Empty(WorkspacePathValidationMiddleware.GetPathArguments("missing", arguments));
     }
 
     private static FunctionInvocationContext CreateInvocationContext(

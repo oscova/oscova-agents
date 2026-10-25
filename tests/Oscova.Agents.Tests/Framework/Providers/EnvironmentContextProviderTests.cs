@@ -1,15 +1,58 @@
 using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
+using Oscova.Agents.Collections;
+using Oscova.Agents.Toolsets;
 using Oscova.Agents.Providers;
 using Oscova.Agents.Workspace;
 using System.Reflection;
 
 namespace Oscova.Agents.Tests.Framework.Providers;
 
+#pragma warning disable MAAI001 // Exercises the public context pipeline with an exposed tool set.
+
 /// <summary>
 /// Verifies the environment provider's prompt-template contract.
 /// </summary>
 public sealed class EnvironmentContextProviderTests
 {
+    /// <summary>A host shell discovered mid-turn still receives host facts rather than only sandbox facts.</summary>
+    [Fact]
+    public async Task DiscoveredHostShell_KeepsHostFactsInTheLiveRequest()
+    {
+        var tools = new AgentToolCollection();
+        tools.Add(new HostShellToolset(_ => throw new NotSupportedException()));
+        var discovery = new ToolSearchProvider([HostShellToolset.QualifiedToolName], [], tools,
+            new AgentToolResolver(tools), new LexicalToolSearchStrategy());
+        var environment = new EnvironmentContextProvider
+        {
+            RuntimeEnvironment = new("Linux", "X64", "/bin/sh", "/", "/workspace/default", "/home", "/tmp", false),
+            HostEnvironment = new("Windows", "X64", "pwsh", "\\", "C:\\work", "C:\\Users", "C:\\Temp")
+        };
+        int requests = 0;
+        using var client = new TestChatClient
+        {
+            ResponseAsync = (messages, options, _) =>
+            {
+                requests++;
+                if (requests == 1)
+                {
+                    Assert.DoesNotContain(options!.Tools!, tool => tool.Name == HostShellToolset.QualifiedToolName);
+                    return Task.FromResult(new ChatResponse(new ChatMessage(ChatRole.Assistant,
+                        [new FunctionCallContent("discover", ToolSearchProvider.SearchToolName,
+                            new Dictionary<string, object?> { ["query"] = "host shell" })])));
+                }
+
+                Assert.Contains(options!.Tools!, tool => tool.Name == HostShellToolset.QualifiedToolName);
+                Assert.Contains("host_os: Windows", options.Instructions, StringComparison.Ordinal);
+                return Task.FromResult(new ChatResponse(new ChatMessage(ChatRole.Assistant, "ready")));
+            }
+        };
+        var agent = new ChatClientAgent(client, new ChatClientAgentOptions { AIContextProviders = [discovery, environment] });
+
+        await agent.RunAsync("Use the host shell");
+
+        Assert.Equal(2, requests);
+    }
 
     /// <summary>Notify channel ids appear only when the host supplies them.</summary>
     [Fact]
@@ -35,7 +78,7 @@ public sealed class EnvironmentContextProviderTests
             new(Path.Combine(root, "workspace", "default"), "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/default"),
             new(Path.Combine(root, "workspace", "library"), "library", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadOnly, "/workspace/library"),
             new(Path.Combine(root, "workspace", "research"), "research", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/workspace/research"),
-            new(privateRoot, "Server workspace: private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/private")
+            new(privateRoot, "Server workspace: private", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite, "/self")
         ])
         {
             RuntimeEnvironment = new("test-os", "X64", "test-shell", "/", "/workspace/default", "/home", "/tmp", usesHostPaths)
@@ -48,11 +91,11 @@ public sealed class EnvironmentContextProviderTests
         Assert.Contains("- library (`ro`):", sections[0]);
         Assert.Contains("- research (`rw`):", sections[0]);
         Assert.DoesNotContain("- Server workspace: private", sections[0]);
-        Assert.Contains("- Server workspace: private (`rw`): /private", sections[1]);
+        Assert.Contains("- Server workspace: private (`rw`): /self", sections[1]);
         Assert.Contains("This is your own private folder.", sections[1]);
         Assert.Contains("It persists across runs and chats", sections[1]);
         Assert.DoesNotContain(privateRoot, instructions, StringComparison.Ordinal);
-        Assert.Contains("ROOT_PRIVATE: /private", instructions, StringComparison.Ordinal);
+        Assert.Contains("ROOT_SELF: /self", instructions, StringComparison.Ordinal);
         Assert.Contains("ROOT_WORKSPACE_RESEARCH: /workspace/research", instructions, StringComparison.Ordinal);
     }
 

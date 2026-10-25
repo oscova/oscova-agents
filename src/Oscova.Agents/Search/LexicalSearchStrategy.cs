@@ -134,6 +134,12 @@ public static class LexicalSearchStrategy
             builder.Append(char.ToLowerInvariant(text[index]));
         }
 
+        // Drop a plural "s" so "tab" matches "tabs"; "ss" endings such as "process" stay whole.
+        if (builder.Length > 3 && builder[^1] == 's' && builder[^2] != 's')
+        {
+            builder.Length--;
+        }
+
         return builder.ToString();
     }
 }

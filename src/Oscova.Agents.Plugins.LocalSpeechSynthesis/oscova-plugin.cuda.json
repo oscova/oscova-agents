@@ -3,6 +3,7 @@
   "name": "Oscova Local Speech Synthesis NVIDIA CUDA",
   "version": "$version$",
   "frameworkVersionRange": "[$frameworkVersion$]",
+  "supportedRuntimeIdentifiers": ["win-x64", "linux-x64"],
   "assembly": "Oscova.Agents.Plugins.LocalSpeechSynthesis.dll",
   "entryType": "Oscova.Agents.Plugins.LocalSpeechSynthesis.LocalSpeechSynthesisAgentPlugin"
 }

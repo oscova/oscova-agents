@@ -169,6 +169,11 @@ public sealed class AgentPluginLoader
                 return InvalidInspection(manifestPath, manifest, validationMessage);
             }
 
+            if (!manifest!.SupportsRuntimeIdentifier(SupportedRuntimeIdentifier))
+            {
+                return InvalidInspection(manifestPath, manifest, $"Plugin '{manifest.Id}' is not available on this platform ({SupportedRuntimeIdentifier}).");
+            }
+
             var manifestDirectory = Path.GetDirectoryName(Path.GetFullPath(manifestPath))!;
             if (!TryResolveAssemblyPath(manifestDirectory, manifest!.Assembly, out var assemblyPath, out var assemblyPathError))
             {

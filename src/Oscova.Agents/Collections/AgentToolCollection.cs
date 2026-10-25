@@ -1,5 +1,6 @@
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Policies;
+using Oscova.Agents.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ public class AgentToolCollection : ICollection<AIFunction>
     private readonly Dictionary<string, string> _serverNamesByQualifiedName =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _originalNamesByQualifiedName =
+        new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _serverIdsByQualifiedName =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ToolApprovalMode> _defaultApprovalModesByQualifiedName =
         new(StringComparer.OrdinalIgnoreCase);
@@ -79,18 +82,21 @@ public class AgentToolCollection : ICollection<AIFunction>
     /// <param name="serverName">The external server or provider name that supplied the tool.</param>
     /// <param name="originalName">The tool name before framework qualification.</param>
     /// <param name="networkScope">The tool's declared network scope.</param>
+    /// <param name="serverId">The supplying server's stable id, when it has one.</param>
     public void Add(
         AIFunction item,
         string serverName,
         string originalName,
-        NetworkScope networkScope = NetworkScope.None)
+        NetworkScope networkScope = NetworkScope.None,
+        string? serverId = null)
     {
         ArgumentNullException.ThrowIfNull(item);
         AddCore(
             item,
             ToolNaming.NormalizeQualifier(serverName),
             ToolNaming.NormalizeToolName(originalName),
-            networkScope: networkScope);
+            networkScope: networkScope,
+            serverId: serverId);
     }
 
     private void AddCore(
@@ -98,7 +104,8 @@ public class AgentToolCollection : ICollection<AIFunction>
         string serverName,
         string originalName,
         ToolApprovalMode defaultApprovalMode = ToolApprovalMode.Default,
-        NetworkScope networkScope = NetworkScope.None)
+        NetworkScope networkScope = NetworkScope.None,
+        string? serverId = null)
     {
         lock (_gate)
         {
@@ -114,6 +121,7 @@ public class AgentToolCollection : ICollection<AIFunction>
             _defaultApprovalModesByQualifiedName[item.Name] = defaultApprovalMode;
             _declaredNetworkScopeByQualifiedName[item.Name] = networkScope;
             _networkScopeByQualifiedName[item.Name] = networkScope;
+            if (serverId is not null) { _serverIdsByQualifiedName[item.Name] = serverId; }
         }
     }
 
@@ -159,6 +167,7 @@ public class AgentToolCollection : ICollection<AIFunction>
                 CopyDictionary(source._toolsByQualifiedName, _toolsByQualifiedName);
                 CopyDictionary(source._serverNamesByQualifiedName, _serverNamesByQualifiedName);
                 CopyDictionary(source._originalNamesByQualifiedName, _originalNamesByQualifiedName);
+                CopyDictionary(source._serverIdsByQualifiedName, _serverIdsByQualifiedName);
                 CopyDictionary(source._defaultApprovalModesByQualifiedName, _defaultApprovalModesByQualifiedName);
                 CopyDictionary(source._declaredNetworkScopeByQualifiedName, _declaredNetworkScopeByQualifiedName);
                 CopyDictionary(source._networkScopeByQualifiedName, _networkScopeByQualifiedName);
@@ -447,6 +456,25 @@ public class AgentToolCollection : ICollection<AIFunction>
         }
     }
 
+    /// <summary>
+    /// Gets the source identity of a tool supplied by an identified external server.
+    /// </summary>
+    /// <param name="qualifiedName">The qualified tool name.</param>
+    /// <returns>The metadata, or <see langword="null"/> when the tool was not added with a server id.</returns>
+    public ExternalToolMetadata? GetExternalToolMetadata(string qualifiedName)
+    {
+        lock (_gate)
+        {
+            return _serverIdsByQualifiedName.TryGetValue(qualifiedName, out var serverId)
+                ? new ExternalToolMetadata(
+                    _serverNamesByQualifiedName[qualifiedName],
+                    _originalNamesByQualifiedName[qualifiedName],
+                    _networkScopeByQualifiedName[qualifiedName],
+                    serverId)
+                : null;
+        }
+    }
+
     /// <inheritdoc />
     public bool Contains(AIFunction item)
     {
@@ -497,6 +525,7 @@ public class AgentToolCollection : ICollection<AIFunction>
             _tools.Remove(fn);
             _serverNamesByQualifiedName.Remove(qualifiedName);
             _originalNamesByQualifiedName.Remove(qualifiedName);
+            _serverIdsByQualifiedName.Remove(qualifiedName);
             _defaultApprovalModesByQualifiedName.Remove(qualifiedName);
             _declaredNetworkScopeByQualifiedName.Remove(qualifiedName);
             _networkScopeByQualifiedName.Remove(qualifiedName);
@@ -519,6 +548,7 @@ public class AgentToolCollection : ICollection<AIFunction>
         _toolsByQualifiedName.Clear();
         _serverNamesByQualifiedName.Clear();
         _originalNamesByQualifiedName.Clear();
+        _serverIdsByQualifiedName.Clear();
         _defaultApprovalModesByQualifiedName.Clear();
         _declaredNetworkScopeByQualifiedName.Clear();
         _networkScopeByQualifiedName.Clear();

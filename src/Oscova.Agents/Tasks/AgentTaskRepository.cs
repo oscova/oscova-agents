@@ -461,7 +461,6 @@ public sealed class AgentTaskRepository(
         {
             Id = file.Id,
             Name = file.Name,
-            RequiresHandler = file.RequiresHandler,
             Instruction = body,
             InstructionSource = file.InstructionSource,
             InstructionMode = file.InstructionMode,
@@ -494,7 +493,6 @@ public sealed class AgentTaskRepository(
             Name = task.Name,
             InstructionSource = task.InstructionSource,
             InstructionMode = task.InstructionMode,
-            RequiresHandler = task.RequiresHandler,
             AgentId = task.AgentId,
             ModelOverrideId = task.ModelOverrideId,
             Schedule = MapScheduleToFile(task.Schedule),

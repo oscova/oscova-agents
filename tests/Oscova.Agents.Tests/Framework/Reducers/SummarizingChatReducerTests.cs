@@ -6,6 +6,57 @@ namespace Oscova.Agents.Tests.Framework.Reducers;
 
 public sealed class SummarizingChatReducerTests
 {
+    /// <summary>Rewritten Anthropic history drops bound thinking while preserving retained text and tool pairs.</summary>
+    [Theory]
+    [InlineData("anthropic", false, true)]
+    [InlineData("anthropic", true, true)]
+    [InlineData("openai", false, false)]
+    public async Task Compaction_RemovesOnlyInvalidatedAnthropicReasoning(string provider, bool force, bool removesReasoning)
+    {
+        // Arrange: the old tool exchange is rewritten before a retained, signed tool exchange.
+        using var client = new ProviderMetadataChatClient(new TestChatClient(), provider);
+        var reducer = new OscovaSummarizingChatReducer(client, maxTokenCount: 400);
+        var reasoning = new TextReasoningContent(string.Empty) { ProtectedData = "original-prefix-signature" };
+        var text = new TextContent("Looking up the answer");
+        var call = new FunctionCallContent("retained-call", "lookup", new Dictionary<string, object?>());
+        var result = new FunctionResultContent("retained-call", "answer");
+        var retained = new ChatMessage(ChatRole.Assistant, [reasoning, text, call]);
+        var history = CreateToolHeavyHistory(new string('x', 8000), recentAssistant: retained);
+        history.Insert(history.Count - 2, new ChatMessage(ChatRole.Tool, [result]));
+        history.Insert(history.Count - 2, new ChatMessage(ChatRole.Assistant,
+            [new TextReasoningContent(string.Empty) { ProtectedData = "signed-only-message" }]));
+
+        // Act: cover automatic tool stripping and explicit summary replacement.
+        var reduced = (force
+            ? await reducer.CompactAsync(history)
+            : await reducer.ReduceAsync(history, CancellationToken.None)).ToList();
+
+        // Assert: the original history is immutable and only invalidated thinking is removed.
+        var contents = reduced.SelectMany(message => message.Contents).ToList();
+        Assert.Equal(!removesReasoning, contents.Contains(reasoning));
+        Assert.Contains(text, contents);
+        Assert.Contains(call, contents);
+        Assert.Contains(result, contents);
+        Assert.Contains(reasoning, retained.Contents);
+        Assert.All(reduced, message => Assert.NotEmpty(message.Contents));
+
+        var freshReasoning = new TextReasoningContent("Fresh reasoning") { ProtectedData = "new-prefix-signature" };
+        reduced.Add(new ChatMessage(ChatRole.Assistant, [freshReasoning]));
+        var unchanged = await reducer.ReduceAsync(reduced, CancellationToken.None);
+        Assert.Contains(freshReasoning, unchanged.SelectMany(message => message.Contents));
+    }
+
+    /// <summary>Supplies the SDK metadata used to distinguish provider replay contracts.</summary>
+    private sealed class ProviderMetadataChatClient(IChatClient inner, string provider) : DelegatingChatClient(inner)
+    {
+        public override object? GetService(Type serviceType, object? serviceKey = null)
+        {
+            return serviceType == typeof(ChatClientMetadata)
+                ? new ChatClientMetadata(provider)
+                : base.GetService(serviceType, serviceKey);
+        }
+    }
+
     /// <summary>Consecutive streamed tool results retain their calls through per-service-call compaction.</summary>
     [Theory]
     [InlineData("first", "second")]

@@ -42,6 +42,21 @@ public sealed class LexicalSearchStrategyTests
         Assert.Equal(["a", "b"], result);
     }
 
+    /// <summary>A singular query word matches a plural title word, so "browser tab" finds the tabs tool first.</summary>
+    [Fact]
+    public void Search_MatchesSingularAndPluralForms()
+    {
+        LexicalSearchDocument[] documents =
+        [
+            new("click", "browser.click", "Clicks an element in this tab."),
+            new("tabs", "browser.tabs", "Lists, opens and closes browser pages.")
+        ];
+
+        var result = LexicalSearchStrategy.Search("browser tab", documents, maxResults: 5);
+
+        Assert.Equal(["tabs", "click"], result);
+    }
+
     [Fact]
     public void Search_IncludesKeywordsInBodyMatches()
     {

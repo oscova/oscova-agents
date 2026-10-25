@@ -24,6 +24,9 @@ namespace Oscova.Agents.Runtime;
 /// </remarks>
 public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = null) : IAgentOrchestrator
 {
+    /// <summary>Model requests a run's tool loop may make before the framework forces a final answer.</summary>
+    internal const int MaximumToolIterations = 40;
+
     private readonly SemaphoreSlim _agentBuildGate = new(1, 1);
 
     /// <inheritdoc />
@@ -49,7 +52,7 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
         {
             if (externalToolMetadata.TryGetValue(tool.Name, out var metadata))
             {
-                rebuiltTools.Add(tool, metadata.ServerName, metadata.OriginalName, metadata.NetworkScope);
+                rebuiltTools.Add(tool, metadata.ServerName, metadata.OriginalName, metadata.NetworkScope, metadata.ServerId);
                 continue;
             }
             rebuiltTools.Add(tool);
@@ -212,7 +215,7 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
             // results; application code can still inspect FunctionResultContent.Exception.
             static fic =>
             {
-                fic.MaximumIterationsPerRequest = 40;
+                fic.MaximumIterationsPerRequest = MaximumToolIterations;
                 fic.MaximumConsecutiveErrorsPerRequest = 3;
                 fic.IncludeDetailedErrors = false;
             }

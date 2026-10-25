@@ -24,8 +24,10 @@ Choose an agent you are authorized to use. Unlock your Vault Password in Oscova 
 - A failed save leaves the connection unchanged. A failed restart keeps your saved settings, so fix the connection problem and start again.
 - Use **Start Bot** to connect or **Stop Bot** to disconnect.
 - Startup needs credentials and network access.
-- Task notifications need a saved authorized user, a running bot, and permission to send DMs.
-- Messages use the selected agent's current conversation, tools, privacy, and approvals.
+- Chat and task notifications need a saved authorized user, a running bot, and permission to send DMs.
+- Notifications temporarily route replies to the notified conversation's agent and project for your chat resume window.
+- Send `/new` to continue with the selected agent in a fresh conversation.
+- If an approval or question is waiting, `/new` cancels that run and its pending prompt first.
 - Missing or unavailable selections use the main agent.
 - Discord stays networked even when the agent is local-only.
 - Messages accept 50 supported attachments, up to 10 MB each.

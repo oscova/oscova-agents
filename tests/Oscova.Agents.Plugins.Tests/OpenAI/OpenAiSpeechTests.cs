@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.Extensions.Logging.Abstractions;
 using Oscova.Agents.Plugins.OpenAI;
 using Oscova.Agents.Plugins.Tests.TestSupport;
 using Oscova.Agents.Speech;
@@ -38,5 +39,18 @@ public sealed class OpenAiSpeechTests
             Assert.Equal(pcm, response.Audio[^pcm.Length..]);
         }
         else { Assert.Equal(pcm, response.Audio); }
+    }
+
+    [Fact]
+    public async Task Recognition_WithoutCredential_NamesProviderIdOnly()
+    {
+        using var http = new HttpClient(new StubHttpMessageHandler((_, _) => throw new InvalidOperationException("No request expected.")));
+        using var provider = new OpenAiSpeechRecognitionProvider(http, NullLogger<OpenAiSpeechRecognitionProvider>.Instance);
+        var config = new SpeechProviderConfig { Id = Guid.NewGuid(), Name = "Private Speech zq" };
+
+        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => provider.TranscribeAsync(config, apiKey: null, [1, 2]));
+
+        Assert.Contains(config.Id.ToString(), error.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain(config.Name, error.Message, StringComparison.Ordinal);
     }
 }

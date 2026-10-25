@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Collections;
+using Oscova.Agents.Conversations;
 
 namespace Oscova.Agents.Providers;
 
 /// <summary>
 /// Exposes a single <c>search_tools</c> entry point instead of the agent's full tool set.
-/// Discovered tools are added to the live run and remembered for the cached agent instance.
+/// Discovered tools are added to the live run; previously called tools return from the current session's history.
 /// </summary>
 public sealed class ToolSearchProvider : AIContextProvider
 {
@@ -23,6 +24,8 @@ public sealed class ToolSearchProvider : AIContextProvider
     public const string DefaultInstructions =
         """
         Some tools are already available, and the rest of your tool set is hidden behind `search_tools`.
+        Use these exact search keywords: `agenttask` for recurring or scheduled work, `visualization` for interactive displays, `encryptedfile` for encrypted files, and `tabs` for browser tabs.
+        Other searchable families are `pdf`, `datetime`, `skillauthoring`, `skillregistry`, `mcpregistry`, `notification`, `logs`, `chathistory`, and `wait`.
         When you need a capability that is not already available, call `search_tools` with a short description.
         When the user asks for a kind of tool you do not see, search for it before working around it with other tools.
         After matching tools are loaded, call the newly available tool that best fits the task.
@@ -36,7 +39,6 @@ public sealed class ToolSearchProvider : AIContextProvider
     private readonly IToolSearchStrategy _strategy;
     private readonly AgentToolCollection _tools;
     private readonly Lock _gate = new();
-    private readonly HashSet<string> _unlocked = new(StringComparer.OrdinalIgnoreCase);
     private readonly AIFunction _searchTool;
 
     /// <summary>Initializes a provider that hides allowed tools behind lexical discovery.</summary>
@@ -66,31 +68,34 @@ public sealed class ToolSearchProvider : AIContextProvider
         CancellationToken cancellationToken = default)
     {
         var exposedTools = new List<AITool> { _searchTool };
-        // Only _unlocked is shared mutable state; pinned and allowed names are constructor snapshots.
+        // Runs can rebuild the agent, so only this thread's retained calls restore tool visibility.
+        List<ChatMessage> messages = context?.Session is { } session && session.TryGetInMemoryChatHistory(out var history)
+            ? [.. history]
+            : [];
+        var restoredNames = messages.SelectMany(message => message.Contents).OfType<FunctionCallContent>()
+            .Select(call => call.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // An approval resume rebuilds the tool list mid-turn, so this turn's search results stay loaded until the next user text.
+        messages.AddRange(context?.AIContext.Messages ?? []);
+        var turnStart = messages.FindLastIndex(message => message.IsSubmittedRequest() && message.Contents.OfType<TextContent>().Any());
+        var turnSearches = messages.Skip(turnStart + 1).SelectMany(message => message.Contents).OfType<FunctionCallContent>()
+            .Where(call => call.Name == SearchToolName);
+        foreach (var search in turnSearches)
+        {
+            if (search.Arguments?.TryGetValue("query", out var value) == true && value?.ToString() is { } query)
+            {
+                restoredNames.UnionWith(_strategy.Search(query, BuildCandidates(), SearchResultLimit));
+            }
+        }
+
         var exposedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var name in _allowedToolNames.Where(_pinnedToolNames.Contains).OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
+        foreach (var name in _allowedToolNames.Where(name => _pinnedToolNames.Contains(name) || restoredNames.Contains(name))
+            .OrderByDescending(_pinnedToolNames.Contains).ThenBy(name => name, StringComparer.OrdinalIgnoreCase))
         {
             var tool = _resolver.Resolve(name);
             if (tool is not null && exposedNames.Add(tool.Name))
             {
                 exposedTools.Add(tool);
-            }
-        }
-
-        lock (_gate)
-        {
-            foreach (var name in _unlocked.OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
-            {
-                if (_pinnedToolNames.Contains(name))
-                {
-                    continue;
-                }
-
-                var tool = _resolver.Resolve(name);
-                if (tool is not null && exposedNames.Add(tool.Name))
-                {
-                    exposedTools.Add(tool);
-                }
             }
         }
 
@@ -127,7 +132,6 @@ public sealed class ToolSearchProvider : AIContextProvider
                     continue;
                 }
 
-                _unlocked.Add(name);
                 if (liveTools is not null && tool is AIFunction function && !ContainsFunction(liveTools, function.Name))
                 {
                     liveTools.Add(tool);

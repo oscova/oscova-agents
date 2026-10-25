@@ -41,7 +41,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
     {
         var (repository, catalog) = CreateRepository();
         var initial = CreateTask("Seeded task");
-        initial.RequiresHandler = true;
         await repository.EnsureTaskAsync("plugin-example.record-run", initial);
         var directory = Assert.IsType<string>(catalog.TryGetTaskDirectory(initial.Id));
         var file = Path.Combine(directory, "task.md.enc");
@@ -69,7 +68,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
         Assert.Equal(saved.CreatedAt.ToUnixTimeSeconds(), restored.CreatedAt.ToUnixTimeSeconds());
         Assert.Equal("Edited task", restored.Name);
         Assert.Equal(45, restored.Schedule.IntervalMinutes);
-        Assert.True(restored.RequiresHandler);
         Assert.Equal("Recorded.", Assert.Single(await repository.GetRunsAsync(_userId, initial.Id)).ResultSummary);
     }
 
@@ -1307,7 +1305,6 @@ public sealed class AgentTaskRepositoryTests : IDisposable
 
         public string? TryGetOwnerUserId(string taskId) => inner.TryGetOwnerUserId(taskId);
 
-        public string? TryGetHandlerKey(string taskId) => inner.TryGetHandlerKey(taskId);
 
         public IReadOnlyCollection<AgentTaskCatalogEntry> GetTasksForUser(string userId)
         {

@@ -61,9 +61,11 @@ public sealed class MemoryContextProvider(
 
         var longTermSection = string.IsNullOrWhiteSpace(longTermMemory)
             ? "Empty - no long-term memories saved yet."
-            : longTermMemory;
+            : KnowledgeContextProjection.KeepHead(longTermMemory);
+        var todaySection = await BoundDailyLogAsync(todayLog, cancellationToken).ConfigureAwait(false);
+        var yesterdaySection = await BoundDailyLogAsync(yesterdayLog, cancellationToken).ConfigureAwait(false);
 
-        var agentMemoryXml = BuildAgentMemoryXml(longTermSection, todayLog.Content, yesterdayLog.Content, todayLog.Date, yesterdayLog.Date);
+        var agentMemoryXml = BuildAgentMemoryXml(longTermSection, todaySection, yesterdaySection, todayLog.Date, yesterdayLog.Date);
         var rendered = PromptTemplateRenderer.Render(SystemPrompt, new { agent_memory = agentMemoryXml });
         var instructions = rendered.Contains(agentMemoryXml) ? rendered : $"{rendered}\n\n{agentMemoryXml}";
 
@@ -72,6 +74,15 @@ public sealed class MemoryContextProvider(
             Instructions = instructions,
             Tools = _memoryTools
         };
+    }
+
+    // An oversized log is cut from its saved body, so the formatted read's link report never displaces the newest entries.
+    private async Task<string?> BoundDailyLogAsync((DateOnly Date, string? Content) log, CancellationToken ct)
+    {
+        if (log.Content is null || KnowledgeContextProjection.Fits(log.Content)) { return log.Content; }
+
+        var concept = await memoryService.GetStore(userId).ReadConceptAsync(AgentMemoryService.DailyConceptId(log.Date), ct).ConfigureAwait(false);
+        return KnowledgeContextProjection.KeepTail(concept?.Body ?? log.Content);
     }
 
     private static string BuildAgentMemoryXml(string longTermSection, string? todaySection, string? yesterdaySection, DateOnly today, DateOnly yesterday)

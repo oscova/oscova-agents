@@ -13,9 +13,6 @@ public interface IAgentTaskCatalog
     /// <summary>Resolves a task id to the user id that owns the on-disk task directory.</summary>
     string? TryGetOwnerUserId(string taskId);
 
-    /// <summary>Resolves the directory key of a task whose saved definition requires a handler.</summary>
-    string? TryGetHandlerKey(string taskId);
-
     /// <summary>Returns all catalogued task definitions physically owned by <paramref name="userId"/>.</summary>
     IReadOnlyCollection<AgentTaskCatalogEntry> GetTasksForUser(string userId);
 
@@ -34,5 +31,4 @@ public sealed record AgentTaskCatalogEntry(
     string TaskId,
     string OwnerUserId,
     string DirectoryPath,
-    bool IsEnabled,
-    string? HandlerKey);
+    bool IsEnabled);

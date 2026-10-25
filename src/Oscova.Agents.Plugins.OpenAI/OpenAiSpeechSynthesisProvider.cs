@@ -114,7 +114,7 @@ public sealed class OpenAiSpeechSynthesisProvider(HttpClient http) : ISpeechSynt
     {
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            throw new InvalidOperationException($"Credential '{config.CredentialKey}' is not available for speech synthesis provider '{config.Name}'.");
+            throw new InvalidOperationException($"Credential '{config.CredentialKey}' is not available for speech synthesis provider '{config.Id}'.");
         }
 
         var model = string.IsNullOrWhiteSpace(config.ModelId)

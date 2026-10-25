@@ -152,6 +152,24 @@ public static class PathHelper
         return "/workspace/" + SanitizeMountName(workspaceName);
     }
 
+    /// <summary>Agent-facing path of the acting agent's own folder.</summary>
+    public const string SelfAgentPath = "/self";
+
+    /// <summary>Agent-facing path of the host-wide folder shared by permitted users.</summary>
+    public const string SharedAgentPath = "/shared";
+
+    /// <summary>
+    /// Maps a normalized path under the retired own-folder root <c>private</c> to <see cref="SelfAgentPath"/>.
+    /// Stored chat transcripts keep the old root, so they are mapped when opened instead of rewritten.
+    /// </summary>
+    public static string MapRetiredSelfAgentPath(string path)
+    {
+        string logicalPath = path.StartsWith('/') ? path[1..] : path;
+        return logicalPath == "private" || logicalPath.StartsWith("private/", StringComparison.Ordinal)
+            ? SelfAgentPath + logicalPath["private".Length..]
+            : path;
+    }
+
     /// <summary>
     /// Converts arbitrary workspace labels into stable container mount names.
     /// </summary>
@@ -247,7 +265,7 @@ public static class PathHelper
     /// so authorization and filesystem access stay bound to held handles. The agent is only ever
     /// shown paths that resolve through this contract:
     /// <list type="bullet">
-    ///   <item>sandbox mode: <c>/workspace/&lt;name&gt;</c>, <c>/private</c>, <c>/mnt/&lt;label&gt;</c>;</item>
+    ///   <item>sandbox mode: <c>/workspace/&lt;name&gt;</c>, <c>/self</c>, <c>/mnt/&lt;label&gt;</c>;</item>
     ///   <item>host / disabled mode: the real host paths plus stable file-tool aliases.</item>
     /// </list>
     /// In sandbox mode those agent-facing roots are bind-mounted into the container at exactly these
@@ -315,7 +333,7 @@ public static class PathHelper
             return true;
         }
 
-        if (IsReservedLogicalPath(logicalPath) || Path.IsPathRooted(requestedPath))
+        if ((IsReservedLogicalPath(logicalPath) && !IsRelativeSharedPath(normalized)) || Path.IsPathRooted(requestedPath))
         {
             return false;
         }
@@ -333,12 +351,14 @@ public static class PathHelper
     public static IReadOnlyList<AllowedDirectory> GetAgentPathRoots(
         string requestedPath, IReadOnlyList<AllowedDirectory> allowedDirectories)
     {
-        string logicalPath = NormalizeAgentPath(requestedPath).TrimStart('/');
+        string normalized = NormalizeAgentPath(requestedPath);
+        string logicalPath = normalized.TrimStart('/');
         var matches = new List<AllowedDirectory>();
         int longest = -1;
         foreach (var directory in allowedDirectories)
         {
             if (directory.Kind != DirectorySourceKind.LocalPath || string.IsNullOrWhiteSpace(directory.AgentPath)) { continue; }
+            if (directory.AgentPath == SharedAgentPath && IsRelativeSharedPath(normalized)) { continue; }
             string alias = NormalizeAgentPath(directory.AgentPath).Trim('/');
             if (logicalPath != alias && !logicalPath.StartsWith(alias + "/", StringComparison.Ordinal)) { continue; }
             if (alias.Length < longest) { continue; }
@@ -359,11 +379,18 @@ public static class PathHelper
         return prefix + string.Join('/', segments);
     }
 
+    // Projects often keep their own shared folder, so only a rooted /shared path means the host-wide folder.
+    private static bool IsRelativeSharedPath(string normalizedPath) =>
+        normalizedPath == "shared" || normalizedPath.StartsWith("shared/", StringComparison.Ordinal);
+
     /// <summary>Returns whether an unmatched path claims one of the logical file-tool roots.</summary>
     private static bool IsReservedLogicalPath(string path)
     {
-        return path is "workspace" or "private" or "mnt" ||
+        // "private" is the retired own-folder root: stray old paths fail instead of landing in a workspace.
+        return path is "workspace" or "self" or "shared" or "private" or "mnt" ||
                path.StartsWith("workspace/", StringComparison.Ordinal) ||
+               path.StartsWith("self/", StringComparison.Ordinal) ||
+               path.StartsWith("shared/", StringComparison.Ordinal) ||
                path.StartsWith("private/", StringComparison.Ordinal) ||
                path.StartsWith("mnt/", StringComparison.Ordinal);
     }

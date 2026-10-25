@@ -73,7 +73,7 @@ public sealed class OpenAiSpeechRecognitionProvider(HttpClient http, ILogger<Ope
     {
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            throw new InvalidOperationException($"Credential '{config.CredentialKey}' is not available for speech recognition provider '{config.Name}'.");
+            throw new InvalidOperationException($"Credential '{config.CredentialKey}' is not available for speech recognition provider '{config.Id}'.");
         }
 
         var model = string.IsNullOrWhiteSpace(config.ModelId)
@@ -86,7 +86,7 @@ public sealed class OpenAiSpeechRecognitionProvider(HttpClient http, ILogger<Ope
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Failed to create OpenAI speech recognition client for {Provider}.", config.Name);
+            logger.LogWarning(ex, "Failed to create OpenAI speech recognition client for {ProviderId}.", config.Id);
             throw;
         }
     }

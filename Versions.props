@@ -1,24 +1,24 @@
 <Project>
   <!-- The only owner of first-party package versions. Change them only with the package version bump script. -->
   <PropertyGroup>
-    <OscovaAgentsVersion>5.2.0-dev.1</OscovaAgentsVersion>
-    <AgentTemplatesPluginVersion>4.4.1</AgentTemplatesPluginVersion>
-    <DiscordPluginVersion>4.4.1</DiscordPluginVersion>
-    <FoundryLocalPluginVersion>4.4.1</FoundryLocalPluginVersion>
-    <GoogleWorkspacePluginVersion>4.5.0</GoogleWorkspacePluginVersion>
-    <LlamaSharpPluginVersion>4.4.1</LlamaSharpPluginVersion>
-    <MicrosoftGraphPluginVersion>4.5.0</MicrosoftGraphPluginVersion>
-    <SlackPluginVersion>4.4.1</SlackPluginVersion>
-    <TelegramPluginVersion>4.4.1</TelegramPluginVersion>
-    <BrowserPluginVersion>2.0.1</BrowserPluginVersion>
-    <WebPluginVersion>4.4.1</WebPluginVersion>
-    <DockerPluginVersion>2.0.1</DockerPluginVersion>
+    <OscovaAgentsVersion>5.2.0</OscovaAgentsVersion>
+    <AgentTemplatesPluginVersion>4.5.0</AgentTemplatesPluginVersion>
+    <DiscordPluginVersion>4.5.0</DiscordPluginVersion>
+    <FoundryLocalPluginVersion>4.5.0</FoundryLocalPluginVersion>
+    <GoogleWorkspacePluginVersion>4.6.0</GoogleWorkspacePluginVersion>
+    <LlamaSharpPluginVersion>4.5.0</LlamaSharpPluginVersion>
+    <MicrosoftGraphPluginVersion>4.6.0</MicrosoftGraphPluginVersion>
+    <SlackPluginVersion>4.5.0</SlackPluginVersion>
+    <TelegramPluginVersion>4.5.0</TelegramPluginVersion>
+    <BrowserPluginVersion>2.1.0</BrowserPluginVersion>
+    <WebPluginVersion>4.5.0</WebPluginVersion>
+    <DockerPluginVersion>2.1.0</DockerPluginVersion>
     <EchoPluginVersion>0.3.21</EchoPluginVersion>
-    <LocalSpeechRecognitionPluginVersion>2.0.1</LocalSpeechRecognitionPluginVersion>
-    <LocalSpeechSynthesisPluginVersion>2.0.1</LocalSpeechSynthesisPluginVersion>
-    <MxcPluginVersion>2.0.1</MxcPluginVersion>
-    <OpenAIPluginVersion>2.0.1</OpenAIPluginVersion>
-    <ElevenLabsPluginVersion>2.0.1</ElevenLabsPluginVersion>
+    <LocalSpeechRecognitionPluginVersion>2.1.0</LocalSpeechRecognitionPluginVersion>
+    <LocalSpeechSynthesisPluginVersion>2.1.0</LocalSpeechSynthesisPluginVersion>
+    <MxcPluginVersion>2.1.0</MxcPluginVersion>
+    <OpenAIPluginVersion>2.1.0</OpenAIPluginVersion>
+    <ElevenLabsPluginVersion>2.1.0</ElevenLabsPluginVersion>
   </PropertyGroup>
 
   <!-- Projects that set EmbedOscovaPackageVersions read these versions at runtime, keyed by package ID. -->

@@ -57,13 +57,6 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
     }
 
     /// <inheritdoc />
-    public string? TryGetHandlerKey(string taskId)
-    {
-        var state = _state;
-        return state.EntriesByTaskId.TryGetValue(taskId, out var entry) ? entry.HandlerKey : null;
-    }
-
-    /// <inheritdoc />
     public IReadOnlyCollection<AgentTaskCatalogEntry> GetTasksForUser(string userId)
     {
         var state = _state;
@@ -255,8 +248,7 @@ public sealed class AgentTaskCatalog : IAgentTaskCatalog
                     taskId,
                     ownerUserId,
                     taskDirectoryPath,
-                    file.IsEnabled,
-                    file.RequiresHandler ? Path.GetFileName(taskDirectoryPath) : null));
+                    file.IsEnabled));
             }
             catch (Exception exception) when (exception is not InvalidDataException || exception.InnerException is YamlException)
             {

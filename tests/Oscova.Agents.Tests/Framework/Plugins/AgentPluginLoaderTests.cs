@@ -4,6 +4,7 @@ using Oscova.Agents.Tests.TestSupport.TestPlugin;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Oscova.Agents.Tasks;
 using Oscova.Agents.Credentials;
 
@@ -11,6 +12,40 @@ namespace Oscova.Agents.Tests.Framework.Plugins;
 
 public sealed class AgentPluginLoaderTests
 {
+    /// <summary>Loads legacy and matching manifests but skips a plugin restricted to another release platform.</summary>
+    [Theory]
+    [InlineData(null, true)]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void LoadDirectory_RespectsDeclaredPlatforms(bool? supportsCurrent, bool expectedLoaded)
+    {
+        using var root = TestPluginRoot.Create();
+        var directory = root.AddTestPlugin();
+        var path = Path.Combine(directory, AgentPluginLoader.ManifestFileName);
+        var manifest = JsonNode.Parse(File.ReadAllText(path))!;
+        if (supportsCurrent is not null)
+        {
+            var current = AgentPluginLoader.SupportedRuntimeIdentifier;
+            manifest["supportedRuntimeIdentifiers"] = new JsonArray(supportsCurrent.Value
+                ? current : current == "win-x64" ? "osx-x64" : "win-x64");
+            File.WriteAllText(path, manifest.ToJsonString());
+        }
+
+        var catalog = AgentPluginLoader.LoadDirectory(root.RootPath);
+
+        if (expectedLoaded)
+        {
+            Assert.Single(catalog.Plugins);
+            Assert.Empty(catalog.Diagnostics);
+        }
+        else
+        {
+            Assert.Empty(catalog.Plugins);
+            Assert.Contains("not available on this platform", Assert.Single(catalog.Diagnostics).Message);
+            Assert.True(File.Exists(path));
+        }
+    }
+
     /// <summary>Invalid instruction declarations become diagnostics without replacing accepted defaults.</summary>
     [Fact]
     public void AddInstruction_RejectsDuplicateAndUnsafeKeys_AndRetainsDefaultData()

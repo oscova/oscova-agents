@@ -100,6 +100,7 @@ public class SummarizingChatReducer(
     {
         var original = messages.ToList();
         var (reduced, summarized) = await ReduceCoreAsync(original, force: false, cancellationToken).ConfigureAwait(false);
+        reduced = RemoveInvalidatedReasoning(original, reduced);
         if (!original.SequenceEqual(reduced, ReferenceEqualityComparer.Instance))
         {
             OnHistoryReduced?.Invoke();
@@ -124,7 +125,38 @@ public class SummarizingChatReducer(
         IEnumerable<ChatMessage> messages,
         CancellationToken cancellationToken = default)
     {
-        return (await ReduceCoreAsync(messages, force: true, cancellationToken).ConfigureAwait(false)).Messages;
+        var original = messages.ToList();
+        var (reduced, _) = await ReduceCoreAsync(original, force: true, cancellationToken).ConfigureAwait(false);
+        return RemoveInvalidatedReasoning(original, reduced);
+    }
+
+    // Anthropic signatures bind to the preceding history, so a rewrite invalidates only the following blocks.
+    private IReadOnlyList<ChatMessage> RemoveInvalidatedReasoning(
+        IReadOnlyList<ChatMessage> original,
+        IReadOnlyList<ChatMessage> reduced)
+    {
+        if (!string.Equals(chatClient.GetService<ChatClientMetadata>()?.ProviderName, ModelProviderKeys.Anthropic, StringComparison.OrdinalIgnoreCase))
+        {
+            return reduced;
+        }
+
+        var result = reduced.ToList();
+        var prefixChanged = false;
+        for (var i = 0; i < result.Count; i++)
+        {
+            prefixChanged |= i >= original.Count || !ReferenceEquals(original[i], result[i]);
+            if (prefixChanged && result[i].Contents.Any(static content => content is TextReasoningContent))
+            {
+                result[i] = CloneWithContents(result[i], result[i].Contents.Where(static content => content is not TextReasoningContent).ToList());
+                if (result[i].Contents.Count == 0)
+                {
+                    result.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
+        return result;
     }
 
     // Summarized is true only when a summary message replaced older history.

@@ -6,12 +6,13 @@ using Microsoft.Extensions.Logging;
 using Oscova.Agents.Channels;
 using SlackNet;
 using SlackNet.Events;
+using SlackNet.Interaction;
 using SlackNet.SocketMode;
 
 namespace Oscova.Agents.Plugins.Slack;
 
 /// <summary>Owns one Slack Socket Mode transport and translates authorized messages for host admission.</summary>
-internal sealed class SlackChannelConnection : IChannelConnection
+internal sealed class SlackChannelConnection : IChannelConnection, ISlashCommandHandler
 {
     private readonly AgentPluginContext _services;
     private readonly ChannelConnectionContext _connection;
@@ -77,6 +78,7 @@ internal sealed class SlackChannelConnection : IChannelConnection
                 .UseLogger(_ => new SafeSlackLogger(_logger, _workspaceId))
                 .UseWebSocketFactory(_ => new ObservingSocketFactory(Default.WebSocketFactory, this))
                 .RegisterEventHandler(new ConnectionEventHandler(this))
+                .RegisterSlashCommandHandler("/new", this)
                 .UseSocketModeClient(sp =>
                 {
                     _core = new CoreSocketModeClient(sp.GetApiClient().WithAccessToken(appToken),
@@ -140,6 +142,33 @@ internal sealed class SlackChannelConnection : IChannelConnection
             // Admission returns before the private agent turn, leaving Socket Mode free for approval replies.
             return _connection.Sink.ReceiveAsync(inbound, _lifetime.Token);
         }
+    }
+
+    /// <summary>Admits a registered Slack command through the same private conversation policy as messages.</summary>
+    public async Task<SlashCommandResponse> Handle(SlashCommand command)
+    {
+        Task admitted;
+        lock (_gate)
+        {
+            if (_stopping || !_ready || _socketModeDisabled || _credentialMismatch != 0 ||
+                !string.Equals(command.ApiAppId, _appId, StringComparison.Ordinal) ||
+                !string.Equals(command.TeamId, _workspaceId, StringComparison.Ordinal) ||
+                !string.Equals(command.UserId, _authorizedUserId, StringComparison.Ordinal) ||
+                command.ChannelId?.StartsWith('D') != true ||
+                !string.Equals(command.Command, "/new", StringComparison.Ordinal) ||
+                !string.IsNullOrWhiteSpace(command.Text))
+            {
+                return new SlashCommandResponse();
+            }
+
+            var inbound = new ChannelMessage(command.Command, command.UserId, command.UserName,
+                command.ChannelId, null, [],
+                (text, ct) => _sender!.SendAsync(command.ChannelId, null, text, ct), IsBot: false);
+            admitted = _connection.Sink.ReceiveAsync(inbound, _lifetime.Token);
+        }
+
+        await admitted.ConfigureAwait(false);
+        return new SlashCommandResponse();
     }
 
     private IReadOnlyList<ChannelAttachment> GetAttachments(MessageEvent message)
