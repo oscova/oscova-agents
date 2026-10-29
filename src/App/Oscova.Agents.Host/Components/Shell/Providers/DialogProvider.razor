@@ -1,0 +1,83 @@
+@using Oscova.Agents.Host.Services.UI
+@inject IDialogService DialogService
+@implements IDisposable
+
+@foreach (var entry in _stack)
+{
+    <CascadingValue @key="entry.Instance.DialogId" Value="entry.Instance" TValue="DialogInstance">
+        @entry.Content
+    </CascadingValue>
+}
+
+@code {
+    private sealed class DialogEntry
+    {
+        public DialogInstance Instance { get; } = new();
+        public RenderFragment? Content { get; set; }
+    }
+
+    private readonly List<DialogEntry> _stack = new();
+
+    protected override void OnInitialized()
+    {
+        DialogService.DialogShowing += OnDialogShowing;
+        DialogService.DialogClosing += OnDialogClosing;
+    }
+
+    private void OnDialogShowing(object? sender, DialogEventArgs args)
+    {
+        var entry = new DialogEntry();
+        entry.Instance._dialogService = DialogService;
+
+        if (args.Parameters is not null)
+        {
+            foreach (var kv in args.Parameters)
+            {
+                entry.Instance.Set(kv.Key, kv.Value);
+            }
+        }
+
+        entry.Content = builder =>
+        {
+            builder.OpenComponent(0, args.ComponentType);
+            builder.CloseComponent();
+        };
+
+        _stack.Add(entry);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnDialogClosing(object? sender, DialogEventArgs args)
+    {
+        _ = HandleDialogClosingAsync(args);
+    }
+
+    private async Task HandleDialogClosingAsync(DialogEventArgs args)
+    {
+        try
+        {
+            if (_stack.Count == 0) { return; }
+
+            var top = _stack[^1];
+            // Claim this entry before JS yields so a nested dialog's continuation closes its parent.
+            _stack.Remove(top);
+            await DialogService.CloseDialog(top.Instance.DialogId);
+            top.Instance.Clear();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error while closing dialog: {ex}");
+        }
+        finally
+        {
+            args.OnClosed?.Invoke();
+        }
+    }
+
+    public void Dispose()
+    {
+        DialogService.DialogShowing -= OnDialogShowing;
+        DialogService.DialogClosing -= OnDialogClosing;
+    }
+}

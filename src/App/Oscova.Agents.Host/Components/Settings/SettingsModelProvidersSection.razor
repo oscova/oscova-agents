@@ -1,0 +1,817 @@
+@using System
+@using System.Collections.Generic
+@using System.Globalization
+@using System.Linq
+@using System.Threading.Tasks
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Llm
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject SettingsApiClient SettingsApiClient
+@inject ManagementApiClient ManagementApiClient
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ModelTestCircuitHandler CircuitLifetime
+@implements IDisposable
+
+@if (_isLoading)
+{
+    <p class="text-sm opacity-70" role="status">@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</p>
+}
+else
+{
+<fieldset class="space-y-6" disabled="@_saving" aria-busy="@_saving">
+    @if (_saving)
+    {
+        <p role="status">@CommonLoc.GetOrDefault(CommonTextKeys.GovernanceApplying, "Stopping affected work and applying changes…")</p>
+    }
+    @if (!_configuration.CanManageCatalog)
+    {
+        <p class="text-sm opacity-70">@CommonLoc.GetOrDefault(CommonTextKeys.GovernanceSharedProviders, "Your operator supplies the providers. Keep the operator default or choose another available provider.")</p>
+    }
+    <div class="card custom-settings-catalog-card">
+        <div class="card-body custom-settings-form space-y-4">
+            <div>
+                <h2 class="card-title">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDefaultProviderTitle, "Default Provider")</h2>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDefaultProviderDescription, "Add your providers and choose which one should be used by default.")</p>
+            </div>
+
+            <SearchableSelect Class="max-w-sm"
+                              Options="@BuildSelectionOptions(ChatProviders, _configuration.SelectedChatModelProviderId, _configuration.OperatorDefaultChatModelProviderId)"
+
+                              Value="@(SelectedProviderIdString ?? string.Empty)"
+                              ValueChanged="@OnSelectedProviderChangedAsync"
+                              Placeholder="@GetDefaultProviderPlaceholder()"
+                              AriaLabel="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDefaultProviderTitle, "Default Provider")" />
+
+            <div class="mt-2">
+                <label class="label">
+                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackProviderTitle, "Fallback provider")</span>
+                </label>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackProviderDescription, "Used automatically if the default provider fails.")</p>
+                <SearchableSelect Class="max-w-sm"
+                                  Options="@BuildFallbackOptions()"
+                                  Value="@(FallbackProviderIdString ?? string.Empty)"
+                                  ValueChanged="@OnFallbackProviderChangedAsync"
+                                  Placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackNoneOption, "None"))"
+                                  AriaLabel="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackProviderTitle, "Fallback provider")" />
+            </div>
+
+            @if (_configuration.CanManageCatalog)
+            {
+            <div class="flex flex-wrap gap-2">
+                <button class="btn btn-primary btn-sm" @onclick="() => OpenFormAsync(null)">
+                    <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAddButton, "Add custom provider")
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="card custom-settings-catalog-card">
+        <div class="card-body custom-settings-form space-y-4">
+            <div>
+                <h2 class="card-title">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingProviderTitle, "Embedding Provider")</h2>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingProviderDescription, "Configure an embedding model for agent memory search.")</p>
+            </div>
+
+            <SearchableSelect Class="max-w-sm"
+                              Options="@BuildSelectionOptions(EmbeddingProviders, _configuration.EmbeddingModelProviderId, _configuration.OperatorDefaultEmbeddingModelProviderId)"
+                              Value="@(_configuration.EmbeddingModelProviderId?.ToString() ?? string.Empty)"
+                              ValueChanged="@OnEmbeddingProviderChangedAsync"
+                              AriaLabel="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingProviderTitle, "Embedding Provider")" />
+            @if (_configuration.CanManageCatalog)
+            {
+                <div class="flex flex-wrap gap-2">
+                    <button class="btn btn-primary btn-sm" @onclick="AddEmbeddingProviderAsync">
+                        <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAddEmbeddingButton, "Add embedding provider")
+                    </button>
+                </div>
+            @if (EmbeddingConfig is not null && IsOwned(EmbeddingConfig))
+            {
+                <div class="border-base-200 rounded-lg border p-4">
+                    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h3 class="font-semibold">@EmbeddingConfig.Name</h3>
+                            <p class="text-sm opacity-70">@EmbeddingConfig.Type • @EmbeddingConfig.ModelId</p>
+                            @if (!string.IsNullOrWhiteSpace(EmbeddingConfig.BaseUrl))
+                            {
+                                <p class="text-xs opacity-70">@EmbeddingConfig.BaseUrl</p>
+                            }
+                            <p class="text-xs @(GetCredentialSummary(EmbeddingConfig).HasValue ? "text-success" : "text-warning")">
+                                @GetCredentialSummary(EmbeddingConfig).Text
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm" @onclick="() => EditBudgetAsync(EmbeddingConfig)">@BudgetActionLabel(EmbeddingConfig.Id)</button>
+                            <button class="btn btn-sm" @onclick="EditEmbeddingProviderAsync">
+                                <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")
+                            </button>
+                            <button class="btn btn-outline btn-error btn-sm" @onclick="RemoveEmbeddingProviderAsync">
+                                <span class="iconify lucide--trash-2 size-4" aria-hidden="true"></span>@CommonLoc.GetOrDefault(CommonTextKeys.Remove, "Remove")
+                            </button>
+                        </div>
+                    </div>
+                    @if (_budgetStatuses.FirstOrDefault(status => status.ProviderId == EmbeddingConfig.Id) is { } embeddingBudget)
+                    {
+                        <ModelBudgetSummary Status="@embeddingBudget" />
+                    }
+                </div>
+            }
+            }
+        </div>
+    </div>
+
+    @if (_configuration.CanManageCatalog)
+    {
+    <div class="card custom-settings-catalog-card">
+        <div class="card-body custom-settings-form space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <h2 class="card-title">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersConfiguredProvidersTitle, "Configured Providers")</h2>
+                @if (ChatProviders.Count() > 1)
+                {
+                    <span class="text-xs opacity-70">@FormatSettingsText(SettingsTextKeys.ModelProvidersSelectedProviderLabel, "Selected provider: {0}", SelectedProvider?.Name)</span>
+                }
+            </div>
+
+            @if (!ChatProviders.Any())
+            {
+                <div class="alert">
+                    <iconify-icon icon="lucide:info"></iconify-icon>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoProvidersMessage, "Add a model provider to start chatting.")</span>
+                </div>
+            }
+            else
+            {
+                <div class="custom-settings-table-container overflow-x-auto rounded-box border border-base-300">
+                    <table class="table table-pin-rows custom-settings-adaptive-table custom-settings-provider-table">
+                        <thead>
+                            <tr>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTableHeaderProvider, "Provider")</th>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTableHeaderModel, "Model")</th>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTableHeaderCapabilities, "Capabilities")</th>
+                                <th class="text-end">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var provider in ChatProviders.Where(IsOwned))
+                            {
+                                var state = GetTestState(provider.Id);
+                                var credentialSummary = GetCredentialSummary(provider);
+
+                                <tr @key="provider.Id"
+                                    class="cursor-pointer hover:bg-base-200/40"
+                                    title="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOpenDetailsTitle, "Open provider details")"
+                                    @onclick="() => ShowProviderDetailsAsync(provider)">
+                                    <td data-label="@Loc[SettingsTextKeys.ModelProvidersTableHeaderProvider]">
+                                        <div class="flex items-start gap-3">
+                                            <div class="bg-primary/10 text-primary mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg">
+                                                <iconify-icon icon="@GetProviderIcon(provider.Type)" width="16" height="16"></iconify-icon>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    <button type="button" class="min-w-0 break-words text-start font-medium [overflow-wrap:anywhere]"
+                                                            @onclick:stopPropagation="true" @onclick="() => ShowProviderDetailsAsync(provider)">@provider.Name</button>
+                                                    @if (_configuration.SelectedChatModelProviderId == provider.Id)
+                                                    {
+                                                        <span class="badge badge-primary badge-soft badge-sm">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDefaultBadge, "Default")</span>
+                                                    }
+                                                    @if (_configuration.FallbackChatModelProviderId == provider.Id)
+                                                    {
+                                                        <span class="badge badge-info badge-soft badge-sm">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackBadge, "Fallback")</span>
+                                                    }
+                                                </div>
+                                                <p class="mt-1 break-words text-xs text-base-content/55 [overflow-wrap:anywhere]">@provider.Type</p>
+                                                <p class="mt-1 text-xs @(credentialSummary.HasValue ? "text-success" : "text-warning")">@credentialSummary.Text</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="@Loc[SettingsTextKeys.ModelProvidersTableHeaderModel]">
+                                        <div class="font-mono text-xs break-all">@DisplayModel(provider)</div>
+                                        <div class="mt-1 text-xs text-base-content/50">@DisplayEndpoint(provider)</div>
+                                        <div class="mt-1 text-xs text-base-content/50">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersInputCostLabel, "Input price, USD per 1M tokens"): @FormatCost(provider.InputCostPerMillionTokens)</div>
+                                        <div class="mt-1 text-xs text-base-content/50">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOutputCostLabel, "Output price, USD per 1M tokens"): @FormatCost(provider.OutputCostPerMillionTokens)</div>
+                                        @if (_budgetStatuses.FirstOrDefault(status => status.ProviderId == provider.Id) is { } providerBudget)
+                                        {
+                                            <div class="mt-1"><ModelBudgetSummary Status="@providerBudget" /></div>
+                                        }
+                                    </td>
+                                    <td data-label="@Loc[SettingsTextKeys.ModelProvidersTableHeaderCapabilities]">
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach (var badge in GetCapabilityBadges(provider))
+                                            {
+                                                <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@badge</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="text-end" data-label="@CommonLoc[CommonTextKeys.Actions]">
+                                        <div role="status" aria-live="polite" aria-atomic="true">
+                                        @if (state.IsRunning)
+                                        {
+                                            <span class="inline-flex items-center gap-2 text-sm text-base-content/60">
+                                                <span class="loading loading-spinner loading-xs"></span>
+                                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTestButton, "Test")
+                                            </span>
+                                        }
+                                        else if (state.Message is null)
+                                        {
+                                            <span class="text-sm text-base-content/50">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoTestRun, "Not tested")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-sm @(state.Success == true ? "text-success" : "text-error")">@state.Message</span>
+                                        }
+                                        </div>
+                                        <div class="custom-settings-provider-actions">
+                                            <button type="button" class="btn btn-ghost btn-xs whitespace-nowrap" @onclick:stopPropagation="true" @onclick="() => EditBudgetAsync(provider)">@BudgetActionLabel(provider.Id)</button>
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-xs"
+                                                    title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")"
+                                                    @onclick:stopPropagation="true"
+                                                    @onclick="() => OpenFormAsync(provider)">
+                                                <iconify-icon icon="lucide:pencil" width="14" height="14"></iconify-icon>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-xs"
+                                                    title="@CommonLoc.GetOrDefault(CommonTextKeys.Duplicate, "Duplicate")"
+                                                    @onclick:stopPropagation="true"
+                                                    @onclick="() => DuplicateProviderAsync(provider)">
+                                                <iconify-icon icon="lucide:copy" width="14" height="14"></iconify-icon>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-xs"
+                                                    title="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTestButton, "Test")"
+                                                    disabled="@state.IsRunning"
+                                                    @onclick:stopPropagation="true"
+                                                    @onclick="() => RunHealthCheck(provider)">
+                                                <iconify-icon icon="lucide:stethoscope" width="14" height="14"></iconify-icon>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-xs text-error"
+                                                    title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")"
+                                                    disabled="@IsDeleteDisabled(provider)"
+                                                    @onclick:stopPropagation="true"
+                                                    @onclick="() => ConfirmRemoveAsync(provider)">
+                                                <iconify-icon icon="lucide:trash-2" width="14" height="14"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    }
+</fieldset>
+}
+
+@code {
+    private bool _isLoading = true;
+    private bool _saving;
+    private readonly Dictionary<Guid, ProviderTestState> _testStates = new();
+    private readonly CancellationTokenSource _lifetime = new();
+
+    public void Dispose()
+    {
+        _lifetime.Cancel();
+        _lifetime.Dispose();
+    }
+    private readonly Dictionary<Guid, CredentialState> _credentialStates = new();
+    private ModelProviderConfiguration _configuration = new();
+    private IReadOnlyList<ModelBudgetStatus> _budgetStatuses = [];
+    private Guid? EffectiveChatId => _configuration.SelectedChatModelProviderId ?? _configuration.OperatorDefaultChatModelProviderId;
+    private Guid? EffectiveEmbeddingId => _configuration.EmbeddingModelProviderId ?? _configuration.OperatorDefaultEmbeddingModelProviderId;
+    private ModelProviderConfig? EmbeddingConfig => EmbeddingProviders.FirstOrDefault(provider => provider.Id == EffectiveEmbeddingId);
+    private IEnumerable<ModelProviderConfig> EmbeddingProviders => _configuration.ModelProviders.Where(provider => _configuration.EmbeddingProviderIds.Contains(provider.Id));
+    private IEnumerable<ModelProviderConfig> ChatProviders => _configuration.ModelProviders.Where(provider => !_configuration.EmbeddingProviderIds.Contains(provider.Id));
+    private ModelProviderConfig? SelectedProvider => ChatProviders.FirstOrDefault(provider => provider.Id == EffectiveChatId);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConfigurationAsync();
+        await LoadCredentialStatesAsync();
+        _isLoading = false;
+    }
+
+    private async Task LoadCredentialStatesAsync()
+    {
+        if (!_configuration.CanManageCatalog) { return; }
+        _credentialStates.Clear();
+
+        var credentials = await SettingsApiClient.GetCredentialsAsync();
+        var credentialMap = credentials.ToDictionary(x => x.CredentialKey, StringComparer.Ordinal);
+
+        foreach (var provider in _configuration.ModelProviders)
+        {
+            if (!string.IsNullOrWhiteSpace(provider.CredentialKey) &&
+                credentialMap.TryGetValue(provider.CredentialKey, out var credential))
+            {
+                _credentialStates[provider.Id] = new CredentialState(
+                    credential.CredentialKey,
+                    credential.Alias,
+                    credential.IsSet);
+            }
+        }
+    }
+
+    private Guid? SelectedProviderId
+    {
+        get => _configuration.SelectedChatModelProviderId;
+        set => _configuration.SelectedChatModelProviderId = value;
+    }
+
+    private string? SelectedProviderIdString
+    {
+        get => SelectedProviderId?.ToString();
+        set => SelectedProviderId = Guid.TryParse(value, out var id) ? id : null;
+    }
+
+    private string? FallbackProviderIdString
+    {
+        get => _configuration.FallbackChatModelProviderId?.ToString();
+        set => _configuration.FallbackChatModelProviderId = Guid.TryParse(value, out var id) ? id : null;
+    }
+
+    private List<SearchableSelectOption> BuildSelectionOptions(IEnumerable<ModelProviderConfig> providers, Guid? selected, Guid? inherited)
+    {
+        var available = providers.ToArray();
+        var none = Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackNoneOption, "None");
+        var inheritedName = available.FirstOrDefault(provider => provider.Id == inherited)?.Name ?? none;
+        var defaultLabel = inherited.HasValue ? string.Format(CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.GovernanceOperatorDefault, "Operator default: {0}"), inheritedName) : none;
+        var options = new List<SearchableSelectOption> { new(string.Empty, defaultLabel) };
+        options.AddRange(available.Select(provider => new SearchableSelectOption(provider.Id.ToString(), $"{provider.Name} ({provider.ModelId})")));
+        if (selected is { } id && !available.Any(provider => provider.Id == id))
+        {
+            options.Add(new SearchableSelectOption(id.ToString(), CommonLoc.GetOrDefault(CommonTextKeys.GovernanceProviderUnavailable, "Selected provider unavailable. Choose another provider.")));
+        }
+        return options;
+    }
+
+    private async Task OnEmbeddingProviderChangedAsync(string? value)
+    {
+        _configuration.EmbeddingModelProviderId = Guid.TryParse(value, out var id) ? id : null;
+        await SaveConfigurationAsync();
+    }
+
+    private string GetDefaultProviderPlaceholder() => _configuration.CanManageCatalog
+        ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSelectDefaultPlaceholder, "Select a provider")
+        : CommonLoc.GetOrDefault(CommonTextKeys.GovernanceProviderUnavailable, "Selected provider unavailable. Choose another provider.");
+
+    private List<SearchableSelectOption> BuildFallbackOptions()
+    {
+        var options = BuildSelectionOptions(ChatProviders.Where(provider => provider.Id != EffectiveChatId), _configuration.FallbackChatModelProviderId, null);
+        options[0] = new SearchableSelectOption(string.Empty, Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackNoneOption, "None"));
+        return options;
+    }
+
+    private async Task OnSelectedProviderChangedAsync(string? value)
+    {
+        SelectedProviderIdString = value;
+        await SaveConfigurationAsync();
+    }
+
+    private async Task OnFallbackProviderChangedAsync(string? value)
+    {
+        FallbackProviderIdString = value;
+        await SaveConfigurationAsync();
+    }
+
+    private async Task OpenFormAsync(ModelProviderConfig? provider)
+    {
+        if (!_configuration.CanManageCatalog || (provider is not null && !IsOwned(provider))) { return; }
+        var isEditing = provider is not null &&
+            _configuration.ModelProviders.Any(p => p.Id == provider.Id);
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["AvailableProviderTypes"] = _configuration.AvailableProviderTypes,
+            ["ProviderTypeDefaults"] = _configuration.ProviderTypeDefaults
+        };
+
+        if (isEditing)
+        {
+            parameters["Provider"] = provider;
+        }
+
+        var result = await DialogService.ShowAsync<ModelProviderEditorDialog, ModelProviderConfig>(parameters);
+
+        if (result.IsOk && result.Data is not null)
+        {
+            await SaveProviderAsync(isEditing, result.Data);
+        }
+    }
+
+    private Task ShowProviderDetailsAsync(ModelProviderConfig provider)
+    {
+        var credentialSummary = GetCredentialSummary(provider);
+        var state = GetTestState(provider.Id);
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Provider"] = provider.Clone(),
+            ["CredentialSummary"] = credentialSummary.Text,
+            ["CredentialHasValue"] = credentialSummary.HasValue,
+            ["IsDefaultProvider"] = _configuration.SelectedChatModelProviderId == provider.Id,
+            ["IsFallbackProvider"] = _configuration.FallbackChatModelProviderId == provider.Id,
+            ["TestMessage"] = state.Message,
+            ["TestSuccess"] = state.Success
+        };
+
+        return DialogService.ShowAsync<ModelProviderDetailsDialog>(parameters);
+    }
+
+    private async Task SaveProviderAsync(bool isEditing, ModelProviderConfig config)
+    {
+        config.ChatOptions ??= new ChatOptions();
+
+        if (isEditing)
+        {
+            var existing = _configuration.ModelProviders.FirstOrDefault(p => p.Id == config.Id);
+            if (existing is not null)
+            {
+                existing.Name = config.Name;
+                existing.Type = config.Type;
+                existing.BaseUrl = config.BaseUrl;
+                existing.ModelId = config.ModelId;
+                existing.CredentialKey = config.CredentialKey;
+                existing.IsLocalEndpoint = config.IsLocalEndpoint;
+                existing.SupportsImages = config.SupportsImages;
+                existing.ContextWindowSize = config.ContextWindowSize;
+                existing.InputCostPerMillionTokens = config.InputCostPerMillionTokens;
+                existing.OutputCostPerMillionTokens = config.OutputCostPerMillionTokens;
+                existing.SupportsThinking = config.SupportsThinking;
+                // Existing providers retain edited durations, including clearing the override.
+                existing.OllamaKeepAlive = config.OllamaKeepAlive;
+                existing.ChatOptions = config.ChatOptions.Clone();
+                existing.Options = config.Clone().Options;
+                _testStates.Remove(existing.Id);
+            }
+        }
+        else
+        {
+            config.ChatOptions = config.ChatOptions.Clone();
+            _configuration.ModelProviders.Add(config);
+            _configuration.SelectedChatModelProviderId ??= config.Id;
+        }
+
+        await SaveConfigurationAsync();
+        await LoadCredentialStatesAsync();
+    }
+
+    private ProviderTestState GetTestState(Guid id)
+    {
+        if (!_testStates.TryGetValue(id, out var state))
+        {
+            state = new ProviderTestState();
+            _testStates[id] = state;
+        }
+
+        return state;
+    }
+
+    private string DisplayModel(ModelProviderConfig provider)
+    {
+        return string.IsNullOrWhiteSpace(provider.ModelId)
+            ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelNotSet, "Model not set")
+            : provider.ModelId!;
+    }
+
+    private string DisplayEndpoint(ModelProviderConfig provider)
+    {
+        return string.IsNullOrWhiteSpace(provider.BaseUrl)
+            ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointDefault, "Default endpoint")
+            : provider.BaseUrl!;
+    }
+
+    private string FormatCost(decimal? cost)
+    {
+        if (cost is not { } price)
+        {
+            return Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCostNotSet, "Cost not set");
+        }
+
+        return price.ToString(CultureInfo.CurrentCulture);
+    }
+
+    private List<string> GetCapabilityBadges(ModelProviderConfig provider)
+    {
+        var badges = new List<string>();
+
+        if (provider.ContextWindowSize > 0)
+        {
+            badges.Add(FormatSettingsText(SettingsTextKeys.ModelProvidersCapabilityText, "{0:N0} context", provider.ContextWindowSize));
+        }
+
+        if (provider.SupportsImages)
+        {
+            badges.Add(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSupportsImagesLabel, "Supports images"));
+        }
+
+        if (provider.SupportsThinking)
+        {
+            badges.Add(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSupportsThinkingLabel, "Supports thinking outputs"));
+        }
+
+        if (badges.Count == 0)
+        {
+            badges.Add(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoCapabilities, "No extra capabilities"));
+        }
+
+        return badges;
+    }
+
+    private static string GetProviderIcon(string providerType)
+    {
+        return providerType switch
+        {
+            ModelProviderKeys.Local => "lucide:hard-drive",
+            ModelProviderKeys.Ollama => "lucide:server",
+            ModelProviderKeys.Google => "lucide:sparkles",
+            ModelProviderKeys.Anthropic => "lucide:hexagon",
+            ModelProviderKeys.OpenAI or ModelProviderKeys.OpenAICompatible or ModelProviderKeys.DeepSeek => "lucide:bot",
+            ModelProviderKeys.OpenRouter => "lucide:route",
+            ModelProviderKeys.Groq => "lucide:zap",
+            _ => "lucide:server-cog"
+        };
+    }
+
+    private (bool HasValue, string Text) GetCredentialSummary(ModelProviderConfig provider)
+    {
+        if (string.IsNullOrWhiteSpace(provider.CredentialKey))
+        {
+            return (false, Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoCredentialLinked, "No saved credential linked"));
+        }
+
+        if (_credentialStates.TryGetValue(provider.Id, out var state))
+        {
+            return state.HasValue
+                ? (true, FormatSettingsText(SettingsTextKeys.ModelProvidersCredentialSummary, "Credential: {0} [{1}]", state.Alias, state.CredentialKey))
+                : (false, FormatSettingsText(SettingsTextKeys.ModelProvidersCredentialMissing, "Credential linked but value is missing: [{0}]", state.CredentialKey));
+        }
+
+        return (false, FormatSettingsText(SettingsTextKeys.ModelProvidersCredentialNotFound, "Credential not found: [{0}]", provider.CredentialKey));
+    }
+
+    private bool IsOwned(ModelProviderConfig provider) => !_configuration.SharedProviderIds.Contains(provider.Id);
+
+    private bool IsDeleteDisabled(ModelProviderConfig provider) => !_configuration.CanManageCatalog || !IsOwned(provider);
+
+    private async Task ConfirmRemoveAsync(ModelProviderConfig provider)
+    {
+        if (IsDeleteDisabled(provider))
+        {
+            return;
+        }
+
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.ModelProvidersRemoveProviderConfirmTitle, "Remove provider"),
+            FormatSettingsText(SettingsTextKeys.ModelProvidersRemoveProviderConfirmMessage, "Are you sure you want to remove {0}?", provider.Name));
+
+        if (result == DialogResult.Ok)
+        {
+            await RemoveProviderAsync(provider);
+        }
+    }
+
+    private async Task DuplicateProviderAsync(ModelProviderConfig provider)
+    {
+        if (!_configuration.CanManageCatalog) { return; }
+        var providerClone = provider.Clone();
+        providerClone.Id = Guid.NewGuid();
+        providerClone.Name = string.IsNullOrWhiteSpace(provider.Name)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.CopyName, "Copy")
+            : FormatSettingsText(SettingsTextKeys.ModelProvidersCopyNameSuffix, "{0} (Copy)", provider.Name);
+
+        _configuration.ModelProviders.Add(providerClone);
+        await SaveConfigurationAsync();
+        await LoadCredentialStatesAsync();
+    }
+
+    private async Task RemoveProviderAsync(ModelProviderConfig provider)
+    {
+        _configuration.ModelProviders.Remove(provider);
+
+
+
+        _testStates.Remove(provider.Id);
+        _credentialStates.Remove(provider.Id);
+
+        await SaveConfigurationAsync();
+    }
+
+    private async Task RunHealthCheck(ModelProviderConfig provider)
+    {
+        if (!_configuration.CanManageCatalog) { return; }
+        var state = GetTestState(provider.Id);
+        state.IsRunning = true;
+        state.Success = null;
+        state.Message = null;
+        StateHasChanged();
+
+        try
+        {
+            using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token, CircuitLifetime.Disconnected);
+            var result = await ManagementApiClient.TestModelProviderAsync(provider, cancellation.Token);
+            state.Success = result.Success;
+            state.Message = result.Outcome switch
+            {
+                "skipped" => Loc[SettingsTextKeys.ModelProvidersTestSkipped],
+                "timedout" => Loc[SettingsTextKeys.ModelProvidersTestTimedOut],
+                "cancelled" => Loc[SettingsTextKeys.ModelProvidersTestCancelled],
+                "passed" when result.TestKind == "inference" => Loc[SettingsTextKeys.ModelProvidersTestInferencePassed,
+                    result.LoadMilliseconds?.ToString() ?? "?", result.InferenceMilliseconds?.ToString() ?? "?"],
+                "failed" when result.TestKind == "inference" && result.Reason == "model-unavailable" => Loc[SettingsTextKeys.ModelProvidersTestModelUnavailable],
+                "failed" when result.TestKind == "inference" => Loc[SettingsTextKeys.ModelProvidersTestInferenceFailed],
+                _ => result.Message
+            };
+            if (result.TestKind == "inference" && result.Success)
+            {
+                state.Message += " " + (result.Runtime?.Backend is { } backend
+                    ? Loc[SettingsTextKeys.ModelProvidersTestRuntime, backend, result.Runtime.Device ?? "?", result.Runtime.OffloadedLayers?.ToString() ?? "?"]
+                    : Loc[SettingsTextKeys.ModelProvidersTestPlacementUnknown]);
+            }
+
+            if (!result.CleanupConfirmed) { state.Message += " " + Loc[SettingsTextKeys.ModelProvidersTestCleanupUnconfirmed]; }
+        }
+        catch (OperationCanceledException)
+        {
+            state.Success = false;
+            state.Message = Loc[SettingsTextKeys.ModelProvidersTestCancelled];
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException)
+        {
+            state.Success = false;
+            state.Message = ex.Message;
+        }
+        finally
+        {
+            state.IsRunning = false;
+            if (!_lifetime.IsCancellationRequested) { StateHasChanged(); }
+        }
+    }
+
+    private async Task AddEmbeddingProviderAsync()
+    {
+        if (!_configuration.CanManageCatalog) { return; }
+        var parameters = new Dictionary<string, object?>
+        {
+            ["SupportedTypes"] = _configuration.SupportedEmbeddingTypes,
+            ["ProviderTypeDefaults"] = _configuration.ProviderTypeDefaults
+        };
+        var result = await DialogService.ShowAsync<EmbeddingModelProviderEditorDialog, ModelProviderConfig>(parameters);
+
+        if (result.IsOk && result.Data is not null)
+        {
+            var config = result.Data;
+            config.ChatOptions ??= new ChatOptions();
+            _configuration.ModelProviders.Add(config);
+            _configuration.EmbeddingProviderIds = [.. _configuration.EmbeddingProviderIds, config.Id];
+            _configuration.EmbeddingModelProviderId = config.Id;
+            await SaveConfigurationAsync();
+            await LoadCredentialStatesAsync();
+        }
+    }
+
+    private async Task EditEmbeddingProviderAsync()
+    {
+        if (!_configuration.CanManageCatalog || EmbeddingConfig is null)
+
+        {
+            return;
+        }
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Provider"] = EmbeddingConfig,
+            ["SupportedTypes"] = _configuration.SupportedEmbeddingTypes,
+            ["ProviderTypeDefaults"] = _configuration.ProviderTypeDefaults
+        };
+
+        var result = await DialogService.ShowAsync<EmbeddingModelProviderEditorDialog, ModelProviderConfig>(parameters);
+
+        if (result.IsOk && result.Data is not null)
+        {
+            var updated = result.Data;
+            var existing = _configuration.ModelProviders.FirstOrDefault(p => p.Id == updated.Id);
+            if (existing is not null)
+            {
+                existing.Name = updated.Name;
+                existing.Type = updated.Type;
+                existing.BaseUrl = updated.BaseUrl;
+                existing.ModelId = updated.ModelId;
+                existing.CredentialKey = updated.CredentialKey;
+                existing.IsLocalEndpoint = updated.IsLocalEndpoint;
+                existing.InputCostPerMillionTokens = updated.InputCostPerMillionTokens;
+                existing.OutputCostPerMillionTokens = updated.OutputCostPerMillionTokens;
+                existing.VectorDimensions = updated.VectorDimensions;
+            }
+
+            await SaveConfigurationAsync();
+            await LoadCredentialStatesAsync();
+        }
+    }
+
+    private async Task RemoveEmbeddingProviderAsync()
+    {
+        if (!_configuration.CanManageCatalog || EmbeddingConfig is null)
+
+        {
+            return;
+        }
+
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.ModelProvidersRemoveEmbeddingConfirmTitle, "Remove embedding provider"),
+            FormatSettingsText(SettingsTextKeys.ModelProvidersRemoveEmbeddingConfirmMessage, "Are you sure you want to remove {0}?", EmbeddingConfig.Name));
+
+        if (result == DialogResult.Ok)
+        {
+            var config = EmbeddingConfig;
+            _configuration.EmbeddingProviderIds = _configuration.EmbeddingProviderIds.Where(id => id != config.Id).ToArray();
+            _configuration.ModelProviders.Remove(config);
+            _credentialStates.Remove(config.Id);
+
+            await SaveConfigurationAsync();
+        }
+    }
+
+    private async Task LoadConfigurationAsync()
+    {
+        _configuration = await ManagementApiClient.GetModelProviderConfigurationAsync();
+        _budgetStatuses = await ManagementApiClient.GetModelBudgetsAsync();
+    }
+
+    private string BudgetActionLabel(Guid providerId)
+    {
+        var policy = _configuration.Budgets.GetValueOrDefault(providerId);
+        return policy?.DailyLimitUsd is > 0 || policy?.MonthlyLimitUsd is > 0
+            ? CommonLoc.GetOrDefault(CommonTextKeys.ModelBudgetEdit, "Edit budget")
+            : CommonLoc.GetOrDefault(CommonTextKeys.ModelBudgetSet, "Set budget");
+    }
+
+    private async Task EditBudgetAsync(ModelProviderConfig provider)
+    {
+        var result = await DialogService.ShowAsync<EditModelBudgetDialog, ModelBudgetPolicy>(new Dictionary<string, object?>
+        {
+            ["ProviderName"] = provider.Name,
+            ["Policy"] = _configuration.Budgets.GetValueOrDefault(provider.Id) ?? new()
+        });
+        if (result.IsOk && result.Data is not null)
+        {
+            _configuration.Budgets = new Dictionary<Guid, ModelBudgetPolicy>(_configuration.Budgets) { [provider.Id] = result.Data };
+            await SaveConfigurationAsync();
+        }
+    }
+
+    private async Task SaveConfigurationAsync()
+    {
+        if (_saving) { return; }
+        _saving = true;
+        try
+        {
+            // Only owned definitions cross the editing boundary, shared entries remain selector metadata.
+            var request = new ModelProviderConfiguration
+            {
+                ModelProviders = _configuration.CanManageCatalog ? _configuration.ModelProviders.Where(IsOwned).ToList() : [],
+                Budgets = _configuration.CanManageCatalog ? _configuration.Budgets.Where(pair => _configuration.ModelProviders.Any(provider => provider.Id == pair.Key && IsOwned(provider))).ToDictionary() : new Dictionary<Guid, ModelBudgetPolicy>(),
+                EmbeddingProviderIds = _configuration.CanManageCatalog ? _configuration.EmbeddingProviderIds.Except(_configuration.SharedProviderIds).ToArray() : [],
+                SelectedChatModelProviderId = _configuration.SelectedChatModelProviderId,
+                EmbeddingModelProviderId = _configuration.EmbeddingModelProviderId,
+                FallbackChatModelProviderId = _configuration.FallbackChatModelProviderId
+            };
+            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, confirmed =>
+            {
+                request.ConfirmInterruptions = confirmed;
+                return ManagementApiClient.SaveModelProviderConfigurationAsync(request);
+            })) { return; }
+            ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.GovernanceChangesSaved, "Changes saved."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _saving = false;
+            await LoadConfigurationAsync();
+        }
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(System.Globalization.CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private sealed record ProviderTestState
+    {
+        public bool IsRunning { get; set; }
+        public bool? Success { get; set; }
+        public string? Message { get; set; }
+    }
+
+    private sealed record CredentialState(string CredentialKey, string Alias, bool HasValue);
+}

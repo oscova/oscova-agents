@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="LibGit2Sharp" Version="0.32.0" />
+		<PackageReference Include="Anthropic" Version="13.3.0" />
+		<PackageReference Include="Microsoft.Agents.AI.Tools.Shell" Version="1.26.0-preview.261023.1" />
+                <PackageReference Include="Google.GenAI" Version="1.27.0" />
+                <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.14" />
+                <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.14" />
+                <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.14" />
+		<PackageReference Include="SQLite3MC.PCLRaw.bundle" Version="2.6.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.14" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.11.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.14" />
+		<PackageReference Include="OpenAI" Version="2.14.0" />
+		<PackageReference Include="ReverseMarkdown" Version="6.3.0" />
+		<PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.81.0" />
+		<PackageReference Include="ModelContextProtocol.Core" Version="2.3.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="10.0.14" />
+		<PackageReference Include="NuGet.Commands" Version="7.9.0" />
+		<PackageReference Include="NuGet.Protocol" Version="7.9.0" />
+		<!-- NuGet.Packaging 7.9.0 still resolves Pkcs 8.0.1, which has known denial-of-service advisories. -->
+		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+		<PackageReference Include="NLog" Version="6.2.2" />
+		<PackageReference Include="OllamaSharp" Version="5.5.0" />
+		<PackageReference Include="ICU4N" Version="60.1.0-alpha.440" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Oscova.Agents.Core\Oscova.Agents.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="SeedContent\**\*.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Resources\SeedProfilePictures\*.png">
+			<Link>app_data\seed\profile-pictures\%(Filename)%(Extension)</Link>
+			<TargetPath>app_data\seed\profile-pictures\%(Filename)%(Extension)</TargetPath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Include="Resources\SeedWallpapers\*.webp">
+			<Link>app_data\seed\wallpapers\%(Filename)%(Extension)</Link>
+			<TargetPath>app_data\seed\wallpapers\%(Filename)%(Extension)</TargetPath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.317" />
+	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
+	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+	</ItemGroup>
+
+	<!-- ProductGuideSkill is generated from the product documentation and committed. Items are read at build time so a regenerated guide embeds in the same build. -->
+	<Target Name="EmbedProductGuideSkill" BeforeTargets="AssignTargetPaths">
+		<ItemGroup>
+			<EmbeddedResource Include="ProductGuideSkill/SKILL.md" LogicalName="Oscova.Agents.Infrastructure.ProductGuideSkill.SKILL.md" />
+			<ProductGuideReference Include="ProductGuideSkill/references/*.md" />
+			<EmbeddedResource Include="@(ProductGuideReference)" LogicalName="Oscova.Agents.Infrastructure.ProductGuideSkill.references.%(ProductGuideReference.Filename)%(ProductGuideReference.Extension)" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
+	  <PackageReference Update="SourceGear.sqlite3" Version="3.53.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="SQLitePCLRaw.config.e_sqlite3" Version="3.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
+	</ItemGroup>
+
+</Project>

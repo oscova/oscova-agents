@@ -1,0 +1,202 @@
+@implements IAsyncDisposable
+@inject ApiAccessTokenProvider AccessTokenProvider
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@Title"
+                MaxWidthClass="max-w-xl"
+                HelpTopic="@HelpTopics.EnvironmentReset"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_resetting)"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-4">
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <div role="alert" class="alert alert-error alert-soft">
+                    <span class="min-w-0 break-words whitespace-normal text-sm">@_error</span>
+                </div>
+            }
+
+            <p class="break-words text-sm font-medium"><bdi dir="ltr">@Preview.AppDataPath</bdi></p>
+            <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetScope, "Users, conversations, settings, files, credentials, plugins, and keys move to a retained sibling directory. Models, voices, logs, CLI files, the installed tool, and Avatar files stay in place.")</p>
+            <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetStopWriters, "Finish important work, run 'oscova avatar mcp stop', and stop external writers before continuing. Everyone will be signed out.")</p>
+            <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetTemporaryAddress, "The current address stays available for setup. Reset network settings apply on later restarts, so configure LAN access or a custom port again.")</p>
+
+            <fieldset class="fieldset p-0">
+                <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetConfirmationLabel, "Type RESET to confirm")</legend>
+                <input id="environment-reset-confirmation"
+                       aria-label="@Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetConfirmationLabel, "Type RESET to confirm")"
+                       class="input w-full"
+                       autocomplete="off"
+                       disabled="@_resetting"
+                       @bind="_confirmation"
+                       @bind:event="oninput" />
+            </fieldset>
+
+            <p id="environment-reset-status" role="status" aria-live="polite" class="break-words text-sm">@_status</p>
+            @if (_resetting)
+            {
+                <a class="link link-primary text-sm" href="/login">
+                    @Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetReopen, "Reopen Oscova")
+                </a>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        @if (!_resetting)
+        {
+            <button type="button" class="btn btn-ghost btn-sm" @onclick="CancelAsync">
+                @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+            </button>
+        }
+        <button type="button"
+                class="btn btn-error btn-sm"
+                disabled="@(_resetting || !string.Equals(_confirmation, "RESET", StringComparison.Ordinal))"
+                @onclick="ResetAsync">
+            @if (_resetting)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+            }
+            @Title
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public EnvironmentResetPreview Preview { get; set; } = default!;
+
+    private IJSObjectReference? _utilsModule;
+    private string _confirmation = string.Empty;
+    private string? _error;
+    private string? _status;
+    private bool _resetting;
+
+    private string Title => Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetTitle, "Reset Environment");
+
+    protected override void OnInitialized()
+    {
+        Preview = DialogInstance.Get(nameof(Preview), Preview)
+            ?? throw new InvalidOperationException("Environment reset preview was not supplied.");
+    }
+
+    private Task CancelAsync()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+        return Task.CompletedTask;
+    }
+
+    private async Task ResetAsync()
+    {
+        if (!string.Equals(_confirmation, "RESET", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _error = null;
+        _resetting = true;
+        _status = Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetRestarting, "Preparing the reset and restarting Oscova...");
+        await InvokeAsync(StateHasChanged);
+
+        var handoffStarted = false;
+        try
+        {
+            var token = await AccessTokenProvider.GetTokenAsync();
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new InvalidOperationException(Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetRejected, "Oscova could not authorize the reset."));
+            }
+
+            _utilsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            handoffStarted = true;
+            var result = await _utilsModule.InvokeAsync<JsonElement>(
+                "resetEnvironment",
+                TimeSpan.FromMinutes(11),
+                NavigationManager.ToAbsoluteUri(ApiRoutes.Environment.Reset).ToString(),
+                token,
+                new ResetEnvironmentRequest("RESET"),
+                NavigationManager.ToAbsoluteUri(ApiRoutes.Environment.Reset + "/completion/").ToString(),
+                NavigationManager.ToAbsoluteUri("/login").ToString(),
+                "environment-reset-status",
+                new
+                {
+                    backup = Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetBackupLocation, "Previous environment retained at"),
+                    restarting = Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetRestarting, "Oscova is restarting and reinstalling default plugins..."),
+                    uncertain = Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetUncertain, "The connection closed before Oscova could confirm acceptance. Do not retry. Reopen Oscova and use offline recovery guidance if startup stopped."),
+                    timeout = Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetTimeout, "Reset was accepted, but completion could not be verified. Reopen Oscova. If startup stopped, use 'oscova environment recover --yes' with the same OSCOVA_APP_DATA_DIR.")
+                });
+
+            if (result.TryGetProperty("accepted", out var accepted) && !accepted.GetBoolean())
+            {
+                _resetting = false;
+                _status = null;
+                _error = ReadError(result);
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (Exception ex)
+        {
+            if (handoffStarted)
+            {
+                _status = Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetUncertain, "The connection closed before Oscova could confirm acceptance. Do not retry. Reopen Oscova and use offline recovery guidance if startup stopped.");
+                return;
+            }
+
+            _resetting = false;
+            _status = null;
+            _error = ex.Message;
+        }
+    }
+
+    private string ReadError(JsonElement result)
+    {
+        if (result.TryGetProperty("body", out var body) && body.ValueKind == JsonValueKind.String)
+        {
+            var value = body.GetString();
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                try
+                {
+                    using var problem = JsonDocument.Parse(value);
+                    if (problem.RootElement.TryGetProperty("detail", out var detail) &&
+                        detail.ValueKind == JsonValueKind.String &&
+                        !string.IsNullOrWhiteSpace(detail.GetString()))
+                    {
+                        return detail.GetString()!;
+                    }
+                }
+                catch (JsonException)
+                {
+                }
+
+                return value.Trim('"');
+            }
+        }
+
+        return Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetRejected, "Oscova rejected the environment reset.");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_utilsModule is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _utilsModule.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+}

@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Settings.Label"><value>Pengaturan</value></data>
+	<data name="Settings.Category.Workspace.Label"><value>Preferensi</value></data>
+	<data name="Settings.Category.Workspace.Description"><value>Tampilan, bahasa, notifikasi, persona, dan suara.</value></data>
+	<data name="Settings.Category.Intelligence.Label"><value>Agen &amp; AI</value></data>
+	<data name="Settings.Category.Intelligence.Description"><value>Agen, penyedia model, instruksi, keterampilan, dan alat.</value></data>
+	<data name="Settings.Category.Connections.Label"><value>Akun &amp; Akses</value></data>
+	<data name="Settings.Category.Connections.Description"><value>Akun terhubung, kredensial, akses jaringan, dan webhook.</value></data>
+	<data name="Settings.Category.Data.Label"><value>Berkas &amp; Cadangan</value></data>
+	<data name="Settings.Category.Data.Description"><value>Berkas, impor, ekspor, dan cadangan.</value></data>
+	<data name="Settings.Section.General.Label"><value>Umum</value></data>
+	<data name="Settings.Section.General.Description"><value>Konfigurasikan preferensi aplikasi umum dan tampilan.</value></data>
+	<data name="Settings.Section.Notifications.Description"><value>Kontrol pengiriman notifikasi dan isyarat suara UI yang halus.</value></data>
+	<data name="Settings.Section.Avatar.Label"><value>Avatar</value></data>
+	<data name="Settings.Section.Avatar.Description"><value>Sesuaikan tampilan avatar visual asisten.</value></data>
+	<data name="Settings.Section.Speech.Label"><value>Suara</value></data>
+	<data name="Settings.Section.Speech.Description"><value>Konfigurasikan opsi teks-ke-suara dan pengenalan ucapan.</value></data>
+	<data name="Settings.Section.Providers.Label"><value>Penyedia Model</value></data>
+	<data name="Settings.Section.Providers.Description"><value>Kelola koneksi penyedia model dan kunci API.</value></data>
+	<data name="Settings.Section.Agent.Label"><value>Agen Utama</value></data>
+	<data name="Settings.Section.Agent.Description"><value>Konfigurasikan perilaku dan instruksi asisten AI utama.</value></data>
+	<data name="Settings.Section.Agents.Label"><value>Agen</value></data>
+	<data name="Settings.Section.Agents.Description"><value>Kelola agen AI tambahan dan konfigurasinya.</value></data>
+	<data name="Settings.Section.Compaction.Label"><value>Instruksi</value></data>
+	<data name="Settings.Section.Compaction.Description"><value>Edit instruksi tersimpan yang digunakan untuk pemadatan dan memori.</value></data>
+	<data name="Settings.Section.Skills.Label"><value>Keterampilan</value></data>
+	<data name="Settings.Section.Skills.Description"><value>Cari, pasang, bagikan, dan hapus keterampilan agen.</value></data>
+	<data name="Settings.Section.Tools.Label"><value>Alat</value></data>
+	<data name="Settings.Section.Tools.Description"><value>Aktifkan atau nonaktifkan alat yang tersedia untuk asisten AI.</value></data>
+	<data name="Settings.Section.Plugins.Label"><value>Plugin</value></data>
+	<data name="Settings.Section.Plugins.Description"><value>Kelola ekstensi terpasang yang diizinkan berjalan setelah mulai ulang.</value></data>
+	<data name="Settings.Section.Mcp.Label"><value>Server MCP</value></data>
+	<data name="Settings.Section.Mcp.Description"><value>Hubungkan server alat eksternal yang menggunakan Model Context Protocol.</value></data>
+	<data name="Settings.Section.Network.Label"><value>Jaringan</value></data>
+	<data name="Settings.Section.Network.Description"><value>Sesuaikan pengaturan jaringan, proksi, dan koneksi.</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Label"><value>Akun Terhubung</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Description"><value>Hubungkan akun Google dan Microsoft untuk integrasi berbasis OAuth.</value></data>
+	<data name="Settings.Section.Credentials.Label"><value>Kredensial</value></data>
+	<data name="Settings.Section.Credentials.Description"><value>Kelola kunci API dan token tersimpan.</value></data>
+	<data name="Settings.Channels.CredentialsTitle"><value>Kredensial Bot</value></data>
+	<data name="Settings.Channels.AgentHint"><value>Pilih agen yang membalas di saluran ini.</value></data>
+	<data name="Settings.Channels.EnableAtStartupHint"><value>Jika diaktifkan, bot akan otomatis terhubung saat aplikasi dimulai</value></data>
+	<data name="Settings.Channels.NewCredentialButton"><value>Kelola kredensial</value></data>
+	<data name="Settings.Channels.SavedTokenHeading"><value>Token Bot Tersimpan</value></data>
+	<data name="Settings.Channels.SaveSettingsButton"><value>Simpan Pengaturan</value></data>
+	<data name="Settings.Channels.StartBotButton"><value>Mulai Bot</value></data>
+	<data name="Settings.Channels.StopBotButton"><value>Hentikan Bot</value></data>
+	<data name="Settings.Channels.StatusTitle"><value>Status Bot</value></data>
+	<data name="Settings.Channels.TokensManagedDescription"><value>Token bot dikelola secara terpusat di tab Kredensial.</value></data>
+	<data name="Settings.Discord.ConfigurationTitle"><value>Konfigurasi Bot Discord</value></data>
+	<data name="Settings.Discord.ConfigurationDescription"><value>Konfigurasikan bot Discord Anda untuk mengirim dan menerima pesan.</value></data>
+	<data name="Settings.Discord.EnableAtStartupLabel"><value>Aktifkan bot Discord saat mulai</value></data>
+	<data name="Settings.Discord.CredentialsDescription"><value>Tetapkan ID pengguna Discord yang diizinkan. Token bot dikelola di tab Kredensial.</value></data>
+	<data name="Settings.Discord.CredentialSelectLabel"><value>Kredensial Bot Discord</value></data>
+	<data name="Settings.Discord.CredentialTypeHint"><value>Gunakan kredensial `BotToken` untuk Discord.</value></data>
+	<data name="Settings.Discord.StatusDescription"><value>Status koneksi bot Discord Anda saat ini.</value></data>
+	<data name="Settings.Discord.CredentialValidStatus"><value>Kredensial yang dipilih memiliki token tersimpan.</value></data>
+	<data name="Settings.Discord.CredentialInvalidStatus"><value>Tidak ada kredensial bot Discord valid yang dipilih.</value></data>
+	<data name="Settings.Discord.UserIdRequiredError"><value>ID Pengguna wajib diisi.</value></data>
+	<data name="Settings.Discord.UserIdInvalidFormatError"><value>Format ID Pengguna tidak valid. Harus berupa ID pengguna Discord numerik.</value></data>
+	<data name="Settings.Discord.CredentialRequiredWarning"><value>Pilih dan simpan kredensial bot Discord sebelum memulai bot.</value></data>
+	<data name="Settings.Discord.UserIdSaveWarning"><value>Harap simpan ID pengguna Anda sebelum memulai bot.</value></data>
+	<data name="Settings.Discord.UserIdRequiredForStartup"><value>ID Pengguna Discord diperlukan sebelum mengaktifkan bot saat mulai.</value></data>
+	<data name="Settings.Discord.CredentialRequiredForStartup"><value>Pilih kredensial token bot sebelum mengaktifkan bot saat mulai.</value></data>
+	<data name="Settings.Section.ImportExport.Label"><value>Cadangan</value></data>
+	<data name="Settings.Section.ImportExport.Description"><value>Ekspor cadangan terenkripsi atau reset data aplikasi yang dapat dipulihkan.</value></data>
+	<data name="Settings.ImportExport.ExportTitle"><value>Ekspor Lingkungan</value></data>
+	<data name="Settings.ImportExport.ExportDescription"><value>Unduh lingkungan Anda yang dapat dipulihkan sebagai cadangan .oscb terenkripsi. Model, suara, log, dan operasi tertunda tidak disertakan.</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseLabel"><value>Frasa Sandi</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseHint"><value>Gunakan frasa sandi yang dapat Anda simpan dengan aman. Memulihkan cadangan ini memerlukan frasa sandi yang sama.</value></data>
+	<data name="Settings.ImportExport.ExportButton"><value>Ekspor</value></data>
+	<data name="Settings.ImportExport.ExportDialogTitle"><value>Ekspor lingkungan</value></data>
+	<data name="Settings.ImportExport.ExportDialogDescription"><value>Buat cadangan .oscb terenkripsi dari data aplikasi yang dapat dipulihkan. Model dan suara tidak disertakan.</value></data>
+	<data name="Settings.ImportExport.PassphraseLabel"><value>Frasa Sandi</value></data>
+	<data name="Settings.ImportExport.PassphrasePlaceholder"><value>Masukkan frasa sandi ekspor</value></data>
+	<data name="Settings.ImportExport.PassphraseRequiredError"><value>Masukkan frasa sandi untuk melanjutkan.</value></data>
+	<data name="Settings.ImportExport.ExportFinishButton"><value>Mulai Ekspor</value></data>
+	<data name="Settings.ImportExport.ExportStartedToast"><value>Ekspor lingkungan dimulai.</value></data>
+	<data name="Settings.EnvironmentReset.Title"><value>Reset Lingkungan</value></data>
+	<data name="Settings.EnvironmentReset.Description"><value>Pertahankan lingkungan saat ini, lalu mulai ulang Oscova dengan data aplikasi baru.</value></data>
+	<data name="Settings.EnvironmentReset.Scope"><value>Pengguna, percakapan, pengaturan, file, kredensial, plugin, dan kunci dipindahkan ke direktori sejajar yang dipertahankan. Model, suara, log, file CLI, alat yang terpasang, dan file Avatar tetap di tempatnya.</value></data>
+	<data name="Settings.EnvironmentReset.StopWriters"><value>Selesaikan pekerjaan penting, jalankan 'oscova avatar mcp stop', dan hentikan penulis eksternal sebelum melanjutkan. Semua orang akan keluar dari sesi.</value></data>
+	<data name="Settings.EnvironmentReset.TemporaryAddress"><value>Alamat saat ini tetap tersedia untuk penyiapan. Pengaturan jaringan yang direset berlaku pada mulai ulang berikutnya, jadi konfigurasikan lagi akses LAN atau port khusus.</value></data>
+	<data name="Settings.EnvironmentReset.ConfirmationLabel"><value>Ketik RESET untuk mengonfirmasi</value></data>
+	<data name="Settings.EnvironmentReset.BackupLocation"><value>Lingkungan sebelumnya dipertahankan di</value></data>
+	<data name="Settings.EnvironmentReset.Restarting"><value>Oscova sedang memulai ulang dan memasang kembali plugin default...</value></data>
+	<data name="Settings.EnvironmentReset.Rejected"><value>Oscova menolak reset lingkungan.</value></data>
+	<data name="Settings.EnvironmentReset.Uncertain"><value>Koneksi ditutup sebelum Oscova dapat mengonfirmasi penerimaan. Jangan coba lagi. Buka kembali Oscova dan gunakan panduan pemulihan offline jika proses mulai berhenti.</value></data>
+	<data name="Settings.EnvironmentReset.Timeout"><value>Reset diterima, tetapi penyelesaiannya tidak dapat diverifikasi. Buka kembali Oscova. Jika proses mulai berhenti, gunakan 'oscova environment recover --yes' dengan OSCOVA_APP_DATA_DIR yang sama.</value></data>
+	<data name="Settings.EnvironmentReset.Reopen"><value>Buka kembali Oscova</value></data>
+	<data name="Settings.Section.Files.Label"><value>Berkas</value></data>
+	<data name="Settings.Section.Files.Description"><value>Kelola lokasi penyimpanan berkas dan preferensi unggah.</value></data>
+	<data name="Settings.Files.HomeBreadcrumb"><value>Beranda</value></data>
+	<data name="Settings.Files.SharedBreadcrumb"><value>Bersama</value></data>
+	<data name="Settings.Files.NewFolder"><value>Folder Baru</value></data>
+	<data name="Settings.Files.NewFile"><value>Berkas Baru</value></data>
+	<data name="Settings.Files.EmptyDirectoryMessage"><value>Direktori ini kosong.</value></data>
+	<data name="Settings.Files.ColumnSize"><value>Ukuran</value></data>
+	<data name="Settings.Files.ColumnModified"><value>Dimodifikasi</value></data>
+	<data name="Settings.Files.FolderNamePlaceholder"><value>Nama folder</value></data>
+	<data name="Settings.Files.FileNamePlaceholder"><value>filename.md</value></data>
+	<data name="Settings.Files.AllowedExtensionsHint"><value>Diizinkan: {0}</value></data>
+	<data name="Settings.Files.BackupHistoryButton"><value>Riwayat</value></data>
+	<data name="Settings.Files.BackupHistoryTitle"><value>Riwayat: {0}</value></data>
+	<data name="Settings.Files.BackupCurrentVersionLabel"><value>Saat Ini</value></data>
+	<data name="Settings.Files.BackupNoVersions"><value>Belum ada titik pemulihan yang tersedia untuk berkas ini.</value></data>
+	<data name="Settings.Files.BackupRestoreButton"><value>Pulihkan</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmTitle"><value>Pulihkan versi</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmMessage"><value>Pulihkan versi ini? Berkas saat ini akan dicadangkan terlebih dahulu.</value></data>
+	<data name="Settings.Files.BackupRestoreSuccessToast"><value>Versi dipulihkan.</value></data>
+	<data name="Settings.Files.BackupVersionSize"><value>{0}</value></data>
+	<data name="Settings.Files.BackupLoadError"><value>Riwayat cadangan tidak dapat dimuat.</value></data>
+	<data name="Settings.Files.BackupRestoreError"><value>Versi tidak dapat dipulihkan.</value></data>
+	<data name="Settings.Files.FolderCreatedToast"><value>Folder '{0}' dibuat.</value></data>
+	<data name="Settings.Files.FileCreatedToast"><value>Berkas '{0}' dibuat.</value></data>
+	<data name="Settings.Files.DeleteConfirmTitle"><value>Konfirmasi Hapus</value></data>
+	<data name="Settings.Files.DeleteConfirmMessage"><value>Apakah Anda yakin ingin menghapus "{0}"?{1}</value></data>
+	<data name="Settings.Files.DeleteDirectoryWarning"><value> Ini akan menghapus semua konten.</value></data>
+	<data name="Settings.Files.DeletedToast"><value>'{0}' dihapus.</value></data>
+	<data name="Settings.Files.FileTooLargeToast"><value>'{0}' melebihi batas {1}.</value></data>
+	<data name="Settings.Files.UploadFailedToast"><value>Gagal mengunggah '{0}': {1}</value></data>
+	<data name="Settings.Files.UploadCompleteToast"><value>Unggahan selesai.</value></data>
+	<data name="Settings.Files.AgentsFolderTitle"><value>Folder agen terkelola</value></data>
+	<data name="Settings.Files.AgentsFolderDescription"><value>Berisi agen utama, definisi agen kustom, konteks agen bersama, dan data persisten tiap agen.</value></data>
+	<data name="Settings.Files.MainAgentFolderTitle"><value>Folder agen utama</value></data>
+	<data name="Settings.Files.MainAgentFolderDescription"><value>Menyimpan definisi agen utama bawaan dan data persisten pribadinya.</value></data>
+	<data name="Settings.Files.CustomAgentFolderTitle"><value>Folder agen kustom</value></data>
+	<data name="Settings.Files.CustomAgentFolderDescription"><value>Menyimpan definisi agen kustom ini, kebijakan alat, dan data persisten pribadinya.</value></data>
+	<data name="Settings.Files.SharedAgentsFolderTitle"><value>Konteks agen bersama</value></data>
+	<data name="Settings.Files.SharedAgentsFolderDescription"><value>Berisi berkas konteks pribadi Anda untuk agen bersama.</value></data>
+	<data name="Settings.Files.SharedAgentFolderTitle"><value>Konteks pribadi agen bersama</value></data>
+	<data name="Settings.Files.SharedAgentFolderDescription"><value>Menyimpan konteks pribadi Anda untuk agen bersama ini.</value></data>
+	<data name="Settings.Files.AgentPrivateFolderTitle"><value>Folder pribadi agen</value></data>
+	<data name="Settings.Files.AgentPrivateFolderDescription"><value>Menyediakan folder pribadi persisten agen ini untuk catatan, rekaman kemajuan, dan berkas lainnya.</value></data>
+	<data name="Settings.Files.AgentNotesFolderTitle"><value>Catatan agen pribadi</value></data>
+	<data name="Settings.Files.AgentNotesFolderDescription"><value>Menyimpan catatan peningkatan pribadi agen ini, yang dapat dimuat ke eksekusi mendatang.</value></data>
+	<data name="Settings.Files.WorkspaceRootTitle"><value>Ruang kerja terkelola</value></data>
+	<data name="Settings.Files.WorkspaceRootDescription"><value>Berisi folder ruang kerja yang dapat ditetapkan ke agen.</value></data>
+	<data name="Settings.Files.DefaultWorkspaceTitle"><value>Ruang kerja default</value></data>
+	<data name="Settings.Files.DefaultWorkspaceDescription"><value>Menyediakan ruang kerja umum yang dibuat secara otomatis dan awalnya ditetapkan ke agen utama.</value></data>
+	<data name="Settings.Files.LibraryWorkspaceTitle"><value>Ruang kerja Pustaka</value></data>
+	<data name="Settings.Files.LibraryWorkspaceDescription"><value>Menyimpan dokumen referensi yang diindeks untuk Pencarian Pustaka dan diekspos ke agen yang ditetapkan sebagai berkas hanya-baca.</value></data>
+	<data name="Settings.Files.SharedFolderTitle"><value>Folder bersama</value></data>
+	<data name="Settings.Files.SharedFolderDescription"><value>Setiap pengguna dengan izin Folder bersama dapat membuka, mengubah, dan menghapus file ini, termasuk file terenkripsi.</value></data>
+	<data name="Settings.Files.WorkspaceFolderTitle"><value>Folder ruang kerja</value></data>
+	<data name="Settings.Files.WorkspaceFolderDescription"><value>Menyediakan ruang kerja yang dikelola pengguna yang dapat ditetapkan ke agen.</value></data>
+	<data name="Settings.Files.SettingsFolderTitle"><value>Pengaturan terkelola</value></data>
+	<data name="Settings.Files.SettingsFolderDescription"><value>Menyimpan domain pengaturan Anda sebagai berkas YAML.</value></data>
+	<data name="Settings.Files.PromptsFolderTitle"><value>Instruksi runtime</value></data>
+	<data name="Settings.Files.PromptsFolderDescription"><value>Menyimpan instruksi yang dapat diedit yang digunakan oleh eksekusi agen di masa mendatang.</value></data>
+	<data name="Settings.Files.SkillsFolderTitle"><value>Keterampilan terkelola</value></data>
+	<data name="Settings.Files.SkillsFolderDescription"><value>Berisi keterampilan yang diimpor dan dibuat oleh agen yang tersedia untuk penugasan.</value></data>
+	<data name="Settings.Files.SkillFolderTitle"><value>Folder keterampilan</value></data>
+	<data name="Settings.Files.SkillFolderDescription"><value>Berisi satu paket keterampilan yang berakar pada SKILL.md, beserta sumber daya, skrip, atau aset yang digunakannya.</value></data>
+	<data name="Settings.Files.TasksFolderTitle"><value>Tugas terkelola</value></data>
+	<data name="Settings.Files.TasksFolderDescription"><value>Berisi definisi tugas yang dijadwalkan dan dipicu secara eksternal.</value></data>
+	<data name="Settings.Files.TaskFolderTitle"><value>Folder tugas</value></data>
+	<data name="Settings.Files.TaskFolderDescription"><value>Menyimpan satu definisi tugas dan riwayat eksekusinya.</value></data>
+	<data name="Settings.Files.TaskRunsFolderTitle"><value>Riwayat eksekusi tugas</value></data>
+	<data name="Settings.Files.TaskRunsFolderDescription"><value>Menyimpan indeks eksekusi, transkrip, dan artefak sesi terkelola untuk tugas ini.</value></data>
+	<data name="Settings.Files.MemoryFolderTitle"><value>Memori pengguna</value></data>
+	<data name="Settings.Files.MemoryFolderDescription"><value>Menyimpan data memori jangka panjang, topik, harian, dan percakapan.</value></data>
+	<data name="Settings.Files.DailyMemoryFolderTitle"><value>Memori harian</value></data>
+	<data name="Settings.Files.DailyMemoryFolderDescription"><value>Menyimpan log memori Markdown bertanggal yang digunakan oleh rutinitas memori.</value></data>
+	<data name="Settings.Files.ChatFolderTitle"><value>Percakapan tersimpan</value></data>
+	<data name="Settings.Files.ChatFolderDescription"><value>Menyimpan indeks percakapan tersimpan, transkrip, metadata sesi, dan status lampiran.</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderTitle"><value>Lampiran obrolan</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderDescription"><value>Menyimpan lampiran yang diunggah dalam folder yang dikelompokkan berdasarkan percakapan.</value></data>
+	<data name="Settings.Files.LogsFolderTitle"><value>Log aplikasi</value></data>
+	<data name="Settings.Files.LogsFolderDescription"><value>Menyimpan file log aplikasi pengguna ini.</value></data>
+	<data name="Settings.Files.MetricsFolderTitle"><value>Metrik penggunaan</value></data>
+	<data name="Settings.Files.MetricsFolderDescription"><value>Menyimpan aliran peristiwa metrik runtime pengguna ini.</value></data>
+	<data name="Settings.Files.AuditFolderTitle"><value>Audit keluar (egress)</value></data>
+	<data name="Settings.Files.AuditFolderDescription"><value>Menyimpan rekaman audit aktivitas pengiriman data ke penyedia.</value></data>
+	<data name="Settings.Files.NotificationsFolderTitle"><value>Kotak masuk notifikasi</value></data>
+	<data name="Settings.Files.NotificationsFolderDescription"><value>Menyimpan kotak masuk notifikasi persisten milik pengguna ini.</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderTitle"><value>Status penggunaan alat</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderDescription"><value>Menyimpan penghitung kuota yang digunakan oleh batas panggilan alat yang dikelola.</value></data>
+	<data name="Settings.Files.LibraryIndexingColumn"><value>Pengindeksan</value></data>
+	<data name="Settings.Files.LibraryLocalOnlyBlockedMessage"><value>Pengindeksan Pustaka diblokir hingga Anda memilih penyedia embedding lokal.</value></data>
+	<data name="Settings.Files.LibraryCloudProviderWarning"><value>Penyedia embedding cloud sedang digunakan. Teks yang diekstrak dari file di Pustaka dikirim ke {0} untuk pengindeksan dan pencarian. Untuk dokumen pribadi, disarankan menggunakan penyedia embedding lokal.</value></data>
+	<data name="Settings.Files.LibraryNoProviderMessage"><value>Pengindeksan dan pencarian Pustaka tidak akan dimulai hingga penyedia embedding dikonfigurasi. File yang sudah ada di Pustaka akan ditemukan setelah penyedia dipilih.</value></data>
+	<data name="Settings.Files.LibraryLocalProviderMessage"><value>Pencarian Pustaka menggunakan penyedia embedding lokal {0}.</value></data>
+	<data name="Settings.Files.LibraryReadyStatus"><value>Siap</value></data>
+	<data name="Settings.Files.LibraryQueuedStatus"><value>Dalam antrean</value></data>
+	<data name="Settings.Files.LibraryIndexingStatus"><value>Mengindeks</value></data>
+	<data name="Settings.Files.LibrarySkippedStatus"><value>Dilewati</value></data>
+	<data name="Settings.Files.LibraryFailedStatus"><value>Gagal</value></data>
+	<data name="Settings.Notifications.Title"><value>Notifikasi</value></data>
+	<data name="Settings.Notifications.LoadingMessage"><value>Memuat pengaturan notifikasi...</value></data>
+	<data name="Settings.Notifications.DeliveryTitle"><value>Pengiriman notifikasi</value></data>
+	<data name="Settings.Notifications.DeliveryDescription"><value>Pilih peringatan langsung dan lihat pemberitahuan tersimpan di kotak masuk Anda.</value></data>
+	<data name="Settings.Notifications.MutedDescription"><value>Jeda peringatan langsung dari lonceng. Pemberitahuan baru tetap tersimpan di kotak masuk Anda.</value></data>
+	<data name="Settings.Notifications.ShowLogWarnings"><value>Tampilkan peringatan log</value></data>
+	<data name="Settings.Notifications.ShowSystemErrors"><value>Tampilkan kesalahan sistem</value></data>
+	<data name="Settings.SoundEffects.Title"><value>Efek suara</value></data>
+	<data name="Settings.SoundEffects.Description"><value>Kontrol isyarat audio pendek yang mengonfirmasi momen penting UI.</value></data>
+	<data name="Settings.SoundEffects.MasterLabel"><value>Putar suara UI</value></data>
+	<data name="Settings.SoundEffects.VolumeLabel"><value>Volume</value></data>
+	<data name="Settings.SoundEffects.VolumeDescription"><value>Satu pengaturan volume berlaku untuk setiap isyarat suara.</value></data>
+	<data name="Settings.SoundEffects.CueGroupLabel"><value>Isyarat suara</value></data>
+	<data name="Settings.SoundEffects.Cue.Send"><value>Kirim pesan</value></data>
+	<data name="Settings.SoundEffects.Cue.Enter"><value>Masuk ke obrolan</value></data>
+	<data name="Settings.SoundEffects.Cue.Receive"><value>Respons selesai</value></data>
+	<data name="Settings.SoundEffects.Cue.Error"><value>Kesalahan respons</value></data>
+	<data name="Settings.SoundEffects.Cue.Notify"><value>Notifikasi masuk</value></data>
+	<data name="Settings.SoundEffects.Cue.Tap"><value>Ketukan pada prompt pembuka</value></data>
+	<data name="Settings.SoundEffects.Cue.Complete"><value>Orientasi selesai</value></data>
+	<data name="Settings.Network.LoadingMessage"><value>Memuat pengaturan jaringan...</value></data>
+	<data name="Settings.Network.AccessTitle"><value>Akses Jaringan</value></data>
+	<data name="Settings.Network.EnableAccessLabel"><value>Izinkan akses dari perangkat lain</value></data>
+	<data name="Settings.Network.PortLabel"><value>Port</value></data>
+	<data name="Settings.Network.RestartRequiredHint"><value>Perubahan akses jaringan dan port berlaku setelah memulai ulang.</value></data>
+	<data name="Settings.Network.PrivateFetchTitle"><value>Akses pengambilan web</value></data>
+	<data name="Settings.Network.AllowPrivateFetchLabel"><value>Izinkan mengambil URL lokal dan jaringan pribadi</value></data>
+	<data name="Settings.Network.AllowPrivateFetchDescription"><value>Hanya aktifkan ini jika agen perlu membaca halaman internal tepercaya. Alamat yang tidak ditentukan, link-local, multicast, dan alamat lain yang tidak dapat dirutekan tetap diblokir.</value></data>
+	<data name="Settings.Network.SandboxAccessTitle"><value>Akses jaringan sandbox</value></data>
+	<data name="Settings.Network.AllowSandboxAccessLabel"><value>Izinkan skrip sandbox mengakses jaringan</value></data>
+	<data name="Settings.Network.AllowSandboxAccessDescription"><value>Izin Admin di seluruh instalasi ini berlaku untuk setiap eksekusi online sandbox reguler pengguna. Eksekusi offline dan khusus lokal tetap tanpa jaringan.</value></data>
+	<data name="Settings.Network.PublicUrlTitle"><value>URL Aplikasi Publik</value></data>
+	<data name="Settings.Network.PublicUrlModeLabel"><value>Mode</value></data>
+	<data name="Settings.Network.PublicUrlModeAuto"><value>URL jaringan yang terdeteksi otomatis</value></data>
+	<data name="Settings.Network.PublicUrlModeCustom"><value>URL Kustom</value></data>
+	<data name="Settings.Network.CustomPublicUrlLabel"><value>URL Aplikasi Publik Kustom</value></data>
+	<data name="Settings.Network.CustomPublicUrlPlaceholder"><value>https://oscova.company.local</value></data>
+	<data name="Settings.Network.RestartRequiredAlert"><value>Mulai ulang Oscova Agents agar perubahan akses jaringan dan port berlaku.</value></data>
+	<data name="Settings.Network.DetectedUrlsTitle"><value>URL yang Terdeteksi</value></data>
+	<data name="Settings.Network.LocalUrlLabel"><value>URL Lokal</value></data>
+	<data name="Settings.Network.CopyToClipboardTitle"><value>Salin ke papan klip</value></data>
+	<data name="Settings.Network.AutoNetworkUrlLabel"><value>URL Jaringan Otomatis</value></data>
+	<data name="Settings.Network.AutoNetworkUrlUnavailable"><value>URL jaringan otomatis tidak tersedia.</value></data>
+	<data name="Settings.Network.EffectivePublicUrlLabel"><value>URL Aplikasi Publik Efektif</value></data>
+	<data name="Settings.Network.EffectivePublicUrlUnavailable"><value>URL publik efektif tidak tersedia.</value></data>
+	<data name="Settings.Network.ActiveUrlsLabel"><value>URL Server Aktif</value></data>
+	<data name="Settings.Network.NoActiveUrls"><value>Tidak ada URL pendengar aktif yang dilaporkan saat memulai.</value></data>
+	<data name="Settings.Network.QrCodeTitle"><value>Kode QR</value></data>
+	<data name="Settings.Network.QrCodeAlt"><value>Kode QR URL Aplikasi Publik Efektif</value></data>
+	<data name="Settings.Network.DownloadQrCodeButton"><value>Unduh Kode QR</value></data>
+	<data name="Settings.Network.ResetButton"><value>Atur ulang</value></data>
+	<data name="Settings.Network.SaveButton"><value>Simpan Pengaturan Jaringan</value></data>
+	<data name="Settings.Network.LoadErrorToast"><value>Kesalahan pemuatan pengaturan jaringan: {0}</value></data>
+	<data name="Settings.Network.SaveFailedToast"><value>Pengaturan jaringan tidak dapat disimpan.</value></data>
+	<data name="Settings.Network.SaveSuccessToast"><value>Pengaturan jaringan disimpan</value></data>
+	<data name="Settings.Network.SaveFailedWithMessageToast"><value>Gagal menyimpan pengaturan jaringan: {0}</value></data>
+	<data name="Settings.Network.CopySuccessToast"><value>Disalin ke papan klip</value></data>
+	<data name="Settings.Network.CopyFailedToast"><value>Gagal menyalin ke papan klip</value></data>
+	<data name="Settings.Network.QrCodeDownloadedToast"><value>Kode QR diunduh</value></data>
+	<data name="Settings.Network.QrCodeDownloadFailedToast"><value>Gagal mengunduh kode QR</value></data>
+	<data name="Settings.ConnectedAccounts.AvailableBadge"><value>Tersedia</value></data>
+	<data name="Settings.ConnectedAccounts.NoProvidersMessage"><value>Tidak ada koneksi akun yang tersedia dari plugin yang diaktifkan.</value></data>
+	<data name="Settings.ConnectedAccounts.UnavailableBadge"><value>Tidak tersedia</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredMessage"><value>Tidak tersedia. Hubungi administrator untuk mengonfigurasi penyedia ini.</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredAdminMessage"><value>Belum disiapkan. Gunakan "Kelola penyedia" untuk menambahkan aplikasi OAuth-nya.</value></data>
+	<data name="Settings.ConnectedAccounts.AuthenticatedAccountFallback"><value>akun yang terotentikasi</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectedAsMessage"><value>Terhubung sebagai {0}.</value></data>
+	<data name="Settings.ConnectedAccounts.NotConnectedMessage"><value>Tidak terhubung.</value></data>
+	<data name="Settings.ConnectedAccounts.DisconnectButton"><value>Putuskan sambungan</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectButton"><value>Hubungkan</value></data>
+	<data name="Settings.Credentials.SavedCredentialsTitle"><value>Kredensial Tersimpan</value></data>
+	<data name="Settings.Credentials.SavedCredentialsDescription"><value>Kelola kunci API dan token bot secara terpusat, lalu tautkan dari pengaturan penyedia dan Discord.</value></data>
+	<data name="Settings.Credentials.AddCredentialButton"><value>Tambah Kredensial</value></data>
+	<data name="Settings.Credentials.LangsearchInfo"><value>Buat kredensial `ApiKey` dengan kunci `langsearch` untuk mengaktifkan alat `web_search`.</value></data>
+	<data name="Settings.Credentials.IntegrationCredentialsHeading"><value>Kredensial integrasi</value></data>
+	<data name="Settings.Credentials.NoIntegrationCredentialsMessage"><value>Tidak ada kredensial integrasi yang diperlukan.</value></data>
+	<data name="Settings.Credentials.UserCredentialsHeading"><value>Kredensial Anda</value></data>
+	<data name="Settings.Credentials.NoCredentialsEmpty"><value>Belum ada kredensial yang disimpan.</value></data>
+	<data name="Settings.Credentials.ColumnAlias"><value>Alias</value></data>
+	<data name="Settings.Credentials.ColumnKind"><value>Jenis</value></data>
+	<data name="Settings.Credentials.ColumnKey"><value>Kunci</value></data>
+	<data name="Settings.Credentials.ColumnValue"><value>Nilai</value></data>
+	<data name="Settings.Credentials.ValueSetBadge"><value>Ditetapkan</value></data>
+	<data name="Settings.Credentials.ValueNotSetBadge"><value>Belum ditetapkan</value></data>
+	<data name="Settings.Credentials.AddCredentialTitle"><value>Tambah Kredensial</value></data>
+	<data name="Settings.Credentials.EditCredentialTitle"><value>Edit Kredensial</value></data>
+	<data name="Settings.Credentials.NewCredentialLabel"><value>Kredensial baru</value></data>
+	<data name="Settings.Credentials.EncryptionDescription"><value>Nilai rahasia tetap dienkripsi saat disimpan dan tidak pernah ditampilkan setelah disimpan.</value></data>
+	<data name="Settings.Credentials.AliasLabel"><value>Nama</value></data>
+	<data name="Settings.Credentials.AliasPlaceholder"><value>LangSearch API</value></data>
+	<data name="Settings.Credentials.KeyLabel"><value>Kunci Kredensial</value></data>
+	<data name="Settings.Credentials.KeyPlaceholder"><value>langsearch</value></data>
+	<data name="Settings.Credentials.KeyHint"><value>Hanya huruf kecil, angka, dan tanda hubung. Kunci menjadi hanya-baca setelah dibuat.</value></data>
+	<data name="Settings.Credentials.KindLabel"><value>Jenis</value></data>
+	<data name="Settings.Credentials.DescriptionPlaceholder"><value>Untuk apa kredensial ini digunakan</value></data>
+	<data name="Settings.Credentials.SecretValueLabel"><value>Nilai Rahasia</value></data>
+	<data name="Settings.Credentials.SecretValueNewPlaceholder"><value>Tempelkan nilai rahasia</value></data>
+	<data name="Settings.Credentials.SecretValueEditPlaceholder"><value>Biarkan kosong untuk mempertahankan nilai saat ini</value></data>
+	<data name="Settings.Credentials.SecretValueNewHint"><value>Wajib untuk kredensial baru.</value></data>
+	<data name="Settings.Credentials.SecretValueEditHint"><value>Biarkan kosong jika Anda hanya ingin memperbarui metadata.</value></data>
+	<data name="Settings.Credentials.ValueFieldLabel"><value>Nilai</value></data>
+	<data name="Settings.Credentials.StoredValueOption"><value>Masukkan nilai</value></data>
+	<data name="Settings.Credentials.EnvironmentValueOption"><value>Gunakan variabel lingkungan</value></data>
+	<data name="Settings.Credentials.EnvironmentVariablePlaceholder"><value>ENVIRONMENT_VARIABLE</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableHint"><value>Nilai dibaca dari variabel lingkungan ini saat runtime.</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableRequiredError"><value>Masukkan nama variabel lingkungan untuk {0}.</value></data>
+	<data name="Settings.Credentials.ValueRequiredError"><value>Masukkan nilai untuk {0}.</value></data>
+	<data name="Settings.Credentials.SaveButton"><value>Simpan Kredensial</value></data>
+	<data name="Settings.Credentials.NotFoundToast"><value>Kredensial tidak ditemukan.</value></data>
+	<data name="Settings.Credentials.AliasRequiredError"><value>Nama kredensial wajib diisi.</value></data>
+	<data name="Settings.Credentials.KeyRequiredError"><value>Kunci kredensial wajib diisi.</value></data>
+	<data name="Settings.Credentials.KeyInvalidFormatError"><value>Kunci kredensial hanya boleh menggunakan huruf kecil, angka, dan tanda hubung.</value></data>
+	<data name="Settings.Credentials.KeyAlreadyExistsError"><value>Kunci kredensial sudah ada.</value></data>
+	<data name="Settings.Credentials.SecretRequiredError"><value>Nilai rahasia wajib untuk kredensial baru.</value></data>
+	<data name="Settings.Credentials.CreatedToast"><value>Kredensial dibuat.</value></data>
+	<data name="Settings.Credentials.UpdatedToast"><value>Kredensial diperbarui.</value></data>
+	<data name="Settings.Credentials.DeleteConfirmTitle"><value>Hapus kredensial</value></data>
+	<data name="Settings.Credentials.DeleteConfirmMessage"><value>Apakah Anda yakin ingin menghapus '{0}'?</value></data>
+	<data name="Settings.Credentials.StillLinkedWarning"><value>Kredensial ini masih ditautkan ke {0}. Hapus referensi tersebut sebelum menghapusnya.</value></data>
+	<data name="Settings.Credentials.DeletedToast"><value>Kredensial dihapus.</value></data>
+	<data name="Settings.Avatar.ConnectionHeading"><value>Koneksi</value></data>
+	<data name="Settings.Avatar.BridgeUrlLabel"><value>URL Bridge</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsTitle"><value>Terapkan ke Avatar Langsung</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsButton"><value>Terapkan ke Avatar Langsung</value></data>
+	<data name="Settings.Avatar.StartEngineButton"><value>Mulai Avatar Engine</value></data>
+	<data name="Settings.Avatar.EngineCheckingStatus"><value>Memeriksa</value></data>
+	<data name="Settings.Avatar.EngineConnectedStatus"><value>Terhubung</value></data>
+	<data name="Settings.Avatar.EngineOfflineStatus"><value>Offline</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorStatus"><value>Masalah katalog</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedStatus"><value>Belum diperiksa</value></data>
+	<data name="Settings.Avatar.EngineCheckingDescription"><value>Menghubungkan ke Avatar Engine dan memuat pilihan langsung.</value></data>
+	<data name="Settings.Avatar.EngineConnectedDescription"><value>Avatar Engine dapat dijangkau di {0}.</value></data>
+	<data name="Settings.Avatar.EngineOfflineDescription"><value>Tidak dapat menjangkau Avatar Engine di {0}. Pengaturan tersimpan tetap dapat diedit.</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorDescription"><value>Engine dapat dijangkau, tetapi satu atau beberapa daftar pilihan langsung tidak dapat dimuat.</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedDescription"><value>Pilih Hubungkan untuk memuat avatar dan ekspresi langsung.</value></data>
+	<data name="Settings.Avatar.BridgeUrlDescription"><value>Titik akhir jembatan tersimpan yang digunakan oleh runtime avatar bersama.</value></data>
+	<data name="Settings.Avatar.SaveChangesWarning"><value>Simpan perubahan sebelum menerapkannya ke avatar engine.</value></data>
+	<data name="Settings.Avatar.AvatarHeading"><value>Avatar</value></data>
+	<data name="Settings.Avatar.SelectedAvatarLabel"><value>Avatar Terpilih</value></data>
+	<data name="Settings.Avatar.LoadingAvatarsOption"><value>Memuat avatar...</value></data>
+	<data name="Settings.Avatar.LoadingEmotionsOption"><value>Memuat ekspresi...</value></data>
+	<data name="Settings.Avatar.SavedUnverifiedOption"><value>Tersimpan: {0} (belum diverifikasi)</value></data>
+	<data name="Settings.Avatar.SavedUnavailableOption"><value>Tersimpan: {0} (tidak tersedia)</value></data>
+	<data name="Settings.Avatar.CatalogCheckingHint"><value>Memuat pilihan langsung dari Avatar Engine.</value></data>
+	<data name="Settings.Avatar.CatalogOfflineHint"><value>Pilihan langsung tersedia setelah Avatar Engine terhubung.</value></data>
+	<data name="Settings.Avatar.SavedValueUnverifiedHint"><value>Nilai tersimpan '{0}' ditampilkan tetapi belum diverifikasi dengan engine yang sedang berjalan.</value></data>
+	<data name="Settings.Avatar.SavedValueUnavailableHint"><value>Nilai tersimpan '{0}' tidak tersedia di engine yang sedang berjalan.</value></data>
+	<data name="Settings.Avatar.RefreshAvatarsTitle"><value>Segarkan Avatar</value></data>
+<data name="Settings.Avatar.ApplyAvatarButton"><value>Terapkan Tampilan</value></data>
+	<data name="Settings.Avatar.ChooseAvatarDescription"><value>Pilih avatar untuk ditampilkan</value></data>
+	<data name="Settings.Avatar.ExpressionHeading"><value>Ekspresi</value></data>
+	<data name="Settings.Avatar.SelectedEmotionLabel"><value>Emosi yang Dipilih</value></data>
+	<data name="Settings.Avatar.ChooseEmotionDescription"><value>Pilih ekspresi dari engine yang sedang berjalan.</value></data>
+	<data name="Settings.Avatar.RefreshEmotionsTitle"><value>Segarkan Emosi</value></data>
+	<data name="Settings.Avatar.BlendSpeedLabel"><value>Kecepatan Perpaduan</value></data>
+	<data name="Settings.Avatar.CueBlendInLabel"><value>Detik transisi masuk emosi</value></data>
+	<data name="Settings.Avatar.CueRestoreAfterLabel"><value>Detik sebelum emosi dipulihkan</value></data>
+	<data name="Settings.Avatar.CueTimingDescription"><value>Emosi dari balasan lisan muncul bertahap, bertahan, lalu kembali ke emosi terpilih dengan kecepatan perpaduan di atas.</value></data>
+	<data name="Settings.Avatar.ApplyExpressionButton"><value>Terapkan Ekspresi</value></data>
+	<data name="Settings.Avatar.WindowHeading"><value>Jendela</value></data>
+	<data name="Settings.Avatar.ResolutionLabel"><value>Resolusi</value></data>
+	<data name="Settings.Avatar.Resolution1920x1080"><value>1920x1080 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1440"><value>2560x1440 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution3840x2160"><value>3840x2160 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1080"><value>2560x1080 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution3440x1440"><value>3440x1440 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution5120x2160"><value>5120x2160 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution1280x720"><value>1280x720 (16:9)</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLabel"><value>Preset Grafik</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLow"><value>Rendah</value></data>
+	<data name="Settings.Avatar.GraphicsPresetMedium"><value>Sedang</value></data>
+	<data name="Settings.Avatar.GraphicsPresetHigh"><value>Tinggi</value></data>
+	<data name="Settings.Avatar.GraphicsPresetEpic"><value>Epik</value></data>
+	<data name="Settings.Avatar.GraphicsPresetCinematic"><value>Sinematik</value></data>
+	<data name="Settings.Avatar.RayTracingLabel"><value>Ray Tracing</value></data>
+	<data name="Settings.Avatar.RayTracingDescription"><value>Mengaktifkan efek ray-traced yang didukung secara terpisah dari preset kualitas. Nonaktif secara default dan dapat mengurangi performa.</value></data>
+	<data name="Settings.Avatar.FullscreenLabel"><value>Layar Penuh</value></data>
+	<data name="Settings.Avatar.BackgroundColorLabel"><value>Warna Latar Belakang</value></data>
+	<data name="Settings.Avatar.ApplyWindowButton"><value>Terapkan Jendela</value></data>
+	<data name="Settings.Avatar.MessageAppearanceHeading"><value>Tampilan Pesan</value></data>
+	<data name="Settings.Avatar.MessageFontSizeLabel"><value>Ukuran Font Pesan</value></data>
+	<data name="Settings.Avatar.MessageColorLabel"><value>Warna</value></data>
+	<data name="Settings.Avatar.MessageColorOpacityLabel"><value>Opasitas</value></data>
+	<data name="Settings.Avatar.ApplyMessageAppearanceButton"><value>Terapkan Tampilan</value></data>
+	<data name="Settings.Avatar.MessageBoxHeading"><value>Kotak Pesan</value></data>
+	<data name="Settings.Avatar.EditMessageLayoutButton"><value>Edit tata letak</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogTitle"><value>Tata letak pesan</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogSubtitle"><value>Posisikan kotak pesan pada layar avatar {0} x {1}.</value></data>
+	<data name="Settings.Avatar.MessageLayoutInstructions"><value>Seret kotak pesan untuk memindahkannya, ubah ukurannya dari sudut, atau masukkan persentase yang tepat di bawah.</value></data>
+	<data name="Settings.Avatar.MessageLayoutScreenLabel"><value>Layar avatar</value></data>
+	<data name="Settings.Avatar.MessageLayoutBoxLabel"><value>Kotak pesan</value></data>
+	<data name="Settings.Avatar.MessageLayoutLeftLabel"><value>Kiri</value></data>
+	<data name="Settings.Avatar.MessageLayoutTopLabel"><value>Atas</value></data>
+	<data name="Settings.Avatar.MessageLayoutInvalid"><value>Pastikan kotak pesan berada di dalam layar serta lebar dan tingginya minimal 1%.</value></data>
+	<data name="Settings.Avatar.TransformWidthLabel"><value>Lebar (%)</value></data>
+	<data name="Settings.Avatar.TransformHeightLabel"><value>Tinggi (%)</value></data>
+	<data name="Settings.Avatar.MessageDisplayDurationLabel"><value>Durasi Tampilan</value></data>
+	<data name="Settings.Avatar.SecondsUnit"><value>detik</value></data>
+	<data name="Settings.Avatar.ApplyMessageBoxButton"><value>Terapkan Kotak Pesan</value></data>
+	<data name="Settings.Avatar.MessagePreviewHeading"><value>Pratinjau Pesan</value></data>
+	<data name="Settings.Avatar.PreviewTextLabel"><value>Teks Pratinjau</value></data>
+	<data name="Settings.Avatar.PreviewTextPlaceholder"><value>Ketik pesan untuk melihat pratinjau di kotak pesan avatar</value></data>
+	<data name="Settings.Avatar.SendPreviewButton"><value>Kirim Pratinjau</value></data>
+	<data name="Settings.Avatar.ClearPreviewButton"><value>Hapus</value></data>
+	<data name="Settings.Avatar.CameraHeading"><value>Kamera</value></data>
+	<data name="Settings.Avatar.CameraYawLabel"><value>Yaw Kamera</value></data>
+	<data name="Settings.Avatar.ApplyCameraButton"><value>Terapkan Kamera</value></data>
+	<data name="Settings.Avatar.AudioHeading"><value>Audio</value></data>
+	<data name="Settings.Avatar.SpeechVolumeLabel"><value>Volume Ucapan</value></data>
+	<data name="Settings.Avatar.ApplyAudioButton"><value>Terapkan Audio</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarTitle"><value>Matikan Avatar</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarButton"><value>Matikan Avatar</value></data>
+	<data name="Settings.Avatar.ResetToDefaultsButton"><value>Atur ulang ke default</value></data>
+	<data name="Settings.Avatar.SaveSettingsButton"><value>Simpan Pengaturan</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmTitle"><value>Konfirmasi Mematikan Avatar</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmMessage"><value>Matikan avatar yang terhubung ke URL jembatan ini? Hal ini dapat memengaruhi avatar yang berjalan di komputer lain di jaringan.</value></data>
+	<data name="Settings.Avatar.DefaultPreviewMessage"><value>Ini adalah pesan uji coba.</value></data>
+	<data name="Settings.Avatar.SettingsLoadErrorToast"><value>Terjadi kesalahan saat memuat pengaturan avatar: {0}</value></data>
+	<data name="Settings.Avatar.SavedSettingsAppliedToast"><value>Pengaturan avatar yang disimpan telah diterapkan</value></data>
+	<data name="Settings.Avatar.ApplySavedSettingsFailedToast"><value>Pengaturan avatar tidak dapat diterapkan.</value></data>
+	<data name="Settings.Avatar.SyncErrorToast"><value>Terjadi kesalahan sinkronisasi avatar: {0}</value></data>
+	<data name="Settings.Avatar.LoadedAvatarsToast"><value>Berhasil memuat {0} avatar</value></data>
+	<data name="Settings.Avatar.LoadAvatarsFailedToast"><value>Gagal memuat avatar: {0}</value></data>
+	<data name="Settings.Avatar.LoadAvatarsErrorToast"><value>Terjadi kesalahan saat memuat avatar: {0}</value></data>
+	<data name="Settings.Avatar.LoadedEmotionsToast"><value>Berhasil memuat {0} emosi</value></data>
+	<data name="Settings.Avatar.LoadEmotionsFailedToast"><value>Gagal memuat emosi: {0}</value></data>
+	<data name="Settings.Avatar.LoadEmotionsErrorToast"><value>Terjadi kesalahan saat memuat emosi: {0}</value></data>
+	<data name="Settings.Avatar.EngineOfflineToast"><value>Avatar Engine tidak dapat dijangkau.</value></data>
+	<data name="Settings.Avatar.EngineRefreshFailedToast"><value>Gagal menyegarkan Avatar Engine: {0}</value></data>
+	<data name="Settings.Avatar.StartEngineStartedToast"><value>Avatar Engine dimulai. Tunggu jendelanya muncul, lalu pilih Hubungkan.</value></data>
+	<data name="Settings.Avatar.StartEngineLocalUrlToast"><value>Gunakan Bridge URL http://localhost atau http://127.0.0.1 untuk memulai Avatar Engine lokal.</value></data>
+	<data name="Settings.Avatar.StartEngineFailedToast"><value>Avatar Engine tidak dapat dimulai.</value></data>
+	<data name="Settings.Avatar.EngineConnectedToast"><value>Avatar Engine terhubung dan opsi langsung telah dimuat.</value></data>
+	<data name="Settings.Avatar.AppliedToast"><value>Tampilan diterapkan pada '{0}'</value></data>
+	<data name="Settings.Avatar.ApplyFailedToast"><value>Gagal menerapkan avatar: {0}</value></data>
+	<data name="Settings.Avatar.ApplyErrorToast"><value>Terjadi kesalahan saat menerapkan avatar: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionAppliedToast"><value>Ekspresi '{0}' diterapkan</value></data>
+	<data name="Settings.Avatar.ExpressionFailedToast"><value>Gagal menerapkan ekspresi: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionErrorToast"><value>Terjadi kesalahan saat menerapkan ekspresi: {0}</value></data>
+	<data name="Settings.Avatar.WindowApplyFailedToast"><value>Gagal menerapkan jendela: {0}</value></data>
+	<data name="Settings.Avatar.WindowSettingsAppliedToast"><value>Pengaturan jendela diterapkan</value></data>
+	<data name="Settings.Avatar.WindowApplyErrorToast"><value>Terjadi kesalahan saat menerapkan jendela: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyFailedToast"><value>Gagal menerapkan tampilan pesan: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceAppliedToast"><value>Tampilan pesan diterapkan</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyErrorToast"><value>Terjadi kesalahan saat menerapkan tampilan pesan: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyFailedToast"><value>Gagal menerapkan kotak pesan: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxAppliedToast"><value>Kotak pesan diterapkan</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyErrorToast"><value>Terjadi kesalahan saat menerapkan kotak pesan: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawAppliedToast"><value>Yaw kamera diatur ke {0} derajat</value></data>
+	<data name="Settings.Avatar.CameraYawApplyFailedToast"><value>Gagal menerapkan yaw kamera: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawApplyErrorToast"><value>Terjadi kesalahan saat menerapkan yaw kamera: {0}</value></data>
+	<data name="Settings.Avatar.AudioSettingsAppliedToast"><value>Pengaturan audio diterapkan ({0}%)</value></data>
+	<data name="Settings.Avatar.AudioApplyFailedToast"><value>Gagal menerapkan audio: {0}</value></data>
+	<data name="Settings.Avatar.AudioApplyErrorToast"><value>Terjadi kesalahan saat menerapkan audio: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageSentToast"><value>Pesan pratinjau terkirim</value></data>
+	<data name="Settings.Avatar.PreviewMessageFailedToast"><value>Gagal mengirim pesan pratinjau: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageErrorToast"><value>Terjadi kesalahan pratinjau pesan: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearedToast"><value>Pesan pratinjau dibersihkan</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearFailedToast"><value>Gagal membersihkan pesan pratinjau: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearErrorToast"><value>Terjadi kesalahan saat membersihkan pesan: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownInitiatedToast"><value>Proses mematikan avatar dimulai</value></data>
+	<data name="Settings.Avatar.ShutdownFailedToast"><value>Gagal memulai proses mematikan: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownErrorToast"><value>Terjadi kesalahan saat mematikan: {0}</value></data>
+	<data name="Settings.Avatar.SettingsSavedToast"><value>Pengaturan avatar disimpan</value></data>
+	<data name="Settings.Avatar.SaveSettingsFailedToast"><value>Gagal menyimpan pengaturan avatar: {0}</value></data>
+	<data name="Settings.Speech.VoiceLabel"><value>Suara</value></data>
+	<data name="Settings.Speech.NoVoicesOption"><value>(tidak ada suara yang ditemukan)</value></data>
+	<data name="Settings.Speech.TestVoiceButton"><value>Uji Suara</value></data>
+	<data name="Settings.Speech.TestingButton"><value>Menguji</value></data>
+	<data name="Settings.Speech.VoiceHelperText"><value>Klik Simpan pengaturan suara untuk menerapkan suara ini.</value></data>
+	<data name="Settings.Speech.SampleTextLabel"><value>Teks sampel</value></data>
+	<data name="Settings.Speech.SampleTextPlaceholder"><value>Ketik sesuatu untuk melihat pratinjau suara yang dipilih...</value></data>
+	<data name="Settings.Speech.DefaultSampleText"><value>Ini adalah pratinjau suara singkat.</value></data>
+	<data name="Settings.Speech.OutputModeLabel"><value>Output ucapan asisten</value></data>
+	<data name="Settings.Speech.OutputModeBrowserOnly"><value>Hanya browser</value></data>
+	<data name="Settings.Speech.OutputModeBrowserAndAvatar"><value>Browser dan avatar</value></data>
+	<data name="Settings.Speech.OutputModeAvatarOnly"><value>Hanya avatar</value></data>
+	<data name="Settings.Speech.RecognitionSectionTitle"><value>Pengenalan ucapan</value></data>
+	<data name="Settings.Speech.SynthesisSectionTitle"><value>Sintesis ucapan</value></data>
+	<data name="Settings.Speech.DownloadModelButton"><value>Unduh model</value></data>
+	<data name="Settings.Speech.DownloadingLabel"><value>Mengunduh {0:0}%</value></data>
+	<data name="Settings.Speech.ModelReadyLabel"><value>Siap</value></data>
+	<data name="Settings.Speech.ModelMissingLabel"><value>Belum diunduh</value></data>
+	<data name="Settings.Speech.CancelDownloadButton"><value>Batal</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderTitle"><value>Penyedia Default</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderDescription"><value>Tambahkan penyedia Anda dan pilih mana yang harus digunakan secara default.</value></data>
+	<data name="Settings.ModelProviders.SelectPlaceholder"><value>Tambahkan penyedia untuk memulai</value></data>
+	<data name="Settings.ModelProviders.SelectDefaultPlaceholder"><value>Pilih penyedia</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderTitle"><value>Penyedia cadangan</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderDescription"><value>Digunakan secara otomatis jika penyedia default gagal.</value></data>
+	<data name="Settings.ModelProviders.FallbackNoneOption"><value>Tidak ada</value></data>
+	<data name="Settings.ModelProviders.AddButton"><value>Tambah penyedia kustom</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderTitle"><value>Penyedia Embedding</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderDescription"><value>Konfigurasikan model embedding untuk pencarian memori agen.</value></data>
+	<data name="Settings.ModelProviders.NoEmbeddingConfiguredMessage"><value>Belum ada penyedia embedding yang dikonfigurasi. Fitur memori agen memerlukan model embedding.</value></data>
+	<data name="Settings.ModelProviders.AddEmbeddingButton"><value>Tambah penyedia embedding</value></data>
+	<data name="Settings.ModelProviders.ConfiguredProvidersTitle"><value>Penyedia Terkonfigurasi</value></data>
+	<data name="Settings.ModelProviders.SelectedProviderLabel"><value>Penyedia terpilih: {0}</value></data>
+	<data name="Settings.ModelProviders.NoProvidersMessage"><value>Tambahkan penyedia model untuk mulai mengobrol.</value></data>
+	<data name="Settings.ModelProviders.TableHeaderProvider"><value>Penyedia</value></data>
+	<data name="Settings.ModelProviders.TableHeaderModel"><value>Model</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCredential"><value>Kredensial</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCapabilities"><value>Kemampuan</value></data>
+	<data name="Settings.ModelProviders.TableHeaderLastTest"><value>Uji Terakhir</value></data>
+	<data name="Settings.ModelProviders.OpenDetailsTitle"><value>Buka detail penyedia</value></data>
+	<data name="Settings.ModelProviders.DefaultBadge"><value>Default</value></data>
+	<data name="Settings.ModelProviders.FallbackBadge"><value>Cadangan</value></data>
+	<data name="Settings.ModelProviders.CapabilityText"><value>Konteks {0:N0}</value></data>
+	<data name="Settings.ModelProviders.NoCapabilities"><value>Tidak ada kemampuan tambahan</value></data>
+	<data name="Settings.ModelProviders.NoTestRun"><value>Belum diuji</value></data>
+	<data name="Settings.ModelProviders.DetailsDialogTitle"><value>Detail penyedia</value></data>
+	<data name="Settings.ModelProviders.EndpointDefault"><value>Endpoint default</value></data>
+	<data name="Settings.ModelProviders.TestButton"><value>Uji</value></data>
+	<data name="Settings.ModelProviders.ModelNotSet"><value>Model belum diatur</value></data>
+	<data name="Settings.ModelProviders.NoCredentialLinked"><value>Tidak ada kredensial tersimpan yang ditautkan</value></data>
+	<data name="Settings.ModelProviders.CredentialSummary"><value>Kredensial: {0} [{1}]</value></data>
+	<data name="Settings.ModelProviders.CredentialMissing"><value>Kredensial ditautkan tetapi nilainya hilang: [{0}]</value></data>
+	<data name="Settings.ModelProviders.CredentialNotFound"><value>Kredensial tidak ditemukan: [{0}]</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmTitle"><value>Hapus penyedia</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmMessage"><value>Apakah Anda yakin ingin menghapus {0}?</value></data>
+	<data name="Settings.ModelProviders.CopyNameSuffix"><value>{0} (Salinan)</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmTitle"><value>Hapus penyedia embedding</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmMessage"><value>Apakah Anda yakin ingin menghapus {0}?</value></data>
+	<data name="Settings.ModelProviders.EditProviderDialogTitle"><value>Edit Penyedia</value></data>
+	<data name="Settings.ModelProviders.AddProviderDialogTitle"><value>Tambah Penyedia</value></data>
+	<data name="Settings.ModelProviders.DialogTabProvider"><value>Penyedia</value></data>
+	<data name="Settings.ModelProviders.DialogTabChatOptions"><value>Opsi Obrolan</value></data>
+	<data name="Settings.ModelProviders.ProviderTypeLabel"><value>Jenis Penyedia</value></data>
+	<data name="Settings.ModelProviders.ProviderNameLabel"><value>Nama Penyedia</value></data>
+	<data name="Settings.ModelProviders.ProviderNamePlaceholder"><value>cth., OpenAI Kerja</value></data>
+	<data name="Settings.ModelProviders.ProviderNameRequired"><value>Nama penyedia wajib diisi</value></data>
+	<data name="Settings.ModelProviders.ModelFileLabel"><value>File Model</value></data>
+	<data name="Settings.ModelProviders.NoGgufFilesOption"><value>Tidak ada file GGUF yang ditemukan</value></data>
+	<data name="Settings.ModelProviders.SelectModelPlaceholder"><value>Pilih model...</value></data>
+	<data name="Settings.ModelProviders.GgufFilesLocation"><value>File GGUF di {0}</value></data>
+	<data name="Settings.ModelProviders.DownloadSectionTitle"><value>Unduh model GGUF</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlLabel"><value>URL Unduhan</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlPlaceholder"><value>https://huggingface.co/.../model.gguf</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlHelp"><value>Tempelkan tautan langsung ke berkas GGUF (mis. dari HuggingFace)</value></data>
+	<data name="Settings.ModelProviders.BaseUrlLabel"><value>URL Dasar</value></data>
+	<data name="Settings.ModelProviders.BaseUrlInvalid"><value>Masukkan URL yang valid</value></data>
+	<data name="Settings.ModelProviders.ModelIdLabel"><value>ID Model</value></data>
+	<data name="Settings.ModelProviders.ModelIdRequired"><value>ID model wajib diisi</value></data>
+	<data name="Settings.ModelProviders.ModelIdHelp"><value>Ketik ID model apa pun secara manual, atau ambil model penyedia di bawah.</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsTitle"><value>Model Penyedia</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsDescription"><value>Ambil model yang tersedia atau disarankan, lalu salin salah satu ke bidang ID Model.</value></data>
+	<data name="Settings.ModelProviders.FetchModelsButton"><value>Ambil model</value></data>
+	<data name="Settings.ModelProviders.DownloadFetchedModelButton"><value>Unduh model</value></data>
+	<data name="Settings.ModelProviders.DownloadUnsupportedMessage"><value>Penyedia yang dipilih tidak mendukung pengunduhan model.</value></data>
+	<data name="Settings.ModelProviders.InstalledModelBadge"><value>Terpasang</value></data>
+	<data name="Settings.ModelProviders.ModelLicenseLabel"><value>Lisensi</value></data>
+	<data name="Settings.ModelProviders.ChooseFetchedModelLabel"><value>Pilih model yang diambil</value></data>
+	<data name="Settings.ModelProviders.AvailableModelsLoadedLabel"><value>{0} dimuat</value></data>
+	<data name="Settings.ModelProviders.SelectFetchedModelPlaceholder"><value>Pilih model yang diambil...</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLabel"><value>Cakupan endpoint</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeAuto"><value>Deteksi otomatis</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLocal"><value>Perlakukan sebagai lokal</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeCloud"><value>Perlakukan sebagai cloud</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeDescription"><value>Gunakan ini jika endpoint khusus salah diklasifikasikan oleh mode offline, seperti gateway LAN atau proksi cloud.</value></data>
+	<data name="Settings.ModelProviders.CredentialSectionTitle"><value>Kredensial</value></data>
+	<data name="Settings.ModelProviders.CredentialDescription"><value>Tautkan penyedia ini ke kunci API yang tersimpan alih-alih menyimpan rahasia pada penyedia itu sendiri.</value></data>
+	<data name="Settings.ModelProviders.NewCredentialButton"><value>Kelola kredensial</value></data>
+	<data name="Settings.ModelProviders.SavedApiKeyLabel"><value>Kunci API Tersimpan</value></data>
+	<data name="Settings.ModelProviders.ModelConfigurationTitle"><value>Konfigurasi Model</value></data>
+	<data name="Settings.ModelProviders.SupportsImagesLabel"><value>Mendukung gambar</value></data>
+	<data name="Settings.ModelProviders.SupportsThinkingLabel"><value>Mendukung output pemikiran</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeLabel"><value>Ukuran Jendela Konteks</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeInvalid"><value>Ukuran jendela konteks harus bernilai positif</value></data>
+	<data name="Settings.ModelProviders.MemoryFitFits"><value>Perkiraan kecocokan memori untuk komputer yang menjalankan Oscova: muat.</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTight"><value>Perkiraan kecocokan memori untuk komputer yang menjalankan Oscova: ketat. Jendela konteks yang lebih kecil mengurangi perkiraan.</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTooLarge"><value>Perkiraan kecocokan memori untuk komputer yang menjalankan Oscova: terlalu besar. Coba model atau jendela konteks yang lebih kecil.</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveLabel"><value>Tetap dimuat</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveHelp"><value>Durasi opsional Ollama. Contoh: 5m menjaga model tetap dimuat selama lima menit, -1 menjaganya tetap dimuat tanpa batas waktu, dan 0 mengeluarkannya dari memori setelah respons. Kosongkan untuk menggunakan default server Ollama.</value></data>
+	<data name="Settings.ModelProviders.InputCostLabel"><value>Harga input, USD per 1 juta token</value></data>
+	<data name="Settings.ModelProviders.OutputCostLabel"><value>Harga output, USD per 1 juta token</value></data>
+	<data name="Settings.ModelProviders.CostEstimateHelp"><value>Tarif standar opsional untuk perkiraan dasbor. Input yang di-cache memakai tarif input. Biaya lain tidak termasuk.</value></data>
+	<data name="Settings.ModelProviders.CostPerMillionTokensInvalid"><value>Masukkan jumlah non-negatif atau biarkan kosong.</value></data>
+	<data name="Settings.ModelProviders.CostNotSet"><value>Biaya belum diatur</value></data>
+	<data name="Settings.ModelProviders.TemperatureLabel"><value>Temperatur</value></data>
+	<data name="Settings.ModelProviders.ClearButton"><value>Bersihkan</value></data>
+	<data name="Settings.ModelProviders.TemperatureDescription"><value>Nilai yang lebih tinggi meningkatkan keacakan; nilai yang lebih rendah membuat respons lebih fokus.</value></data>
+	<data name="Settings.ModelProviders.TopPLabel"><value>Top P</value></data>
+	<data name="Settings.ModelProviders.TopPDescription"><value>Mengontrol pengambilan sampel nukleus. Nilai yang lebih rendah membatasi pilihan token.</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyLabel"><value>Penalti Frekuensi</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyDescription"><value>Nilai positif mengurangi kecenderungan pengulangan; nilai negatif meningkatkannya.</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyLabel"><value>Penalti Kehadiran</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyDescription"><value>Mendorong model untuk memperkenalkan topik baru jika bernilai positif.</value></data>
+	<data name="Settings.ModelProviders.TopKLabel"><value>Top K</value></data>
+	<data name="Settings.ModelProviders.TopKDescription"><value>Membatasi kandidat token. Atur ke 0 untuk mengandalkan default penyedia.</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensLabel"><value>Token Output Maksimum</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensInvalid"><value>Masukkan angka positif atau biarkan kosong.</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensDescription"><value>Biarkan kosong agar penyedia menentukan panjang respons.</value></data>
+	<data name="Settings.ModelProviders.SeedLabel"><value>Seed</value></data>
+	<data name="Settings.ModelProviders.SeedInvalid"><value>Masukkan angka non-negatif atau biarkan kosong.</value></data>
+	<data name="Settings.ModelProviders.SeedDescription"><value>Gunakan untuk respons yang dapat direproduksi jika didukung oleh model.</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorLabel"><value>Perilaku Pemanggilan Alat</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAuto"><value>Otomatis</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAllowMultiple"><value>Izinkan beberapa pemanggilan alat</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorSingle"><value>Hanya satu pemanggilan alat</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorDescription"><value>Pilih berapa banyak pemanggilan alat yang dapat dikeluarkan model per permintaan.</value></data>
+	<data name="Settings.ModelProviders.ResetToDefaultsButton"><value>Atur ulang ke default</value></data>
+	<data name="Settings.ModelProviders.ConnectedNoModelsMessage"><value>Berhasil terhubung, tetapi penyedia tidak mengembalikan model apa pun. Anda masih dapat mengetik ID model secara manual.</value></data>
+	<data name="Settings.ModelProviders.ModelsLoadedMessage"><value>{0} model dimuat.</value></data>
+	<data name="Settings.ModelProviders.ModelDetailsPrefilledMessage"><value>Bidang terisi otomatis dari model yang dipilih. Tinjau dan sesuaikan seperlunya.</value></data>
+	<data name="Settings.ModelProviders.InvalidDownloadUrl"><value>Masukkan URL http atau https yang valid.</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOllama"><value>Ganti endpoint Ollama lokal jika tidak berjalan di alamat default</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpGroq"><value>Ganti endpoint Groq hanya jika Anda merutekan melalui proksi atau gateway</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenAICompatible"><value>Atur endpoint untuk API yang kompatibel, proksi, atau gateway</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenRouter"><value>Ganti endpoint OpenRouter hanya jika Anda merutekan melalui proksi atau gateway</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpDefault"><value>Ganti endpoint API default</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpNoCredentials"><value>Buat kredensial di Pengaturan > Kredensial untuk menggunakan penyedia yang diautentikasi.</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpGoogle"><value>Google Gemini memerlukan kredensial kunci API.</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpDefault"><value>Biarkan kosong hanya jika penyedia ini dapat digunakan tanpa kunci API.</value></data>
+	<data name="Settings.ModelProviders.AutoValue"><value>Otomatis</value></data>
+	<data name="Settings.ModelProviders.AllowValue"><value>Izinkan</value></data>
+	<data name="Settings.ModelProviders.SingleValue"><value>Tunggal</value></data>
+	<data name="Settings.ModelProviders.EmbeddingEditDialogTitle"><value>Edit Penyedia Embedding</value></data>
+	<data name="Settings.ModelProviders.EmbeddingAddDialogTitle"><value>Tambah Penyedia Embedding</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderNamePlaceholder"><value>mis., Embedding Ollama</value></data>
+	<data name="Settings.ModelProviders.EmbeddingModelIdPlaceholder"><value>mis., nomic-embed-text</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsLabel"><value>Dimensi Vektor</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsRequired"><value>Dimensi vektor wajib diisi</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsHelp"><value>Harus cocok dengan output model (mis. 768 untuk nomic-embed-text, 1536 untuk text-embedding-3-small). Menyimpan model embedding atau dimensi yang diubah akan menghapus indeks memori yang ada agar Oscova dapat membangunnya kembali.</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialDescription"><value>Tautkan penyedia embedding ini ke kredensial kunci API yang tersimpan.</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialHelp"><value>Pilih kredensial yang tersimpan, atau biarkan kosong untuk penyedia yang tidak memerlukannya.</value></data>
+	<data name="Settings.Agents.SectionDescription"><value>Buat dan kelola agen khusus untuk digunakan dalam obrolan.</value></data>
+	<data name="Settings.Agents.NewAgentButton"><value>Agen Baru</value></data>
+	<data name="Settings.Agents.EmptyStateMessage"><value>Belum ada agen khusus. Buat satu untuk memulai.</value></data>
+	<data name="Settings.Agents.SharedBadge"><value>Dibagikan</value></data>
+	<data name="Settings.Agents.DeleteButtonTitle"><value>Hapus agen</value></data>
+	<data name="Settings.Agents.ExportButtonTitle"><value>Ekspor agen</value></data>
+	<data name="Settings.Agents.ExportFailedToast"><value>Agen tidak dapat diekspor.</value></data>
+	<data name="Settings.Agents.ImportDialogTitle"><value>Impor Agen</value></data>
+	<data name="Settings.Agents.ImportDialogDescription"><value>Impor agen dari berkas .oscagent. Agen selalu ditambahkan sebagai agen baru dan tidak pernah menggantikan agen yang sudah ada.</value></data>
+	<data name="Settings.Agents.ChooseFileButton"><value>Pilih Berkas Agen</value></data>
+	<data name="Settings.Agents.ImporterLimitInfo"><value>Pengimpor menerima satu paket .oscagent hingga 5 MB. Obrolan, memori, dan catatan agen pribadi tidak disertakan.</value></data>
+	<data name="Settings.Agents.ImportNameLabel"><value>Nama (opsional)</value></data>
+	<data name="Settings.Agents.ImportNameHint"><value>Biarkan kosong untuk mempertahankan nama yang tersimpan dalam berkas. Jika nama tersebut sudah digunakan, angka akan ditambahkan.</value></data>
+	<data name="Settings.Agents.UnsupportedImportFileError"><value>Hanya berkas .oscagent yang didukung.</value></data>
+	<data name="Settings.Agents.InvalidImportFileError"><value>Berkas agen tidak dapat diimpor.</value></data>
+	<data name="Settings.Agents.ImportedToast"><value>Agen '{0}' berhasil diimpor.</value></data>
+	<data name="Settings.Agents.ImportedWithRemovedToast"><value>Agen '{0}' berhasil diimpor. {1} referensi yang tidak tersedia di komputer ini telah dihapus.</value></data>
+	<data name="Settings.Agents.BackButton"><value>Kembali</value></data>
+	<data name="Settings.Agents.EditingLabel"><value>Mengedit: {0}</value></data>
+	<data name="Settings.Agents.DeleteConfirmTitle"><value>Hapus agen</value></data>
+	<data name="Settings.Agents.DeleteConfirmMessage"><value>Apakah Anda yakin ingin menghapus "{0}"?</value></data>
+	<data name="Settings.Agents.CustomizeButton"><value>Sesuaikan</value></data>
+	<data name="Settings.Agents.SharedAgentWarning"><value>Definisi agen bersama hanya dapat diedit oleh pengguna Admin atau Moderator.</value></data>
+	<data name="Settings.Agents.SaveFirstTitle"><value>Simpan agen terlebih dahulu</value></data>
+	<data name="Settings.Agents.NamePlaceholder"><value>Asisten</value></data>
+	<data name="Settings.Agents.CallableNameCollisionMessage"><value>Nama agen "{0}" diterjemahkan menjadi nama yang dapat dipanggil "{1}", yang sudah digunakan oleh agen lain. Pilih nama agen yang berbeda.</value></data>
+	<data name="Settings.Agents.DescriptionPlaceholder"><value>Deskripsi singkat tentang agen ini...</value></data>
+	<data name="Settings.Agents.SystemInstructionLabel"><value>Instruksi Sistem</value></data>
+	<data name="Settings.Agents.SystemInstructionPlaceholder"><value>Masukkan instruksi sistem untuk mengarahkan asisten...</value></data>
+	<data name="Settings.Agents.PreviewInstructionButton"><value>Pratinjau</value></data>
+	<data name="Settings.Agents.PreviewInstructionTitle"><value>Instruksi sistem setelah pemrosesan</value></data>
+	<data name="Settings.Agents.PreviewInstructionGeneratedAt"><value>Dibuat {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionFailed"><value>Tidak dapat memperkirakan penggunaan konteks: {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionTokenCount"><value>{0} token</value></data>
+	<data name="Settings.PromptVariables.AgentName"><value>Nama agen saat ini.</value></data>
+	<data name="Settings.PromptVariables.CurrentDate"><value>Tanggal lokal saat ini.</value></data>
+	<data name="Settings.PromptVariables.UserName"><value>Nama tampilan pengguna saat ini.</value></data>
+	<data name="Settings.PromptVariables.UserNickname"><value>Nama panggilan pilihan pengguna saat ini.</value></data>
+	<data name="Settings.PromptVariables.UserUsername"><value>Nama pengguna login pengguna saat ini.</value></data>
+	<data name="Settings.PromptVariables.UserEmail"><value>Email akun pengguna saat ini.</value></data>
+	<data name="Settings.PromptVariables.UserTimezone"><value>Zona waktu pengguna saat ini.</value></data>
+	<data name="Settings.PromptVariables.UserContext"><value>Konteks pribadi yang disimpan pengguna saat ini untuk agen bersama ini.</value></data>
+	<data name="Settings.Agents.ModelProviderLabel"><value>Penyedia Model Default</value></data>
+	<data name="Settings.Agents.ModelProviderDefaultOption"><value>Gunakan penyedia default aplikasi</value></data>
+	<data name="Settings.Agents.ModelProviderDescription"><value>Default untuk tugas, kanal pesan, dan pekerjaan yang didelegasikan. Chat Anda sendiri dengan agen ini atau penyedia yang dipilih secara eksplisit untuk tugas dapat menggantikannya. Biarkan kosong untuk menggunakan default aplikasi.</value></data>
+	<data name="Settings.Agents.EnableCompactionLabel"><value>Aktifkan Pemadatan</value></data>
+	<data name="Settings.Agents.EnableCompactionDescription"><value>Meringkas riwayat percakapan secara otomatis saat batas jendela konteks tercapai.</value></data>
+	<data name="Settings.Agents.EnableMemoryLabel"><value>Aktifkan Memori</value></data>
+	<data name="Settings.Agents.EnableMemoryDescription"><value>Muat memori yang tersimpan ke dalam konteks dan izinkan agen menyimpan serta mengambil memori di seluruh sesi.</value></data>
+	<data name="Settings.Agents.EnableTodoLabel"><value>Aktifkan Daftar Tugas</value></data>
+	<data name="Settings.Agents.EnableTodoDescription"><value>Biarkan agen ini melacak pekerjaan beberapa langkah dalam daftar tugas sesi. Paling cocok untuk tugas yang kompleks dan berjalan lama.</value></data>
+	<data name="Settings.Agents.SubagentDelegationLabel"><value>Gunakan subagen</value></data>
+	<data name="Settings.Agents.SubagentDelegationDescription"><value>Biarkan agen ini mendelegasikan tugas ke instans terpisah dari dirinya sendiri.</value></data>
+	<data name="Settings.Agents.LocalOnlyLabel"><value>Hanya lokal</value></data>
+	<data name="Settings.Agents.LocalOnlyDescription"><value>Blokir agen ini agar tidak menggunakan penyedia model cloud dan alat internet, bahkan ketika mode offline global nonaktif.</value></data>
+	<data name="Settings.Agents.ToolSearchToggleLabel"><value>Penemuan alat</value></data>
+	<data name="Settings.Agents.ToolSearchToggleHelp"><value>Hanya tampilkan alat yang disematkan di awal; agen dapat mencari sisanya saat dibutuhkan.</value></data>
+	<data name="Settings.Agents.PinnedColumnLabel"><value>Disematkan</value></data>
+	<data name="Settings.Agents.PinToolLabel"><value>Sematkan alat {0}</value></data>
+	<data name="Settings.Agents.ToolSearchSummary"><value>{0} disematkan - {1} dapat dicari</value></data>
+	<data name="Settings.Agents.ExposeAsToolLabel"><value>Ekspos sebagai Alat</value></data>
+	<data name="Settings.Agents.ExposeAsToolDescription"><value>Izinkan agen lain memanggil agen ini sebagai alat.</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersLabel"><value>Bagikan dengan semua pengguna</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersDescription"><value>Membuat agen ini dapat dilihat oleh pengguna lain. Instruksi sistem dapat menyertakan {{ user_context }} yang dipersonalisasi oleh setiap pengguna.</value></data>
+	<data name="Settings.Agents.RestrictUsersTitle"><value>Batasi untuk pengguna tertentu</value></data>
+	<data name="Settings.Agents.RestrictUsersDescription"><value>Biarkan semua tidak dicentang untuk berbagi dengan semua orang.</value></data>
+	<data name="Settings.Agents.NoUsersMessage"><value>Pengguna tidak ditemukan.</value></data>
+	<data name="Settings.Agents.AllowedToolsTitle"><value>Alat yang Diizinkan</value></data>
+	<data name="Settings.Agents.NoToolsAvailableMessage"><value>Tidak ada alat yang tersedia. Konfigurasikan server MCP di Pengaturan -> Server MCP untuk menambahkan alat eksternal.</value></data>
+	<data name="Settings.Agents.AgentToolsTitle"><value>Alat Agen</value></data>
+	<data name="Settings.Agents.NoAgentToolsAvailableMessage"><value>Tidak ada agen yang tersedia sebagai alat. Aktifkan "Ekspos sebagai Alat" pada agen khusus untuk menggunakannya di sini.</value></data>
+	<data name="Settings.Agents.SkillsTitle"><value>Keterampilan</value></data>
+	<data name="Settings.Agents.NoSkillsFoundMessage"><value>Keterampilan tidak ditemukan. Tambahkan keterampilan di Pengaturan -> Berkas -> folder skills.</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersTitle"><value>Folder Ruang Kerja</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersDescription"><value>Ruang kerja terkelola adalah folder di bawah workspace/. Buat di Pengaturan -> Berkas, lalu pilih di sini.</value></data>
+	<data name="Settings.Agents.NoWorkspacesMessage"><value>Belum ada folder ruang kerja yang ditemukan. Buat ruang kerja di Pengaturan -> Berkas, lalu pilih di sini.</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceLabel"><value>Pustaka</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceDescription"><value>Memilih Pustaka memberikan akses berkas hanya-baca dan menambahkan alat Pencarian Pustaka.</value></data>
+	<data name="Settings.Agents.SharedFolderLabel"><value>Folder bersama</value></data>
+	<data name="Settings.Agents.SharedFolderDescription"><value>Memberikan akses baca dan tulis ke folder yang dibagikan oleh semua pengguna yang diizinkan di server ini, di /shared.</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessTitle"><value>Akses Folder Tambahan</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessDescription"><value>Tambahkan folder host eksternal atau folder pengguna terkelola untuk akses /mnt eksplisit.</value></data>
+	<data name="Settings.Agents.AutomaticDataRootLabel"><value>Root data otomatis</value></data>
+	<data name="Settings.Agents.AutomaticDataRootDescription"><value>Selalu tersedia untuk agen ini; catatan pribadi berada di bawah /data/notes.</value></data>
+	<data name="Settings.Agents.AddDirectoryButton"><value>Tambah Direktori</value></data>
+	<data name="Settings.Agents.NoDirectoriesMessage"><value>Tidak ada folder tambahan yang dikonfigurasi.</value></data>
+	<data name="Settings.Agents.DirectorySourceLabel"><value>Sumber</value></data>
+	<data name="Settings.Agents.DirectorySourceExternal"><value>Eksternal</value></data>
+	<data name="Settings.Agents.DirectorySourceManaged"><value>Dikelola</value></data>
+	<data name="Settings.Agents.DirectoryPathLabel"><value>Jalur folder yang ada</value></data>
+	<data name="Settings.Agents.DirectoryPathPlaceholder"><value>Jalur folder proyek</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathLabel"><value>Jalur folder pengguna</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathPlaceholder"><value>agents/main/data/notes</value></data>
+	<data name="Settings.Agents.DirectoryLabelLabel"><value>Label</value></data>
+	<data name="Settings.Agents.DirectoryLabelPlaceholder"><value>Brankas Obsidian</value></data>
+	<data name="Settings.Agents.DirectoryAccessLabel"><value>Akses</value></data>
+	<data name="Settings.Agents.AccessModeReadOnly"><value>Hanya baca</value></data>
+	<data name="Settings.Agents.AccessModeReadWrite"><value>Baca &amp; tulis</value></data>
+	<data name="Settings.Agents.RemoveDirectoryTitle"><value>Hapus direktori</value></data>
+	<data name="Settings.Agents.MountNameCollisionMessage"><value>Nama ruang kerja dan label folder harus menghasilkan nama mount yang unik. Konflik: {0}.</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdatedToast"><value>Foto profil diperbarui.</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdateFailedToast"><value>Tidak dapat memperbarui foto profil: {0}</value></data>
+	<data name="Settings.Prompts.CatalogTitle"><value>Prompt kustom</value></data>
+	<data name="Settings.Prompts.CatalogDescription"><value>Tinjau dan edit templat prompt yang digunakan oleh memori, Pencarian Pustaka, pemadatan, keterampilan, dan fitur konteks runtime.</value></data>
+	<data name="Settings.Prompts.CatalogCountBadge"><value>{0} prompt</value></data>
+	<data name="Settings.Prompts.CompactionInstructionLabel"><value>Instruksi pemadatan</value></data>
+	<data name="Settings.Prompts.CompactionDescription"><value>Mengontrol bagaimana percakapan panjang diringkas saat jendela konteks membutuhkan ruang.</value></data>
+	<data name="Settings.Prompts.StoredAsLabel"><value>Disimpan sebagai</value></data>
+	<data name="Settings.Prompts.OpenInFileEditorLink"><value>Buka di editor berkas</value></data>
+	<data name="Settings.Prompts.CompactionPlaceholder"><value>Masukkan instruksi untuk meringkas riwayat percakapan...</value></data>
+	<data name="Settings.Prompts.MemorySystemPromptLabel"><value>Prompt sistem memori</value></data>
+	<data name="Settings.Prompts.MemorySystemDescription"><value>Membentuk bagaimana memori yang disimpan disajikan kepada agen sebagai konteks.</value></data>
+	<data name="Settings.Prompts.MemorySystemPlaceholder"><value>Masukkan prompt sistem untuk penyedia konteks memori...</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptLabel"><value>Prompt lingkungan</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptDescription"><value>Membangun konteks lingkungan runtime yang ditambahkan ke instruksi agen.</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptPlaceholder"><value>Masukkan templat prompt untuk konteks lingkungan runtime...</value></data>
+	<data name="Settings.Prompts.LibraryPromptLabel"><value>Instruksi pustaka</value></data>
+	<data name="Settings.Prompts.LibraryPromptDescription"><value>Memandu cara agen mencari di dalam berkas Pustaka persisten dan membedakannya dari memori percakapan.</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptLabel"><value>Instruksi penemuan alat</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptDescription"><value>Memandu cara agen mencari alat saat set alat besar ditangguhkan.</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptLabel"><value>Instruksi daftar tugas</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptDescription"><value>Memandu cara agen yang fitur daftar tugasnya diaktifkan membuat dan memelihara daftar tugas selama pekerjaan yang rumit.</value></data>
+	<data name="Settings.Prompts.SubagentsPromptLabel"><value>Instruksi Subagen</value></data>
+	<data name="Settings.Prompts.SubagentsPromptDescription"><value>Memandu cara agen dengan subagen aktif mendelegasikan pekerjaan ke instans terpisah dari dirinya sendiri.</value></data>
+	<data name="Settings.Prompts.SkillsPromptLabel"><value>Instruksi keterampilan</value></data>
+	<data name="Settings.Prompts.SkillsPromptDescription"><value>Memandu cara agen menemukan, memuat, dan menggunakan keterampilan yang ditetapkan.</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptLabel"><value>Instruksi emosi avatar</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptDescription"><value>Memandu kapan agen menandai perasaan dengan tag emosi saat avatar mengucapkan balasan.</value></data>
+	<data name="Settings.Prompts.VariablesBadge"><value>{0} variabel</value></data>
+	<data name="Settings.Prompts.NoVariablesBadge"><value>Tidak ada variabel</value></data>
+	<data name="Settings.Prompts.VariablePickerHelperText"><value>Klik variabel untuk memasukkannya pada kursor.</value></data>
+	<data name="Settings.Skills.ScriptExecutionTitle"><value>Eksekusi shell dan skrip keterampilan</value></data>
+	<data name="Settings.Skills.ScriptExecutionDescription"><value>Operator memilih tempat perintah shell dan skrip keterampilan dijalankan untuk semua akun. Host adalah pilihan bawaan. Mulai proses baru setelah mengganti lingkungan.</value></data>
+	<data name="Settings.Skills.ExecutionModeLabel"><value>Mode eksekusi</value></data>
+	<data name="Settings.Skills.SaveExecutionModeButton"><value>Simpan lingkungan eksekusi</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesTitle"><value>Jenis skrip bawaan yang didukung</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesDescription"><value>Kotak Pasir Kontainer menjalankan berkas .py, .js, dan .sh secara langsung; masing-masing memerlukan baris pertama #! yang valid untuk runtime yang terinstal di citra.</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesHostDescription"><value>Host menjalankan berkas melalui shell host dan memerlukan runtime yang cocok di PATH.</value></data>
+	<data name="Settings.Skills.InstalledSkillsTitle"><value>Keterampilan terinstal</value></data>
+	<data name="Settings.Skills.InstalledSkillsDescription"><value>Kelola paket keterampilan yang tersedia untuk ditetapkan ke agen Anda.</value></data>
+	<data name="Settings.Skills.ImportSkillButton"><value>Impor keterampilan</value></data>
+	<data name="Settings.Skills.NoSkillsInstalledMessage"><value>Belum ada keterampilan yang terinstal. Impor berkas SKILL.md atau paket .zip untuk membuatnya tersedia bagi agen Anda.</value></data>
+	<data name="Settings.Skills.InstalledBadge"><value>Terinstal</value></data>
+	<data name="Settings.Skills.DeleteButton"><value>Copot pemasangan keterampilan</value></data>
+	<data name="Settings.Skills.DeleteConfirmTitle"><value>Copot Pemasangan Keterampilan</value></data>
+	<data name="Settings.Skills.DeleteConfirmMessage"><value>Apakah Anda yakin ingin mencopot pemasangan "{0}"? Tindakan ini akan menghapusnya dari semua agen Anda.</value></data>
+	<data name="Settings.Skills.DeletedToast"><value>Keterampilan dicopot pemasangannya.</value></data>
+	<data name="Settings.Skills.ImportedSkillsInfoNote"><value>Keterampilan yang diimpor berada di direktori skills/ Anda dan saat ini dapat dihapus secara manual dari halaman Berkas.</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabled"><value>Dinonaktifkan</value></data>
+	<data name="Settings.Skills.ExecutionModeHost"><value>Host</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxed"><value>Kotak Pasir Kontainer</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabledDescription"><value>Perintah shell dan skrip keterampilan bawaan tidak dapat dijalankan.</value></data>
+	<data name="Settings.Skills.ExecutionModeHostDescription"><value>Perintah dijalankan langsung di mesin yang menjalankan Oscova dengan izin akun sistem operasinya. Persetujuan mengikuti pengaturan agen dan eksekusi.</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxedDescription"><value>Perintah dijalankan di dalam Docker dengan folder yang Anda izinkan terpasang. Alat yang hanya dipasang di kontainer akan hilang saat kontainer dihapus. Alat yang dipasang di host tidak tersedia secara otomatis.</value></data>
+	<data name="Settings.Skills.ExecutionModeSavedToast"><value>Lingkungan disimpan. Mulai eksekusi baru untuk menggunakannya.</value></data>
+	<data name="Settings.Tools.AutoApproveHostWarning"><value>Perintah shell yang disetujui otomatis dapat mengubah mesin yang menjalankan Oscova saat eksekusi host diaktifkan.</value></data>
+	<data name="Settings.Skills.ImportDialogTitle"><value>Impor Keterampilan</value></data>
+	<data name="Settings.Skills.ImportDialogDescription"><value>Impor satu keterampilan sebagai berkas SKILL.md mentah atau arsip .zip yang dikemas.</value></data>
+	<data name="Settings.Skills.ChooseFileButton"><value>Pilih Berkas Keterampilan</value></data>
+	<data name="Settings.Skills.ImporterLimitInfo"><value>Pengimpor menerima satu dokumen SKILL.md atau satu paket .zip hingga 10 MB.</value></data>
+	<data name="Settings.Skills.ImporterZipInfo"><value>Impor zip dapat mencakup scripts/, references/, dan assets/.</value></data>
+	<data name="Settings.Skills.ImportWarningsTitle"><value>Peringatan impor</value></data>
+	<data name="Settings.Skills.UnsupportedFileTypeError"><value>Hanya berkas .md dan .zip yang didukung.</value></data>
+	<data name="Settings.Skills.InvalidImportFileError"><value>Berkas tampaknya bukan berkas keterampilan yang valid. Impor berkas SKILL.md atau paket .zip yang berisi satu keterampilan.</value></data>
+	<data name="Settings.Skills.ImportedToast"><value>Keterampilan '{0}' diimpor.</value></data>
+	<data name="Settings.Tools.AvailableToolsTitle"><value>Alat yang Tersedia</value></data>
+	<data name="Settings.Tools.AvailableToolsDescription"><value>Ini adalah alat yang tersedia untuk agen Anda, termasuk kumpulan alat bawaan dan alat server MCP.</value></data>
+	<data name="Settings.Tools.NoToolsAvailableMessage"><value>Tidak ada alat yang tersedia. Konfigurasikan server MCP di Pengaturan -> Server MCP untuk menambahkan alat eksternal.</value></data>
+	<data name="Settings.Tools.SearchPlaceholder"><value>Cari alat</value></data>
+	<data name="Settings.Tools.SearchLabel"><value>Cari alat</value></data>
+	<data name="Settings.Tools.SelectedCountLabel"><value>{0} dari {1} dipilih</value></data>
+
+  <data name="Settings.Tools.ShowEnabledOnlyLabel" xml:space="preserve"><value>Tampilkan hanya alat yang diaktifkan</value></data>
+	<data name="Settings.Tools.ServerNameLabel"><value>Nama server</value></data>
+	<data name="Settings.Tools.AllServersOption"><value>Semua</value></data>
+	<data name="Settings.Tools.SelectVisibleToolsLabel"><value>Pilih alat yang terlihat</value></data>
+	<data name="Settings.Tools.SelectToolLabel"><value>Pilih alat {0}</value></data>
+	<data name="Settings.Tools.TableHeaderTool"><value>Alat</value></data>
+	<data name="Settings.Tools.TableHeaderQualifiedName"><value>Nama terkualifikasi</value></data>
+	<data name="Settings.Tools.TableHeaderServer"><value>Server</value></data>
+	<data name="Settings.Tools.TableHeaderNetwork"><value>Internet</value></data>
+	<data name="Settings.Tools.TableHeaderApproval"><value>Persetujuan</value></data>
+	<data name="Settings.Tools.ApprovalDefault"><value>Default</value></data>
+	<data name="Settings.Tools.ApprovalDefaultRequire"><value>Default (perlu persetujuan)</value></data>
+	<data name="Settings.Tools.ApprovalDefaultAutoApprove"><value>Default (setujui otomatis)</value></data>
+	<data name="Settings.Tools.ApprovalRequire"><value>Perlu persetujuan</value></data>
+	<data name="Settings.Tools.ApprovalAutoApprove"><value>Setujui otomatis</value></data>
+	<data name="Settings.Tools.ApprovalDeny"><value>Tolak</value></data>
+	<data name="Settings.Tools.ApprovalUnavailable"><value>Tidak dipilih</value></data>
+	<data name="Settings.Tools.NetworkYes"><value>Internet</value></data>
+	<data name="Settings.Tools.NetworkNo"><value>Hanya lokal</value></data>
+	<data name="Settings.Tools.NoMatchesMessage"><value>Tidak ada alat yang cocok dengan filter saat ini.</value></data>
+	<data name="Settings.Plugins.LoadingMessage"><value>Memuat pengaturan plugin...</value></data>
+	<data name="Settings.Plugins.SecurityTitle"><value>Hanya kode tepercaya</value></data>
+	<data name="Settings.Plugins.SecurityDescription"><value>Plugin berjalan di dalam Oscova Agents dan dapat menambahkan kemampuan untuk semua pengguna. Aktifkan hanya plugin yang Anda percayai.</value></data>
+	<data name="Settings.Plugins.RestartRequiredAlert"><value>Mulai ulang Oscova Agents agar perubahan pengaktifan plugin diterapkan.</value></data>
+	<data name="Settings.Plugins.InstalledTitle"><value>Plugin Terinstal</value></data>
+	<data name="Settings.Plugins.InstalledDescription"><value>Pilih plugin terinstal mana yang dapat dimuat untuk setiap pengguna saat Oscova Agents dimulai berikutnya.</value></data>
+	<data name="Settings.Plugins.RestartHint"><value>Plugin yang terinstal tetap tidak aktif hingga diaktifkan dan aplikasi dimulai ulang.</value></data>
+	<data name="Settings.Plugins.SearchPlaceholder"><value>Cari plugin</value></data>
+	<data name="Settings.Plugins.SearchLabel"><value>Cari plugin</value></data>
+	<data name="Settings.Plugins.TableHeaderPlugin"><value>Plugin</value></data>
+	<data name="Settings.Plugins.TableHeaderStatus"><value>Status Saat Ini</value></data>
+	<data name="Settings.Plugins.TableHeaderNextStart"><value>Muat Saat Mulai Ulang Berikutnya</value></data>
+	<data name="Settings.Plugins.TableHeaderActions"><value>Tindakan</value></data>
+	<data name="Settings.Plugins.NoPluginsMessage"><value>Tidak ada plugin terinstal yang ditemukan.</value></data>
+	<data name="Settings.Plugins.NoMatchesMessage"><value>Tidak ada plugin yang cocok dengan pencarian saat ini.</value></data>
+	<data name="Settings.Plugins.EnableLabel"><value>Muat {0} saat mulai ulang berikutnya</value></data>
+	<data name="Settings.Plugins.DetailsButton"><value>Lihat detail plugin</value></data>
+	<data name="Settings.Plugins.DetailsLabel"><value>Lihat detail untuk {0}</value></data>
+	<data name="Settings.Plugins.ResetButton"><value>Atur ulang</value></data>
+	<data name="Settings.Plugins.SaveButton"><value>Simpan Pengaturan Plugin</value></data>
+	<data name="Settings.Plugins.LoadErrorToast"><value>Respons pengaturan plugin kosong.</value></data>
+	<data name="Settings.Plugins.SavedToast"><value>Pengaturan plugin disimpan.</value></data>
+	<data name="Settings.Plugins.UninstallLabel"><value>Copot pemasangan {0}</value></data>
+	<data name="Settings.Plugins.UninstallDisableRequiredTooltip"><value>Nonaktifkan dan simpan terlebih dahulu.</value></data>
+	<data name="Settings.Plugins.UninstallRestartRequiredTooltip"><value>Nonaktifkan, simpan, dan mulai ulang terlebih dahulu.</value></data>
+	<data name="Settings.Plugins.UninstallConfirmTitle"><value>Copot pemasangan plugin</value></data>
+	<data name="Settings.Plugins.UninstallConfirmMessage"><value>Copot pemasangan '{0}'? Ini menghapus file yang terpasang, kredensial tersimpan, dan token akun terhubung untuk semua pengguna. Data dan pengaturan lain yang dibuat plugin tetap disimpan.</value></data>
+	<data name="Settings.Plugins.UninstalledToast"><value>Plugin dicopot pemasangannya.</value></data>
+	<data name="Settings.Plugins.EnabledLabel"><value>Diaktifkan</value></data>
+	<data name="Settings.Plugins.DisabledLabel"><value>Dinonaktifkan</value></data>
+	<data name="Settings.Plugins.InvalidManifestName"><value>Manifes plugin tidak valid</value></data>
+	<data name="Settings.Plugins.StatusActive"><value>Aktif</value></data>
+	<data name="Settings.Plugins.StatusInactive"><value>Tidak aktif</value></data>
+	<data name="Settings.Plugins.StatusLoadFailed"><value>Gagal memuat</value></data>
+	<data name="Settings.Plugins.StatusInvalidManifest"><value>Manifes tidak valid</value></data>
+	<data name="Settings.Plugins.DetailsTitle"><value>Detail Plugin</value></data>
+	<data name="Settings.Plugins.DetailsTrustNotice"><value>Plugin yang diaktifkan menjalankan kode tepercaya di dalam Oscova Agents. Aktifkan hanya plugin yang Anda percayai.</value></data>
+	<data name="Settings.Plugins.NameLabel"><value>Nama</value></data>
+	<data name="Settings.Plugins.IdLabel"><value>ID Plugin</value></data>
+	<data name="Settings.Plugins.VersionLabel"><value>Versi</value></data>
+	<data name="Settings.Plugins.AssemblyLabel"><value>Assembly</value></data>
+	<data name="Settings.Plugins.EntryTypeLabel"><value>Jenis Entri</value></data>
+	<data name="Settings.Plugins.CurrentStatusLabel"><value>Status Saat Ini</value></data>
+	<data name="Settings.Plugins.NextStartLabel"><value>Muat Saat Mulai Ulang Berikutnya</value></data>
+	<data name="Settings.Plugins.DiagnosticLabel"><value>Diagnostik</value></data>
+	<data name="Settings.McpServers.SectionTitle"><value>Server MCP</value></data>
+	<data name="Settings.McpServers.FindOnlineButton"><value>Temukan online</value></data>
+	<data name="Settings.McpServers.FindOnlineDialogTitle"><value>Temukan server MCP online</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPlaceholder"><value>Cari di Registri MCP resmi...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchButton"><value>Cari</value></data>
+	<data name="Settings.McpServers.FindOnlineSearching"><value>Mencari di Registri MCP...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPrompt"><value>Cari server, lalu pilih metode penyiapan untuk ditinjau di editor server MCP.</value></data>
+	<data name="Settings.McpServers.FindOnlineEmptyResults"><value>Tidak ada server MCP yang cocok dengan pencarian Anda.</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchFailed"><value>Pencarian Registri MCP gagal.</value></data>
+	<data name="Settings.McpServers.FindOnlineNoDescription"><value>Tidak ada deskripsi yang tersedia untuk server ini.</value></data>
+	<data name="Settings.McpServers.FindOnlineVersionLabel"><value>v{0}</value></data>
+	<data name="Settings.McpServers.FindOnlineWebsiteButton"><value>Situs Web</value></data>
+	<data name="Settings.McpServers.FindOnlineRepositoryButton"><value>Repositori</value></data>
+	<data name="Settings.McpServers.FindOnlineAddButton"><value>Tambah</value></data>
+	<data name="Settings.McpServers.FindOnlineRequiredFieldsPrefix"><value>Anda perlu menyediakan: {0}</value></data>
+	<data name="Settings.McpServers.FindOnlineManualSetupHint"><value>Server ini memerlukan penyiapan manual. Minta agen Anda untuk menyiapkannya.</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderServer"><value>Server</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderSetup"><value>Penyiapan</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteHttpOption"><value>Jarak Jauh (HTTP)</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteSseOption"><value>Jarak Jauh (SSE)</value></data>
+	<data name="Settings.McpServers.FindOnlineNpxOption"><value>Lokal (npx)</value></data>
+	<data name="Settings.McpServers.FindOnlineUvxOption"><value>Lokal (uvx)</value></data>
+	<data name="Settings.McpServers.FindOnlineDockerOption"><value>Lokal (docker)</value></data>
+	<data name="Settings.McpServers.FindOnlineDnxOption"><value>Lokal (dnx)</value></data>
+	<data name="Settings.McpServers.FindOnlineManualOption"><value>Penyiapan manual</value></data>
+	<data name="Settings.McpServers.ImportJsonButton"><value>Impor JSON</value></data>
+	<data name="Settings.McpServers.AddServerButton"><value>Tambah server</value></data>
+	<data name="Settings.McpServers.NoServersMessage"><value>Tidak ada server MCP yang dikonfigurasi.</value></data>
+	<data name="Settings.McpServers.UnnamedServerLabel"><value>(server tanpa nama)</value></data>
+	<data name="Settings.McpServers.NamePlaceholder"><value>mis. Server MCP Saya</value></data>
+	<data name="Settings.McpServers.NameRequired"><value>Nama wajib diisi.</value></data>
+	<data name="Settings.McpServers.TransportLabel"><value>Jenis transport</value></data>
+	<data name="Settings.McpServers.TransportHttp"><value>HTTP</value></data>
+	<data name="Settings.McpServers.TransportStdio"><value>STDIO</value></data>
+	<data name="Settings.McpServers.NetworkScopeLabel"><value>Penggunaan jaringan</value></data>
+	<data name="Settings.McpServers.NetworkScopeHelp"><value>Eksekusi terisolasi hanya mengecualikan server yang diklasifikasikan sebagai Internet. Pilih klasifikasi jaringan server yang sebenarnya.</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentLabel"><value>Lingkungan eksekusi</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHost"><value>Proses host</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainer"><value>Sandbox Docker</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHostHint"><value>Berjalan pada perangkat yang dikonfigurasi dengan izin aplikasi.</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainerHint"><value>Berjalan dalam Docker pada perangkat yang dikonfigurasi. Proyek memasang /project dan eksekusi pusat /workspace/&lt;name>.</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentBadge"><value>Diisolasi sandbox</value></data>
+	<data name="Settings.McpServers.EndpointLabel"><value>Titik akhir</value></data>
+	<data name="Settings.McpServers.EndpointPlaceholder"><value>http://127.0.0.1:8811/mcp</value></data>
+	<data name="Settings.McpServers.EndpointRequired"><value>Titik akhir wajib diisi sebelum menghubungkan ulang.</value></data>
+	<data name="Settings.McpServers.HeadersLabel"><value>Header (kunci=nilai per baris)</value></data>
+	<data name="Settings.McpServers.HeadersPlaceholder"><value>Authorization=Bearer sk-xxx</value></data>
+	<data name="Settings.McpServers.CommandLabel"><value>Perintah</value></data>
+	<data name="Settings.McpServers.CommandPlaceholder"><value>npx</value></data>
+	<data name="Settings.McpServers.CommandRequired"><value>Perintah wajib diisi sebelum menghubungkan ulang.</value></data>
+	<data name="Settings.McpServers.WorkingDirectoryLabel"><value>Direktori Kerja (opsional)</value></data>
+	<data name="Settings.McpServers.ArgumentsLabel"><value>Argumen (satu per baris)</value></data>
+	<data name="Settings.McpServers.ArgumentsPlaceholder"><value>-y
+@modelcontextprotocol/server-everything</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesLabel"><value>Variabel Lingkungan (KUNCI=NILAI atau KUNCI per baris)</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesPlaceholder"><value>API_KEY
+NODE_ENV=production</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesHelp"><value>Gunakan KUNCI=NILAI untuk nilai literal tersimpan. Untuk proses Host, gunakan KUNCI untuk membacanya dari Oscova saat peluncuran; kunci yang hilang diabaikan, dan nilai yang terselesaikan tidak pernah disimpan atau ditampilkan.</value></data>
+	<data name="Settings.McpServers.SaveAndReconnectButton"><value>Simpan &amp; Hubungkan Ulang Semua</value></data>
+	<data name="Settings.McpServers.CompleteRequiredFieldsToast"><value>Lengkapi kolom wajib setiap server MCP sebelum menyimpan.</value></data>
+	<data name="Settings.McpServers.SavedReconnectStartedToast"><value>Server MCP disimpan dan penyambungan ulang dimulai.</value></data>
+	<data name="Settings.McpServers.SaveFailedToast"><value>Gagal menyimpan server MCP: {0}</value></data>
+	<data name="Settings.McpServers.ImportedToast"><value>{0} server MCP berhasil diimpor.</value></data>
+	<data name="Settings.McpServers.ImportFailedToast"><value>Gagal mengimpor server MCP: {0}</value></data>
+	<data name="Settings.McpServers.ReconnectAllButton"><value>Hubungkan ulang semua</value></data>
+	<data name="Settings.McpServers.ServerAddedToast"><value>Server MCP "{0}" ditambahkan dan terhubung. Untuk menggunakan alatnya, pilih alat tersebut di Alat yang Diizinkan pada pengaturan agen.</value></data>
+	<data name="Settings.McpServers.ServerUpdatedToast"><value>Server MCP "{0}" diperbarui dan dihubungkan ulang.</value></data>
+	<data name="Settings.McpServers.ServerRemovedToast"><value>Server MCP "{0}" dihapus.</value></data>
+	<data name="Settings.McpServers.ReconnectedAllToast"><value>Semua server MCP terhubung ulang.</value></data>
+	<data name="Settings.McpServers.ServerAddedConnectionFailedToast"><value>Server MCP "{0}" disimpan, tetapi koneksi gagal: {1}</value></data>
+	<data name="Settings.McpServers.ServerUpdatedConnectionFailedToast"><value>Server MCP "{0}" disimpan, tetapi penyambungan ulang gagal: {1}</value></data>
+	<data name="Settings.McpServers.ReconnectAllFailedToast"><value>{0} server MCP disimpan tetapi tidak dapat terhubung ulang.</value></data>
+	<data name="Settings.McpServers.OperationFailedToast"><value>Operasi server MCP gagal: {0}</value></data>
+	<data name="Settings.McpServers.CopyNameSuffix"><value>{0} (Salinan)</value></data>
+	<data name="Settings.McpServers.ImportDialogTitle"><value>Impor Konfigurasi Server MCP</value></data>
+	<data name="Settings.McpServers.ImportDialogDescription"><value>Tempel JSON dari format VS Code, Cursor, atau Claude Desktop.</value></data>
+	<data name="Settings.McpServers.NoServersFoundError"><value>Tidak ada server yang ditemukan di JSON yang diberikan.</value></data>
+	<data name="Settings.McpServers.InvalidJsonError"><value>JSON tidak valid: {0}</value></data>
+	<data name="Settings.McpServers.TableHeaderServer"><value>Server</value></data>
+	<data name="Settings.McpServers.TableHeaderConnection"><value>Koneksi</value></data>
+	<data name="Settings.McpServers.TableHeaderOptions"><value>Opsi</value></data>
+	<data name="Settings.McpServers.OpenDetailsTitle"><value>Buka detail server</value></data>
+	<data name="Settings.McpServers.DetailsDialogTitle"><value>Konfigurasi server</value></data>
+	<data name="Settings.McpServers.AddDialogTitle"><value>Tambah server MCP</value></data>
+	<data name="Settings.McpServers.EditDialogTitle"><value>Edit server MCP</value></data>
+	<data name="Settings.McpServers.SaveServerButton"><value>Simpan server</value></data>
+	<data name="Settings.McpServers.ConfiguredBadge"><value>Dikonfigurasi</value></data>
+	<data name="Settings.McpServers.IncompleteBadge"><value>Belum selesai</value></data>
+	<data name="Settings.McpServers.HeadersCountLabel"><value>{0} header</value></data>
+	<data name="Settings.McpServers.ArgumentsCountLabel"><value>{0} argumen</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesCountLabel"><value>{0} variabel</value></data>
+	<data name="Settings.McpServers.NoHeaders"><value>Tidak ada header</value></data>
+	<data name="Settings.McpServers.NoArguments"><value>Tidak ada argumen</value></data>
+	<data name="Settings.McpServers.NoEnvironmentVariables"><value>Tidak ada variabel lingkungan</value></data>
+	<data name="Settings.Section.Hooks.Label"><value>Hook</value></data>
+	<data name="Settings.Section.Hooks.Description"><value>Konfigurasikan hook siklus proses keluar dan webhook tugas masuk.</value></data>
+	<data name="Settings.Hooks.LoadingMessage"><value>Memuat pengaturan hook...</value></data>
+	<data name="Settings.Hooks.SectionTitle"><value>Penangan hook</value></data>
+	<data name="Settings.Hooks.SectionDescription"><value>Jalankan perintah atau titik akhir HTTP saat peristiwa agen dan tugas terjadi.</value></data>
+	<data name="Settings.Hooks.AddHookButton"><value>Tambah hook</value></data>
+	<data name="Settings.Hooks.VisualTab"><value>Visual</value></data>
+	<data name="Settings.Hooks.JsonTab"><value>JSON</value></data>
+	<data name="Settings.Hooks.NoHooksMessage"><value>Belum ada hook keluar yang dikonfigurasi.</value></data>
+	<data name="Settings.Hooks.UnnamedHookLabel"><value>Hook tanpa nama</value></data>
+	<data name="Settings.Hooks.NewHookDefaultName"><value>Hook baru</value></data>
+	<data name="Settings.Hooks.AddHookDialogTitle"><value>Tambah hook</value></data>
+	<data name="Settings.Hooks.EditHookDialogTitle"><value>Edit hook</value></data>
+	<data name="Settings.Hooks.SaveHookButton"><value>Simpan hook</value></data>
+	<data name="Settings.Hooks.CopyNameSuffix"><value>{0} (Salinan)</value></data>
+	<data name="Settings.Hooks.NamePlaceholder"><value>mis. Blokir alat berisiko</value></data>
+	<data name="Settings.Hooks.EnabledLabel"><value>Aktifkan hook ini</value></data>
+	<data name="Settings.Hooks.EnabledStatus"><value>Diaktifkan</value></data>
+	<data name="Settings.Hooks.DisabledStatus"><value>Dinonaktifkan</value></data>
+	<data name="Settings.Hooks.EventsLabel"><value>Peristiwa</value></data>
+	<data name="Settings.Hooks.HandlerTypeLabel"><value>Jenis penangan</value></data>
+	<data name="Settings.Hooks.HandlerCommand"><value>Perintah</value></data>
+	<data name="Settings.Hooks.HandlerHttp"><value>HTTP</value></data>
+	<data name="Settings.Hooks.FailureModeLabel"><value>Mode kegagalan</value></data>
+	<data name="Settings.Hooks.FailureFailClosed"><value>Blokir saat gagal</value></data>
+	<data name="Settings.Hooks.FailureFailOpen"><value>Izinkan saat gagal</value></data>
+	<data name="Settings.Hooks.TimeoutLabel"><value>Batas waktu (detik)</value></data>
+	<data name="Settings.Hooks.TargetLabel"><value>Target</value></data>
+	<data name="Settings.Hooks.CommandFileNameLabel"><value>Perintah</value></data>
+	<data name="Settings.Hooks.CommandArgumentsLabel"><value>Argumen, satu per baris</value></data>
+	<data name="Settings.Hooks.CommandWorkingDirectoryLabel"><value>Direktori kerja</value></data>
+	<data name="Settings.Hooks.HttpUrlLabel"><value>URL</value></data>
+	<data name="Settings.Hooks.StaticHeadersLabel"><value>Header statis</value></data>
+	<data name="Settings.Hooks.SecretHeadersLabel"><value>Header rahasia</value></data>
+	<data name="Settings.Hooks.HeaderNamePlaceholder"><value>Nama header</value></data>
+	<data name="Settings.Hooks.HeaderValuePlaceholder"><value>Nilai header</value></data>
+	<data name="Settings.Hooks.CredentialSelectPlaceholder"><value>Pilih rahasia HTTP keluar</value></data>
+	<data name="Settings.Hooks.AddHeaderButton"><value>Tambah header</value></data>
+	<data name="Settings.Hooks.AddSecretHeaderButton"><value>Tambah header rahasia</value></data>
+	<data name="Settings.Hooks.ResetButton"><value>Atur ulang</value></data>
+	<data name="Settings.Hooks.SaveButton"><value>Simpan hook</value></data>
+	<data name="Settings.Hooks.JsonLabel"><value>JSON pengaturan hook</value></data>
+	<data name="Settings.Hooks.CopyJsonButton"><value>Salin JSON</value></data>
+	<data name="Settings.Hooks.ApplyJsonButton"><value>Terapkan JSON</value></data>
+	<data name="Settings.Hooks.SavedToast"><value>Pengaturan hook disimpan.</value></data>
+	<data name="Settings.Hooks.LoadFailedToast"><value>Gagal memuat pengaturan hook: {0}</value></data>
+	<data name="Settings.Hooks.SaveFailedToast"><value>Gagal menyimpan pengaturan hook: {0}</value></data>
+	<data name="Settings.Hooks.JsonAppliedToast"><value>JSON hook diterapkan.</value></data>
+	<data name="Settings.Hooks.InvalidJsonToast"><value>JSON hook tidak valid: {0}</value></data>
+	<data name="Settings.Hooks.Event.TaskStart"><value>Mulai tugas</value></data>
+	<data name="Settings.Hooks.Event.TaskComplete"><value>Tugas selesai</value></data>
+	<data name="Settings.Hooks.Event.TaskFailed"><value>Tugas gagal</value></data>
+	<data name="Settings.Hooks.Event.SessionStart"><value>Mulai sesi</value></data>
+	<data name="Settings.Hooks.Event.UserPromptSubmit"><value>Kirim prompt pengguna</value></data>
+	<data name="Settings.Hooks.Event.PreToolUse"><value>Sebelum penggunaan alat</value></data>
+	<data name="Settings.Hooks.Event.PostToolUse"><value>Setelah penggunaan alat</value></data>
+	<data name="Settings.Hooks.ApiKeysTitle"><value>Kunci API webhook tugas</value></data>
+	<data name="Settings.Hooks.ApiKeysDescription"><value>Buat token pembawa untuk sistem eksternal yang memicu tugas yang diizinkan.</value></data>
+	<data name="Settings.Hooks.NewApiKeyNameLabel"><value>Nama kunci API</value></data>
+	<data name="Settings.Hooks.AllowedTaskSlugsLabel"><value>Slug tugas yang diizinkan, dipisahkan koma</value></data>
+	<data name="Settings.Hooks.CreateApiKeyButton"><value>Buat kunci API</value></data>
+	<data name="Settings.Hooks.CreateApiKeyDialogTitle"><value>Buat kunci API webhook tugas</value></data>
+	<data name="Settings.Hooks.NoApiKeysMessage"><value>Belum ada kunci API webhook tugas.</value></data>
+	<data name="Settings.Hooks.CreatedTokenTitle"><value>Salin token ini sekarang</value></data>
+	<data name="Settings.Hooks.CopyTokenButton"><value>Salin</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedLabel"><value>Dibuat {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyLastUsedLabel"><value>Terakhir digunakan {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyNeverUsed"><value>Tidak pernah digunakan</value></data>
+	<data name="Settings.Hooks.ApiKeyScopesLabel"><value>Cakupan</value></data>
+	<data name="Settings.Hooks.ApiKeyAllowedSlugsLabel"><value>Slug yang diizinkan</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmTitle"><value>Hapus kunci API webhook tugas</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmMessage"><value>Hapus kunci API webhook tugas "{0}"?</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedToast"><value>Kunci API webhook tugas dibuat.</value></data>
+	<data name="Settings.Hooks.ApiKeyUpdatedToast"><value>Kunci API webhook tugas diperbarui.</value></data>
+	<data name="Settings.Hooks.ApiKeyDeletedToast"><value>Kunci API webhook tugas dihapus.</value></data>
+	<data name="Settings.Hooks.SecretsTitle"><value>Rahasia hook HTTP keluar</value></data>
+	<data name="Settings.Hooks.SecretsDescription"><value>Simpan nilai header yang dikirim Oscova ke titik akhir hook HTTP eksternal.</value></data>
+	<data name="Settings.Hooks.NewSecretButton"><value>Baru</value></data>
+	<data name="Settings.Hooks.NewSecretDialogTitle"><value>Rahasia hook HTTP keluar baru</value></data>
+	<data name="Settings.Hooks.EditSecretDialogTitle"><value>Edit rahasia hook HTTP keluar</value></data>
+	<data name="Settings.Hooks.SecretNameLabel"><value>Nama rahasia</value></data>
+	<data name="Settings.Hooks.SecretKeyLabel"><value>Kunci referensi rahasia</value></data>
+	<data name="Settings.Hooks.SecretValueLabel"><value>Nilai rahasia</value></data>
+	<data name="Settings.Hooks.SecretDescriptionLabel"><value>Deskripsi</value></data>
+	<data name="Settings.Hooks.SecretValueEditHint"><value>Biarkan kosong untuk mempertahankan nilai saat ini.</value></data>
+	<data name="Settings.Hooks.SaveSecretButton"><value>Simpan rahasia</value></data>
+	<data name="Settings.Hooks.NoSecretsMessage"><value>Belum ada rahasia hook HTTP keluar yang disimpan.</value></data>
+	<data name="Settings.Hooks.SecretSetStatus"><value>Ditetapkan</value></data>
+	<data name="Settings.Hooks.SecretUpdatedLabel"><value>Diperbarui {0}</value></data>
+	<data name="Settings.Hooks.SecretSavedToast"><value>Rahasia hook HTTP keluar disimpan.</value></data>
+	<data name="Settings.Hooks.SecretDeletedToast"><value>Rahasia hook HTTP keluar dihapus.</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmTitle"><value>Hapus rahasia hook HTTP keluar</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmMessage"><value>Hapus rahasia hook HTTP keluar "{0}"?</value></data>
+	<data name="Settings.Hooks.DeleteSecretReferencedConfirmMessage"><value>Hapus rahasia hook HTTP keluar "{0}"? Satu atau beberapa hook HTTP masih mereferensikan kredensial ini.</value></data>
+	<data name="Settings.General.AssistantNameLabel"><value>Nama Asisten</value></data>
+	<data name="Settings.General.AssistantNamePlaceholder"><value>Masukkan nama asisten...</value></data>
+	<data name="Settings.General.SaveNameTitle"><value>Simpan nama</value></data>
+	<data name="Settings.General.UnsavedChangesHint"><value>Perubahan tidak disimpan secara otomatis.</value></data>
+	<data name="Settings.General.ShowTopBarProfileLabel"><value>Tampilkan profil di bilah atas</value></data>
+	<data name="Settings.General.ShowTopBarProfileDescription"><value>Tampilkan avatar, nama, dan nama pengguna Anda di bilah atas</value></data>
+	<data name="Settings.General.GamificationLabel"><value>Pencapaian dan XP</value></data>
+	<data name="Settings.General.GamificationDescription"><value>Tampilkan pencapaian dan XP, serta kirim pemberitahuan saat terbuka</value></data>
+	<data name="Settings.General.TimeZoneLabel"><value>Zona Waktu</value></data>
+	<data name="Settings.General.SearchTimeZonesPlaceholder"><value>Cari zona waktu...</value></data>
+	<data name="Settings.General.ServerDefault"><value>Default Server</value></data>
+	<data name="Settings.General.TimeZoneDescription"><value>Stempel waktu di UI akan ditampilkan dalam zona waktu ini.</value></data>
+	<data name="Settings.General.LanguageLabel"><value>Bahasa</value></data>
+	<data name="Settings.General.LanguageReloadHint"><value>Perubahan berlaku setelah halaman dimuat ulang.</value></data>
+	<data name="Settings.General.DeleteConversationsLabel"><value>Hapus Percakapan</value></data>
+	<data name="Settings.General.DeleteConversationsDescription"><value>Menghapus secara permanen setiap percakapan obrolan di aplikasi. Tindakan ini tidak dapat dibatalkan.</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmTitle"><value>Konfirmasi Penghapusan</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmMessage"><value>Hapus secara permanen semua {0} percakapan? Tindakan ini tidak dapat dibatalkan.</value></data>
+	<data name="Settings.Shared.SaveSettingsToast"><value>Pengaturan berhasil disimpan.</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Back"><value>Kembali</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Customize"><value>Sesuaikan: {0}</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Description"><value>Tambahkan konteks pribadi yang akan dimasukkan ke dalam instruksi agen bersama ini untuk sesi Anda, seperti nama panggilan atau preferensi panggilan yang diinginkan.</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Label"><value>Konteks Pribadi</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Placeholder"><value>Tambahkan catatan, preferensi, latar belakang, atau konteks pribadi lainnya untuk agen bersama ini...</value></data>
+	<data name="Settings.Category.Channels.Label"><value>Saluran</value></data>
+	<data name="Settings.Category.Channels.Description"><value>Saluran obrolan dan integrasi bot.</value></data>
+	<data name="Settings.General.ChatTitleGenerationLabel"><value>Buat judul obrolan</value></data>
+	<data name="Settings.General.ChatTitleGenerationDescription"><value>Gunakan model obrolan yang dipilih untuk mengganti nama percakapan setelah beberapa pesan</value></data>
+	<data name="Settings.General.ChatResumeWindowLabel"><value>Lanjutkan obrolan terbaru</value></data>
+	<data name="Settings.General.ChatResumeWindowDescription"><value>Kembali ke obrolan terbaru saat pesan terakhir Anda berumur sekian menit atau lebih baru. Gunakan 0 untuk selalu menampilkan layar awal.</value></data>
+	<data name="Settings.General.ChatResumeWindowInvalid"><value>Masukkan bilangan bulat menit, 0 atau lebih.</value></data>
+	<data name="Settings.General.AboutTitle"><value>Tentang</value></data>
+	<data name="Settings.General.AboutDescription"><value>Detail versi untuk aplikasi ini dan kerangka kerja agennya.</value></data>
+	<data name="Settings.General.HostVersionLabel"><value>Oscova Agents</value></data>
+	<data name="Settings.General.FrameworkVersionLabel"><value>Framework</value></data>
+	<data name="Settings.Skills.FindOnlineButton"><value>Cari keterampilan online</value></data>
+	<data name="Settings.Skills.ManageSourcesButton"><value>Kelola sumber</value></data>
+	<data name="Settings.Skills.FindOnlineDialogTitle"><value>Cari keterampilan online</value></data>
+	<data name="Settings.Skills.FindOnlineSearchPlaceholder"><value>Cari berdasarkan nama...</value></data>
+	<data name="Settings.Skills.FindOnlineInstallButton"><value>Instal</value></data>
+	<data name="Settings.Skills.FindOnlineDescriptionLoading"><value>Memuat deskripsi...</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsUnavailable"><value>Detail tidak dapat dimuat.</value></data>
+	<data name="Settings.Skills.FindOnlineNoDescription"><value>Tidak ada deskripsi yang tersedia untuk keterampilan ini.</value></data>
+	<data name="Settings.Skills.FindOnlineInstalledToast"><value>Keterampilan terinstal.</value></data>
+	<data name="Settings.Skills.FindOnlineNoSourcesMessage"><value>Tidak ada sumber keterampilan yang dikonfigurasi. Minta administrator untuk menambahkannya.</value></data>
+	<data name="Settings.Skills.FindOnlineEmptyResults"><value>Tidak ada keterampilan yang cocok dengan pencarian Anda.</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsButton"><value>Detail</value></data>
+	<data name="Settings.Skills.FindOnlineHideButton"><value>Sembunyikan</value></data>
+	<data name="Settings.Skills.FindOnlineRetryButton"><value>Coba lagi</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSkill"><value>Keterampilan</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSource"><value>Sumber</value></data>
+	<data name="Settings.Skills.RegistrySourcesDialogTitle"><value>Sumber keterampilan</value></data>
+	<data name="Settings.Skills.RegistrySourcesDescription"><value>Konfigurasikan repositori GitHub yang digunakan oleh Cari keterampilan online.</value></data>
+	<data name="Settings.Skills.RegistrySourcesAddRow"><value>Tambah sumber</value></data>
+	<data name="Settings.Skills.RegistrySourcesOwnerLabel"><value>Pemilik</value></data>
+	<data name="Settings.Skills.RegistrySourcesRepoLabel"><value>Repositori</value></data>
+	<data name="Settings.Skills.RegistrySourcesBranchLabel"><value>Cabang</value></data>
+	<data name="Settings.Skills.RegistryPatHint"><value>Admin dapat menambahkan Token Akses Pribadi di halaman Admin pada Pencarian Keterampilan GitHub untuk mengakses repositori dengan autentikasi.</value></data>
+	<data name="Settings.Skills.RegistrySavedToast"><value>Sumber keterampilan disimpan.</value></data>
+	<data name="Settings.Skills.InstallStageResolving"><value>Menentukan berkas</value></data>
+	<data name="Settings.Skills.InstallStageDownloading"><value>Mengunduh</value></data>
+	<data name="Settings.Skills.InstallStageImporting"><value>Mengimpor</value></data>
+	<data name="Settings.Skills.InstallStageInstalled"><value>Terinstal</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialTitle"><value>Pencarian Keterampilan GitHub</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialDescription"><value>Token Akses Pribadi opsional yang digunakan oleh Cari keterampilan online. Menaikkan batas jumlah permintaan API GitHub dari 60 menjadi 5.000 permintaan per jam untuk seluruh host.</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialHint"><value>Biarkan bidang kosong untuk mempertahankan token yang ada. Gunakan Hapus untuk menghapusnya.</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialFieldLabel"><value>Token Akses Pribadi</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialLoading"><value>Memuat status saat ini...</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderExists"><value>Biarkan kosong untuk mempertahankan token saat ini</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderNew"><value>Tempel token akses pribadi GitHub</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialSavedToast"><value>Token pencarian keterampilan GitHub disimpan.</value></data>
+	<data name="Settings.Plugins.FindOnlineButton"><value>Cari plugin online</value></data>
+	<data name="Settings.Plugins.FindOnlineDialogTitle"><value>Cari plugin online</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPlaceholder"><value>Cari paket NuGet...</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchButton"><value>Cari</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPrompt"><value>Ketik nama paket untuk mencari paket OscovaPlugin di NuGet.org.</value></data>
+	<data name="Settings.Plugins.FindOnlineSearching"><value>Mencari di NuGet.org...</value></data>
+	<data name="Settings.Plugins.FindOnlineEmptyResults"><value>Tidak ada plugin yang cocok dengan pencarian Anda.</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsButton"><value>Detail</value></data>
+	<data name="Settings.Plugins.FindOnlineHideButton"><value>Sembunyikan</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallButton"><value>Instal atau perbarui</value></data>
+	<data name="Settings.Plugins.FindOnlineRetryButton"><value>Coba lagi</value></data>
+	<data name="Settings.Plugins.FindOnlineRequiresNewerOscova"><value>Memerlukan Oscova yang lebih baru</value></data>
+	<data name="Settings.Plugins.FindOnlineIncompatible"><value>Tidak kompatibel dengan Oscova ini</value></data>
+	<data name="Settings.Plugins.FindOnlinePrereleaseOnly"><value>Hanya prarilis</value></data>
+	<data name="Settings.Plugins.FindOnlineDescriptionLoading"><value>Memuat detail...</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsUnavailable"><value>Detail tidak dapat dimuat.</value></data>
+	<data name="Settings.Plugins.FindOnlineNoDescription"><value>Tidak ada deskripsi yang tersedia untuk plugin ini.</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledToast"><value>Paket plugin sudah siap. Konfirmasikan Muat Pada Mulai Ulang Berikutnya, lalu mulai ulang.</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallNotice"><value>Paket plugin sudah siap. Konfirmasikan Muat Pada Mulai Ulang Berikutnya, lalu mulai ulang.</value></data>
+	<data name="Settings.Plugins.FindOnlineDownloadsLabel"><value>{0:N0} unduhan</value></data>
+	<data name="Settings.Plugins.FindOnlineVersionLabel"><value>Versi {0}</value></data>
+	<data name="Settings.Plugins.FindOnlineUnknownAuthor"><value>Penulis tidak dikenal</value></data>
+	<data name="Settings.Plugins.FindOnlineLicenseLabel"><value>Lisensi</value></data>
+	<data name="Settings.Plugins.FindOnlineProjectButton"><value>Proyek</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderPackage"><value>Paket</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderMetadata"><value>Metadata</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallingButton"><value>Memasang...</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledButton"><value>Terinstal</value></data>
+	<data name="Settings.Speech.RecognitionProviderDescription"><value>Pilih cara audio mikrofon ditranskripsikan setelah perekaman hands-free. Bahasa: Deteksi otomatis.</value></data>
+	<data name="Settings.Speech.SynthesisProviderDescription"><value>Pilih cara teks asisten diubah menjadi audio.</value></data>
+	<data name="Settings.Speech.ProviderLabel"><value>Penyedia</value></data>
+	<data name="Settings.Speech.ProviderLocal"><value>Lokal</value></data>
+	<data name="Settings.Speech.ProviderOpenAI"><value>OpenAI</value></data>
+	<data name="Settings.Speech.CredentialLabel"><value>Kredensial</value></data>
+	<data name="Settings.Speech.CredentialPlaceholder"><value>Pilih kredensial yang disimpan</value></data>
+	<data name="Settings.Speech.CredentialHelp"><value>Kredensial dikelola di Pengaturan > Kredensial.</value></data>
+	<data name="Settings.Speech.ModelLabel"><value>Model</value></data>
+	<data name="Settings.Speech.SaveProviderButton"><value>Simpan pengaturan suara</value></data>
+	<data name="Settings.Speech.SettingsSavedToast"><value>Pengaturan suara disimpan.</value></data>
+	<data name="Settings.Credentials.ConfiguredStatus"><value>Terkonfigurasi</value></data>
+	<data name="Settings.Credentials.MissingStatus"><value>Nilai hilang</value></data>
+	<data name="Settings.Section.Privacy.Label"><value>Privasi</value></data>
+	<data name="Settings.Section.Privacy.Description"><value>Kontrol mode offline, keluar otomatis, dan apa yang dapat dikirim oleh agen Anda.</value></data>
+	<data name="Settings.Privacy.LoadingMessage"><value>Memuat pengaturan privasi...</value></data>
+	<data name="Settings.Privacy.OfflineModeTitle"><value>Mode offline</value></data>
+	<data name="Settings.Privacy.OfflineModeLabel"><value>Jalankan agen secara offline</value></data>
+	<data name="Settings.Privacy.OfflineModeDescription"><value>Saat diaktifkan, agen Anda dapat menggunakan model lokal, alat lokal, dan titik akhir LAN, tetapi penyedia internet publik dan alat egress diblokir.</value></data>
+	<data name="Settings.Privacy.OfflineModeOffBadge"><value>Nonaktif</value></data>
+	<data name="Settings.Privacy.OfflineModeOnBadge"><value>Aktif</value></data>
+	<data name="Settings.Privacy.EffectsTitle"><value>Efek langsung</value></data>
+	<data name="Settings.Privacy.EffectsOff"><value>Batasan offline tidak aktif. Penyedia dan alat yang Anda konfigurasikan dapat menggunakan akses jaringan normal mereka.</value></data>
+	<data name="Settings.Privacy.DisabledToolsCount"><value>{0} alat dinonaktifkan</value></data>
+	<data name="Settings.Privacy.CloudProvidersTitle"><value>Penyedia cloud diblokir</value></data>
+	<data name="Settings.Privacy.NoCloudProviders"><value>Tidak ada penyedia cloud terkonfigurasi yang saat ini diblokir.</value></data>
+	<data name="Settings.Privacy.LocalNetworkTitle"><value>Jaringan lokal</value></data>
+	<data name="Settings.Privacy.LocalNetworkDescription"><value>Alamat loopback dan jaringan lokal tetap tersedia, termasuk Ollama lokal atau mesin avatar di mesin lain.</value></data>
+	<data name="Settings.Privacy.RedactionTitle"><value>Penyamaran data sensitif</value></data>
+	<data name="Settings.Privacy.RedactionBadge"><value>Selalu aktif</value></data>
+	<data name="Settings.Privacy.RedactionDescription"><value>Rahasia yang disimpan disamarkan dalam log agen, persetujuan, dan detail permintaan yang diambil. Perlindungan ini tidak dapat dimatikan.</value></data>
+	<data name="Settings.Privacy.ChannelsTitle"><value>Saluran yang terhubung</value></data>
+	<data name="Settings.Privacy.ChannelsDescription"><value>Discord, Telegram, dan Slack masih meneruskan pesan Anda melalui server mereka sendiri saat saluran tersebut diaktifkan.</value></data>
+	<data name="Settings.Privacy.AutoLogout.Title"><value>Keluar otomatis</value></data>
+	<data name="Settings.Privacy.AutoLogout.Description"><value>Keluar dari browser ini setelah waktu yang dipilih tanpa mouse, sentuhan, keyboard, pengguliran, atau pengiriman pesan di tab Oscova mana pun yang terbuka.</value></data>
+	<data name="Settings.Privacy.AutoLogout.Label"><value>Keluar setelah</value></data>
+	<data name="Settings.Privacy.AutoLogout.OffOption"><value>Nonaktif</value></data>
+	<data name="Settings.Privacy.AutoLogout.MinutesOption"><value>{0} menit</value></data>
+	<data name="Settings.Privacy.ResetButton"><value>Atur ulang</value></data>
+	<data name="Settings.Privacy.SaveButton"><value>Simpan Pengaturan Privasi</value></data>
+	<data name="Settings.Privacy.LoadErrorToast"><value>Kesalahan memuat pengaturan privasi: {0}</value></data>
+	<data name="Settings.Privacy.SaveSuccessToast"><value>Pengaturan privasi disimpan</value></data>
+	<data name="Settings.Privacy.SaveFailedToast"><value>Pengaturan privasi tidak dapat disimpan.</value></data>
+	<data name="Settings.Privacy.SaveFailedWithMessageToast"><value>Gagal menyimpan pengaturan privasi: {0}</value></data>
+	<data name="Settings.Tools.NetworkEgress"><value>Internet</value></data>
+	<data name="Settings.Tools.NetworkIncidental"><value>Dapat menjangkau jaringan</value></data>
+	<data name="Settings.Tools.EgressDisabledNotice"><value>Alat internet diblokir oleh pengaturan hanya-lokal saat ini.</value></data>
+	<data name="Settings.Tools.EgressDisabledBadge"><value>Diblokir</value></data>
+	<data name="Settings.Tools.EgressDisabledTooltip"><value>Matikan pengaturan hanya-lokal yang aktif untuk memilih alat internet ini.</value></data>
+	<data name="Settings.Tools.TableHeaderPolicy"><value>Kebijakan</value></data>
+	<data name="Settings.Tools.ConfigurePolicyTooltip"><value>Konfigurasikan kebijakan alat</value></data>
+	<data name="Settings.Tools.ConfigurePolicyLabel"><value>Konfigurasikan kebijakan untuk {0}</value></data>
+	<data name="Settings.Tools.Governance.OverrideBadge"><value>Diganti</value></data>
+	<data name="Settings.Tools.Governance.DefaultBadge"><value>Default</value></data>
+	<data name="Settings.Tools.Governance.CustomBadge"><value>Kustom</value></data>
+	<data name="Settings.Tools.Governance.QuotaBadge"><value>{0} / {1}</value></data>
+	<data name="Settings.Tools.Governance.DialogTitle"><value>Kebijakan alat</value></data>
+	<data name="Settings.Tools.Governance.NetworkLabel"><value>Akses jaringan</value></data>
+	<data name="Settings.Tools.Governance.UseDeclaredOption"><value>Gunakan cakupan yang dideklarasikan</value></data>
+	<data name="Settings.Tools.Governance.NetworkHint"><value>Klasifikasi ini mengontrol apakah mode hanya-lokal menyembunyikan alat.</value></data>
+	<data name="Settings.Tools.Governance.LocalOnlyWarning"><value>Alat ini tidak akan tersedia saat mode hanya-lokal aktif.</value></data>
+	<data name="Settings.Tools.Governance.LimitEnabledLabel"><value>Batasi panggilan</value></data>
+	<data name="Settings.Tools.Governance.MaxCallsLabel"><value>Panggilan maksimum</value></data>
+	<data name="Settings.Tools.Governance.WindowHint"><value>Batas berlaku pada jendela 24 jam tetap.</value></data>
+	<data name="Settings.Tools.Governance.InvalidLimitMessage"><value>Masukkan batas panggilan dari 1 hingga 1000000.</value></data>
+	<data name="Settings.Tools.Governance.SavedToast"><value>Kebijakan alat disimpan.</value></data>
+	<data name="Settings.Tools.Governance.SaveFailedToast"><value>Kebijakan alat tidak dapat disimpan: {0}</value></data>
+	<data name="Settings.Avatar.ConnectEngineTitle"><value>Hubungkan ke Avatar Engine</value></data>
+	<data name="Settings.Avatar.ConnectEngineButton"><value>Hubungkan</value></data>
+	<data name="Settings.Avatar.AccessModeLabel"><value>Mode akses</value></data>
+	<data name="Settings.Avatar.AccessModeShared"><value>Bersama</value></data>
+	<data name="Settings.Avatar.AccessModeExclusive"><value>Eksklusif</value></data>
+	<data name="Settings.Avatar.AccessModeHelp"><value>Bersama mengizinkan klien terpasang lain. Eksklusif memblokirnya hingga mesin dimulai ulang.</value></data>
+	<data name="Settings.Avatar.PairingDialogTitle"><value>Pasangkan Avatar Engine</value></data>
+	<data name="Settings.Avatar.PairingCodeLabel"><value>Kode pemasangan</value></data>
+	<data name="Settings.Avatar.PairingCodeHelp"><value>Masukkan kode enam digit yang ditampilkan Avatar Engine.</value></data>
+	<data name="Settings.Avatar.PairingLifetime"><value>Kode akan kedaluwarsa dalam sekitar {0} detik.</value></data>
+	<data name="Settings.Avatar.PairingButton"><value>Pasangkan</value></data>
+	<data name="Settings.Avatar.PairingBusy"><value>Memasangkan...</value></data>
+	<data name="Settings.Avatar.PairingFailed"><value>Pemasangan gagal. Minta kode baru dan coba lagi.</value></data>
+	<data name="Settings.Avatar.PairingExpired"><value>Kode telah kedaluwarsa. Tutup dialog ini dan pilih Hubungkan untuk mendapatkan kode baru.</value></data>
+	<data name="Settings.Avatar.PairingInvalidResponse"><value>Mesin Avatar mengembalikan respons yang tidak valid. Tutup dialog ini dan pilih Hubungkan untuk mencoba lagi.</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredStatus"><value>Pemasangan diperlukan</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictStatus"><value>Konflik akses</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedStatus"><value>Laju dibatasi</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorStatus"><value>Masalah konfigurasi</value></data>
+	<data name="Settings.Avatar.EngineErrorStatus"><value>Kesalahan mesin</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredDescription"><value>Pilih Hubungkan untuk memasangkan instalasi Oscova ini.</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictDescription"><value>Klien lain saat ini memiliki akses runtime yang tidak kompatibel.</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedDescription"><value>Tunggu sebelum memilih Hubungkan lagi.</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedRetryDescription"><value>Tunggu {0} detik sebelum memilih Hubungkan lagi.</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorDescription"><value>Perbaiki penyimpanan pengaturan lokal, lalu pilih Hubungkan lagi.</value></data>
+	<data name="Settings.Avatar.EngineErrorDescription"><value>Mesin Avatar mengembalikan respons yang tidak terduga. Pilih Hubungkan untuk mencoba lagi.</value></data>
+  <data name="Settings.Agents.Prebuilt.Browse" xml:space="preserve">
+    <value>Jelajahi agen siap pakai</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Summary" xml:space="preserve">
+    <value>Pilih spesialis untuk percakapan sesuai kebutuhan. Instalasi membuat agen yang dapat diedit.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Selection" xml:space="preserve">
+    <value>Pilih agen</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.OptionalTools" xml:space="preserve">
+    <value>Alat baca yang dipilih bergantung pada instalasi dan penyiapan akun Anda. Tinjau alat dan akses di editor.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Install" xml:space="preserve">
+    <value>Instal agen</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Empty" xml:space="preserve">
+    <value>Tidak ada agen siap pakai yang tersedia.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.LoadFailed" xml:space="preserve">
+    <value>Katalog tidak dapat dimuat. Coba lagi.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Installed" xml:space="preserve">
+    <value>Agen terinstal. Anda dapat mengedit salinan sekarang.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.RefreshFailed" xml:space="preserve">
+    <value>Agen telah diinstal, tetapi editor tidak dapat dimuat. Muat ulang halaman Agen untuk membuka salinan Anda.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.InstallFailed" xml:space="preserve">
+    <value>Instalasi belum dapat dipastikan. Muat ulang halaman Agen dan periksa salinan baru sebelum menginstal lagi.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Available" xml:space="preserve">
+    <value>Pembaruan tersedia</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Title" xml:space="preserve">
+    <value>Pembaruan aplikasi</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Versions" xml:space="preserve">
+    <value>Terpasang {0}, tersedia {1}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.PluginsOnly" xml:space="preserve">
+    <value>Terpasang {0}. Hanya plugin yang memiliki pembaruan.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Interruption" xml:space="preserve">
+    <value>Selesaikan pekerjaan penting terlebih dahulu. Oscova tidak tersedia selama pembaruan dan mulai ulang.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Start" xml:space="preserve">
+    <value>Perbarui dan mulai ulang</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Refresh" xml:space="preserve">
+    <value>Segarkan</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.BackupLocation" xml:space="preserve">
+    <value>File pemulihan: {0}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Preparing" xml:space="preserve">
+    <value>Menyiapkan pembaruan</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Restarting" xml:space="preserve">
+    <value>Memperbarui. Menunggu Oscova dimulai ulang...</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Failed" xml:space="preserve">
+    <value>Pembaruan aplikasi gagal.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Unsupported" xml:space="preserve">
+    <value>Instalasi ini harus diperbarui dari terminal.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailable" xml:space="preserve">
+    <value>Pemeriksaan rilis tidak tersedia. Segarkan atau perbarui dari terminal.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RecoveryHint" xml:space="preserve">
+    <value>Jalankan 'oscova update status' di komputer Host untuk melihat kemajuan atau panduan pemulihan.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.FailedOnVersion" xml:space="preserve">
+    <value>Pembaruan gagal. Oscova masih di versi {0}.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RetryGuidance" xml:space="preserve">
+    <value>Data Anda tidak berubah. Pilih Coba lagi untuk mencoba kembali. Jika gagal lagi, jalankan 'oscova update status' di komputer Host.</value>
+  </data>
+  <data name="PluginsPendingReplacement" xml:space="preserve">
+    <value>Setelah dimulai ulang: {0} {1}</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesAction" xml:space="preserve">
+    <value>Kredit dan lisensi</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesTitle" xml:space="preserve">
+    <value>Kredit dan lisensi</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesDescription" xml:space="preserve">
+    <value>Pemberitahuan lisensi perangkat lunak pihak ketiga yang disertakan dengan Oscova disimpan secara lokal dan tersedia secara offline.</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesLoading" xml:space="preserve">
+    <value>Memuat pemberitahuan lisensi...</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesUnavailable" xml:space="preserve">
+    <value>Pemberitahuan lisensi yang disertakan tidak dapat dimuat.</value>
+  </data>
+  <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>Rambut</value></data>
+  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>Pakaian atas</value></data>
+  <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>Pilih rambut untuk avatar yang dipilih.</value></data>
+  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>Pilih pakaian atas untuk avatar yang dipilih.</value></data>
+  <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>Beberapa pilihan tampilan tidak dapat dimuat. Periksa koneksi Engine lalu segarkan.</value></data>
+  <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>Tidak dapat menerapkan {0}: {1}. Pilih opsi yang tersedia lalu coba lagi.</value></data>
+  <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">
+    <value>Periksa pembaruan</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Current" xml:space="preserve">
+    <value>Oscova sudah diperbarui.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailableLabel" xml:space="preserve">
+    <value>Pemeriksaan pembaruan tidak tersedia</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.TakingLonger" xml:space="preserve">
+    <value>Pembaruan ini memerlukan waktu lebih lama. Oscova mungkin masih mencadangkan data Anda atau mengunduh komponen. Anda dapat terus menunggu atau memeriksa 'oscova update status'.</value>
+  </data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Hubungkan saat mulai</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Simpan perubahan sebelum memulai saluran.</value></data>
+	<data name="Settings.Plugins.VerifiedBadge"><value>Terverifikasi</value></data>
+	<data name="Settings.Plugins.ReplaceButton"><value>Ganti plugin</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmTitle"><value>Ganti {0} dengan {1}?</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmMessage"><value>Penggantian ini mempertahankan identitas, pengaturan, dan kredensial plugin.</value></data>
+  <data name="Settings.General.FollowUpModeLabel" xml:space="preserve"><value>Perilaku pesan lanjutan</value></data>
+  <data name="Settings.General.FollowUpModeSteer" xml:space="preserve"><value>Arahkan</value></data>
+  <data name="Settings.General.FollowUpModeQueue" xml:space="preserve"><value>Antrekan</value></data>
+  <data name="Settings.General.FollowUpModeDescription" xml:space="preserve"><value>Saat agen bekerja, Enter menggunakan pilihan ini. Arahkan memandu respons saat ini. Antrekan mengirim pesan Anda setelah respons selesai. Ctrl+Enter menggunakan pilihan lainnya satu kali.</value></data>
+  <data name="Settings.Agents.ContextUsage.Initial" xml:space="preserve">
+    <value>Perkiraan token input awal</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Deferred" xml:space="preserve">
+    <value>Alat yang ditunda</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Assembly" xml:space="preserve">
+    <value>Penyesuaian gabungan alat</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Runtime" xml:space="preserve">
+    <value>Lingkungan eksekusi dan ruang kerja</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Memory" xml:space="preserve">
+    <value>Memori</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Todo" xml:space="preserve">
+    <value>Daftar tugas</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Vision" xml:space="preserve">
+    <value>Analisis gambar</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Scope" xml:space="preserve">
+    <value>Perkiraan lokal untuk pengaturan ini. Input percakapan, isi keterampilan yang dimuat nanti, dan hasil alat tidak disertakan. Format model dan tokenisasi dapat berbeda.</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.DeferredHelp" xml:space="preserve">
+    <value>Deklarasi alat yang dapat dicari dimuat saat diperlukan dan tidak termasuk total awal.</value>
+  </data>
+<data name="Settings.LowBatteryProtection.Label" xml:space="preserve"><value>Lewati tugas terjadwal saat baterai lemah</value></data>
+<data name="Settings.LowBatteryProtection.Description" xml:space="preserve"><value>Lewati tugas otomatis di bawah ambang baterai saat komputer server ini tidak terhubung ke daya listrik. Anda akan menerima notifikasi dan dapat menjalankan tugas secara manual.</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdLabel" xml:space="preserve"><value>Ambang baterai (%)</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdInvalid" xml:space="preserve"><value>Masukkan bilangan bulat dari 1 hingga 100.</value></data>
+<data name="Settings.LowBatteryProtection.Checking" xml:space="preserve"><value>Memeriksa informasi baterai pada komputer yang menjalankan Oscova.</value></data>
+<data name="Settings.LowBatteryProtection.NotDetected" xml:space="preserve"><value>Tidak ada baterai sistem yang terdeteksi pada komputer yang menjalankan Oscova.</value></data>
+<data name="Settings.LowBatteryProtection.Unavailable" xml:space="preserve"><value>Informasi baterai atau sambungan daya tidak tersedia pada komputer yang menjalankan Oscova.</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderLabel"><value>Folder keterampilan (opsional)</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderHint"><value>Contoh: skills. Biarkan kosong untuk mencari di seluruh repositori.</value></data>
+  <data name="Settings.Prompts.ChatContinuationInstructionLabel"><value>Instruksi melanjutkan chat</value></data>
+  <data name="Settings.Prompts.ChatContinuationDescription"><value>Memandu chat yang terputus untuk melanjutkan permintaan terakhir.</value></data>
+  <data name="Settings.Prompts.ChatTitleInstructionLabel"><value>Instruksi judul chat</value></data>
+  <data name="Settings.Prompts.ChatTitleDescription"><value>Memandu pembuatan judul chat secara otomatis.</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryInstructionLabel"><value>Instruksi pemulihan kegagalan alat</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryDescription"><value>Memandu agen untuk pulih setelah kegagalan alat berulang.</value></data>
+  <data name="Settings.Prompts.WorkspaceHasAliasesVariableDescription"><value>Benar saat ruang kerja memiliki alias untuk alat file.</value></data>
+  <data name="Settings.Prompts.UsesHostPathsVariableDescription"><value>Benar saat perintah shell menggunakan jalur host.</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationSummary"><value>Sumber keterampilan: {0} dari {1} selesai.</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCheckingCache"><value>Memeriksa cache</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationWaiting"><value>Menunggu persiapan</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationConnecting"><value>Menghubungkan</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationIndexing"><value>Mengindeks unduhan</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPreparingFiles"><value>Menyiapkan berkas</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationScanning"><value>Memindai keterampilan</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCached"><value>Tersimpan di cache</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReady"><value>Siap: {0} keterampilan</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReadyCached"><value>Siap: {0} keterampilan (dari cache)</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationFailed"><value>Gagal</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReceivedBytes"><value>{0} diterima</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPartialResults"><value>Hasil dari sumber yang siap. Sumber lainnya masih disiapkan.</value></data>
+  <data name="Settings.Avatar.Presentation.Heading" xml:space="preserve"><value>Tampilan</value></data>
+  <data name="Settings.Avatar.Presentation.ModeLabel" xml:space="preserve"><value>Mode tata letak</value></data>
+  <data name="Settings.Avatar.Presentation.AutoLabel" xml:space="preserve"><value>Otomatis</value></data>
+  <data name="Settings.Avatar.Presentation.SubtitleLabel" xml:space="preserve"><value>Subtitel</value></data>
+  <data name="Settings.Avatar.Presentation.SideLabel" xml:space="preserve"><value>Samping</value></data>
+  <data name="Settings.Avatar.Presentation.ApplyPresentationButton" xml:space="preserve"><value>Terapkan tampilan</value></data>
+  <data name="Settings.Avatar.Presentation.TestButton" xml:space="preserve"><value>Uji tata letak</value></data>
+  <data name="Settings.Avatar.Presentation.EndTestButton" xml:space="preserve"><value>Akhiri pengujian</value></data>
+  <data name="Settings.Avatar.Presentation.TestDescription" xml:space="preserve"><value>Pengujian menggunakan durasi di atas, lalu memulihkan mode tata letak yang dipilih. Tetapkan durasi lebih dari nol untuk menguji.</value></data>
+  <data name="Settings.Avatar.Presentation.FailedToast" xml:space="preserve"><value>Tidak dapat menerapkan pengaturan tampilan.</value></data>
+  <data name="Settings.Mcp.Governance.McpEnabled" xml:space="preserve"><value>Diaktifkan</value></data>
+  <data name="Settings.Mcp.Governance.McpShared" xml:space="preserve"><value>Bagikan dengan pengguna</value></data>
+  <data name="Skills.UpdateForUsers" xml:space="preserve"><value>Perbarui untuk pengguna</value></data>
+  <data name="Skills.ShareWithUsers" xml:space="preserve"><value>Bagikan kepada pengguna</value></data>
+  <data name="Skills.ManagedByOperator" xml:space="preserve"><value>Dikelola operator</value></data>
+  <data name="Settings.Mcp.Device" xml:space="preserve"><value>Perangkat</value></data>
+  <data name="Settings.Mcp.SelectDevice" xml:space="preserve"><value>Pilih perangkat</value></data>
+  <data name="Settings.Mcp.CentralServer" xml:space="preserve"><value>Server</value></data>
+  <data name="Settings.Mcp.DeviceOnline" xml:space="preserve"><value>Online</value></data>
+  <data name="Settings.Mcp.DeviceOffline" xml:space="preserve"><value>Offline</value></data>
+  <data name="Settings.Mcp.SavedDeviceOffline" xml:space="preserve"><value>Tersimpan. Perangkat offline. Hubungkan untuk memeriksa server MCP ini.</value></data>
+  <data name="Skills.IncludedForAll" xml:space="preserve"><value>Disertakan untuk semua pengguna</value></data>
+  <data name="Skills.PublicationResult" xml:space="preserve"><value>Berbagi diaktifkan. Salinan ditambahkan atau diperbarui: {0}. Salinan pribadi dipertahankan: {1}.</value></data>
+  <data name="Plugins.DeviceReady" xml:space="preserve"><value>Siap di {0}</value></data>
+  <data name="Plugins.DevicePreparing" xml:space="preserve"><value>Menyiapkan di {0}</value></data>
+  <data name="Plugins.DeviceUnavailable" xml:space="preserve"><value>Sementara tidak tersedia di {0}</value></data>
+  <data name="Settings.PromptsBrowserUseLabel" xml:space="preserve"><value>Penggunaan browser</value></data>
+  <data name="Settings.PromptsBrowserUseDescription" xml:space="preserve"><value>Memandu interaksi situs, bantuan masuk, dan konfirmasi sebelum tindakan sensitif. Instruksi ini memandu model dan tidak menjamin deteksi.</value></data>
+  <data name="Settings.ModelProviders.DownloadFailedMessage" xml:space="preserve"><value>Tidak dapat mengunduh model '{0}': {1}</value></data>
+  <data name="Settings.Prompts.RestoreDefaultButton" xml:space="preserve">
+    <value>Pulihkan default</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmTitle" xml:space="preserve">
+    <value>Pulihkan instruksi default?</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmMessage" xml:space="preserve">
+    <value>Hapus instruksi kustom Anda untuk {0} dan beralih ke Gunakan Default? Klik Simpan setelahnya untuk menerapkan perubahan.</value>
+  </data>
+  <data name="Settings.Execution.UnavailableDescription" xml:space="preserve">
+    <value>Lingkungan ini tidak tersedia. Aktifkan pluginnya dan mulai ulang, atau pilih dan simpan lingkungan lain.</value>
+  </data>
+  <data name="Settings.Execution.Description" xml:space="preserve">
+    <value>Pilih tempat menjalankan perintah shell dan skrip keterampilan.</value>
+  </data>
+  <data name="Settings.Execution.EnvironmentLabel" xml:space="preserve">
+    <value>Lingkungan eksekusi</value>
+  </data>
+  <data name="Settings.Execution.Label" xml:space="preserve">
+    <value>Eksekusi</value>
+  </data>
+  <data name="Settings.Execution.ScriptsDescription" xml:space="preserve">
+    <value>Skrip memerlukan runtime yang terpasang di lingkungan pilihan dan pemanggilan yang sesuai untuk shell-nya.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Completed" xml:space="preserve"><value>Diperbarui ke {0}</value></data>
+  <data name="Settings.ApplicationUpdate.PluginsCompleted" xml:space="preserve"><value>Plugin diperbarui. Oscova tetap di {0}.</value></data>
+  <data name="Settings.ApplicationUpdate.NotStarted" xml:space="preserve"><value>Pembaruan tidak dimulai, jadi Oscova tidak berubah. Periksa jendela pembaruan di komputer Host, lalu coba lagi.</value></data>
+  <data name="Settings.ApplicationUpdate.FilesKept" xml:space="preserve"><value>Berkas dan pengaturannya telah disimpan.</value></data>
+  <data name="Settings.ApplicationUpdate.OpenPlugins" xml:space="preserve"><value>Buka Plugin</value></data>
+  <data name="Settings.ApplicationUpdate.Compatibility" xml:space="preserve"><value>Plugin yang tidak mendukung versi baru akan dinonaktifkan. Berkas dan pengaturannya akan disimpan.</value></data>
+  <data name="Settings.ApplicationUpdate.PluginUpdated" xml:space="preserve"><value>Diperbarui</value></data>
+  <data name="Settings.ApplicationUpdate.PluginDisabled" xml:space="preserve"><value>Dinonaktifkan</value></data>
+  <data name="Settings.ApplicationUpdate.PluginRetained" xml:space="preserve"><value>Disimpan</value></data>
+  <data name="Settings.Execution.Checking" xml:space="preserve"><value>Memeriksa…</value></data>
+  <data name="Settings.Execution.Available" xml:space="preserve"><value>Tersedia pada mesin ini</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLabel" xml:space="preserve"><value>Metode pencarian</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodApi" xml:space="preserve"><value>API GitHub</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocal" xml:space="preserve"><value>Unduhan repositori lokal</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodHint" xml:space="preserve"><value>Berlaku untuk semua pengguna host ini.</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocalNotice" xml:space="preserve"><value>Mengunduh seluruh repositori, termasuk skrip, ke komputer yang menjalankan Oscova.</value></data>
+  <data name="Settings.Skills.FindOnlinePreparationReadingMetadata" xml:space="preserve"><value>Membaca metadata repositori</value></data>
+  <data name="Settings.Goal.MaxIterations" xml:space="preserve">
+    <value>Iterasi maksimum tujuan</value>
+  </data>
+  <data name="Settings.Goal.Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsInvalid" xml:space="preserve">
+    <value>Masukkan bilangan bulat dari 1 sampai 2147483647.</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsHelp" xml:space="preserve">
+    <value>Membatasi siklus kerja. Kosong memakai default.</value>
+  </data>
+  <data name="Settings.Goal.JudgeInstruction" xml:space="preserve">
+    <value>Instruksi penilai tujuan</value>
+  </data>
+  <data name="Settings.Goal.JudgeDescription" xml:space="preserve">
+    <value>Memeriksa apakah tujuan selesai setelah satu siklus kerja.</value>
+  </data>
+  <data name="Settings.Goal.ContinuationInstruction" xml:space="preserve">
+    <value>Templat kelanjutan tujuan</value>
+  </data>
+  <data name="Settings.Goal.ContinuationDescription" xml:space="preserve">
+    <value>Mengubah analisis kekurangan penilai menjadi instruksi agen berikutnya.</value>
+  </data>
+  <data name="Settings.Goal.GapAnalysis" xml:space="preserve">
+    <value>Pekerjaan yang menurut penilai masih perlu dilakukan.</value>
+  </data>
+  <data name="Settings.Prompts.PrivateDirectoriesVariableDescription" xml:space="preserve">
+    <value>Daftar folder pribadi agen.</value>
+  </data>
+  <data name="Settings.Prompts.HasPrivateDirectoryVariableDescription" xml:space="preserve">
+    <value>Benar jika agen memiliki folder pribadi.</value>
+  </data>
+  <data name="Settings.Prompts.ShellRootVariablesVariableDescription" xml:space="preserve">
+    <value>Nama variabel lingkungan shell dan alias foldernya.</value>
+  </data>
+  <data name="Settings.Prompts.HasShellRootsVariableDescription" xml:space="preserve">
+    <value>Benar jika variabel folder akar shell tersedia.</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsLabel" xml:space="preserve">
+    <value>Gunakan model chat saat bergabung ke chat agen lain</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsDescription" xml:space="preserve">
+    <value>Hanya untuk penyebutan dan konsultasi dalam chat web. Jika nonaktif, gunakan penyedia di atas.</value>
+  </data>
+  <data name="Settings.Prompts.InstructionModeLabel" xml:space="preserve"><value>Mode instruksi</value></data>
+  <data name="Settings.Prompts.InstructionUseDefault" xml:space="preserve"><value>Gunakan Default</value></data>
+  <data name="Settings.Prompts.InstructionAppend" xml:space="preserve"><value>Tambahkan ke Default</value></data>
+  <data name="Settings.Prompts.InstructionReplace" xml:space="preserve"><value>Ganti Default</value></data>
+  <data name="Settings.Prompts.InstructionDefaultReference" xml:space="preserve"><value>Instruksi default</value></data>
+  <data name="Speech.InstallPluginHelp" xml:space="preserve"><value>Instal plugin suara di Pengaturan &gt; Plugin, lalu mulai ulang.</value></data>
+  <data name="Speech.ProviderUnavailableHelp" xml:space="preserve"><value>Penyedia ini tidak tersedia. Aktifkan pluginnya dan mulai ulang, atau pilih penyedia yang terinstal.</value></data>
+  <data name="Settings.Speech.VoiceCatalogFailed" xml:space="preserve"><value>Suara tidak dapat dimuat. Periksa kredensial yang dipilih dan izin suara, lalu pilih kembali kredensial.</value></data>
+  <data name="Settings.Prompts.MetadataError" xml:space="preserve">
+    <value>Metadata instruksi hilang atau tidak valid. Instruksi ini tidak dapat diedit.</value>
+  </data>
+  <data name="Settings.Prompts.LoadFailed" xml:space="preserve">
+    <value>Instruksi tidak dapat dimuat.</value>
+  </data>
+  <data name="Updates.HarnessUpdateNoticeTitle" xml:space="preserve"><value>Pembaruan harness tersedia</value></data>
+  <data name="Updates.HarnessUpdateNoticeBody" xml:space="preserve"><value>Oscova {0} tersedia. Buka Pembaruan Dasbor untuk meninjaunya.</value></data>
+  <data name="Updates.AvatarUpdateNoticeTitle" xml:space="preserve"><value>Avatar Engine tersedia</value></data>
+  <data name="Updates.AvatarUpdateNoticeBody" xml:space="preserve"><value>Avatar Engine {0} tersedia. Buka Pembaruan Dasbor untuk meninjau pemasangan di komputer ini.</value></data>
+  <data name="Updates.AvatarUpdateTitle" xml:space="preserve"><value>Avatar Engine</value></data>
+  <data name="Updates.AvatarInstall" xml:space="preserve"><value>Pasang Avatar</value></data>
+  <data name="Updates.AvatarUpdateAction" xml:space="preserve"><value>Perbarui Avatar</value></data>
+  <data name="Updates.AvatarUpdateVersions" xml:space="preserve"><value>Lokal: {0}. Tersedia: {1}. Unduhan: {2}.</value></data>
+  <data name="Updates.AvatarNotInstalled" xml:space="preserve"><value>Belum terpasang</value></data>
+  <data name="Updates.AvatarUpdateUnknown" xml:space="preserve"><value>Versi tidak diketahui</value></data>
+  <data name="Updates.AvatarUpdateConfirm" xml:space="preserve"><value>Saya mengonfirmasi pemasangan rilis ini di komputer ini.</value></data>
+  <data name="Updates.AvatarUpdateStopImpact" xml:space="preserve"><value>Avatar Engine lokal akan berhenti, lalu dimulai ulang setelah pemasangan.</value></data>
+  <data name="Updates.AvatarUpdateUnsupported" xml:space="preserve"><value>Pemasangan dan pembaruan Avatar memerlukan Windows.</value></data>
+  <data name="Updates.AvatarUpdateUnmanaged" xml:space="preserve"><value>Jalankan dengan 'oscova start' untuk mengelola Avatar Engine di komputer ini.</value></data>
+  <data name="Updates.AvatarUpdateCurrent" xml:space="preserve"><value>Avatar Engine sudah terbaru.</value></data>
+  <data name="Updates.AvatarUpdateRunning" xml:space="preserve"><value>Berjalan</value></data>
+  <data name="Updates.AvatarUpdateStopped" xml:space="preserve"><value>Berhenti</value></data>
+  <data name="Updates.AvatarUpdateComputer" xml:space="preserve"><value>Komputer: {0}</value></data>
+  <data name="Updates.AvatarUpdateDownloading" xml:space="preserve"><value>Mengunduh {0} dari {1}</value></data>
+  <data name="Updates.AvatarUpdateInstalling" xml:space="preserve"><value>Memasang...</value></data>
+  <data name="Updates.AvatarUpdateRestarting" xml:space="preserve"><value>Memulai ulang Avatar Engine...</value></data>
+  <data name="Updates.AvatarUpdateStopping" xml:space="preserve"><value>Menghentikan Avatar Engine...</value></data>
+  <data name="Updates.AvatarUpdateCompleted" xml:space="preserve"><value>Avatar Engine terpasang.</value></data>
+  <data name="Updates.AvatarUpdateVerifying" xml:space="preserve"><value>Memverifikasi unduhan...</value></data>
+  <data name="Updates.AvatarUpdateNotRunning" xml:space="preserve"><value>Avatar Engine terpasang tetapi tidak berjalan. Jalankan dari pengaturan Avatar atau gunakan 'oscova avatar start'.</value></data>
+  <data name="Updates.ApplicationUpdateReadNotes" xml:space="preserve"><value>Baca catatan rilis</value></data>
+  <data name="Updates.ApplicationUpdateWhatsNew" xml:space="preserve"><value>Lihat yang baru</value></data>
+  <data name="Updates.ApplicationUpdateAllNotes" xml:space="preserve"><value>Semua catatan rilis</value></data>
+  <data name="Updates.ApplicationUpdateChecking" xml:space="preserve"><value>Memeriksa pembaruan...</value></data>
+  <data name="Updates.ApplicationUpdatePluginsIncluded" xml:space="preserve"><value>Pembaruan plugin ini dipasang bersama pembaruan.</value></data>
+  <data name="Updates.ApplicationUpdateInstalledColumn" xml:space="preserve"><value>Terpasang</value></data>
+  <data name="Updates.ApplicationUpdateAvailableColumn" xml:space="preserve"><value>Tersedia</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLabel" xml:space="preserve"><value>Upaya penalaran</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLow" xml:space="preserve"><value>Rendah</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortMedium" xml:space="preserve"><value>Sedang</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHigh" xml:space="preserve"><value>Tinggi</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortExtraHigh" xml:space="preserve"><value>Sangat tinggi</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHelp" xml:space="preserve"><value>Default menggunakan Sedang untuk OpenAI saat keluaran pemikiran diaktifkan dan default model dalam kondisi lainnya. Model yang dipilih harus mendukung upaya yang dipilih.</value></data>
+  <data name="ModelProvidersAnthropicMaxOutputTokensDescription" xml:space="preserve"><value>Biarkan kosong untuk menggunakan {0} token keluaran.</value></data>
+  <data name="Plugins.NotAvailableOnPlatform" xml:space="preserve"><value>Plugin ini tidak tersedia di platform ini.</value></data>
+	<data name="Settings.Files.Encrypted"><value>Terenkripsi</value></data>
+  <data name="Settings.OAuthConnected" xml:space="preserve"><value>{0} terhubung.</value></data>
+  <data name="Settings.OAuthCanceled" xml:space="preserve"><value>Koneksi ke {0} dibatalkan.</value></data>
+  <data name="Settings.OAuthUnverified" xml:space="preserve"><value>Koneksi ke {0} tidak dapat diverifikasi. Mulai prosesnya lagi.</value></data>
+  <data name="Settings.OAuthMissingCode" xml:space="preserve"><value>{0} tidak mengembalikan kode otorisasi.</value></data>
+  <data name="Settings.OAuthNotConfigured" xml:space="preserve"><value>{0} belum dikonfigurasi.</value></data>
+  <data name="Settings.OAuthTokenExchangeFailed" xml:space="preserve"><value>Pertukaran token {0} gagal.</value></data>
+  <data name="Settings.OAuthVaultLocked" xml:space="preserve"><value>Buat atau buka kunci Kata Sandi Brankas Anda sebelum menghubungkan {0}.</value></data>
+  <data name="Settings.OAuthFailed" xml:space="preserve"><value>Koneksi ke {0} gagal: {1}.</value></data>
+  <data name="Settings.AdminOnlySettings" xml:space="preserve"><value>Pengaturan {0} hanya tersedia untuk administrator.</value></data>
+  <data name="Settings.ModelProviders.FetchRecovery" xml:space="preserve"><value>Model tidak dapat dimuat. Periksa URL Dasar, koneksi penyedia, dan kunci API tersimpan, lalu ambil model lagi.</value></data>
+  <data name="Settings.ModelProviders.MemoryFitUnknown" xml:space="preserve"><value>Perkiraan memori tidak tersedia. Anda tetap dapat menyimpan.</value></data>
+  <data name="Settings.ModelProviders.MemoryFitEstimateHelp" xml:space="preserve"><value>Ini hanya perkiraan kapasitas. Simpan, lalu uji. Pemeriksaan terpisah memerlukan memori tambahan saat model lain tetap dimuat.</value></data>
+  <data name="Settings.ModelProviders.ManagedHardware" xml:space="preserve"><value>Penyedia mengelola perangkat keras. Memori host tidak memprediksi runtime-nya.</value></data>
+  <data name="Settings.ModelProviders.AdvancedOptions" xml:space="preserve"><value>Opsi lanjutan</value></data>
+  <data name="Settings.ModelProviders.TestSkipped" xml:space="preserve"><value>Tes dilewati. Diagnostik lain mungkin berjalan atau prasyarat tidak tersedia.</value></data>
+  <data name="Settings.ModelProviders.TestTimedOut" xml:space="preserve"><value>Waktu tes habis.</value></data>
+  <data name="Settings.ModelProviders.TestCancelled" xml:space="preserve"><value>Tes dibatalkan atau koneksi terputus. Eksekusi belum dikonfirmasi.</value></data>
+  <data name="Settings.ModelProviders.TestCleanupUnconfirmed" xml:space="preserve"><value>Penghentian proses belum dikonfirmasi. Tes lain diblokir hingga proses keluar.</value></data>
+  <data name="Settings.Plugins.HardwareSummary" xml:space="preserve"><value>Pengamatan perangkat keras</value></data>
+  <data name="Settings.Plugins.HardwareUnknown" xml:space="preserve"><value>Pemeriksaan tidak tersedia atau persyaratan tidak diketahui.</value></data>
+  <data name="Settings.Plugins.HardwareNotDetected" xml:space="preserve"><value>Perangkat keras yang sesuai tidak terdeteksi. Ini tidak membuktikan perangkat atau driver tidak ada.</value></data>
+  <data name="Settings.Plugins.RuntimeUnverified" xml:space="preserve"><value>Eksekusi belum diverifikasi. Gunakan tes penyedia model.</value></data>
+  <data name="Settings.Plugins.RuntimeRequirements" xml:space="preserve"><value>Persyaratan yang dinyatakan</value></data>
+  <data name="Settings.ModelProviders.MemoryFootprint" xml:space="preserve"><value>Perkiraan bobot dan cache F16: {0}.</value></data>
+  <data name="Settings.ModelProviders.TestInferencePassed" xml:space="preserve"><value>Inferensi berhasil. Pemuatan: {0} md. Inferensi: {1} md.</value></data>
+  <data name="Settings.ModelProviders.TestInferenceFailed" xml:space="preserve"><value>Inferensi lokal gagal. Periksa log server untuk penyebabnya. Kurangi konteks atau lapisan GPU, kosongkan memori GPU, atau instal edisi CPU lalu mulai ulang.</value></data>
+  <data name="Settings.ModelProviders.TestRuntime" xml:space="preserve"><value>Backend teramati: {0}. Perangkat: {1}. Lapisan yang dialihkan: {2}.</value></data>
+  <data name="Settings.ModelProviders.TestPlacementUnknown" xml:space="preserve"><value>Penempatan pada perangkat keras tidak dapat diverifikasi.</value></data>
+  <data name="Settings.ModelProviders.TestModelUnavailable" xml:space="preserve"><value>Pilih file model GGUF yang tersedia, simpan penyedia, lalu uji lagi.</value></data>
+</root>

@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Common.Cancel">
+		<value>Cancelar</value>
+	</data>
+	<data name="Common.Actions">
+		<value>Acciones</value>
+	</data>
+	<data name="Common.Close">
+		<value>Cerrar</value>
+	</data>
+	<data name="Common.Connected">
+		<value>Conectado</value>
+	</data>
+	<data name="Common.CopyName">
+		<value>Copia</value>
+	</data>
+	<data name="Common.Create">
+		<value>Crear</value>
+	</data>
+	<data name="Common.Delete">
+		<value>Eliminar</value>
+	</data>
+	<data name="Common.Description">
+		<value>Descripción</value>
+	</data>
+	<data name="Common.Disconnected">
+		<value>Desconectado</value>
+	</data>
+	<data name="Common.Download">
+		<value>Descargar</value>
+	</data>
+	<data name="Common.Duplicate">
+		<value>Duplicar</value>
+	</data>
+	<data name="Common.Edit">
+		<value>Editar</value>
+	</data>
+	<data name="Common.FileTooLarge">
+		<value>El archivo es demasiado grande. El tamaño máximo es {0}.</value>
+	</data>
+	<data name="Common.Import">
+		<value>Importar</value>
+	</data>
+	<data name="Common.ImportFailed">
+		<value>Error de importación: {0}</value>
+	</data>
+	<data name="Common.Key"><value>Clave</value></data>
+	<data name="Common.Loading">
+		<value>Cargando...</value>
+	</data>
+	<data name="Common.Name">
+		<value>Nombre</value>
+	</data>
+	<data name="Common.NoFileSelected">
+		<value>Ningún archivo seleccionado</value>
+	</data>
+	<data name="Common.NoneOption">
+		<value>Ninguno</value>
+	</data>
+	<data name="Common.Password">
+		<value>Contraseña</value>
+	</data>
+	<data name="Common.Refresh">
+		<value>Actualizar</value>
+	</data>
+	<data name="Common.Remove">
+		<value>Quitar</value>
+	</data>
+	<data name="Common.Retry">
+		<value>Reintentar</value>
+	</data>
+	<data name="Common.NoResults"><value>Sin resultados</value></data>
+	<data name="Common.Save">
+		<value>Guardar</value>
+	</data>
+	<data name="Common.Search"><value>Buscar...</value></data>
+	<data name="Common.Settings">
+		<value>Configuración</value>
+	</data>
+	<data name="Common.UnsavedChanges.Title">
+		<value>¿Descartar los cambios sin guardar?</value>
+	</data>
+	<data name="Common.UnsavedChanges.Message">
+		<value>Tienes cambios sin guardar en esta página. Si sales ahora, se descartarán.</value>
+	</data>
+	<data name="Common.SignOutConfirmTitle">
+		<value>Confirmar cierre de sesión</value>
+	</data>
+	<data name="Common.SignOutConfirmMessage">
+		<value>¿Seguro que quieres cerrar sesión?</value>
+	</data>
+	<data name="Common.Upload">
+		<value>Subir</value>
+	</data>
+	<data name="Common.Username">
+		<value>Nombre de usuario</value>
+	</data>
+	<data name="Common.Assistant"><value>Asistente</value></data>
+	<data name="Common.Clear"><value>Limpiar</value></data>
+	<data name="Common.ConfirmPassword"><value>Confirmar contraseña</value></data>
+	<data name="Common.Content"><value>Contenido</value></data>
+	<data name="Common.CurrentPassword"><value>Contraseña actual</value></data>
+	<data name="Common.Email"><value>Correo electrónico</value></data>
+	<data name="Common.FullName"><value>Nombre completo</value></data>
+	<data name="Common.PreferredName"><value>Nombre preferido</value></data>
+	<data name="Common.PreferredNameHelp"><value>¿Cómo quieres que te llamen tus agentes?</value></data>
+	<data name="Common.NewPassword"><value>Nueva contraseña</value></data>
+	<data name="Common.NotConfigured"><value>No configurado</value></data>
+	<data name="Common.NotSet"><value>No establecido</value></data>
+	<data name="Common.Page"><value>Página {0}</value></data>
+	<data name="Common.Roles"><value>Roles</value></data>
+	<data name="Common.System"><value>Sistema</value></data>
+	<data name="Common.Time"><value>Hora</value></data>
+	<data name="Common.Tool"><value>Herramienta</value></data>
+	<data name="Common.Unknown"><value>Desconocido</value></data>
+	<data name="Common.User"><value>Usuario</value></data>
+	<data name="Dialog.AccountDetailsTitle"><value>Detalles de la cuenta</value></data>
+	<data name="Dialog.AllAgentsOption"><value>Todos los agentes</value></data>
+	<data name="Dialog.AllThreadsOption"><value>Todos los hilos</value></data>
+	<data name="Dialog.ApplicationLogsTitle"><value>Registros de la aplicación</value></data>
+	<data name="Dialog.ExportFilteredCsv"><value>CSV filtrado</value></data>
+	<data name="Dialog.ExportFilteredText"><value>Texto filtrado</value></data>
+	<data name="Dialog.ExportLogsButton"><value>Exportar</value></data>
+	<data name="Dialog.ExportOriginalJsonLines"><value>Líneas JSON originales</value></data>
+	<data name="Dialog.ChangePasswordTitle"><value>Cambiar contraseña</value></data>
+	<data name="Dialog.ChatMemory.HeaderAgent"><value>Agente</value></data>
+	<data name="Dialog.ChatMemory.HeaderChunk"><value>Fragmento</value></data>
+	<data name="Dialog.ChatMemory.HeaderContent"><value>Contenido</value></data>
+	<data name="Dialog.ChatMemory.HeaderThread"><value>Hilo</value></data>
+	<data name="Dialog.ChatMemoryStoreTitle"><value>Almacén de memoria de chat</value></data>
+	<data name="Dialog.ClearLogButton"><value>Limpiar</value></data>
+	<data name="Dialog.ClearLogConfirmMessage"><value>¿Seguro que quieres limpiar el archivo de registro actual? Esta acción no se puede deshacer.</value></data>
+	<data name="Dialog.ClearLogConfirmTitle"><value>Confirmar limpieza del registro</value></data>
+	<data name="Dialog.ClearLogTitleAttribute"><value>Limpiar archivo de registro actual</value></data>
+	<data name="Dialog.CloseChatMemoryLabel"><value>Cerrar diálogo de memoria de chat</value></data>
+	<data name="Dialog.CloseLogsLabel"><value>Cerrar diálogo de registros</value></data>
+	<data name="Dialog.CloseProfileLabel"><value>Cerrar diálogo de perfil</value></data>
+	<data name="Dialog.ContentTypeCall"><value>llamada</value></data>
+	<data name="Dialog.ContentTypeReasoning"><value>Razonamiento</value></data>
+	<data name="Dialog.ContentTypeResult"><value>resultado</value></data>
+	<data name="Dialog.DataContentBytes"><value>{0} - {1} bytes</value></data>
+	<data name="Dialog.EmailAddressLabel"><value>Correo electrónico</value></data>
+	<data name="Dialog.FailedLoadChatMemoryError"><value>No se pudo cargar la memoria de chat:</value></data>
+	<data name="Dialog.FailedLoadLogsError"><value>No se pudieron cargar los registros:</value></data>
+	<data name="Dialog.InspectorJsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorVisualTab"><value>Visual</value></data>
+	<data name="Dialog.LogDetailException"><value>Excepción</value></data>
+	<data name="Dialog.LogDetailMetadata"><value>Metadatos</value></data>
+	<data name="Dialog.LogEntriesCount"><value>{0} entradas</value></data>
+	<data name="Dialog.LogEntriesPage"><value>{0} entradas - Página {1} de {2}</value></data>
+	<data name="Dialog.LogLevelAll"><value>Todos los niveles</value></data>
+	<data name="Dialog.LogLevelDebug"><value>Debug</value></data>
+	<data name="Dialog.LogLevelError"><value>Error</value></data>
+	<data name="Dialog.LogLevelFatal"><value>Fatal</value></data>
+	<data name="Dialog.LogLevelInfo"><value>Info</value></data>
+	<data name="Dialog.LogLevelTrace"><value>Trace</value></data>
+	<data name="Dialog.LogLevelWarn"><value>Warn</value></data>
+	<data name="Dialog.LogsHeaderLevel"><value>Nivel</value></data>
+	<data name="Dialog.LogsHeaderLogger"><value>Registrador</value></data>
+	<data name="Dialog.LogsHeaderMessage"><value>Mensaje</value></data>
+	<data name="Dialog.LogsInvalidUserGuid"><value>Introduce un GUID de usuario válido.</value></data>
+	<data name="Dialog.LogsScope.Mine"><value>Míos</value></data>
+	<data name="Dialog.LogsScope.User"><value>Usuario...</value></data>
+	<data name="Dialog.Logs.UserIdPlaceholder"><value>ID de usuario (GUID)</value></data>
+	<data name="Dialog.NoChatMemoryEntries"><value>Ninguna entrada de memoria de chat coincide con los filtros actuales.</value></data>
+	<data name="Dialog.NoLogEntriesMatch"><value>Ninguna entrada de registro coincide con los filtros actuales.</value></data>
+	<data name="Dialog.NoLogFilesOption"><value>No hay archivos de registro</value></data>
+	<data name="Dialog.NoMessagesInSession"><value>No hay mensajes en la sesión.</value></data>
+	<data name="Dialog.NoStructuredLogsFound"><value>No se encontraron archivos de registro estructurados. Los registros aparecerán aquí cuando la aplicación escriba nuevas entradas.</value></data>
+	<data name="Notifications.AllTab"><value>Todo</value></data>
+	<data name="Notifications.Clear"><value>Borrar notificaciones</value></data>
+	<data name="Notifications.DetailKindLabel"><value>Tipo</value></data>
+	<data name="Notifications.DialogTitle"><value>Notificaciones</value></data>
+	<data name="Notifications.EmptyState"><value>Todo al día.</value></data>
+	<data name="Notifications.MarkAllRead"><value>Marcar todo como leído</value></data>
+	<data name="Notifications.Muted"><value>Notificaciones silenciadas</value></data>
+	<data name="Notifications.JustNow"><value>Ahora mismo</value></data>
+	<data name="Notifications.MinutesAgo"><value>Hace {0} min</value></data>
+	<data name="Notifications.HoursAgo"><value>Hace {0} h</value></data>
+	<data name="Notifications.Task.CompletedTitle"><value>Tarea completada</value></data>
+	<data name="Notifications.Task.NeedsAttentionTitle"><value>La tarea requiere atención</value></data>
+	<data name="Notifications.Task.CompletedInSeconds"><value>Completada en {0} segundos.</value></data>
+	<data name="Notifications.Task.Skipped"><value>La tarea se omitió.</value></data>
+	<data name="Notifications.Task.MissingChatProvider"><value>No hay ningún proveedor de modelo de chat configurado. Configura uno en Ajustes &gt; Agentes e IA &gt; Proveedores de modelos para ejecutar esta tarea.</value></data>
+	<data name="Notifications.Task.MissingEmbeddingProvider"><value>No hay ningún proveedor de modelo de embeddings configurado. Configura uno en Ajustes &gt; Agentes e IA &gt; Proveedores de modelos &gt; Proveedor de embeddings para ejecutar esta tarea.</value></data>
+	<data name="Notifications.Task.HandlerUnavailable"><value>El controlador de ejecución de esta tarea no está disponible. Activa o reinstala su complemento y reinicia la aplicación para ejecutarla.</value></data>
+	<data name="Notifications.Task.StepLimitReached"><value>La tarea se detuvo en el límite de {0} pasos antes de terminar.</value></data>
+	<data name="Notifications.Task.Finished"><value>La ejecución de la tarea finalizó.</value></data>
+	<data name="Notifications.Task.OutcomeHidden"><value>Abre la tarea para ver el resultado.</value></data>
+	<data name="Notifications.Task.SkippedLocked"><value>Esta tarea no se ejecutó porque tu frase de contraseña confidencial está bloqueada. Desbloquéala para continuar.</value></data>
+	<data name="Notifications.Settings"><value>Configuración de notificaciones</value></data>
+	<data name="Notifications.SystemTab"><value>Sistema</value></data>
+	<data name="Notifications.TasksTab"><value>Tareas</value></data>
+	<data name="Notifications.Title"><value>Notificaciones</value></data>
+	<data name="Notifications.ViewAll"><value>Ver todo</value></data>
+	<data name="Dialog.PasswordBlankHint"><value>Déjalo en blanco para conservar tu contraseña actual.</value></data>
+	<data name="Dialog.ProfileDescription"><value>Actualiza tu correo electrónico, nombre completo, nombre preferido y contraseña.</value></data>
+	<data name="Dialog.ProfilePictureUpdated"><value>Foto de perfil actualizada.</value></data>
+	<data name="Dialog.ProfilePictureUpdateFailed"><value>No se pudo actualizar la foto de perfil: {0}</value></data>
+	<data name="Dialog.WallpaperUpdated"><value>Fondo de pantalla actualizado.</value></data>
+	<data name="Dialog.WallpaperUpdateFailed"><value>No se pudo actualizar el fondo de pantalla: {0}</value></data>
+	<data name="Dialog.SaveChangesButton"><value>Guardar cambios</value></data>
+	<data name="Dialog.SearchLogsPlaceholder"><value>Buscar registros...</value></data>
+	<data name="Dialog.SessionInspectorTitle"><value>Inspector de sesión</value></data>
+	<data name="Dialog.SessionJsonCopied"><value>JSON de sesión copiado al portapapeles.</value></data>
+	<data name="Dialog.SessionJsonDownloaded"><value>Evidencia de sesión descargada.</value></data>
+	<data name="Dialog.InspectorConversationTab"><value>Conversación</value></data>
+	<data name="Dialog.InspectorMessageSummary"><value>{0} mensajes</value></data>
+	<data name="Dialog.MessageCountBadge"><value>{0} mensajes</value></data>
+	<data name="Dialog.NoSystemInstruction"><value>No se capturó ninguna instrucción del sistema.</value></data>
+	<data name="Dialog.Egress.CloudLabel"><value>Nube</value></data>
+	<data name="Dialog.Egress.LocalLabel"><value>Local</value></data>
+	<data name="Dialog.Egress.IndeterminateDescription"><value>Algunas llamadas a herramientas no se pudieron asociar con los metadatos de herramientas.</value></data>
+	<data name="Dialog.Egress.IndeterminateTitle"><value>No se pudo verificar completamente la salida</value></data>
+	<data name="Dialog.Egress.NoDataDescription"><value>Es posible que las sesiones antiguas no incluyan registros de salida del proveedor.</value></data>
+	<data name="Dialog.Egress.NoDataTitle"><value>No hay datos de salida registrados</value></data>
+	<data name="Dialog.Egress.ReachedInternetDescription"><value>Se usaron proveedores en la nube o herramientas de internet durante esta sesión.</value></data>
+	<data name="Dialog.Egress.ReachedInternetTitle"><value>Esta sesión llegó a internet</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceDescription"><value>Los proveedores registrados fueron locales y no se detectaron herramientas de internet.</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceTitle"><value>Esta sesión permaneció en el dispositivo</value></data>
+	<data name="Dialog.Egress.ToolCallCount"><value>{0} llamadas a herramientas de internet</value></data>
+	<data name="Dialog.Egress.UnknownToolCallCount"><value>{0} llamadas a herramientas desconocidas</value></data>
+	<data name="Dialog.Egress.EntryCount"><value>{0} entradas de salida auditadas</value></data>
+	<data name="Dialog.Egress.ProviderKind"><value>Proveedor</value></data>
+	<data name="Dialog.Egress.ToolKind"><value>Herramienta</value></data>
+	<data name="Dialog.Egress.EmbeddingKind"><value>Incrustación</value></data>
+	<data name="Dialog.Egress.ChatSource"><value>Chat</value></data>
+	<data name="Dialog.Egress.TaskSource"><value>Tarea</value></data>
+	<data name="Dialog.Egress.EmbeddingIndexingSource"><value>Indexación de memoria</value></data>
+	<data name="Dialog.Egress.EmbeddingSearchSource"><value>Búsqueda de memoria</value></data>
+	<data name="Dialog.Egress.UnknownDestination"><value>Destino desconocido</value></data>
+	<data name="Dialog.EgressAudit.AgentColumn"><value>Agente</value></data>
+	<data name="Dialog.EgressAudit.AllKinds"><value>Todos los tipos</value></data>
+	<data name="Dialog.EgressAudit.AllSources"><value>Todas las fuentes</value></data>
+	<data name="Dialog.EgressAudit.ContextColumn"><value>Contexto</value></data>
+	<data name="Dialog.EgressAudit.CountSummary"><value>{0} eventos</value></data>
+	<data name="Dialog.EgressAudit.DestinationColumn"><value>Destino</value></data>
+	<data name="Dialog.EgressAudit.Title"><value>Auditoría de egreso</value></data>
+	<data name="Dialog.EgressAudit.EmbeddingEvents"><value>Eventos de incrustación</value></data>
+	<data name="Dialog.EgressAudit.InspectAction"><value>Inspeccionar sesión</value></data>
+	<data name="Dialog.EgressAudit.LoadFailed"><value>No se pudieron cargar los detalles de auditoría de egreso.</value></data>
+	<data name="Dialog.EgressAudit.ModelMetadata"><value>Modelo</value></data>
+	<data name="Dialog.EgressAudit.NoEntries"><value>Ninguna entrada de auditoría coincide con los filtros actuales.</value></data>
+	<data name="Dialog.EgressAudit.PageSummary"><value>{0} eventos - Página {1} de {2}</value></data>
+	<data name="Dialog.EgressAudit.ProviderEvents"><value>Eventos de proveedor</value></data>
+	<data name="Dialog.EgressAudit.ProviderIdMetadata"><value>ID de proveedor</value></data>
+	<data name="Dialog.EgressAudit.RangeAllTime"><value>Todo el tiempo</value></data>
+	<data name="Dialog.EgressAudit.RangeLastThirtyDays"><value>Últimos 30 días</value></data>
+	<data name="Dialog.EgressAudit.RunMetadata"><value>Ejecución</value></data>
+	<data name="Dialog.EgressAudit.SearchButton"><value>Buscar</value></data>
+	<data name="Dialog.EgressAudit.SearchPlaceholder"><value>Buscar egreso</value></data>
+	<data name="Dialog.EgressAudit.SessionUnavailable"><value>La sesión de esta entrada ya no está disponible.</value></data>
+	<data name="Dialog.EgressAudit.SourceColumn"><value>Fuente</value></data>
+	<data name="Dialog.EgressAudit.TaskMetadata"><value>Tarea</value></data>
+	<data name="Dialog.EgressAudit.ThreadMetadata"><value>Hilo</value></data>
+	<data name="Dialog.EgressAudit.ToolEvents"><value>Eventos de herramienta</value></data>
+	<data name="Dialog.EgressAudit.ToolMetadata"><value>Herramienta</value></data>
+	<data name="Dialog.EgressAudit.TotalEvents"><value>Total de eventos</value></data>
+	<data name="Dialog.EgressAudit.TypeColumn"><value>Tipo</value></data>
+	<data name="Dialog.EgressAudit.UserColumn"><value>Usuario</value></data>
+	<data name="Dialog.SystemInstructionTitle"><value>Instrucción del sistema</value></data>
+	<data name="Dialog.TokenCountBadge"><value>{0} tokens</value></data>
+	<data name="Dialog.UsageInputTokens"><value>Entrada: {0}</value></data>
+	<data name="Dialog.UsageOutputTokens"><value>Salida: {0}</value></data>
+	<data name="Dialog.UsageTotalTokens"><value>Total: {0}</value></data>
+	<data name="Dialog.StoredContent"><value>Contenido almacenado</value></data>
+	<data name="Dialog.ToggleDetailsTitle"><value>Mostrar u ocultar detalles</value></data>
+	<data name="Dialog.UnableToSubmitChoice"><value>No se pudo enviar esa opción.</value></data>
+	<data name="Dialog.YourProfileTitle"><value>Tu perfil</value></data>
+	<data name="Common.Validation.NameRequired"><value>El nombre es obligatorio.</value></data>
+	<data name="Common.Validation.InstructionRequired"><value>La instrucción es obligatoria.</value></data>
+	<data name="Common.Task.AgentUnavailable"><value>Solo se puede crear una tarea cuando hay al menos un agente disponible.</value></data>
+	<data name="Common.Task.AgentCreatedBadge"><value>Creada por un agente</value></data>
+	<data name="Common.Task.CreatedSuccessfully"><value>Tarea creada correctamente.</value></data>
+	<data name="Common.Task.CronExpression"><value>Cron: {0}</value></data>
+	<data name="Common.Task.CronExpressionLabel"><value>Expresión cron</value></data>
+	<data name="Common.Task.CronExpressionRequired"><value>La expresión cron es obligatoria.</value></data>
+	<data name="Common.Task.CustomProvider"><value>Proveedor personalizado</value></data>
+	<data name="Common.Task.DefaultModelProvider"><value>Usar predeterminado del agente</value></data>
+	<data name="Common.Task.DefaultModelProviderShort"><value>Usar predeterminado del agente</value></data>
+	<data name="Common.Task.DeleteAfterRun"><value>Eliminar tarea después de ejecutarla</value></data>
+	<data name="Common.Task.DeleteConfirmMessage"><value>¿Seguro que quieres eliminar "{0}"?</value></data>
+	<data name="Common.Task.DeleteConfirmTitle"><value>Eliminar tarea</value></data>
+	<data name="Common.Task.DeletedSuccessfully"><value>Tarea eliminada.</value></data>
+	<data name="Common.Task.RunsLoadFailed"><value>No se pudieron cargar las ejecuciones de esta tarea. Inténtalo de nuevo.</value></data>
+	<data name="Common.Task.DeletesAfterSuccessfulRun"><value>Se elimina después de una ejecución correcta</value></data>
+	<data name="Common.Task.DialogCreateTitle"><value>Crear tarea</value></data>
+	<data name="Common.Task.DialogEditTitle"><value>Editar tarea</value></data>
+	<data name="Common.Task.DisablesAfterSuccessfulRun"><value>Se desactiva después de una ejecución correcta</value></data>
+	<data name="Common.Task.Enabled"><value>Habilitada</value></data>
+	<data name="Common.Task.ExternalTrigger.AddParameterButton"><value>Agregar parámetro</value></data>
+	<data name="Common.Task.ExternalTrigger.CopyEndpointButton"><value>Copiar endpoint</value></data>
+	<data name="Common.Task.ExternalTrigger.EnableLabel"><value>Permitir activación por webhook externo</value></data>
+	<data name="Common.Task.ExternalTrigger.Hint"><value>Los llamadores externos pueden activar esta tarea mediante un endpoint de hook autenticado.</value></data>
+	<data name="Common.Task.ExternalTrigger.KindBoolean"><value>Booleano</value></data>
+	<data name="Common.Task.ExternalTrigger.KindJson"><value>JSON</value></data>
+	<data name="Common.Task.ExternalTrigger.KindNumber"><value>Número</value></data>
+	<data name="Common.Task.ExternalTrigger.KindString"><value>Texto</value></data>
+	<data name="Common.Task.ExternalTrigger.NoParameters"><value>No se requieren parámetros para este webhook.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameDuplicate"><value>Los nombres de parámetros deben ser únicos.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameInvalid"><value>Los parámetros deben empezar con una letra y contener solo letras, números, guiones bajos o guiones.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNamePlaceholder"><value>nombreParametro</value></data>
+	<data name="Common.Task.ExternalTrigger.ParametersLabel"><value>Parámetros del webhook</value></data>
+	<data name="Common.Task.ExternalTrigger.SlugLabel"><value>Slug del webhook</value></data>
+	<data name="Common.Task.AfterTaskSummary"><value>Después de: {0}</value></data>
+	<data name="Common.Task.AfterTaskSupport"><value>Se ejecuta cuando la tarea seleccionada termina correctamente</value></data>
+	<data name="Common.Task.RunScope.Label"><value>Alcance de ejecución</value></data>
+	<data name="Common.Task.RunScope.CustomTitle"><value>Configuración personalizada de tarea</value></data>
+	<data name="Common.Task.RunScope.InheritSummary"><value>Esta tarea hereda las herramientas, la memoria, las habilidades y los espacios de trabajo del agente seleccionado.</value></data>
+	<data name="Common.Task.RunScope.CustomSummary"><value>{0} herramientas, {1} espacios de trabajo</value></data>
+	<data name="Common.Task.RunScope.UseAgentSettingsButton"><value>Usar configuración del agente</value></data>
+	<data name="Common.Task.RunScope.DialogTitle"><value>Alcance de ejecución de tarea</value></data>
+	<data name="Common.Task.RunScope.DialogDescription"><value>La configuración personalizada de ejecución reemplaza la configuración del agente seleccionado solo para esta tarea.</value></data>
+	<data name="Common.Task.EvaluatedInTimeZone"><value>Evaluado en {0}</value></data>
+	<data name="Common.Task.NextRun"><value>Próxima ejecución {0}</value></data>
+	<data name="Common.Task.ShowInstructions"><value>Mostrar instrucciones</value></data>
+	<data name="Common.Task.EveryHoursMinutes"><value>Cada {0}h {1}m</value></data>
+	<data name="Common.Task.EveryMinutes"><value>Cada {0}m</value></data>
+	<data name="Common.Task.FinishedAt"><value>Finalizó {0}</value></data>
+	<data name="Common.Task.InstructionLabel"><value>Instrucción</value></data>
+	<data name="Common.Task.InstructionPlaceholder"><value>¿Qué debe hacer el agente?</value></data>
+	<data name="Common.Task.IntervalInvalid"><value>El intervalo debe ser de al menos 1 minuto.</value></data>
+	<data name="Common.Task.IntervalLabel"><value>Intervalo (minutos)</value></data>
+	<data name="Common.Task.KeepLastRunsLabel"><value>Conservar últimas ejecuciones</value></data>
+	<data name="Common.Task.KeepLastRunsPlaceholder"><value>Conservar todas</value></data>
+	<data name="Common.Task.KeepLastRunsHint"><value>Las ejecuciones antiguas se eliminan cuando termina la siguiente. Déjalo vacío para conservar todas.</value></data>
+	<data name="Common.Task.KeepLastRunsInvalid"><value>Debe ser al menos 1, o quedar vacío para conservar todas las ejecuciones.</value></data>
+	<data name="Common.Task.RunDeleteConfirmTitle"><value>Eliminar ejecución</value></data>
+	<data name="Common.Task.RunDeleteConfirmMessage"><value>¿Eliminar la ejecución iniciada el {0}? También se elimina su transcripción.</value></data>
+	<data name="Common.Task.RunDeletedSuccessfully"><value>Ejecución eliminada.</value></data>
+	<data name="Common.Task.MessagesCount"><value>{0} mensajes</value></data>
+	<data name="Common.Task.ModelProviderLabel"><value>Proveedor de modelo</value></data>
+	<data name="Common.Task.NamePlaceholder"><value>p. ej., Resumen diario</value></data>
+	<data name="Common.Task.NoOtherTasks"><value>No hay otras tareas disponibles para encadenar.</value></data>
+	<data name="Common.Task.OnceAt"><value>Una vez a las {0}</value></data>
+	<data name="Common.Task.OrphanRowHint"><value>El agente asociado ya no existe</value></data>
+	<data name="Common.Task.PausedUntilEnabled"><value>La tarea está en pausa hasta que se habilite de nuevo</value></data>
+	<data name="Common.Task.PredecessorLabel"><value>Ejecutar después de la tarea</value></data>
+	<data name="Common.Task.PredecessorMissing"><value>Tarea eliminada</value></data>
+	<data name="Common.Task.PredecessorRequired"><value>Selecciona la tarea después de la cual debe ejecutarse esta.</value></data>
+	<data name="Common.Task.PredecessorSelf"><value>Una tarea no puede ejecutarse después de sí misma.</value></data>
+	<data name="Common.Task.RunAtLabel"><value>Ejecutar a las</value></data>
+	<data name="Common.Task.RunAtTimeZoneHint"><value>Usa tu zona horaria de usuario actual cuando se guarda y programa esta tarea.</value></data>
+	<data name="Common.Task.RunningNow"><value>Ejecutándose ahora</value></data>
+	<data name="Common.Task.ScheduleAfterTask"><value>Después de otra tarea</value></data>
+	<data name="Common.Task.ScheduleCron"><value>Cron</value></data>
+	<data name="Common.Task.ScheduleExamples"><value>Ejemplos: 30 9 * * 1-5 para días laborables a las 09:30, 0 */6 * * * para cada 6 horas.</value></data>
+	<data name="Common.Task.ScheduleInterval"><value>Intervalo</value></data>
+	<data name="Common.Task.ScheduleOneShot"><value>Una vez</value></data>
+	<data name="Common.Task.ScheduleTimeZoneHint"><value>Se evalúa usando tu zona horaria de usuario actual cuando se guarda esta tarea.</value></data>
+	<data name="Common.Task.ServerLocalTime"><value>hora local del servidor</value></data>
+	<data name="Common.Task.StartedAt"><value>Inició {0}</value></data>
+	<data name="Common.Task.StatusHealthy"><value>Correcta</value></data>
+	<data name="Common.Task.StatusIdle"><value>Inactiva</value></data>
+	<data name="Common.Task.StatusNeedsAttention"><value>Requiere atención</value></data>
+	<data name="Common.Task.StatusOrphan"><value>Huérfana</value></data>
+	<data name="Common.Task.StatusPaused"><value>En pausa</value></data>
+	<data name="Common.Task.StatusPending"><value>Pendiente</value></data>
+	<data name="Common.Task.StatusSkipped"><value>Omitida</value></data>
+	<data name="Common.Task.StatusReady"><value>Lista</value></data>
+	<data name="Common.Task.StatusRunning"><value>En ejecución</value></data>
+	<data name="Common.Task.TokensUsed"><value>{0} tokens</value></data>
+	<data name="Common.Task.UpdatedSuccessfully"><value>Tarea actualizada correctamente.</value></data>
+	<data name="Common.Task.WatchingForNextWindow"><value>Esperando la próxima ventana programada</value></data>
+	<data name="Common.Task.Page.AllStatusesOption"><value>Todos los estados</value></data>
+	<data name="Common.Task.Page.CategoryLabel"><value>Orquestación</value></data>
+	<data name="Common.Task.Page.CompletedMetric"><value>Completadas</value></data>
+	<data name="Common.Task.Page.ConfiguredBadge"><value>Configurado</value></data>
+	<data name="Common.Task.Page.CreateTaskButton"><value>Crear tarea</value></data>
+	<data name="Common.Task.Page.Description"><value>Programa, observa y administra trabajo autónomo de agentes desde una sola pantalla. Selecciona una tarea para inspeccionar su último estado de ejecución y sus ejecuciones recientes.</value></data>
+	<data name="Common.Task.Page.DetailsDialogTitle"><value>Detalles de la tarea</value></data>
+	<data name="Common.Task.Page.DirectoryDescription"><value>Selecciona una tarea para ver detalles y ejecuciones recientes.</value></data>
+	<data name="Common.Task.Page.DirectoryTitle"><value>Directorio de tareas</value></data>
+	<data name="Common.Task.Page.DisabledOption"><value>Deshabilitada</value></data>
+	<data name="Common.Task.Page.EmptyDescription"><value>Crea tu primer flujo autónomo para ver aquí programaciones, ejecuciones e historial en vivo.</value></data>
+	<data name="Common.Task.Page.EmptyTitle"><value>Aún no hay tareas de agente</value></data>
+	<data name="Common.Task.Page.FailedBadge"><value>Error</value></data>
+	<data name="Common.Task.Page.InspectButton"><value>Inspeccionar</value></data>
+	<data name="Common.Task.Page.LatestRunHeader"><value>Última ejecución</value></data>
+	<data name="Common.Task.Page.LiveBadge"><value>En vivo</value></data>
+	<data name="Common.Task.Page.NeverBadge"><value>Nunca</value></data>
+	<data name="Common.Task.Page.NeverRunOption"><value>Nunca ejecutada</value></data>
+	<data name="Common.Task.Page.NewTaskButton"><value>Nueva tarea</value></data>
+	<data name="Common.Task.Page.NoExecutionYet"><value>Aún sin ejecución</value></data>
+	<data name="Common.Task.Page.NoRunsYet"><value>Aún no hay ejecuciones registradas para esta tarea.</value></data>
+	<data name="Common.Task.Page.OpenBadge"><value>Abierta</value></data>
+	<data name="Common.Task.Page.RecentExecutionsDescription"><value>Últimas ejecuciones de esta tarea, incluida la ejecución en vivo actual si existe.</value></data>
+	<data name="Common.Task.Page.RecentExecutionsTitle"><value>Ejecuciones recientes</value></data>
+	<data name="Common.Task.Page.RunNowButton"><value>Ejecutar ahora</value></data>
+	<data name="Common.Task.Page.RunsButton"><value>Ejecuciones</value></data>
+	<data name="Common.Task.Page.ScheduleHeader"><value>Programación</value></data>
+	<data name="Common.Task.Page.SearchPlaceholder"><value>Buscar tareas o agentes</value></data>
+	<data name="Common.Task.Page.SelectTaskDescription"><value>Elige una tarea de la lista para mantener visible su resumen de ejecución, último estado y ejecuciones recientes.</value></data>
+	<data name="Common.Task.Page.SelectTaskTitle"><value>Selecciona una tarea</value></data>
+	<data name="Common.Task.Page.StateHeader"><value>Estado</value></data>
+	<data name="Common.Task.Page.TaskHeader"><value>Tarea</value></data>
+	<data name="Common.Task.Page.Title"><value>Operaciones de agentes</value></data>
+	<data name="Common.Task.Page.TotalTasksMetric"><value>Total de tareas</value></data>
+	<data name="Common.Task.Page.ViewAllButton"><value>Ver todo</value></data>
+	<data name="Common.Task.Page.ViewRunsButton"><value>Ver ejecuciones</value></data>
+	<data name="Admin.Title"><value>Administración</value></data>
+	<data name="Admin.Description"><value>Crea usuarios y mantén el acceso seguro.</value></data>
+	<data name="Admin.AuthMode.Label"><value>Modo de autenticación</value></data>
+	<data name="Admin.AuthMode.Description"><value>Cambia entre el inicio de sesión estándar con contraseña y el flujo Home simplificado de selección de perfil.</value></data>
+	<data name="Admin.AuthMode.StandardLabel"><value>Estándar</value></data>
+	<data name="Admin.AuthMode.StandardDescription"><value>Usa la pantalla existente de inicio de sesión con usuario y contraseña.</value></data>
+	<data name="Admin.AuthMode.HomeLabel"><value>Home</value></data>
+	<data name="Admin.AuthMode.HomeDescription"><value>Muestra un selector de perfil y luego inicia sesión con un PIN.</value></data>
+	<data name="Admin.AuthMode.PinRequirementTitle"><value>Requisito de PIN</value></data>
+	<data name="Admin.AuthMode.PinRequirementDescription"><value>Los perfiles necesitan un PIN antes de poder iniciar sesión en el modo Home.</value></data>
+	<data name="Admin.AuthMode.HomeRequiresPin"><value>Se requiere al menos un PIN del operador antes de habilitar el modo Home.</value></data>
+	<data name="Admin.AuthMode.PasswordFallbackHint"><value>El inicio de sesión con contraseña sigue disponible desde la pantalla de inicio de sesión.</value></data>
+	<data name="Admin.AuthMode.SaveButton"><value>Guardar configuración de autenticación</value></data>
+	<data name="Admin.AuthSettings.Saved"><value>Configuración de autenticación guardada.</value></data>
+	<data name="Admin.User.CreateTitle"><value>Crear usuario</value></data>
+	<data name="Admin.User.CreateDescription"><value>Define el nombre de usuario, correo y contraseña para el nuevo usuario.</value></data>
+	<data name="Admin.User.CreateButton"><value>Crear usuario</value></data>
+	<data name="Admin.User.DirectoryTitle"><value>Directorio de usuarios</value></data>
+	<data name="Admin.User.FullNamePlaceholder"><value>María García</value></data>
+	<data name="Admin.User.UsernamePlaceholder"><value>mariagarcia</value></data>
+	<data name="Admin.User.EmailPlaceholder"><value>maria@example.com</value></data>
+	<data name="Admin.User.YouBadge"><value>Tú</value></data>
+	<data name="Admin.User.EditTitleAttribute"><value>Editar usuario</value></data>
+	<data name="Admin.User.DeleteTitleAttribute"><value>Eliminar usuario</value></data>
+	<data name="Admin.User.ProfileTitle"><value>Perfil</value></data>
+	<data name="Admin.User.SaveProfileButton"><value>Guardar perfil</value></data>
+	<data name="Admin.User.SaveRolesButton"><value>Guardar roles</value></data>
+	<data name="Admin.User.PasswordResetTitle"><value>Restablecer contraseña</value></data>
+	<data name="Admin.User.ResetPasswordButton"><value>Restablecer contraseña</value></data>
+	<data name="Admin.User.ResetPasswordCurrentUserHint"><value>Usa el diálogo de perfil para cambiar tu propia contraseña.</value></data>
+	<data name="Admin.User.PinLoginTitle"><value>Inicio de sesión con PIN</value></data>
+	<data name="Admin.User.PinHeader"><value>PIN</value></data>
+	<data name="Admin.User.PinNewLabel"><value>Nuevo PIN</value></data>
+	<data name="Admin.User.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Admin.User.PinConfirmLabel"><value>Confirmar PIN</value></data>
+	<data name="Admin.User.PinRepeatPlaceholder"><value>Repetir PIN</value></data>
+	<data name="Admin.User.PinChangeButton"><value>Cambiar PIN</value></data>
+	<data name="Admin.User.PinSetButton"><value>Establecer PIN</value></data>
+	<data name="Admin.User.PinClearButton"><value>Limpiar PIN</value></data>
+	<data name="Admin.User.PinHashesHint"><value>Los PIN de acceso normales se almacenan como hashes.</value></data>
+	<data name="Admin.User.CannotDeleteOwnAccount"><value>No puedes eliminar tu propia cuenta.</value></data>
+	<data name="Admin.User.DeleteConfirmTitle"><value>Confirmar eliminación</value></data>
+	<data name="Admin.User.DeleteConfirmMessage"><value>¿Seguro que quieres eliminar el usuario '{0}'? Esta acción no se puede deshacer.</value></data>
+	<data name="Admin.GitHubSkills.ManageButton"><value>Administrar token de GitHub</value></data>
+	<data name="Admin.OAuth.ManageButton"><value>Administrar proveedores</value></data>
+	<data name="Admin.OAuth.Title"><value>Proveedores OAuth</value></data>
+	<data name="Admin.OAuth.Description"><value>Configura las apps OAuth compartidas de Google y Microsoft usadas para cuentas conectadas e integraciones futuras.</value></data>
+	<data name="Admin.OAuth.SecretHint"><value>Deja el secreto en blanco para conservar el secreto almacenado actual. Limpia el ID de cliente para deshabilitar un proveedor.</value></data>
+	<data name="Admin.OAuth.LoadingProviders"><value>Cargando configuración de proveedores...</value></data>
+	<data name="Admin.OAuth.GoogleDescription"><value>Gmail, Calendar, YouTube</value></data>
+	<data name="Admin.OAuth.MicrosoftDescription"><value>Outlook, To-Do, integraciones de Graph</value></data>
+	<data name="Admin.OAuth.ConfiguredStatus"><value>Configurado</value></data>
+	<data name="Admin.OAuth.ClientIdLabel"><value>ID de cliente</value></data>
+	<data name="Admin.OAuth.ClientIdPlaceholder"><value>ID de cliente de {0}</value></data>
+	<data name="Admin.OAuth.ClientSecretLabel"><value>Secreto de cliente</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderExists"><value>Déjalo en blanco para conservar el secreto actual</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderNew"><value>Pega el secreto de cliente</value></data>
+	<data name="Admin.OAuth.SecretExists"><value>Ya hay un secreto almacenado.</value></data>
+	<data name="Admin.OAuth.SecretNotStored"><value>Aún no hay ningún secreto almacenado.</value></data>
+	<data name="Admin.OAuth.SaveButton"><value>Guardar {0}</value></data>
+	<data name="Admin.OAuth.ConfigurationSaved"><value>Configuración de {0} guardada.</value></data>
+	<data name="Common.Back"><value>Volver</value></data>
+	<data name="Common.Forward"><value>Adelante</value></data>
+	<data name="Common.Completed"><value>Completado</value></data>
+	<data name="Common.No"><value>No</value></data>
+	<data name="Common.Ok"><value>Aceptar</value></data>
+	<data name="Common.Parameter"><value>Parametro</value></data>
+	<data name="Common.ProfilePicture"><value>Foto de perfil</value></data>
+	<data name="Common.ProfilePicture.AgentMissing"><value>Guarda el agente antes de cambiar su foto.</value></data>
+	<data name="Common.ProfilePictureChange"><value>Cambiar foto de perfil</value></data>
+	<data name="Common.ProfilePicture.ChooseFromGallery"><value>Imagenes incluidas</value></data>
+	<data name="Common.ProfilePicture.Current"><value>Actual</value></data>
+	<data name="Common.ProfilePicture.GalleryDescription"><value>Elige una foto de perfil incluida o sube la tuya.</value></data>
+	<data name="Common.ProfilePicture.GalleryEmpty"><value>No hay imagenes incluidas disponibles en este momento.</value></data>
+	<data name="Common.ProfilePicture.GalleryLoadFailed"><value>No se pudo cargar la galeria de imagenes.</value></data>
+	<data name="Common.ProfilePicture.GalleryTitle"><value>Elige una imagen</value></data>
+	<data name="Common.ProfilePictureRequirements"><value>PNG, JPEG o WebP. Maximo 2 MB.</value></data>
+	<data name="Common.ProfilePicture.SeedOptionLabel"><value>Imagen incluida {0}</value></data>
+	<data name="Common.ProfilePicture.Selected"><value>Seleccionada</value></data>
+	<data name="Common.ProfilePicture.UnsupportedType"><value>El archivo debe ser una imagen PNG, JPEG o WebP.</value></data>
+	<data name="Common.ProfilePicture.UploadOwn"><value>Subir la tuya</value></data>
+	<data name="Common.ProfilePicture.UseSelected"><value>Usar esta imagen</value></data>
+	<data name="Common.Wallpaper"><value>Fondo de pantalla</value></data>
+	<data name="Common.Wallpaper.Change"><value>Cambiar fondo de pantalla</value></data>
+	<data name="Common.Wallpaper.ChooseFromGallery"><value>Fondos incluidos</value></data>
+	<data name="Common.Wallpaper.Current"><value>Actual</value></data>
+	<data name="Common.Wallpaper.Effects"><value>Fondo de pantalla y efectos de cristal</value></data>
+	<data name="Common.Wallpaper.EffectsDescription"><value>Desactívalo para quitar el fondo y usar superficies sólidas sin transparencia.</value></data>
+	<data name="Common.Wallpaper.GalleryDescription"><value>Elige un fondo incluido o sube el tuyo.</value></data>
+	<data name="Common.Wallpaper.GalleryEmpty"><value>No hay fondos incluidos disponibles en este momento.</value></data>
+	<data name="Common.Wallpaper.GalleryLoadFailed"><value>No se pudo cargar la galería de fondos.</value></data>
+	<data name="Common.Wallpaper.GalleryTitle"><value>Elige un fondo de pantalla</value></data>
+	<data name="Common.Wallpaper.Requirements"><value>PNG, JPEG o WebP. Máximo 10 MB. Se recomienda 1920 × 1080.</value></data>
+	<data name="Common.Wallpaper.SeedOptionLabel"><value>Fondo incluido {0}</value></data>
+	<data name="Common.Wallpaper.Selected"><value>Seleccionado</value></data>
+	<data name="Common.Wallpaper.UnsupportedType"><value>El archivo debe ser una imagen PNG, JPEG o WebP.</value></data>
+	<data name="Common.Wallpaper.UploadOwn"><value>Subir el tuyo</value></data>
+	<data name="Common.Wallpaper.UseSelected"><value>Usar este fondo</value></data>
+	<data name="Common.Required"><value>Obligatorio</value></data>
+	<data name="Common.Started"><value>Iniciado</value></data>
+	<data name="Common.Status"><value>Estado</value></data>
+	<data name="Common.Summary"><value>Resumen</value></data>
+	<data name="Common.Value"><value>Valor</value></data>
+	<data name="Common.Yes"><value>Si</value></data>
+	<data name="Common.Download.Complete"><value>Descarga completada.</value></data>
+	<data name="Common.Download.Failed"><value>Error en la descarga.</value></data>
+	<data name="Common.Download.DownloadingModel"><value>Descargando modelo</value></data>
+	<data name="Common.Download.UrlInvalid"><value>La URL de descarga debe ser una direccion http o https valida.</value></data>
+	<data name="Common.ErrorPage.Title"><value>Error</value></data>
+	<data name="Common.ErrorPage.Heading"><value>Error.</value></data>
+	<data name="Common.ErrorPage.Message"><value>Ocurrio un error al procesar la solicitud.</value></data>
+	<data name="Common.ErrorPage.RequestId"><value>ID de solicitud:</value></data>
+	<data name="Common.ErrorPage.DevelopmentMode"><value>Modo de desarrollo</value></data>
+	<data name="Common.ErrorPage.DevelopmentModeDetails"><value>Cambiar al entorno Development mostrara informacion mas detallada sobre el error ocurrido.</value></data>
+	<data name="Common.ErrorPage.DevelopmentWarning"><value>El entorno Development no debe habilitarse en aplicaciones implementadas. Puede mostrar informacion confidencial de excepciones a los usuarios finales. Para depuracion local, habilita el entorno Development estableciendo la variable de entorno ASPNETCORE_ENVIRONMENT en Development y reinicia la app.</value></data>
+	<data name="Common.Route.NotAuthorized"><value>No tienes autorizacion para ver esta pagina.</value></data>
+	<data name="Common.Route.NotFound"><value>Lo sentimos, no se encontro la pagina solicitada.</value></data>
+	<data name="Common.Validation.AllowedRange"><value>Rango permitido: {0} - {1}</value></data>
+	<data name="Common.Validation.EnterValidNumber"><value>Escribe un numero valido.</value></data>
+	<data name="Common.Validation.EnterWholeNumber"><value>Escribe un numero entero.</value></data>
+	<data name="Common.Validation.MaximumLength"><value>La longitud maxima es {0}.</value></data>
+	<data name="Common.Validation.MaximumValue"><value>Valor maximo: {0}</value></data>
+	<data name="Common.Validation.MinimumLength"><value>La longitud minima es {0}.</value></data>
+	<data name="Common.Validation.MinimumValue"><value>Valor minimo: {0}</value></data>
+	<data name="Common.Validation.SelectOption"><value>Selecciona una opcion</value></data>
+	<data name="Common.Validation.SelectValidOption"><value>Selecciona una opcion valida.</value></data>
+	<data name="Common.Validation.Submit"><value>Enviar</value></data>
+	<data name="Common.Validation.ThisFieldRequired"><value>Este campo es obligatorio.</value></data>
+	<data name="Common.Task.RunsTitle"><value>Ejecuciones - {0}</value></data>
+	<data name="Admin.User.DeleteTitle"><value>Eliminar usuario</value></data>
+	<data name="Dialog.ConfirmNewPasswordLabel"><value>Confirmar nueva contrasena</value></data>
+	<data name="Dialog.ContentTypeException"><value>Excepcion</value></data>
+	<data name="Dialog.CurrentPasswordLabel"><value>Contrasena actual</value></data>
+	<data name="Dialog.JsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorEgressTab"><value>Egreso</value></data>
+	<data name="Dialog.NewPasswordLabel"><value>Nueva contrasena</value></data>
+	<data name="Dialog.PasswordLeaveBlankHelper"><value>Dejalo en blanco para conservar tu contrasena actual.</value></data>
+	<data name="Dialog.ReasoningTitle"><value>Razonamiento</value></data>
+	<data name="Dialog.VisualTab"><value>Visual</value></data>
+	<data name="Common.Task.ScheduleKindLabel"><value>Tipo de programacion</value></data>
+  <data name="Common.SignOut"><value>Cerrar sesión</value></data>
+  <data name="Common.Unlock"><value>Desbloquear</value></data>
+  <data name="Dialog.VaultPassword.Title"><value>Contraseña de la bóveda</value></data>
+  <data name="Dialog.VaultPassword.Description"><value>Cambia la contraseña que desbloquea tus credenciales guardadas y datos protegidos.</value></data>
+  <data name="Dialog.VaultPassword.Current"><value>Contraseña actual de la bóveda</value></data>
+  <data name="Dialog.VaultPassword.New"><value>Nueva contraseña de la bóveda</value></data>
+  <data name="Dialog.VaultPassword.Confirm"><value>Confirmar contraseña de la bóveda</value></data>
+  <data name="Dialog.VaultPassword.RecoveryWarning"><value>Guarda esta contraseña en un lugar seguro. Oscova no puede recuperarla ni abrir los datos protegidos sin ella.</value></data>
+  <data name="Dialog.VaultPassword.ChangeButton"><value>Cambiar contraseña</value></data>
+  <data name="Dialog.VaultPassword.ChangeSuccess"><value>Tu contraseña de la bóveda se cambió.</value></data>
+  <data name="Dialog.VaultPassword.LengthError"><value>La contraseña de la bóveda debe tener entre 12 y 256 caracteres.</value></data>
+  <data name="Dialog.VaultPassword.ManageButton"><value>Cambiar contraseña de la bóveda</value></data>
+  <data name="Dialog.VaultPassword.ConfirmationError"><value>La confirmación de la contraseña de la bóveda no coincide.</value></data>
+  <data name="Dialog.VaultPassword.SetupTitle"><value>Crea tu contraseña de la bóveda</value></data>
+  <data name="Dialog.VaultPassword.SetupDescription"><value>Solo tú conoces esta contraseña.</value></data>
+  <data name="Dialog.VaultPassword.SetupEncrypts"><value>Cifra tus chats, memoria, configuración y claves guardadas en este equipo.</value></data>
+  <data name="Dialog.VaultPassword.SetupSeparate"><value>Es distinta de tu contraseña de inicio de sesión.</value></data>
+  <data name="Dialog.VaultPassword.CreateButton"><value>Crear bóveda</value></data>
+  <data name="Dialog.VaultPassword.UnlockTitle"><value>Desbloquea tu bóveda</value></data>
+  <data name="Dialog.VaultPassword.UnlockDescription"><value>Introduce tu contraseña de la bóveda para desbloquear credenciales guardadas y datos protegidos.</value></data>
+  <data name="Dialog.VaultPassword.Incorrect"><value>La contraseña de la bóveda es incorrecta.</value></data>
+  <data name="Dialog.VaultPassword.StateLoadFailed"><value>No se pudo cargar el estado de la bóveda.</value></data>
+  <data name="Dialog.DuressCredentials.AccountPassword"><value>Contraseña de la cuenta</value></data>
+  <data name="Dialog.DuressCredentials.AccountPasswordError"><value>La contraseña de tu cuenta es incorrecta.</value></data>
+  <data name="Dialog.DuressCredentials.Agents"><value>Agentes que se eliminarán</value></data>
+  <data name="Dialog.DuressCredentials.Confirmation"><value>Confirmar contraseña de coacción</value></data>
+  <data name="Dialog.DuressCredentials.ConfirmationError"><value>La confirmación de la contraseña de coacción no coincide.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspace"><value>El espacio de trabajo predeterminado siempre se conserva.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspaceError"><value>El espacio de trabajo predeterminado no se puede seleccionar.</value></data>
+  <data name="Dialog.DuressCredentials.DeleteThreads"><value>Eliminar todas las conversaciones</value></data>
+  <data name="Dialog.DuressCredentials.ClearSharedFolder"><value>Vaciar la carpeta compartida para todos los usuarios</value></data>
+  <data name="Dialog.DuressCredentials.Description"><value>Usa una segunda contraseña para iniciar sesión normalmente mientras destruyes de forma permanente los datos privados elegidos.</value></data>
+  <data name="Dialog.DuressCredentials.DifferentError"><value>La contraseña de coacción debe ser diferente de la contraseña de la cuenta.</value></data>
+  <data name="Dialog.DuressCredentials.LengthError"><value>La contraseña de coacción debe tener entre 12 y 256 caracteres.</value></data>
+  <data name="Dialog.DuressCredentials.LoadFailed"><value>No se pudieron cargar las opciones de coacción.</value></data>
+  <data name="Dialog.DuressCredentials.NoTargets"><value>No hay agentes, tareas ni espacios de trabajo disponibles para seleccionar.</value></data>
+  <data name="Dialog.DuressCredentials.OpenButton"><value>Configurar credenciales de coacción</value></data>
+  <data name="Dialog.DuressCredentials.Password"><value>Contraseña de coacción</value></data>
+  <data name="Dialog.DuressCredentials.PriorSelections"><value>Las selecciones guardadas no se pueden mostrar. Este formulario empieza vacío y, al guardarlo, sustituye toda la política.</value></data>
+  <data name="Dialog.DuressCredentials.Save"><value>Guardar credenciales de coacción</value></data>
+  <data name="Dialog.DuressCredentials.SaveSuccess"><value>Se han guardado tus credenciales de coacción.</value></data>
+  <data name="Dialog.DuressCredentials.SelectionTooLarge"><value>La selección es demasiado grande. Elimina algunos elementos e inténtalo de nuevo.</value></data>
+  <data name="Dialog.DuressCredentials.SharedAgentError"><value>No se puede seleccionar un agente compartido.</value></data>
+  <data name="Dialog.DuressCredentials.TargetNameTooLong"><value>Uno de los nombres seleccionados es demasiado largo.</value></data>
+  <data name="Dialog.DuressCredentials.Tasks"><value>Tareas que se eliminarán</value></data>
+  <data name="Dialog.DuressCredentials.Title"><value>Credenciales de coacción</value></data>
+  <data name="Dialog.DuressCredentials.TwoFactorError"><value>No se pueden configurar credenciales de coacción con la autenticación de dos factores activada.</value></data>
+  <data name="Dialog.DuressCredentials.Unavailable"><value>Uno de los elementos seleccionados ya no está disponible. Vuelve a abrir el formulario y elige de nuevo.</value></data>
+  <data name="Dialog.DuressCredentials.Workspaces"><value>Espacios de trabajo que se vaciarán</value></data>
+  <data name="Dialog.DuressCredentials.WorkspaceClearing"><value>Se elimina el contenido del espacio de trabajo, pero el espacio de trabajo permanece.</value></data>
+  <data name="Dialog.Security.Title"><value>Seguridad</value></data>
+  <data name="Dialog.DuressCredentials.Pin"><value>PIN de coacción (opcional)</value></data>
+  <data name="Dialog.DuressCredentials.PinConfirmation"><value>Confirmar PIN de coacción</value></data>
+  <data name="Dialog.DuressCredentials.PinHelp"><value>Ambas credenciales de coacción eliminan permanentemente los mismos datos seleccionados. Guardar reemplaza todas las opciones. Deja ambos campos PIN vacíos para quitar el PIN de coacción. Debes tener un PIN de acceso asignado.</value></data>
+  <data name="Dialog.DuressCredentials.PinError"><value>Introduce PIN iguales de 6–64 dígitos (0–9), o deja ambos vacíos.</value></data>
+  <data name="Dialog.DuressCredentials.PinRequired"><value>Configura un PIN de acceso antes del PIN de coacción.</value></data>
+  <data name="Dialog.DuressCredentials.PinDifferent"><value>Elige un PIN distinto del PIN de acceso.</value></data>
+  <data name="Admin.User.PinNotAllowedError"><value>No se puede usar este PIN. Elige otro.</value></data>
+  <data name="Admin.User.PinLengthError"><value>El PIN debe tener 6–64 dígitos (0–9).</value></data>
+  <data name="Common.Reconnect.Title" xml:space="preserve"><value>Conexión con Oscova</value></data>
+  <data name="Common.Reconnect.Connecting" xml:space="preserve"><value>Reconectando…</value></data>
+  <data name="Common.Reconnect.Countdown" xml:space="preserve"><value>Se intentará de nuevo en {0} segundos.</value></data>
+  <data name="Common.Reconnect.Failed" xml:space="preserve"><value>No se pudo reconectar. Comprueba tu conexión e inténtalo de nuevo.</value></data>
+  <data name="Common.Reconnect.Expired" xml:space="preserve"><value>Tu sesión ha terminado. Recarga para continuar. Es posible que se pierdan los cambios no guardados.</value></data>
+  <data name="Common.Reconnect.Paused" xml:space="preserve"><value>Tu sesión está en pausa. Reanúdala para continuar.</value></data>
+  <data name="Common.Reconnect.Resuming" xml:space="preserve"><value>Reanudando tu sesión…</value></data>
+  <data name="Common.Reconnect.ResumeFailed" xml:space="preserve"><value>No se pudo reanudar tu sesión. Inténtalo de nuevo.</value></data>
+  <data name="Common.Reconnect.Updating" xml:space="preserve"><value>Esta página se recargará cuando Oscova se reinicie. Es posible que tengas que volver a iniciar sesión.</value></data>
+  <data name="Common.Reload" xml:space="preserve"><value>Recargar</value></data>
+  <data name="Common.Resume" xml:space="preserve"><value>Reanudar</value></data>
+	<data name="Common.Task.NotifyOnCompletion"><value>Notificar al completar</value></data>
+	<data name="Common.Task.NotifyOnCompletionHint"><value>Envía un aviso adicional a la bandeja de entrada de la aplicación después de una ejecución correcta. Los fallos siempre aparecen en ella.</value></data>
+<data name="Notifications.Task.SkippedLowBattery" xml:space="preserve"><value>Esta tarea se omitió porque el equipo funciona con batería por debajo del umbral configurado. Ejecútala manualmente cuando quieras.</value></data>
+<data name="Notifications.Task.BatteryInformationUnavailable" xml:space="preserve"><value>La información de la batería o de la conexión eléctrica no está disponible en el equipo que ejecuta Oscova.</value></data>
+<data name="Admin.ExecutionPermissionsTitle" xml:space="preserve"><value>Permisos de ejecución</value></data><data name="Admin.PermissionProjects" xml:space="preserve"><value>Proyectos</value></data><data name="Admin.PermissionWorkspaceShell" xml:space="preserve"><value>Shell del espacio de trabajo</value></data><data name="Admin.PermissionProjectShell" xml:space="preserve"><value>Shell del proyecto</value></data><data name="Admin.ExecutionPermissionsHint" xml:space="preserve"><value>Desactivar un permiso bloquea el trabajo nuevo y solicita cancelar el trabajo afectado en curso.</value></data><data name="Admin.ExecutionPermissionsSaved" xml:space="preserve"><value>Permisos de ejecución guardados.</value></data>  <data name="Common.DialogOperatorVaultTitle" xml:space="preserve">
+    <value>Esperando al operador</value>
+  </data>
+  <data name="Common.DialogOperatorVaultDescription" xml:space="preserve">
+    <value>El operador debe desbloquear su bóveda. Después, selecciona Reintentar para continuar.</value>
+  </data>
+  <data name="Common.AdminPermissionApprovedSkills" xml:space="preserve">
+    <value>Instalar habilidades de repositorios aprobados</value>
+  </data>
+  <data name="Common.AdminPermissionCustomSkills" xml:space="preserve">
+    <value>Subir, crear y editar habilidades personalizadas</value>
+  </data>
+  <data name="Common.AdminPermissionPersonalMcp" xml:space="preserve">
+    <value>Gestionar conexiones MCP personales</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedTitle" xml:space="preserve">
+    <value>Trabajo interrumpido</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedBody" xml:space="preserve">
+    <value>El trabajo afectado se está deteniendo porque cambió su configuración. Revísala antes de iniciar otra ejecución.</value>
+  </data>
+  <data name="Governance.Applying" xml:space="preserve"><value>Deteniendo el trabajo afectado y aplicando los cambios…</value></data>
+  <data name="Governance.SharedProviders" xml:space="preserve"><value>El operador configura los proveedores. Conserva su opción predeterminada o elige otro proveedor disponible.</value></data>
+  <data name="Governance.OperatorDefault" xml:space="preserve"><value>Predeterminado del operador: {0}</value></data>
+  <data name="Governance.ProviderUnavailable" xml:space="preserve"><value>El proveedor seleccionado no está disponible. Elige otro proveedor.</value></data>
+  <data name="Governance.ConfirmInterruption" xml:space="preserve"><value>Este cambio detendrá el trabajo que utiliza este recurso. ¿Aplicarlo ahora?</value></data>
+  <data name="Governance.ChangesSaved" xml:space="preserve"><value>Cambios guardados.</value></data>
+  <data name="Notifications.Providers.AttentionTitle" xml:space="preserve"><value>Elige un proveedor de modelos disponible</value></data>
+  <data name="Notifications.Providers.AttentionBody" xml:space="preserve"><value>Un proveedor de modelos guardado no está disponible. Elige uno disponible en Configuración y revisa los proveedores seleccionados en tus agentes y tareas.</value></data>
+  <data name="Notifications.Plugins.SetupTitle" xml:space="preserve"><value>La configuración del complemento requiere atención</value></data>
+  <data name="Notifications.Plugins.SetupBody" xml:space="preserve"><value>No se pudo preparar {0} en {1}. {2} Usa Reintentar después de corregir la configuración.</value></data>
+  <data name="Notifications.Plugins.DeviceUnavailable" xml:space="preserve"><value>Temporalmente no disponible en {0}. Se ha notificado al operador.</value></data>
+  <data name="Common.AdminPermissionPersonalModels" xml:space="preserve"><value>Gestionar proveedores de modelos personales</value></data>
+  <data name="Common.AdminPermissionSharedFolder" xml:space="preserve"><value>Carpeta compartida</value></data>
+  <data name="ModelBudgetTitle" xml:space="preserve"><value>Presupuesto del modelo</value></data>
+  <data name="ModelBudgetDaily" xml:space="preserve"><value>Límite diario (USD)</value></data>
+  <data name="ModelBudgetMonthly" xml:space="preserve"><value>Límite mensual (USD)</value></data>
+  <data name="ModelBudgetAlerts" xml:space="preserve"><value>Avisarme al alcanzar el 80% de un límite</value></data>
+  <data name="ModelBudgetBlank" xml:space="preserve"><value>Estimaciones en USD. Deje un límite vacío para no limitarlo. Los proveedores compartidos tienen un presupuesto para todos sus usuarios.</value></data>
+  <data name="ModelBudgetIncomplete" xml:space="preserve"><value>Estimación incompleta. No se pudo calcular el precio o leer parte del uso.</value></data>
+  <data name="ModelBudgetLocal" xml:space="preserve"><value>Inferencia local: sin cargo estimado.</value></data>
+  <data name="ModelBudgetOwnerExceeded" xml:space="preserve"><value>Se ha alcanzado el presupuesto de {0}. Puede continuar esta operación de todos modos.</value></data>
+  <data name="ModelBudgetSharedExceeded" xml:space="preserve"><value>Se ha alcanzado el presupuesto de {0}. Contacte con su operador o elija otro proveedor de modelos.</value></data>
+  <data name="ModelBudgetContinue" xml:space="preserve"><value>Continuar de todos modos</value></data>
+  <data name="ModelBudgetTaskSkipped" xml:space="preserve"><value>Se ha alcanzado el presupuesto del modelo. Se omitió este intento. La tarea sigue programada.</value></data>
+  <data name="ModelBudgetSearchPaused" xml:space="preserve"><value>La búsqueda semántica y la indexación están en pausa porque se alcanzó el presupuesto de embeddings. Inténtelo después del restablecimiento o de que el propietario cambie el límite.</value></data>
+  <data name="ModelBudgetThreshold" xml:space="preserve"><value>{0} ha alcanzado al menos el 80% de un límite de gasto. Abra Modelos y proveedores para revisar su presupuesto.</value></data>
+  <data name="ModelBudgetSet" xml:space="preserve"><value>Establecer presupuesto</value></data>
+  <data name="ModelBudgetEdit" xml:space="preserve"><value>Editar presupuesto</value></data>
+  <data name="ModelBudgetDailyUsage" xml:space="preserve"><value>Hoy ${0:0.##} de ${1:0.##}</value></data>
+  <data name="ModelBudgetMonthlyUsage" xml:space="preserve"><value>Mes ${0:0.##} de ${1:0.##}</value></data>
+  <data name="ModelBudgetReset" xml:space="preserve"><value>Presupuesto agotado. Se restablece el {0:g}.</value></data>
+  <data name="ModelBudgetSharedReset" xml:space="preserve"><value>Presupuesto agotado. Se restablece el {0:g}. Elige otro proveedor o contacta con tu operador.</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdle" xml:space="preserve"><value>Esperar mientras uso el proveedor</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdleHint" xml:space="preserve"><value>Los inicios programados esperan a que terminen tus solicitudes activas al proveedor de la tarea. Ejecutar ahora, los webhooks y las tareas encadenadas se inician inmediatamente.</value></data>
+  <data name="Common.Task.InstructionDefaultUnavailable" xml:space="preserve"><value>La instrucción predeterminada de la tarea no está disponible. Activa su complemento y reinicia.</value></data>
+  <data name="Notifications.Channels.SavedNotApplied" xml:space="preserve"><value>La configuración se guardó, pero no se pudo aplicar. La conexión existente sigue activa. Revise la configuración e inténtelo de nuevo.</value></data>
+  <data name="Common.ReleaseNotes" xml:space="preserve"><value>Notas de versión</value></data>
+  <data name="Common.RecordLabel.DeletedAgent" xml:space="preserve"><value>Agente eliminado</value></data>
+  <data name="Common.RecordLabel.DeletedProvider" xml:space="preserve"><value>Proveedor eliminado</value></data>
+  <data name="Common.RecordLabel.DeletedMcpServer" xml:space="preserve"><value>Servidor MCP eliminado</value></data>
+  <data name="Common.RecordLabel.OwnDestination" xml:space="preserve"><value>Destino propio</value></data>
+  <data name="Common.RecordLabel.OtherUsersAgents" xml:space="preserve"><value>Agentes de otros usuarios</value></data>
+  <data name="Common.RecordLabel.UsersOwnProviders" xml:space="preserve"><value>Proveedores propios de usuarios</value></data>
+  <data name="Common.RecordLabel.UsersOwnModels" xml:space="preserve"><value>Modelos propios de usuarios</value></data>
+  <data name="Common.RecordLabel.UsersOwnTools" xml:space="preserve"><value>Herramientas propias de usuarios</value></data>
+  <data name="Dialog.LogsScope.Label" xml:space="preserve"><value>Ámbito de los registros</value></data>
+  <data name="Dialog.LogsFile.Label" xml:space="preserve"><value>Archivo de registro</value></data>
+  <data name="Common.PreviousPage" xml:space="preserve"><value>Página anterior</value></data>
+  <data name="Common.NextPage" xml:space="preserve"><value>Página siguiente</value></data>
+  <data name="Common.TimeRange" xml:space="preserve"><value>Intervalo de tiempo</value></data>
+  <data name="Common.Validation.EnterValidEmail" xml:space="preserve"><value>Introduce una dirección de correo electrónico válida.</value></data>
+	<data name="Common.Task.ApprovalModeLabel"><value>Modo de aprobación</value></data>
+	<data name="Common.Task.ApprovalModeAutoReject"><value>Rechazar automáticamente si requiere aprobación</value></data>
+	<data name="Common.Task.ApprovalModeAutoApprove"><value>Aprobar automáticamente si requiere aprobación</value></data>
+	<data name="Common.Task.ApprovalModeHint"><value>Las tareas en segundo plano no tienen un usuario interactivo. La aprobación de herramientas debe decidirse automáticamente.</value></data>
+  <data name="Common.Task.ExternalTrigger.EndpointLabel" xml:space="preserve"><value>Endpoint del webhook</value></data>
+  <data name="Common.Task.ExternalTrigger.ParameterKindLabel" xml:space="preserve"><value>Tipo de parámetro</value></data>
+</root>

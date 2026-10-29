@@ -1,0 +1,370 @@
+@using Oscova.Agents.Core.ApiContracts.Agents
+@using Oscova.Agents.Definitions
+@using Oscova.Agents.Policies
+@using Oscova.Agents.Tasks
+@using Oscova.Agents.Workspace
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> Loc
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeDialogTitle, "Task Run Scope")"
+                Subtitle="@CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeDialogDescription, "Custom runtime settings replace the selected agent settings for this task only.")"
+                MaxWidthClass="max-w-5xl"
+                BoxContentClass="min-w-0"
+                HelpTopic="@HelpTopics.TaskRunScope"
+                BodyClass="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-5 py-4"
+                FooterClass="modal-action px-5 pb-5 pt-0"
+                CloseResult="@DialogResult.Cancel"
+                OnClose="@Cancel">
+    <ChildContent>
+        <div class="space-y-6">
+            <div class="space-y-1">
+                <SettingsToggleRow @bind-Checked="@_isCompactionEnabled"
+                                   Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableCompactionLabel, "Enable Compaction")"
+                                   Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableCompactionDescription, "Automatically summarize conversation history when the context window limit is reached.")" />
+
+                <SettingsToggleRow @bind-Checked="@_isMemoryEnabled"
+                                   Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableMemoryLabel, "Enable Memory")"
+                                   Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableMemoryDescription, "Load saved memories into context and allow the agent to save and retrieve memory across sessions.")" />
+
+                <SettingsToggleRow @bind-Checked="@_isTodoEnabled"
+                                   Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableTodoLabel, "Enable Task List")"
+                                   Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableTodoDescription, "Let this agent track multi-step work in a session task list. Best for complex, long-running tasks.")" />
+
+                <SettingsToggleRow @bind-Checked="@_isSubagentDelegationEnabled"
+                                   Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsSubagentDelegationLabel, "Use subagents")"
+                                   Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsSubagentDelegationDescription, "Let this agent delegate tasks to separate instances of itself.")" />
+
+                <SettingsToggleRow @bind-Checked="@_isLocalOnly"
+                                   Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsLocalOnlyLabel, "Local only")"
+                                   Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsLocalOnlyDescription, "Block this agent from using cloud model providers and internet tools, even when global Offline mode is off.")" />
+
+                <SettingsToggleRow @bind-Checked="@_isToolSearchEnabled"
+                                   Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsToolSearchToggleLabel, "Tool discovery")"
+                                   Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsToolSearchToggleHelp, "Expose only pinned tools upfront; the agent can search for the rest when needed.")" />
+            </div>
+
+            <div>
+                <h4 class="mb-3 text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.AgentsAllowedToolsTitle, "Allowed Tools")</h4>
+                <SettingsToolsTable ToolGroups="@ToolGroups"
+                                    ShowSelection="true"
+                                    ShowEnabledOnlyFilter="true"
+                                    ShowPolicyControls="true"
+                                    SelectedToolNames="@_allowedToolNames"
+                                    ToolApprovalModes="@_toolApprovalModes"
+                                    ShowPinning="@_isToolSearchEnabled"
+                                    PinnedToolNames="@_pinnedToolNames"
+                                    OnSelectionChanged="@HandleAllowedToolsChanged"
+                                    OnPinnedToolNamesChanged="@HandlePinnedToolNamesChanged"
+                                    OnToolApprovalModeChanged="@HandleToolApprovalModeChanged"
+                                    IsEgressDisabled="@_isLocalOnly"
+                                    HeightClass="h-[22rem]" />
+            </div>
+
+            <div>
+                <h4 class="mb-3 text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.AgentsAgentToolsTitle, "Agent Tools")</h4>
+                @if (VisibleExposableAgents.Count == 0)
+                {
+                    <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoAgentToolsAvailableMessage, "No agents are available as tools. Enable \"Expose as Tool\" on a custom agent to use it here.")</div>
+                }
+                else
+                {
+                    <div class="space-y-1">
+                        @foreach (var exposableAgent in VisibleExposableAgents)
+                        {
+                            <label class="flex cursor-pointer select-none items-start gap-3 py-1.5" @key="exposableAgent.Id">
+                                <input type="checkbox"
+                                       class="checkbox checkbox-sm mt-0.5 shrink-0"
+                                       checked="@_agentToolIds.Contains(exposableAgent.Id)"
+                                       @onchange="e => OnAgentToolChanged(exposableAgent.Id, e.Value is bool b && b)" />
+                                <div class="flex min-w-0 flex-col gap-0.5">
+                                    <span class="text-sm font-medium">@exposableAgent.Name</span>
+                                    @if (!string.IsNullOrWhiteSpace(exposableAgent.Description))
+                                    {
+                                        <span class="text-xs leading-snug opacity-60">@exposableAgent.Description</span>
+                                    }
+                                </div>
+                            </label>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div>
+                <h4 class="mb-3 text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.AgentsSkillsTitle, "Skills")</h4>
+                @if (AvailableSkills.Count == 0)
+                {
+                    <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoSkillsFoundMessage, "No skills found. Add skills in Settings -> Files -> skills folder.")</div>
+                }
+                else
+                {
+                    <div class="space-y-1">
+                        @foreach (var skill in AvailableSkills)
+                        {
+                            <label class="flex cursor-pointer select-none items-start gap-3 py-1.5" @key="skill.Name">
+                                <input type="checkbox"
+                                       class="checkbox checkbox-sm mt-0.5 shrink-0"
+                                       checked="@_allowedSkillNames.Contains(skill.Name)"
+                                       @onchange="e => OnSkillChanged(skill.Name, e.Value is bool b && b)" />
+                                <div class="flex min-w-0 flex-col gap-0.5">
+                                    <span class="text-sm font-medium">@skill.Name</span>
+                                    @if (!string.IsNullOrWhiteSpace(skill.Description))
+                                    {
+                                        <span class="text-xs leading-snug opacity-60">@skill.Description</span>
+                                    }
+                                </div>
+                            </label>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div>
+                <h4 class="mb-3 text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.AgentsWorkspaceFoldersTitle, "Workspace Folders")</h4>
+                @if (DisplayWorkspaces.Count == 0)
+                {
+                    <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoWorkspacesMessage, "No workspace folders found yet. The default workspace is created automatically per user.")</div>
+                }
+                else
+                {
+                    <div class="space-y-1">
+                        @foreach (var workspaceName in DisplayWorkspaces)
+                        {
+                            <label class="flex cursor-pointer select-none items-start gap-3 py-1.5" @key="workspaceName">
+                                <input type="checkbox"
+                                       class="checkbox checkbox-sm mt-0.5 shrink-0"
+                                       checked="@_allowedWorkspaces.Contains(workspaceName)"
+                                       @onchange="e => OnWorkspaceChanged(workspaceName, e.Value is bool b && b)" />
+                                <div class="flex min-w-0 flex-col gap-0.5">
+                                    <span class="text-sm font-medium">@workspaceName</span>
+                                </div>
+                            </label>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary" @onclick="Save">
+    @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    [Parameter, EditorRequired] public AgentDefinition SelectedAgent { get; set; } = default!;
+    [Parameter] public TaskRunScope? InitialScope { get; set; }
+    [Parameter] public IReadOnlyList<ToolGroup> ToolGroups { get; set; } = [];
+    [Parameter] public IReadOnlyList<AgentReference> ExposableAgents { get; set; } = [];
+    [Parameter] public IReadOnlyList<SkillDefinition> AvailableSkills { get; set; } = [];
+    [Parameter] public IReadOnlyList<string> AvailableWorkspaces { get; set; } = [];
+
+    private bool _isToolSearchEnabled;
+    private bool _isCompactionEnabled;
+    private bool _isMemoryEnabled;
+    private bool _isTodoEnabled;
+    private bool _isSubagentDelegationEnabled;
+    private bool _isLocalOnly;
+    private HashSet<string> _allowedToolNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _pinnedToolNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _agentToolIds = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _allowedSkillNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _allowedWorkspaces = new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, ToolApprovalMode> _toolApprovalModes = new(StringComparer.OrdinalIgnoreCase);
+
+    private IReadOnlyList<AgentReference> VisibleExposableAgents =>
+        [.. ExposableAgents.Where(agent => !string.Equals(agent.Id, SelectedAgent.Id, StringComparison.OrdinalIgnoreCase))];
+
+    private IReadOnlyList<string> DisplayWorkspaces =>
+    [
+        UserFileNames.DefaultWorkspaceDirectory,
+        .. AvailableWorkspaces
+            .Where(workspace => !IsDefaultWorkspace(workspace) && !IsAgentPrivateWorkspace(workspace))
+            .OrderBy(workspace => workspace, StringComparer.OrdinalIgnoreCase)
+    ];
+
+
+
+
+
+    protected override void OnInitialized()
+    {
+        HydrateDialogParameters();
+        LoadDrafts();
+    }
+
+    private void HydrateDialogParameters()
+    {
+        if (DialogInstance.TryGet<AgentDefinition>(nameof(SelectedAgent), out var selectedAgent) && selectedAgent is not null)
+        {
+            SelectedAgent = selectedAgent;
+        }
+
+        if (InitialScope is null &&
+            DialogInstance.TryGet<TaskRunScope>(nameof(InitialScope), out var initialScope))
+        {
+            InitialScope = initialScope;
+        }
+
+        if (ToolGroups.Count == 0 &&
+            DialogInstance.TryGet<List<ToolGroup>>(nameof(ToolGroups), out var toolGroups) &&
+            toolGroups is not null)
+        {
+            ToolGroups = toolGroups;
+        }
+
+        if (ExposableAgents.Count == 0 &&
+            DialogInstance.TryGet<List<AgentReference>>(nameof(ExposableAgents), out var exposableAgents) &&
+            exposableAgents is not null)
+        {
+            ExposableAgents = exposableAgents;
+        }
+
+        if (AvailableSkills.Count == 0 &&
+            DialogInstance.TryGet<List<SkillDefinition>>(nameof(AvailableSkills), out var availableSkills) &&
+            availableSkills is not null)
+        {
+            AvailableSkills = availableSkills;
+        }
+
+        if (AvailableWorkspaces.Count == 0 &&
+            DialogInstance.TryGet<List<string>>(nameof(AvailableWorkspaces), out var availableWorkspaces) &&
+            availableWorkspaces is not null)
+        {
+            AvailableWorkspaces = availableWorkspaces;
+        }
+    }
+
+    private void LoadDrafts()
+    {
+        var source = InitialScope;
+        _isToolSearchEnabled = source?.IsToolSearchEnabled ?? SelectedAgent.IsToolSearchEnabled;
+        _isCompactionEnabled = source?.IsCompactionEnabled ?? SelectedAgent.IsCompactionEnabled;
+        _isMemoryEnabled = source?.IsMemoryEnabled ?? SelectedAgent.IsMemoryEnabled;
+        _isTodoEnabled = source?.IsTodoEnabled ?? SelectedAgent.IsTodoEnabled;
+        _isSubagentDelegationEnabled = source?.IsSubagentDelegationEnabled ?? SelectedAgent.IsSubagentDelegationEnabled;
+        _isLocalOnly = source?.IsLocalOnly ?? SelectedAgent.IsLocalOnly;
+        _allowedToolNames = new HashSet<string>(
+            (source?.AllowedToolNames ?? SelectedAgent.AllowedToolNames)
+                .Where(toolName => !TaskRunScope.IsManagedToolName(toolName)),
+            StringComparer.OrdinalIgnoreCase);
+        _pinnedToolNames = new HashSet<string>(
+            (source?.PinnedToolNames ?? SelectedAgent.PinnedToolNames).Where(name => _allowedToolNames.Contains(name)),
+            StringComparer.OrdinalIgnoreCase);
+        _agentToolIds = new HashSet<string>(source?.AgentToolIds ?? SelectedAgent.AgentToolIds, StringComparer.OrdinalIgnoreCase);
+        _allowedSkillNames = new HashSet<string>(source?.AllowedSkillNames ?? SelectedAgent.AllowedSkillNames, StringComparer.OrdinalIgnoreCase);
+        _allowedWorkspaces = new HashSet<string>(
+            (source?.AllowedWorkspaces ?? SelectedAgent.AllowedWorkspaces).Where(workspace => !IsAgentPrivateWorkspace(workspace)),
+            StringComparer.OrdinalIgnoreCase);
+        _toolApprovalModes = (source?.ToolPolicies ?? SelectedAgent.ToolPolicies)
+            .Where(policy => !string.IsNullOrWhiteSpace(policy.ToolName))
+            .Where(policy => !TaskRunScope.IsManagedToolName(policy.ToolName))
+            .Where(policy => _allowedToolNames.Contains(policy.ToolName))
+            .ToDictionary(policy => policy.ToolName, policy => policy.ApprovalMode, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+
+    private void Save()
+    {
+        DialogInstance.Close(DialogResult.Ok, new TaskRunScope
+        {
+            AllowedToolNames = _allowedToolNames.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList(),
+            ToolPolicies = BuildToolPolicies(),
+            IsToolSearchEnabled = _isToolSearchEnabled,
+            PinnedToolNames = [.. _pinnedToolNames.Where(name => _allowedToolNames.Contains(name)).OrderBy(name => name, StringComparer.OrdinalIgnoreCase)],
+            IsCompactionEnabled = _isCompactionEnabled,
+            IsMemoryEnabled = _isMemoryEnabled,
+            IsTodoEnabled = _isTodoEnabled,
+            IsSubagentDelegationEnabled = _isSubagentDelegationEnabled,
+            IsLocalOnly = _isLocalOnly,
+            AgentToolIds = _agentToolIds.OrderBy(id => id, StringComparer.OrdinalIgnoreCase).ToList(),
+            AllowedSkillNames = _allowedSkillNames.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList(),
+            AllowedWorkspaces = _allowedWorkspaces.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList()
+        });
+    }
+
+    private List<AgentToolPolicy> BuildToolPolicies()
+    {
+        return [.. _toolApprovalModes
+            .Where(pair => _allowedToolNames.Contains(pair.Key) && pair.Value != ToolApprovalMode.Default)
+            .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(pair => new AgentToolPolicy { ToolName = pair.Key, ApprovalMode = pair.Value })];
+    }
+
+
+
+    private Task HandleAllowedToolsChanged()
+    {
+        _pinnedToolNames.RemoveWhere(name => !_allowedToolNames.Contains(name));
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandlePinnedToolNamesChanged()
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleToolApprovalModeChanged((string ToolName, ToolApprovalMode Mode) change)
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void OnAgentToolChanged(string agentId, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _agentToolIds.Add(agentId);
+        }
+        else
+        {
+            _agentToolIds.Remove(agentId);
+        }
+    }
+
+    private void OnSkillChanged(string skillName, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _allowedSkillNames.Add(skillName);
+        }
+        else
+        {
+            _allowedSkillNames.Remove(skillName);
+        }
+    }
+
+    private void OnWorkspaceChanged(string workspaceName, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _allowedWorkspaces.Add(workspaceName);
+        }
+        else
+        {
+            _allowedWorkspaces.Remove(workspaceName);
+        }
+    }
+
+
+
+
+
+    private static bool IsDefaultWorkspace(string workspaceName)
+    {
+        return string.Equals(workspaceName, UserFileNames.DefaultWorkspaceDirectory, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsAgentPrivateWorkspace(string workspaceName)
+    {
+        return string.Equals(workspaceName, UserFileNames.AgentPrivateDirectory, StringComparison.OrdinalIgnoreCase);
+    }
+}

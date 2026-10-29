@@ -1,0 +1,17 @@
+@* Shows one read-only assistant table with scrolling confined to the dialog. *@
+@inject IStringLocalizer<ChatText> Loc
+
+<AppDialogShell Title="@Loc.GetOrDefault(ChatTextKeys.ExpandedTable, "Table")"
+                HelpTopic="@HelpTopics.ChatTable"
+                MaxWidthClass="custom-chat-table-width"
+                BoxContentClass="custom-chat-table-dialog"
+                BodyClass="custom-chat-table-body markdown-content">
+    @* The originating chat also owns links displayed outside its panel. *@
+    <div data-browser-chat="@ChatId">@((MarkupString)Html)</div>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    private string Html => DialogInstance.Get<string>(nameof(Html), string.Empty);
+    private string? ChatId => DialogInstance.Get<string?>(nameof(ChatId), null);
+}

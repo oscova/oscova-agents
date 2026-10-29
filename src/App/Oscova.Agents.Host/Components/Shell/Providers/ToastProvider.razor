@@ -1,0 +1,107 @@
+@using Oscova.Agents.Host.Services.UI
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+@implements IDisposable
+
+<div class="toast @VerticalPosition.ToCssClass() @HorizontalPosition.ToCssClass()"
+     role="status"
+     aria-atomic="false"
+     style="z-index:1000;">
+    @foreach (var (toastId, args) in Children)
+    {
+        @BuildToastElement(toastId, args)
+    }
+</div>
+
+@code {
+    private Dictionary<Guid, ToastEventArgs> Children { get; } = [];
+    private readonly Lock _childrenLock = new();
+    private EventHandler<ToastEventArgs>? _toastShowingHandler;
+    private Timer? _timer;
+
+    [Parameter]
+    public ToastHorizontalPosition HorizontalPosition { get; set; } = ToastHorizontalPosition.Center;
+
+    [Parameter]
+    public ToastVerticalPosition VerticalPosition { get; set; } = ToastVerticalPosition.Top;
+
+    protected override void OnInitialized()
+    {
+        _toastShowingHandler = (sender, args) =>
+        {
+            var toastId = Guid.NewGuid();
+            lock (_childrenLock)
+            {
+                Children.Add(toastId, args);
+            }
+            _ = InvokeAsync(StateHasChanged);
+        };
+        ToastService.ToastShowing += _toastShowingHandler;
+
+        _timer = new Timer(CheckExpiredToasts, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private RenderFragment BuildToastElement(Guid toastId, ToastEventArgs args) => builder =>
+    {
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", $"alert alert-soft shadow-lg max-w-md {args.Type.ToCssClass()}");
+
+        builder.AddMarkupContent(2, args.Type.ToSvg());
+
+        builder.OpenElement(3, "span");
+        builder.AddAttribute(4, "class", "wrap-anywhere");
+        builder.AddContent(5, args.Message);
+        builder.CloseElement();
+
+        builder.OpenElement(6, "button");
+        builder.AddAttribute(7, "type", "button");
+        builder.AddAttribute(8, "class", "btn btn-ghost btn-xs btn-circle");
+        builder.AddAttribute(9, "style", "color: inherit;");
+        builder.AddAttribute(10, "aria-label", CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close"));
+        builder.AddAttribute(11, "onclick", EventCallback.Factory.Create(this, () => DismissToast(toastId)));
+        builder.AddMarkupContent(12, "<span class=\"iconify lucide--x size-4\" aria-hidden=\"true\"></span>");
+        builder.CloseElement();
+
+        builder.CloseElement();
+    };
+
+    private void DismissToast(Guid toastId)
+    {
+        lock (_childrenLock)
+        {
+            Children.Remove(toastId);
+        }
+    }
+
+    private void CheckExpiredToasts(object? state)
+    {
+        _ = InvokeAsync(() =>
+        {
+            var currentTime = DateTime.Now;
+            List<KeyValuePair<Guid, ToastEventArgs>> expiredEntries;
+            lock (_childrenLock)
+            {
+                expiredEntries = Children
+                    .Where(entry => currentTime - entry.Value.CreatedOn > entry.Value.Duration)
+                    .ToList();
+                foreach (var (expiredToastId, _) in expiredEntries)
+                {
+                    Children.Remove(expiredToastId);
+                }
+            }
+            if (expiredEntries.Count > 0)
+            {
+                StateHasChanged();
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        if (_toastShowingHandler is not null)
+        {
+            ToastService.ToastShowing -= _toastShowingHandler;
+        }
+    }
+}

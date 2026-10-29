@@ -1,0 +1,37 @@
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@inject IStringLocalizer<CommonText> Loc
+
+@if (Status.IsExceeded || Status.CanOverride && !Status.IsLocal && (Status.Policy.DailyLimitUsd is > 0 || Status.Policy.MonthlyLimitUsd is > 0))
+{
+<div class="text-xs @(Status.IsExceeded ? "text-error" : NearLimit ? "text-warning" : "text-base-content/70")" role="status">
+    @if (!Status.CanOverride)
+    {
+        @string.Format(Loc.GetOrDefault(CommonTextKeys.ModelBudgetSharedReset, "Budget reached. Resets {0:g}. Choose another provider or contact your operator."), Status.AvailableAt)
+    }
+    else
+    {
+        @if (Status.Policy.DailyLimitUsd is > 0)
+        {
+            <span>@string.Format(Loc.GetOrDefault(CommonTextKeys.ModelBudgetDailyUsage, "Today ${0:0.##} of ${1:0.##}"), Status.DailySpentUsd, Status.Policy.DailyLimitUsd)</span>
+        }
+        @if (Status.Policy.MonthlyLimitUsd is > 0)
+        {
+            <span>@(Status.Policy.DailyLimitUsd is > 0 ? " · " : "")@string.Format(Loc.GetOrDefault(CommonTextKeys.ModelBudgetMonthlyUsage, "Month ${0:0.##} of ${1:0.##}"), Status.MonthlySpentUsd, Status.Policy.MonthlyLimitUsd)</span>
+        }
+        @if (Status.IsExceeded)
+        {
+            <span> · @string.Format(Loc.GetOrDefault(CommonTextKeys.ModelBudgetReset, "Budget reached. Resets {0:g}."), Status.AvailableAt)</span>
+        }
+        @if (!Status.AccountingAvailable || Status.HasUnpricedUsage)
+        {
+            <span>@Loc.GetOrDefault(CommonTextKeys.ModelBudgetIncomplete, "Estimate incomplete. Some usage could not be priced or read.")</span>
+        }
+    }
+</div>
+}
+
+@code {
+    [Parameter, EditorRequired] public ModelBudgetStatus Status { get; set; } = default!;
+    private bool NearLimit => Status.Policy.DailyLimitUsd is > 0 && Status.DailySpentUsd >= Status.Policy.DailyLimitUsd * 0.8m ||
+        Status.Policy.MonthlyLimitUsd is > 0 && Status.MonthlySpentUsd >= Status.Policy.MonthlyLimitUsd * 0.8m;
+}

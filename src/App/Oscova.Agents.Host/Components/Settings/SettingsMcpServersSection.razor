@@ -1,0 +1,500 @@
+@using System.Globalization
+@using Oscova.Agents.Core.Mcp
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject ManagementApiClient ManagementApiClient
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="space-y-4">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.McpServersSectionTitle, "MCP Servers")</h4>
+        <div class="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+            <button class="btn btn-sm btn-ghost grow sm:grow-0" disabled="@(_isBusy || !_canManage)" @onclick="FindOnlineAsync">
+                <span class="iconify lucide--search size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineButton, "Find online")
+            </button>
+            <button class="btn btn-sm btn-ghost grow sm:grow-0" disabled="@(_isBusy || !_canManage)" @onclick="ShowImportDialog">
+                <span class="iconify lucide--file-up size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.McpServersImportJsonButton, "Import JSON")
+            </button>
+            <button class="btn btn-primary btn-sm grow sm:grow-0" disabled="@(_isBusy || !_canManage)" @onclick="AddNewServerAsync">
+                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.McpServersAddServerButton, "Add server")
+            </button>
+        </div>
+    </div>
+
+    @if (_servers.Count == 0)
+    {
+        <div class="alert custom-settings-group custom-settings-form">
+            <iconify-icon icon="lucide:info"></iconify-icon>
+            <span>@Loc.GetOrDefault(SettingsTextKeys.McpServersNoServersMessage, "No MCP servers configured.")</span>
+        </div>
+    }
+    else
+    {
+        <div class="custom-settings-catalog-card custom-settings-table-container overflow-x-auto">
+            <table class="table table-pin-rows custom-settings-adaptive-table custom-settings-mcp-table">
+                <thead>
+                    <tr>
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.McpServersTableHeaderServer, "Server")</th>
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportLabel, "Transport")</th>
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.McpServersTableHeaderConnection, "Connection")</th>
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.McpServersTableHeaderOptions, "Options")</th>
+                        <th class="custom-settings-actions">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var server in _servers)
+                    {
+                        <tr @key="server.Id"
+                            class="cursor-pointer hover:bg-base-200/40"
+                            title="@Loc.GetOrDefault(SettingsTextKeys.McpServersOpenDetailsTitle, "Open server details")"
+                            @onclick="() => ShowServerDetailsAsync(server)">
+                            <td data-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersTableHeaderServer, "Server")">
+                                <div class="flex items-start gap-3">
+                                    <div class="bg-primary/10 text-primary mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg">
+                                        <iconify-icon icon="@GetTransportIcon(server.Transport)" width="16" height="16"></iconify-icon>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <button type="button" class="min-w-0 break-words text-start font-medium [overflow-wrap:anywhere]"
+                                                    @onclick:stopPropagation="true" @onclick="() => ShowServerDetailsAsync(server)">@DisplayName(server)</button>
+                                            @* Configured describes saved settings. Connection results surface as toasts. *@
+                                            @if (_managedIds.Contains(server.Id))
+                                            {
+                                                <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@Loc[SettingsTextKeys.SkillsManagedByOperator]</span>
+                                            }
+                                            else if (server.IsValidForConnect())
+                                            {
+                                                <span class="badge badge-neutral badge-soft badge-sm">@Loc.GetOrDefault(SettingsTextKeys.McpServersConfiguredBadge, "Configured")</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-warning badge-soft badge-sm">@Loc.GetOrDefault(SettingsTextKeys.McpServersIncompleteBadge, "Incomplete")</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportLabel, "Transport")">
+                                <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatTransport(server.Transport)</span>
+                            </td>
+                            <td data-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersTableHeaderConnection, "Connection")">
+                                @if (!_managedIds.Contains(server.Id))
+                                {
+                                    <code class="text-xs break-all">@GetConnectionSummary(server)</code>
+                                }
+                            </td>
+                            <td data-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersTableHeaderOptions, "Options")">
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach (var badge in GetOptionBadges(server))
+                                    {
+                                        <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@badge</span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="custom-settings-actions" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                <div class="flex justify-end gap-1">
+                                    <button type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")"
+                                            disabled="@(_isBusy || !CanEdit(server))"
+                                            @onclick:stopPropagation="true"
+                                            @onclick="() => EditServerAsync(server)">
+                                        <iconify-icon icon="lucide:pencil" width="14" height="14"></iconify-icon>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            title="@CommonLoc.GetOrDefault(CommonTextKeys.Duplicate, "Duplicate")"
+                                            disabled="@(_isBusy || !CanEdit(server))"
+                                            @onclick:stopPropagation="true"
+                                            @onclick="() => DuplicateServerAsync(server)">
+                                        <iconify-icon icon="lucide:copy" width="14" height="14"></iconify-icon>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-ghost btn-xs text-error"
+                                            title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")"
+                                            disabled="@(_isBusy || !CanEdit(server))"
+                                            @onclick:stopPropagation="true"
+                                            @onclick="() => DeleteServerAsync(server)">
+                                        <iconify-icon icon="lucide:trash-2" width="14" height="14"></iconify-icon>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (_servers.Count > 0)
+    {
+        <div class="flex justify-end">
+            <button class="btn btn-ghost btn-sm" disabled="@_isBusy" @onclick="ReconnectAllAsync">
+                <span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
+                @Loc.GetOrDefault(SettingsTextKeys.McpServersReconnectAllButton, "Reconnect all")
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _canManage;
+    private bool _isOperator;
+    private HashSet<Guid> _managedIds = [];
+    private bool CanEdit(McpServerConfig server) => _canManage && !_managedIds.Contains(server.Id);
+
+    private bool _isBusy;
+    private List<McpServerConfig> _servers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConfigurationAsync();
+    }
+
+    private async Task AddNewServerAsync()
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        var result = await DialogService.ShowAsync<McpServerEditorDialog, McpServerConfig>(
+            new Dictionary<string, object?> { ["IsOperator"] = _isOperator });
+
+
+        if (result.IsOk && result.Data is not null)
+        {
+            await AddServerViaApiAsync(result.Data);
+        }
+    }
+
+    private async Task FindOnlineAsync()
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        var picked = await DialogService.ShowAsync<McpRegistryBrowserDialog, McpServerConfig>();
+        if (!picked.IsOk || picked.Data is null)
+        {
+            return;
+        }
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Server"] = picked.Data,
+            ["IsOperator"] = _isOperator
+
+        };
+        var edited = await DialogService.ShowAsync<McpServerEditorDialog, McpServerConfig>(parameters);
+        if (!edited.IsOk || edited.Data is null)
+        {
+            return;
+        }
+
+        edited.Data.Id = Guid.NewGuid();
+        await AddServerViaApiAsync(edited.Data);
+    }
+
+    private async Task EditServerAsync(McpServerConfig server)
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Server"] = server.Clone(),
+            ["IsOperator"] = _isOperator
+        };
+        var result = await DialogService.ShowAsync<McpServerEditorDialog, McpServerConfig>(parameters);
+
+
+        if (!result.IsOk || result.Data is null)
+        {
+            return;
+        }
+
+        var existing = _servers.FirstOrDefault(candidate => candidate.Id == server.Id);
+        if (existing is null)
+        {
+            return;
+        }
+
+        await SaveAndRestartServerAsync(result.Data);
+
+    }
+
+    private Task ShowServerDetailsAsync(McpServerConfig server)
+    {
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Server"] = server.Clone(),
+            ["IsManaged"] = _managedIds.Contains(server.Id)
+        };
+
+        return DialogService.ShowAsync<McpServerDetailsDialog>(parameters);
+    }
+
+    private async Task DuplicateServerAsync(McpServerConfig server)
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        var copy = server.Clone();
+        copy.Id = Guid.NewGuid();
+        copy.Name = string.IsNullOrWhiteSpace(server.Name)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.CopyName, "Copy")
+            : FormatSettingsText(SettingsTextKeys.McpServersCopyNameSuffix, "{0} (Copy)", server.Name);
+        await AddServerViaApiAsync(copy);
+    }
+
+    private async Task DeleteServerAsync(McpServerConfig server)
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        await RunBusyAsync(async () =>
+        {
+            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, confirmed =>
+                ManagementApiClient.DeleteMcpServerAsync(server.Id, confirmInterruption: confirmed))) { return; }
+
+            await LoadConfigurationAsync();
+            ToastService.Show(
+                FormatSettingsText(SettingsTextKeys.McpServersServerRemovedToast, "MCP server \"{0}\" removed.", DisplayName(server)),
+                ToastType.Success);
+        });
+    }
+
+    private async Task ReconnectAllAsync()
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        await RunBusyAsync(async () =>
+        {
+            Oscova.Agents.Core.ApiContracts.Mcp.McpServerReconnectResult? result = null;
+            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
+                (result = await ManagementApiClient.ReconnectAllMcpServersAsync(confirmed: confirmed)) is not null)) { return; }
+            await LoadConfigurationAsync();
+            var failedCount = result!.Connections.Count(connection => !connection.IsConnected);
+            if (failedCount > 0)
+            {
+                ToastService.Show(
+                    FormatSettingsText(SettingsTextKeys.McpServersReconnectAllFailedToast, "{0} MCP server(s) were saved but could not reconnect.", failedCount),
+                    ToastType.Warning);
+            }
+            else
+            {
+                ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.McpServersReconnectedAllToast, "All MCP servers reconnected."), ToastType.Success);
+            }
+        });
+    }
+
+    // --- Import JSON ---
+
+    private async Task ShowImportDialog()
+    {
+        // The result type must match the parser's return type that the dialog closes with, or the data arrives empty.
+        var result = await DialogService.ShowAsync<McpImportDialog, IReadOnlyList<McpServerConfig>>();
+
+        if (!result.IsOk || result.Data is not { Count: > 0 })
+        {
+            return;
+        }
+
+        // Imported personal programs need the same device choice as manually added programs.
+        var imports = result.Data.ToList();
+        if (!_isOperator)
+        {
+            for (var index = 0; index < imports.Count; index++)
+            {
+                if (imports[index].Transport != McpTransportType.Stdio) { continue; }
+                var edited = await DialogService.ShowAsync<McpServerEditorDialog, McpServerConfig>(
+                    new Dictionary<string, object?> { ["Server"] = imports[index], ["IsOperator"] = false });
+                if (!edited.IsOk || edited.Data is null) { return; }
+                imports[index] = edited.Data;
+            }
+        }
+
+        await RunBusyAsync(async () =>
+        {
+            foreach (var server in imports)
+            {
+                server.Id = Guid.NewGuid();
+                await ManagementApiClient.AddMcpServerAsync(server);
+            }
+
+            await LoadConfigurationAsync();
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.McpServersImportedToast, "Imported {0} MCP server(s).", result.Data.Count), ToastType.Success);
+        });
+    }
+
+    private async Task AddServerViaApiAsync(McpServerConfig server)
+    {
+        await RunBusyAsync(async () =>
+        {
+            var result = await ManagementApiClient.AddMcpServerAsync(server);
+            await LoadConfigurationAsync();
+            ShowConnectionToast(
+                result.Connection,
+                FormatSettingsText(SettingsTextKeys.McpServersServerAddedToast, "MCP server \"{0}\" added and connected. To use its tools, select them under Allowed Tools in an agent's settings.", DisplayName(result.Server)),
+                FormatSettingsText(SettingsTextKeys.McpServersServerAddedConnectionFailedToast, "MCP server \"{0}\" was saved, but connection failed: {1}", DisplayName(result.Server), result.Connection.Error ?? string.Empty));
+        });
+    }
+
+    private async Task SaveAndRestartServerAsync(McpServerConfig server)
+    {
+        await RunBusyAsync(async () =>
+        {
+            // The page keeps committed definitions until the server accepts this editor draft.
+            var candidates = _servers.Where(candidate => !_managedIds.Contains(candidate.Id))
+                .Select(candidate => candidate.Id == server.Id ? server : candidate).ToArray();
+            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, confirmed =>
+                ManagementApiClient.SaveMcpConfigurationAsync(candidates,
+                    confirmInterruption: confirmed))) { return; }
+            await LoadConfigurationAsync();
+
+            Oscova.Agents.Core.ApiContracts.Mcp.McpServerReconnectResult? result = null;
+            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
+                (result = await ManagementApiClient.RestartMcpServerAsync(server.Id, confirmed: confirmed)) is not null)) { return; }
+            var connection = result!.Connections.FirstOrDefault();
+            await LoadConfigurationAsync();
+            ShowConnectionToast(
+                connection,
+                FormatSettingsText(SettingsTextKeys.McpServersServerUpdatedToast, "MCP server \"{0}\" updated and reconnected.", DisplayName(server)),
+                FormatSettingsText(SettingsTextKeys.McpServersServerUpdatedConnectionFailedToast, "MCP server \"{0}\" was saved, but reconnection failed: {1}", DisplayName(server), connection?.Error ?? string.Empty));
+        });
+    }
+
+    private void ShowConnectionToast(McpServerConnectionResult? connection, string successMessage, string warningMessage)
+    {
+        if (connection?.DeviceOffline == true)
+        {
+            ToastService.Show(Loc[SettingsTextKeys.McpSavedDeviceOffline], ToastType.Info);
+            return;
+        }
+        if (connection is { IsConnected: false, Error: null })
+        {
+            ToastService.Show(CommonLoc[CommonTextKeys.GovernanceChangesSaved], ToastType.Success);
+            return;
+        }
+        ToastService.Show(
+            connection?.IsConnected == true ? successMessage : warningMessage,
+            connection?.IsConnected == true ? ToastType.Success : ToastType.Warning);
+    }
+
+    // Centralizes the busy flag so every per-server operation presents the same failure toast.
+    private async Task RunBusyAsync(Func<Task> action)
+    {
+        _isBusy = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            await action();
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(
+                FormatSettingsText(SettingsTextKeys.McpServersOperationFailedToast, "MCP server operation failed: {0}", ex.Message),
+                ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task LoadConfigurationAsync()
+    {
+        var configuration = await ManagementApiClient.GetMcpConfigurationAsync();
+        _canManage = configuration.CanManage;
+        _isOperator = configuration.IsOperator;
+        _managedIds = configuration.ManagedServerIds.ToHashSet();
+        _servers = configuration.Servers.Select(server => server.Clone()).ToList();
+    }
+
+
+    private string DisplayName(McpServerConfig server)
+    {
+        return string.IsNullOrWhiteSpace(server.Name)
+            ? Loc.GetOrDefault(SettingsTextKeys.McpServersUnnamedServerLabel, "(unnamed server)")
+            : server.Name;
+    }
+
+    private string GetConnectionSummary(McpServerConfig server)
+    {
+        if (server.Transport == McpTransportType.Http)
+        {
+            return string.IsNullOrWhiteSpace(server.Endpoint)
+                ? CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set")
+                : server.Endpoint;
+        }
+
+        if (string.IsNullOrWhiteSpace(server.Command))
+        {
+            return CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set");
+        }
+
+        return server.Arguments is { Count: > 0 }
+            ? $"{server.Command} {string.Join(' ', server.Arguments)}"
+            : server.Command;
+    }
+
+    private List<string> GetOptionBadges(McpServerConfig server)
+    {
+        if (_managedIds.Contains(server.Id)) { return []; }
+        var badges = new List<string>();
+
+        if (server.Transport == McpTransportType.Http)
+        {
+            badges.Add(server.Headers is { Count: > 0 }
+                ? FormatSettingsText(SettingsTextKeys.McpServersHeadersCountLabel, "{0} header(s)", server.Headers.Count)
+                : Loc.GetOrDefault(SettingsTextKeys.McpServersNoHeaders, "No headers"));
+        }
+        else
+        {
+            if (server.ExecutionEnvironment == McpExecutionEnvironment.Containerized)
+            {
+                badges.Add(Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentBadge, "Sandboxed"));
+            }
+
+            badges.Add(server.Arguments is { Count: > 0 }
+                ? FormatSettingsText(SettingsTextKeys.McpServersArgumentsCountLabel, "{0} argument(s)", server.Arguments.Count)
+                : Loc.GetOrDefault(SettingsTextKeys.McpServersNoArguments, "No arguments"));
+            badges.Add(server.EnvironmentVariables is { Count: > 0 }
+                ? FormatSettingsText(SettingsTextKeys.McpServersEnvironmentVariablesCountLabel, "{0} variable(s)", server.EnvironmentVariables.Count)
+                : Loc.GetOrDefault(SettingsTextKeys.McpServersNoEnvironmentVariables, "No environment variables"));
+        }
+
+        return badges;
+    }
+
+    private string FormatTransport(McpTransportType transport)
+    {
+        return transport == McpTransportType.Http
+            ? Loc.GetOrDefault(SettingsTextKeys.McpServersTransportHttp, "HTTP")
+            : Loc.GetOrDefault(SettingsTextKeys.McpServersTransportStdio, "STDIO");
+    }
+
+    private static string GetTransportIcon(McpTransportType transport)
+    {
+        return transport == McpTransportType.Http ? "lucide:globe" : "lucide:terminal";
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}

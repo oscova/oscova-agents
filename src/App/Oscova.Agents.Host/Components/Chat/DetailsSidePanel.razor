@@ -1,0 +1,384 @@
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IDialogService Dialogs
+@inject ILogger<WorkspaceEditingState> EditingLogger
+@inject UserServiceScope UserScope
+@inject ChatApiClient ChatApi
+@inject IToastService ToastService
+@inject BrowserViewerAccess BrowserAccess
+@inject IJSRuntime JS
+@implements IDisposable
+@implements IAsyncDisposable
+
+<div class="activity-side-panel-host">
+    @if (IsOpen || _hasOpened)
+    {
+        <CascadingValue @key="Thread.Id" Value="@_editing">
+            <div class="@(IsOpen ? "contents" : "hidden")" hidden="@(!IsOpen)">
+                <button type="button" class="activity-side-panel-backdrop" aria-label="@CollapseLabel" @onclick="OnCollapse"></button>
+                <aside @ref="_panel" class="activity-side-panel @(IsWide ? "custom-workspace-full" : null)" role="complementary" aria-label="@DetailsLabel">
+                    <header class="activity-side-panel-header">
+                        <nav class="custom-workspace-document-tabs" role="tablist" aria-label="@DetailsLabel">
+                            @if (!HasSelectedDocument)
+                            {
+                                <span class="custom-workspace-current-view">@Loc[_selectedTab == DetailsTab.Changes ? ChatTextKeys.ProjectChanges : _selectedTab == DetailsTab.Files ? ChatTextKeys.ProjectFiles : ChatTextKeys.ArtifactsTab]</span>
+                            }
+                            @foreach (var document in _editing.Documents)
+                            {
+                                var selected = IsDocumentSelected(document);
+                                <div @key="document.Key" class="custom-workspace-document-tab @(selected ? "custom-workspace-document-tab-active" : null)">
+                                    <button @ref="_documentButtons[document.Key]" type="button" role="tab" class="custom-workspace-document-select"
+                                            id="@($"workspace-document-{_editing.Documents.IndexOf(document)}")"
+                                            aria-selected="@(selected ? "true" : "false")" aria-controls="workspace-document-preview"
+                                            tabindex="@(selected || (!HasSelectedDocument && document == _editing.Documents[0]) ? 0 : -1)"
+                                            title="@document.Path" @onclick="document.Select" @onkeydown="e => HandleDocumentKeyDown(document.Key, e)">
+                                        <iconify-icon icon="@document.Icon" width="14" height="14" aria-hidden="true"></iconify-icon>
+                                        <span class="truncate">@document.Name</span>
+                                        @if (_editing.Files.TryGetValue(document.Key, out var draft) && draft.IsDirty)
+                                        {
+                                            <span class="custom-workspace-dirty" aria-label="@Loc[ChatTextKeys.WorkspaceUnsavedTitle]">•</span>
+                                        }
+                                    </button>
+                                    <button type="button" class="custom-workspace-document-close" title="@CommonLoc[CommonTextKeys.Close]"
+                                            aria-label="@($"{CommonLoc[CommonTextKeys.Close]} {document.Name}")" disabled="@(_openingBrowser && document.Key == BrowserLoadingKey)" @onclick="document.Close">
+                                        <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            }
+                        </nav>
+                        <div class="custom-workspace-actions">
+                            <DropdownMenu TriggerClass="btn btn-ghost btn-sm btn-square" Placement="dropdown-bottom dropdown-end"
+                                          AriaLabel="@Loc[ChatTextKeys.WorkspaceNewTab]" Title="@Loc[ChatTextKeys.WorkspaceNewTab]"
+                                          ContentClass="w-64 max-w-[calc(100vw-1.5rem)] p-1" CloseOnContentClick="@true">
+                                <TriggerContent><span class="iconify lucide--plus size-4" aria-hidden="true"></span></TriggerContent>
+                                <ChildContent>
+                                    <ul class="menu max-h-80 overflow-y-auto p-0">
+                                        <li><button type="button" id="activity-tab-files" aria-pressed="@(_selectedTab == DetailsTab.Files && (_editing.SelectedDocumentKey is null or "view:Files") ? "true" : "false")" @onclick="BrowseFilesAsync">
+                                            <span class="iconify lucide--folder-open size-4" aria-hidden="true"></span>@Loc[ChatTextKeys.ProjectFiles]
+                                        </button></li>
+                                        <li><button type="button" id="activity-tab-changes" aria-pressed="@(_selectedTab == DetailsTab.Changes ? "true" : "false")" @onclick="() => SelectTab(DetailsTab.Changes)">
+                                            <span class="iconify lucide--folder-git-2 size-4" aria-hidden="true"></span>@Loc[ChatTextKeys.ProjectChanges]
+                                        </button></li>
+                                        @if (UserScope.BrowserWorkspace?.IsAvailable == true)
+                                        {
+                                            <li><button type="button" disabled="@(_openingBrowser || string.IsNullOrEmpty(Thread.Id))" @onclick="OpenBrowserAsync">
+                                                <span class="iconify lucide--globe size-4" aria-hidden="true"></span>@Loc[ChatTextKeys.BrowserNewTab]
+                                            </button></li>
+                                        }
+                                        <li class="menu-title">@Loc[ChatTextKeys.ArtifactsTab]</li>
+                                        @foreach (var artifact in Artifacts)
+                                        {
+                                            <li @key="artifact.Id">
+                                                <button type="button" class="workspace-artifact-choice" title="@artifact.AgentPath"
+                                                        aria-pressed="@(artifact.Id == _selectedArtifactId && _selectedTab == DetailsTab.Artifacts ? "true" : "false")"
+                                                        @onclick="() => SelectArtifact(artifact.Id)">
+                                                    <iconify-icon icon="@FileIconResolver.Resolve(artifact.FileName)" width="14" height="14"></iconify-icon>
+                                                    <span class="truncate">@artifact.FileName</span>
+                                                </button>
+                                            </li>
+                                        }
+                                        @if (Artifacts.Count == 0) { <li class="menu-disabled"><span>@Loc[ChatTextKeys.ArtifactsEmptyTitle]</span></li> }
+                                    </ul>
+                                </ChildContent>
+                            </DropdownMenu>
+
+                            <button type="button" class="btn btn-ghost btn-sm btn-square" title="@WideToggleLabel" aria-label="@WideToggleLabel" @onclick="OnToggleWide">
+                                <span class="iconify @(IsWide ? "lucide--minimize" : "lucide--maximize") size-4" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-ghost btn-sm btn-square" title="@CollapseLabel" aria-label="@CollapseLabel" @onclick="OnCollapse">
+                                <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </header>
+                    <div id="workspace-document-preview" class="custom-workspace-document-content"
+                         role="@(HasSelectedDocument ? "tabpanel" : null)"
+                         aria-labelledby="@(HasSelectedDocument ? $"workspace-document-{_editing.Documents.ToList().FindIndex(IsDocumentSelected)}" : null)">
+                        @if (IsOpen && _selectedTab == DetailsTab.Browser && _editing.SelectedDocumentKey == BrowserLoadingKey)
+                        {
+                            <div class="custom-workspace-empty" role="status">
+                                <span class="loading loading-spinner loading-xs" aria-hidden="true"></span>
+                                <p>@CommonLoc[CommonTextKeys.Loading]</p>
+                            </div>
+                        }
+                        else if (IsOpen && _selectedTab == DetailsTab.Browser && _browserPages.FirstOrDefault(page => BrowserKey(page.Id) == _editing.SelectedDocumentKey) is { } browserPage)
+                        {
+                            <BrowserViewer @key="browserPage.Id" ThreadId="@Thread.Id" Page="browserPage" />
+                        }
+                        <div class="@(_selectedTab == DetailsTab.Artifacts ? "contents" : "hidden")">
+                            @if (SelectedArtifact is { } artifact)
+                            {
+                                <ArtifactPreview @key="@($"{Thread.Id}:{artifact.Id}")" ThreadId="@Thread.Id" Artifact="@artifact"
+                                                 RefreshVersion="@(RefreshVersion + _editing.SaveVersion + _artifactVersion)"
+                                                 NodeProject="@(Project?.NodeId is not null && artifact.Environment == "project")" />
+                            }
+                            else
+                            {
+                                <div class="custom-workspace-empty" role="status">
+                                    <span class="iconify lucide--files size-8" aria-hidden="true"></span>
+                                    <p>@Loc[ChatTextKeys.ArtifactsEmptyTitle]</p>
+                                    <p class="text-sm text-base-content/60">@Loc[ChatTextKeys.ArtifactsEmptyDescription]</p>
+                                </div>
+                            }
+                        </div>
+                        <div id="activity-tabpanel-files" class="@(_selectedTab == DetailsTab.Files ? "contents" : "hidden")">
+                            <ProjectFilesPanel @ref="_filesPanel" ThreadId="@(IsDraft ? null : Thread.Id)" ProjectId="@Thread.ProjectId" Project="@Project" AgentId="@Thread.AgentId"
+                                               RefreshVersion="@(RefreshVersion + _editing.SaveVersion + _artifactVersion)" OnDocumentOpened="FileOpened" OnBrowse="@(() => OpenSection(DetailsTab.Files))" OnAddToChat="@OnAddToChat" />
+                        </div>
+                        <div class="@(_selectedTab == DetailsTab.Changes ? "contents" : "hidden")">
+                            <ProjectChangesPanel ThreadId="@(IsDraft ? null : Thread.Id)" ProjectId="@Thread.ProjectId"
+                                                 RefreshVersion="@(RefreshVersion + _editing.SaveVersion + _artifactVersion)" />
+                        </div>
+                    </div>
+                    @if (IsWide)
+                    {
+                        <button type="button" class="custom-workspace-return btn btn-neutral btn-sm" @onclick="OnToggleWide">
+                            <span class="iconify lucide--message-square size-4" aria-hidden="true"></span>@WideToggleLabel
+                        </button>
+                    }
+                </aside>
+            </div>
+        </CascadingValue>
+    }
+</div>
+<UnsavedChangesGuard IsDirty="@_editing.IsDirty" ConfirmDecision="@ConfirmScopeAsync" />
+
+@code {
+    [Parameter, EditorRequired] public ChatThread Thread { get; set; } = default!;
+    [Parameter] public ProjectDefinition? Project { get; set; }
+    [Parameter] public bool IsDraft { get; set; }
+    [Parameter] public long RefreshVersion { get; set; }
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public bool IsWide { get; set; }
+    [Parameter] public EventCallback OnToggleWide { get; set; }
+    [Parameter] public EventCallback OnCollapse { get; set; }
+    [Parameter] public EventCallback<WorkspaceFileReference> OnAddToChat { get; set; }
+
+    private IReadOnlyList<ThreadArtifact> Artifacts { get; set; } = [];
+    private readonly Dictionary<string, ElementReference> _documentButtons = new(StringComparer.Ordinal);
+    private ProjectFilesPanel? _filesPanel;
+    private ElementReference _panel;
+    private IJSObjectReference? _resizeModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!IsOpen) { return; }
+        _resizeModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/dashboardPanelResize.js");
+
+        // Leaving the page during the first import disposes the panel and removes its element.
+        if (_disposed)
+        {
+            await _resizeModule.DisposeAsync();
+            return;
+        }
+
+        await _resizeModule.InvokeVoidAsync("attachWorkspaceTreeResize", _panel);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Dispose();
+        if (_resizeModule is not null)
+        {
+            try { await _resizeModule.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+        }
+    }
+    private string? _threadId;
+    private string? _selectedArtifactId;
+    private DetailsTab _selectedTab = DetailsTab.Artifacts;
+    private bool _hasOpened;
+    private bool _artifactInitialized;
+    private long _artifactVersion;
+    private WorkspaceEditingState _editing = default!;
+    private ThreadArtifact? SelectedArtifact => Artifacts.FirstOrDefault(artifact => artifact.Id == _selectedArtifactId);
+    private bool HasSelectedDocument => _editing.Documents.Any(IsDocumentSelected);
+    private string DetailsLabel => Loc.GetOrDefault(ChatTextKeys.ActivityDetailsTitle, "Workspace");
+    private string CollapseLabel => Loc.GetOrDefault(ChatTextKeys.ActivityCollapse, "Close workspace");
+    private string WideToggleLabel => IsWide
+        ? Loc.GetOrDefault(ChatTextKeys.ActivityUseStandardView, "Return to chat")
+        : Loc.GetOrDefault(ChatTextKeys.ActivityUseWideView, "Enter full view");
+
+    protected override Task OnParametersSetAsync() => RefreshDocumentsAsync();
+
+    // Reconcile projected files on chat updates and when an editor resolves a retained draft.
+    private async Task RefreshDocumentsAsync()
+    {
+        _hasOpened |= IsOpen;
+        if (_editing is null || _threadId != Thread.Id)
+        {
+            _editing = new(EditingLogger) { Changed = EventCallback.Factory.Create(this, RefreshDocumentsAsync) };
+            _documentButtons.Clear();
+            _selectedArtifactId = null;
+            _artifactInitialized = false;
+            _selectedTab = DetailsTab.Artifacts;
+        }
+        var artifacts = ThreadArtifactProjector.Project(Thread.DisplayMessages, Thread.ProjectId is not null).Artifacts;
+        // A removed or moved file can still own an unresolved draft until the user saves or discards it.
+        var retainedDrafts = Artifacts.Where(artifact => !artifacts.Any(current => current.Id == artifact.Id) &&
+            _editing.Files.TryGetValue(ArtifactKey(artifact.Id), out var draft) && draft.IsDirty);
+        artifacts = artifacts.Concat(retainedDrafts).ToArray();
+        if (!Artifacts.Select(file => (file.Id, file.UpdatedAt)).SequenceEqual(artifacts.Select(file => (file.Id, file.UpdatedAt))))
+        { _artifactVersion++; }
+        Artifacts = artifacts;
+        var activeRemoved = false;
+        foreach (var previous in _editing.Documents.Where(document => document.Key.StartsWith($"artifact:{Thread.Id}:", StringComparison.Ordinal)).ToArray())
+        {
+            if (Artifacts.Any(artifact => ArtifactKey(artifact.Id) == previous.Key)) { continue; }
+            _editing.Documents.Remove(previous);
+            _documentButtons.Remove(previous.Key);
+            _editing.Files.Remove(previous.Key);
+            if (_editing.SelectedDocumentKey == previous.Key)
+            {
+                activeRemoved = true;
+                _editing.SelectedDocumentKey = null;
+            }
+        }
+        if (_selectedArtifactId is not null && !Artifacts.Any(artifact => artifact.Id == _selectedArtifactId)) { _selectedArtifactId = null; }
+        if (activeRemoved)
+        {
+            if (Artifacts.FirstOrDefault() is { } remaining)
+            {
+                OpenArtifact(remaining);
+                _selectedArtifactId = remaining.Id;
+                _editing.SelectedDocumentKey = ArtifactKey(remaining.Id);
+                _selectedTab = DetailsTab.Artifacts;
+            }
+            else if (_editing.Documents.LastOrDefault() is { } neighbor) { await neighbor.Select(); }
+            else { _selectedTab = DetailsTab.Files; }
+        }
+        if (!_artifactInitialized && Artifacts.FirstOrDefault() is { } firstArtifact)
+        {
+            _artifactInitialized = true;
+            _selectedArtifactId = firstArtifact.Id;
+            OpenArtifact(firstArtifact);
+            if (_selectedTab == DetailsTab.Artifacts) { _editing.SelectedDocumentKey = ArtifactKey(firstArtifact.Id); }
+        }
+        var restoreBrowserSelection = _threadId != Thread.Id;
+        _threadId = Thread.Id;
+        await RefreshBrowserDocumentsAsync(restoreBrowserSelection);
+    }
+
+    /// <summary>Resolves hidden and visible drafts while their original chat still exists.</summary>
+    public Task<bool> ConfirmScopeAsync() => _editing.ConfirmAsync(Dialogs);
+
+    /// <summary>Selects a referenced file in the existing workspace tabs while retaining editor drafts.</summary>
+    public async Task OpenArtifactAsync(string artifactId)
+    {
+        await RefreshDocumentsAsync();
+        await SelectArtifact(artifactId);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private bool IsDocumentSelected(WorkspaceDocumentTab document) =>
+        document.Key == _editing.SelectedDocumentKey;
+
+    private void OpenSection(DetailsTab tab)
+    {
+        var key = $"view:{tab}";
+        if (!_editing.Documents.Any(document => document.Key == key))
+        {
+            var name = Loc[tab == DetailsTab.Files ? ChatTextKeys.ProjectFiles : ChatTextKeys.ProjectChanges];
+            _editing.Documents.Add(new(key, name, name, tab == DetailsTab.Files ? "lucide:folder-open" : "lucide:folder-git-2",
+                tab == DetailsTab.Files ? BrowseFilesAsync : () => SelectTab(tab), () => CloseSectionAsync(key)));
+        }
+        _editing.SelectedDocumentKey = key;
+        _selectedTab = tab;
+    }
+
+    private async Task CloseSectionAsync(string key)
+    {
+        var document = _editing.Documents.First(item => item.Key == key);
+        _editing.Documents.Remove(document);
+        _documentButtons.Remove(key);
+        if (_editing.SelectedDocumentKey != key) { return; }
+        _editing.SelectedDocumentKey = null;
+        if (_editing.Documents.LastOrDefault() is { } neighbor) { await neighbor.Select(); }
+        else { await OnCollapse.InvokeAsync(); }
+    }
+
+    private async Task SelectTab(DetailsTab tab)
+    {
+        if (_editing.IsBusy) { return; }
+        await _editing.CaptureAsync();
+        await ClearBrowserSelectionAsync();
+        OpenSection(tab);
+    }
+
+    private async Task BrowseFilesAsync()
+    {
+        if (_editing.IsBusy) { return; }
+        if (_filesPanel is not null) { await _filesPanel.BrowseAsync(); }
+        await ClearBrowserSelectionAsync();
+        OpenSection(DetailsTab.Files);
+    }
+
+    private async Task FileOpened()
+    {
+        await ClearBrowserSelectionAsync();
+        _selectedTab = DetailsTab.Files;
+    }
+    private string ArtifactKey(string artifactId) => $"artifact:{Thread.Id}:{artifactId}";
+
+    // Artifact and file tabs share chrome while each preview retains its original reader and draft identity.
+    private void OpenArtifact(ThreadArtifact artifact)
+    {
+        var key = ArtifactKey(artifact.Id);
+        if (_editing.Documents.Any(document => document.Key == key)) { return; }
+        _editing.Documents.Add(new(key, artifact.FileName, artifact.AgentPath, FileIconResolver.Resolve(artifact.FileName),
+            () => SelectArtifact(artifact.Id), () => CloseArtifact(artifact.Id)));
+    }
+
+    private async Task SelectArtifact(string artifactId)
+    {
+        if (_editing.IsBusy) { return; }
+        await _editing.CaptureAsync();
+        if (Artifacts.FirstOrDefault(artifact => artifact.Id == artifactId) is { } artifact)
+        {
+            await ClearBrowserSelectionAsync();
+            OpenArtifact(artifact);
+            _selectedArtifactId = artifactId;
+            _editing.SelectedDocumentKey = ArtifactKey(artifactId);
+            _selectedTab = DetailsTab.Artifacts;
+        }
+    }
+
+    private async Task CloseArtifact(string artifactId)
+    {
+        if (_editing.IsBusy) { return; }
+        var key = ArtifactKey(artifactId);
+        if (_editing.Files.TryGetValue(key, out var draft) && !await _editing.ConfirmAsync(Dialogs, [draft])) { return; }
+        var document = _editing.Documents.FirstOrDefault(tab => tab.Key == key);
+        if (document is null) { return; }
+        _editing.Documents.Remove(document);
+        _documentButtons.Remove(key);
+        _editing.Files.Remove(key);
+        // Unmount a closed preview even when Files or Changes currently hides it.
+        if (_selectedArtifactId == artifactId) { _selectedArtifactId = null; }
+        if (_editing.SelectedDocumentKey != key) { return; }
+        _editing.SelectedDocumentKey = null;
+        if (_editing.Documents.LastOrDefault() is { } neighbor) { await neighbor.Select(); }
+        else { await BrowseFilesAsync(); }
+    }
+
+    private async Task HandleDocumentKeyDown(string key, KeyboardEventArgs e)
+    {
+        if (_editing.Documents.Count == 0 || e.Key is not ("ArrowRight" or "ArrowLeft" or "Home" or "End")) { return; }
+        var current = _editing.Documents.ToList().FindIndex(document => document.Key == key);
+        var next = e.Key switch
+        {
+            "Home" => 0,
+            "End" => _editing.Documents.Count - 1,
+            "ArrowRight" => (current + 1) % _editing.Documents.Count,
+            _ => (current + _editing.Documents.Count - 1) % _editing.Documents.Count
+        };
+        var document = _editing.Documents[next];
+        await document.Select();
+        if (_documentButtons.TryGetValue(document.Key, out var button))
+        {
+            try { await button.FocusAsync(); }
+            catch (JSDisconnectedException) { /* The circuit can disconnect during navigation. */ }
+        }
+    }
+
+    private enum DetailsTab { Artifacts, Files, Changes, Browser }
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentUICulture.Name" class="group/html">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Appearance flash prevention: apply saved settings before any paint -->
+    <script>
+        try {
+            var c = localStorage.getItem("__OSCOVA_LAYOUT__");
+            if (c) {
+                var o = JSON.parse(c);
+                if (o.direction === "rtl" || o.direction === "ltr") {
+                    document.documentElement.setAttribute("dir", o.direction);
+                }
+                if (o.theme === "system") {
+                    // An explicit System choice removes the default theme before styles load.
+                    document.documentElement.removeAttribute("data-theme");
+                } else if (o.theme) {
+                    document.documentElement.setAttribute("data-theme", o.theme);
+                }
+                if (o.fontFamily && o.fontFamily !== "default") {
+                    document.documentElement.setAttribute("data-font-family", o.fontFamily);
+                }
+                if (o.wallpaperEffectsEnabled === false) {
+                    document.documentElement.setAttribute("data-wallpaper-effects", "off");
+                }
+            }
+        } catch (e) { }
+    </script>
+
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="lib/prism-code-editor/prism-code-editor.css" />
+    <link rel="stylesheet" href="lib/prism-code-editor/oscova-code-editor.css" />
+
+
+
+    <link rel="stylesheet" href="custom-theme-bundle.css" />
+    <link rel="stylesheet" href="custom-theme-overrides.css" />
+
+    <link rel="stylesheet" href="Oscova.Agents.Host.styles.css" />
+
+    <script src="lib/tailwindcss/browser.global.js"></script>
+    <HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+</head>
+
+<body>
+    <div hidden id="browser-request-verification"><AntiforgeryToken /></div>
+    <CascadingAuthenticationState>
+        <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+    </CascadingAuthenticationState>
+
+    <ReconnectModal />
+
+    <!-- Iconify icon web component with local icon data -->
+    <script src="lib/iconify-icon/lucide-icons.js"></script>
+    <script src="lib/iconify-icon/iconify-icon.min.js"></script>
+    <script src="lib/iconify-icon/offline.js"></script>
+
+    <!-- Dashboard charts -->
+    <script src="lib/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Blazor runtime -->
+    <script src="js/reconnect.js"></script>
+    <script src="_framework/blazor.web.js" autostart="false"></script>
+    <script>
+        Blazor.start({
+            circuit: {
+                reconnectionOptions: {
+                    maxRetries: 3,
+                    retryIntervalMilliseconds: 5000
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

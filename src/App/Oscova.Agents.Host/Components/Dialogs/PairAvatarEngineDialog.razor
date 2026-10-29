@@ -1,0 +1,216 @@
+@using Oscova.Agents.Avatar.Contracts
+@using Oscova.Agents.Core.ApiContracts.AvatarBridge
+@using Oscova.Agents.Host.Constants
+@using System.Text.Json
+@implements IAsyncDisposable
+@inject HttpClient Http
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@Loc.GetOrDefault(SettingsTextKeys.AvatarPairingDialogTitle, "Pair Avatar Engine")"
+                Subtitle="@PairingLifetimeText"
+                Icon="lucide:link"
+                MaxWidthClass="max-w-md"
+                HelpTopic="@HelpTopics.PairAvatarEngine"
+                CanClose="@(!_isSubmitting)"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <form id="avatar-pairing-form" class="space-y-4" @onsubmit="CompleteAsync" @onsubmit:preventDefault>
+            <fieldset class="fieldset p-0">
+                <label class="fieldset-legend" for="avatar-pairing-code">
+                    @Loc.GetOrDefault(SettingsTextKeys.AvatarPairingCodeLabel, "Pairing code")
+                </label>
+                <input id="avatar-pairing-code"
+                       class="input input-bordered w-full"
+                       inputmode="numeric"
+                       autocomplete="one-time-code"
+                       maxlength="6"
+                       aria-describedby="@(string.IsNullOrWhiteSpace(_error) ? "avatar-pairing-code-help" : "avatar-pairing-code-help avatar-pairing-error")"
+                       disabled="@(_isSubmitting || _isTerminal)"
+                       @bind="_pairingCode"
+                       @bind:event="oninput"
+                       autofocus />
+                <p id="avatar-pairing-code-help" class="fieldset-label">
+                    @Loc.GetOrDefault(SettingsTextKeys.AvatarPairingCodeHelp, "Enter the six-digit code shown by the Avatar Engine.")
+                </p>
+            </fieldset>
+
+            <fieldset class="fieldset p-0">
+                <span class="fieldset-legend">
+                    @Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeLabel, "Access mode")
+                </span>
+                <p id="avatar-pairing-mode" class="font-medium">@AccessModeText</p>
+                <p class="fieldset-label">@Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeHelp, "Shared allows other paired clients. Exclusive blocks them until the Engine restarts.")</p>
+            </fieldset>
+
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <p id="avatar-pairing-error" class="text-error text-sm" role="alert">@_error</p>
+            }
+        </form>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_isSubmitting" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(!CanSubmit)" @onclick="CompleteAsync">
+            @(_isSubmitting
+                ? Loc.GetOrDefault(SettingsTextKeys.AvatarPairingBusy, "Pairing...")
+                : Loc.GetOrDefault(SettingsTextKeys.AvatarPairingButton, "Pair"))
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _baseUrl = string.Empty;
+    private string _pairingCode = string.Empty;
+    private string? _error;
+    private int _expiresInSeconds;
+    private AvatarAccessMode _accessMode;
+    private bool _isSubmitting;
+    private bool _isTerminal;
+    private DateTimeOffset _expiresAt;
+    private CancellationTokenSource? _timerCancellation;
+    private Task? _timerTask;
+
+    private bool CanSubmit =>
+        !_isSubmitting &&
+        !_isTerminal &&
+        _expiresInSeconds > 0 &&
+        _pairingCode.Length == 6 &&
+        _pairingCode.All(character => character is >= '0' and <= '9');
+
+    private string AccessModeText => _accessMode == AvatarAccessMode.Exclusive
+        ? Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeExclusive, "Exclusive")
+        : Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeShared, "Shared");
+
+    private string PairingLifetimeText => _expiresInSeconds > 0
+        ? string.Format(
+            CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(SettingsTextKeys.AvatarPairingLifetime, "The code expires in about {0} seconds."),
+            _expiresInSeconds)
+        : Loc.GetOrDefault(
+            SettingsTextKeys.AvatarPairingExpired,
+            "The code has expired. Close this dialog and select Connect for a new code.");
+
+    protected override void OnInitialized()
+    {
+        _baseUrl = DialogInstance.Get<string>("BaseUrl", string.Empty);
+        _expiresInSeconds = Math.Max(0, DialogInstance.Get("ExpiresInSeconds", 0));
+        _accessMode = DialogInstance.Get("AccessMode", AvatarAccessMode.Shared);
+        _expiresAt = DateTimeOffset.UtcNow.AddSeconds(_expiresInSeconds);
+        _isTerminal = _expiresInSeconds == 0;
+        if (!_isTerminal)
+        {
+            _timerCancellation = new CancellationTokenSource();
+            _timerTask = UpdateCountdownAsync(_timerCancellation.Token);
+        }
+    }
+
+    private async Task CompleteAsync()
+    {
+        if (!CanSubmit || _isSubmitting)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+        _error = null;
+        try
+        {
+            using var response = await Http.PostAsJsonAsync(
+                ApiRoutes.AvatarBridge.PairingComplete,
+                new AvatarPairingCompleteRequest { BaseUrl = _baseUrl, PairingCode = _pairingCode });
+            var result = await response.Content.ReadFromJsonAsync<AvatarBridgeOperationResult>();
+            if (response.IsSuccessStatusCode && result?.Success == true)
+            {
+                DialogInstance.Close(DialogResult.Ok);
+                return;
+            }
+
+            _error = result?.Description ?? Loc.GetOrDefault(
+                SettingsTextKeys.AvatarPairingFailed,
+                "Pairing failed. Request a new code and try again.");
+            if (!IsRetryable(result?.ErrorCode))
+            {
+                SetTerminal();
+            }
+        }
+        catch (JsonException)
+        {
+            _error = Loc.GetOrDefault(
+                SettingsTextKeys.AvatarPairingInvalidResponse,
+                "The Avatar Engine returned an invalid response. Close this dialog and select Connect to try again.");
+            SetTerminal();
+        }
+        catch
+        {
+            _error = Loc.GetOrDefault(SettingsTextKeys.AvatarPairingFailed, "Pairing failed. Request a new code and try again.");
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private async Task UpdateCountdownAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                await InvokeAsync(() =>
+                {
+                    _expiresInSeconds = Math.Max(
+                        0,
+                        (int)Math.Ceiling((_expiresAt - DateTimeOffset.UtcNow).TotalSeconds));
+                    if (_expiresInSeconds == 0)
+                    {
+                        _isTerminal = true;
+                    }
+
+                    StateHasChanged();
+                });
+
+                if (_expiresInSeconds == 0)
+                {
+                    return;
+                }
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+    }
+
+    private static bool IsRetryable(string? errorCode) =>
+        errorCode is "pairing_code_invalid" or "unreachable";
+
+    private void SetTerminal()
+    {
+        _isTerminal = true;
+        _timerCancellation?.Cancel();
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_timerCancellation is null)
+        {
+            return;
+        }
+
+        await _timerCancellation.CancelAsync();
+        if (_timerTask is not null)
+        {
+            await _timerTask;
+        }
+
+        _timerCancellation.Dispose();
+    }
+}

@@ -1,0 +1,164 @@
+@implements IDisposable
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="flex min-w-0 items-center gap-2">
+    <button type="button" class="btn btn-ghost btn-sm h-auto min-h-11 sm:min-h-8 min-w-0 flex-1 justify-start text-start"
+            aria-expanded="@(_expanded ? "true" : "false")" @onclick="Toggle">
+        <span class="iconify @Context.Descriptor.Icon size-4 shrink-0 @Context.Descriptor.IconClass" aria-hidden="true"></span>
+        <span class="min-w-0 grow truncate">@Context.Descriptor.Title · <bdi>@Context.Summary</bdi></span>
+        <span class="@StatusIconClass shrink-0" aria-hidden="true"></span>
+        <span class="shrink-0 text-xs">@StatusLabel</span>
+        <span class="iconify lucide--chevron-down size-4 shrink-0 @(_expanded ? "rotate-180" : null)" aria-hidden="true"></span>
+    </button>
+</div>
+@if (_expanded)
+{
+    <div class="border-base-300 border-s ps-3">
+        <pre class="overflow-auto whitespace-pre-wrap text-sm" dir="auto">@Context.Summary</pre>
+        <ToolResultPreview Text="@Context.ResultText" />
+        @if (DurationText is not null)
+        {
+            <span class="text-base-content/60 text-xs">@DurationText</span>
+        }
+        <button type="button" class="btn btn-ghost btn-sm"
+                aria-expanded="@(_technicalExpanded ? "true" : "false")"
+                @onclick="() => _technicalExpanded = !_technicalExpanded">
+            @Loc.GetOrDefault(ChatTextKeys.ToolActivityTechnicalDetails, "Technical details")
+        </button>
+        @if (_technicalExpanded)
+        {
+            <code class="block break-all text-xs" dir="ltr">@Context.Descriptor.Subtitle</code>
+            @if (Context.Segment.CreatedAt != default)
+            {
+                <time class="block text-xs">@Context.Segment.CreatedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture)</time>
+            }
+            <div class="mt-3 overflow-x-auto">
+                @if (Context.Arguments.Count == 0)
+                {
+                    <p class="text-sm text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.NoParameters, "No parameters")</p>
+                }
+                else
+                {
+                    <table class="table table-xs">
+                        <thead>
+                            <tr>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Parameter, "Parameter")</th>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Value, "Value")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var argument in Context.Arguments)
+                            {
+                                <tr>
+                                    <td class="font-medium" dir="ltr">@argument.Key</td>
+                                    <td><code class="break-all text-xs" dir="auto">@ToolCardContext.FormatValue(argument.Value)</code></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ToolCardContext Context { get; set; } = default!;
+
+    private Timer? _elapsedTimer;
+    private bool _isDisposed;
+
+    private bool _expanded;
+    private bool _technicalExpanded;
+    private bool IsExecuting => Context.Segment.ExecutionState == ToolExecutionState.Executing;
+
+    protected override void OnParametersSet() => UpdateElapsedTimer();
+
+    private void Toggle()
+    {
+        _expanded = !_expanded;
+        UpdateElapsedTimer();
+    }
+
+    // Hidden rows need no elapsed-time refreshes.
+    private void UpdateElapsedTimer()
+    {
+        if (_expanded && IsExecuting)
+        {
+            _elapsedTimer ??= new Timer(_ => _ = RefreshElapsedTimeAsync(), null,
+                TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+        else
+        {
+            StopElapsedTimer();
+        }
+    }
+
+    private string StatusLabel => Context.Segment.ExecutionState switch
+    {
+        ToolExecutionState.Cancelled => Loc.GetOrDefault(ChatTextKeys.ToolCardStatusCancelled, "Cancelled"),
+        ToolExecutionState.Failed => Loc.GetOrDefault(ChatTextKeys.ToolCardStatusFailed, "Failed"),
+        ToolExecutionState.Completed => Loc.GetOrDefault(ChatTextKeys.ToolCardStatusCompleted, "Completed"),
+        ToolExecutionState.Executing => Loc.GetOrDefault(ChatTextKeys.ToolCardStatusRunning, "Running"),
+        _ => Loc.GetOrDefault(ChatTextKeys.ToolCardStatusQueued, "Queued")
+    };
+
+    private string StatusIconClass => Context.Segment.ExecutionState switch
+    {
+        ToolExecutionState.Cancelled => "iconify lucide--circle-alert text-base-content/60 block size-4",
+        ToolExecutionState.Failed => "iconify lucide--circle-alert text-warning block size-4",
+        ToolExecutionState.Completed => "iconify lucide--check-circle-2 text-success block size-4",
+        ToolExecutionState.Executing => "iconify lucide--loader text-info block size-4 animate-spin",
+        _ => "iconify lucide--loader text-base-content/60 block size-4"
+    };
+
+    private string? DurationText => IsExecuting
+        ? FormatDuration(Math.Max(0, (DateTimeOffset.UtcNow - Context.Segment.CreatedAt).TotalSeconds))
+        : Context.Segment.ProcessedAt is null
+            ? null
+            : FormatDuration(Math.Max(0, Context.Segment.Duration.TotalSeconds));
+
+    private static string FormatDuration(double seconds) => seconds < 10
+        ? $"{seconds:F1}s"
+        : $"{Math.Round(seconds):F0}s";
+
+    private async Task RefreshElapsedTimeAsync()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                if (!_isDisposed)
+                {
+                    StateHasChanged();
+                }
+            });
+        }
+        catch (ObjectDisposedException) when (_isDisposed)
+        {
+        }
+        catch (InvalidOperationException) when (_isDisposed)
+        {
+        }
+    }
+
+    private void StopElapsedTimer()
+    {
+        _elapsedTimer?.Dispose();
+        _elapsedTimer = null;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _isDisposed = true;
+        StopElapsedTimer();
+    }
+}

@@ -1,0 +1,161 @@
+@implements IDisposable
+@inject ProjectsApiClient Api
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<ProjectChangesPanel> Logger
+
+@* Displays repository-wide Git changes through the existing readonly diff view. *@
+<div class="custom-workspace-browser custom-workspace-changes">
+    @if (ProjectId is null) { <p class="text-sm opacity-60">@Loc[ChatTextKeys.ProjectChoose]</p> }
+    @if (_error is not null) { <p class="text-error wrap-anywhere text-sm" role="alert">@_error</p> }
+        <div class="custom-workspace-content @(_selected is not null ? "custom-workspace-has-preview" : null)">
+            <nav class="custom-workspace-tree" aria-label="@Loc[ChatTextKeys.ProjectChanges]">
+                <div class="custom-workspace-tree-resizer" role="separator" tabindex="0" aria-orientation="vertical"
+                     aria-label="@Loc[ChatTextKeys.WorkspaceResizeFiles]" aria-valuemax="60" data-dashboard-resizer="tree"></div>
+                <div class="custom-workspace-toolbar custom-workspace-tree-toolbar">
+                    <span class="grow truncate text-xs" title="@Loc[ChatTextKeys.ProjectRepositoryScope]">@Loc[ChatTextKeys.ProjectChanges]</span>
+                    <button type="button" class="btn btn-ghost btn-sm btn-square shrink-0" title="@CommonLoc[CommonTextKeys.Refresh]" aria-label="@CommonLoc[CommonTextKeys.Refresh]" @onclick="RefreshAsync" disabled="@_loading">
+                        <span class="@(_loading ? "loading loading-spinner loading-xs" : "iconify lucide--refresh-cw size-4")" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="custom-workspace-tree-scroll custom-scrollbar">
+                    @if (_changes is { State: not ProjectReadState.Ready })
+                    { <p class="text-sm opacity-60">@Loc[$"Chat.Project.Read.{_changes.State}"]</p> }
+                @foreach (var group in (_changes?.Entries ?? []).GroupBy(entry => entry.Group))
+                {
+                    <h3 class="custom-workspace-change-group">@Loc[$"Chat.Project.{group.Key}"] <span>@group.Count()</span></h3>
+                    @foreach (var entry in group)
+                    {
+                        <button type="button" class="btn btn-ghost btn-sm flex w-full min-w-0 justify-start" title="@entry.Path" aria-current="@(entry == _selected ? "page" : null)" @onclick="() => SelectAsync(entry)">
+                            <iconify-icon icon="@FileIconResolver.Resolve(entry.Path)" width="14" height="14" aria-hidden="true"></iconify-icon>
+                            <span class="truncate">@entry.Path</span>
+                            @if (entry.Group != "untracked") { <span class="custom-workspace-change-status">@entry.Status</span> }
+                        </button>
+                    }
+                }
+                @if (_changes is { State: ProjectReadState.Ready, Entries.Count: 0 }) { <p class="text-sm opacity-60">@Loc[ChatTextKeys.ProjectNoChanges]</p> }
+                @if (_changes?.Truncated == true) { <p class="text-sm text-warning">@Loc[ChatTextKeys.ProjectChangesLimit]</p> }
+                </div>
+            </nav>
+            @if (_selected is not null)
+            {
+                var selectedPathLabel = _selected.OldPath is { } oldPath ? $"{oldPath} → {_selected.Path}" : _selected.Path;
+                <section class="custom-workspace-preview">
+                    <div class="custom-workspace-path">
+                        <button type="button" class="custom-workspace-back btn btn-ghost btn-sm btn-square" title="@CommonLoc[CommonTextKeys.Back]" aria-label="@CommonLoc[CommonTextKeys.Back]" @onclick="BackToList">
+                            <span class="iconify lucide--arrow-left size-4" aria-hidden="true"></span>
+                        </button>
+                        <p class="truncate text-xs" title="@selectedPathLabel">@selectedPathLabel</p>
+                    </div>
+                    @if (_loading && _preview is null)
+                    { <div class="flex min-h-0 flex-1 items-center justify-center p-4" role="status"><span class="loading loading-spinner shrink-0" aria-label="@CommonLoc[CommonTextKeys.Loading]"></span></div> }
+                    @if (_preview is { State: ProjectReadState.Ready })
+                    {
+                        <FileDiffView OldText="@_preview.OldText" NewText="@_preview.NewText" Inline="@true" />
+                    }
+                    else if (_preview is not null)
+                    {
+                        <p class="text-sm opacity-60">@Loc[$"Chat.Project.Read.{_preview.State}"]</p>
+                    }
+                </section>
+            }
+            else
+            {
+                <div class="custom-workspace-preview custom-workspace-placeholder">
+                    <span class="iconify lucide--folder-git-2 size-7" aria-hidden="true"></span>
+                    <p>@Loc[ChatTextKeys.WorkspaceSelectFile]</p>
+                </div>
+            }
+        </div>
+</div>
+
+@code {
+    [Parameter] public string? ProjectId { get; set; }
+    [Parameter] public string? ThreadId { get; set; }
+    [Parameter] public long RefreshVersion { get; set; }
+    private (string?, string?, long)? _scope;
+    private ProjectChanges? _changes;
+    private readonly Dictionary<ProjectChange, ProjectChangePreview> _previews = [];
+    private ProjectChange? _selected;
+    private ProjectChangePreview? _preview;
+    private string? _error;
+    private bool _loading;
+    private CancellationTokenSource? _request;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var scope = (ThreadId, ProjectId, RefreshVersion);
+        if (_scope == scope) { return; }
+        if (_scope?.Item1 != ThreadId || _scope?.Item2 != ProjectId) { BackToList(); }
+        _scope = scope;
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        _previews.Clear();
+        _changes = null;
+        _preview = null;
+        await RequestAsync(async ct =>
+        {
+            if (ProjectId is null) { return; }
+            var changes = await Api.GetChangesAsync(ProjectId, ThreadId, ct);
+            ct.ThrowIfCancellationRequested();
+            _changes = changes;
+            // A completion refresh keeps the same file open with its latest diff.
+            _selected = changes.State == ProjectReadState.Ready
+                ? changes.Entries.FirstOrDefault(entry => _selected is { } selected && entry.Path == selected.Path && entry.Group == selected.Group)
+                : null;
+            if (_selected is not null)
+            {
+                var preview = await Api.GetChangeAsync(ProjectId, ThreadId, _selected, ct);
+                ct.ThrowIfCancellationRequested();
+                _preview = preview;
+                _previews[_selected] = preview;
+            }
+        });
+    }
+
+    private async Task SelectAsync(ProjectChange entry)
+    {
+        _request?.Cancel();
+        _selected = entry;
+        _error = null;
+        if (_previews.TryGetValue(entry, out _preview)) { return; }
+        await RequestAsync(async ct =>
+        {
+            var preview = await Api.GetChangeAsync(ProjectId!, ThreadId, entry, ct);
+            ct.ThrowIfCancellationRequested();
+            _preview = preview;
+            // Bound retained diff text while keeping recent file switches local to this panel.
+            if (_previews.Count == 8) { _previews.Remove(_previews.Keys.First()); }
+            _previews[entry] = preview;
+        });
+    }
+
+    private async Task RequestAsync(Func<CancellationToken, Task> load)
+    {
+        _request?.Cancel();
+        using var request = new CancellationTokenSource();
+        _request = request;
+        _loading = true;
+        _error = null;
+        try { await load(request.Token); }
+        catch (OperationCanceledException) when (request.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            if (!request.IsCancellationRequested)
+            {
+                Logger.LogWarning(ex, "Git review failed for project {ProjectId}.", ProjectId);
+                _error = ex.Message;
+            }
+        }
+        finally
+        {
+            if (ReferenceEquals(_request, request)) { _request = null; _loading = false; }
+        }
+    }
+
+    private void BackToList() { _request?.Cancel(); _selected = null; _preview = null; }
+    public void Dispose() { _request?.Cancel(); }
+}

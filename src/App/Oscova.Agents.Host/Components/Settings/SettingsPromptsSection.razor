@@ -1,0 +1,331 @@
+@using Oscova.Agents.Core
+@using Oscova.Agents.Core.ApiContracts.Prompts
+@using Oscova.Agents.Memory
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IToastService ToastService
+@inject ILogger<SettingsPromptsSection> Logger
+
+<div class="card custom-settings-catalog-card custom-settings-prompts">
+    <div class="card-body space-y-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="space-y-1">
+                <h2 class="card-title">@Loc.GetOrDefault(SettingsTextKeys.PromptsCatalogTitle, "Custom Prompts")</h2>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PromptsCatalogDescription, "Review and edit the prompt templates used by memory, Library Search, compaction, skills, and runtime context features.")</p>
+            </div>
+            <span class="badge badge-soft">@FormatPromptCount()</span>
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="flex justify-center py-6">
+                <span class="loading loading-dots loading-md"></span>
+            </div>
+        }
+        else
+        {
+            <table class="table custom-settings-adaptive-table custom-settings-prompts-table" aria-label="@Loc[SettingsTextKeys.PromptsCatalogTitle]">
+                <thead>
+                    <tr>
+                        <th scope="col">@CommonLoc[CommonTextKeys.Name]</th>
+                        <th scope="col">@CommonLoc[CommonTextKeys.Description]</th>
+                        <th scope="col" class="text-end">@CommonLoc[CommonTextKeys.Actions]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prompt in PromptDefinitions.Where(prompt => prompt.GetDocument(_prompts).DefaultContent is not null))
+                    {
+                        var document = prompt.GetDocument(_prompts);
+
+                        <tr @key="prompt.Key">
+                            <td>
+                                <div class="flex items-start gap-2">
+                                    <iconify-icon icon="@prompt.Icon" width="18" height="18" class="shrink-0 text-primary" aria-hidden="true"></iconify-icon>
+                                    <div class="min-w-0">
+                                        <span class="font-medium">@prompt.Title</span>
+                                        <p class="mt-1 text-sm">@FormatVariablesBadge(prompt.Variables.Count)</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <p class="text-sm">@prompt.Description</p>
+                                <p class="mt-2 text-xs">
+                                    @Loc[SettingsTextKeys.PromptsStoredAsLabel]
+                                    <bdi dir="ltr"><code>@document.RelativePath</code></bdi>
+                                </p>
+                                @if (document.HasMetadataError)
+                                {
+                                    <p role="alert" class="mt-2 text-sm text-error">@Loc[SettingsTextKeys.PromptsMetadataError]</p>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-ghost btn-sm" disabled="@document.HasMetadataError" @onclick="() => OpenPromptEditorAsync(prompt)">
+                                    <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>
+                                    @CommonLoc[CommonTextKeys.Edit]
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <ul class="list">
+                @foreach (var prompt in PromptDefinitions.Where(prompt => prompt.GetDocument(_prompts).DefaultContent is not null))
+                {
+                    var document = prompt.GetDocument(_prompts);
+
+                    <li class="list-row" @key="prompt.Key">
+                        <div class="flex size-10 items-center justify-center rounded-box bg-primary/10 text-primary">
+                            <iconify-icon icon="@prompt.Icon" width="18" height="18"></iconify-icon>
+                        </div>
+                        <div class="list-col-grow min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-medium">@prompt.Title</span>
+                                <span class="badge badge-ghost badge-sm">@FormatVariablesBadge(prompt.Variables.Count)</span>
+                            </div>
+                            <p class="mt-1 text-sm opacity-70">@prompt.Description</p>
+                            <p class="mt-2 text-xs opacity-70">
+                                @Loc.GetOrDefault(SettingsTextKeys.PromptsStoredAsLabel, "Stored as")
+                                <code class="text-xs">@document.RelativePath</code>
+                            </p>
+                            @if (document.HasMetadataError)
+                            {
+                                <p role="alert" class="mt-2 text-sm text-error">@Loc.GetOrDefault(SettingsTextKeys.PromptsMetadataError, "Instruction metadata is missing or invalid. This instruction cannot be edited.")</p>
+                            }
+                        </div>
+                        <button type="button"
+                                class="btn btn-ghost btn-sm"
+                                disabled="@document.HasMetadataError"
+                                @onclick="() => OpenPromptEditorAsync(prompt)">
+                            <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>
+                            @CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")
+                        </button>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+    private static readonly IReadOnlyList<PromptVariableOption> CompactionVariables =
+    [
+        new("{{ chat_history }}", "The formatted conversation history.")
+    ];
+
+    private static readonly IReadOnlyList<PromptVariableOption> MemoryVariables =
+    [
+        new("{{ agent_memory }}", "The assembled memory XML block.")
+    ];
+
+    private IReadOnlyList<PromptVariableOption> EnvironmentVariables =>
+    [
+        new("{{ os }}", "The current operating system name."),
+        new("{{ architecture }}", "The current process architecture."),
+        new("{{ shell }}", "The active shell name."),
+        new("{{ working_directory }}", "The current working directory."),
+        new("{{ path_separator }}", "The platform path separator."),
+        new("{{ home_directory }}", "The current home directory."),
+        new("{{ temp_directory }}", "The temporary directory path."),
+        new("{{ host_os }}", "The host operating system name."),
+        new("{{ host_architecture }}", "The host operating system architecture."),
+        new("{{ host_shell }}", "The host shell used by host_shell__exec."),
+        new("{{ host_path_separator }}", "The host platform path separator."),
+        new("{{ workspace_directories }}", "The available workspace directory list."),
+        new("{{ private_directories }}", Loc.GetOrDefault(SettingsTextKeys.PromptsPrivateDirectoriesVariableDescription, "The agent's private folder list.")),
+        new("{{ has_private_directory }}", Loc.GetOrDefault(SettingsTextKeys.PromptsHasPrivateDirectoryVariableDescription, "True when the agent has a private folder.")),
+        new("{{ shell_root_variables }}", Loc.GetOrDefault(SettingsTextKeys.PromptsShellRootVariablesVariableDescription, "Shell environment variable names and their folder aliases.")),
+        new("{{ has_shell_roots }}", Loc.GetOrDefault(SettingsTextKeys.PromptsHasShellRootsVariableDescription, "True when shell root variables are available.")),
+        new("{{ workspace_has_aliases }}", Loc.GetOrDefault(SettingsTextKeys.PromptsWorkspaceHasAliasesVariableDescription, "True when a workspace has a file-tool alias.")),
+        new("{{ uses_host_paths }}", Loc.GetOrDefault(SettingsTextKeys.PromptsUsesHostPathsVariableDescription, "True when shell commands use host paths."))
+    ];
+
+    private static readonly IReadOnlyList<PromptVariableOption> LibraryVariables =
+    [
+        new("{{ library_path }}", "The agent-facing path to the Library workspace.")
+    ];
+
+    private static readonly IReadOnlyList<PromptVariableOption> SkillsVariables =
+    [
+        new("{skills}", "The generated list of available skills.")
+    ];
+
+    private static readonly IReadOnlyList<PromptVariableOption> AvatarMarkupVariables =
+    [
+        new("{{ emotion_names }}", "The emotion names the connected avatar engine supports.")
+    ];
+
+    private PromptCollection _prompts = new();
+    private bool _isLoading = true;
+
+    private IReadOnlyList<PromptDefinition> PromptDefinitions =>
+    [
+        new("browser-use", Loc[SettingsTextKeys.PromptsBrowserUseLabel], Loc[SettingsTextKeys.PromptsBrowserUseDescription],
+            "lucide:globe", [], prompts => prompts.BrowserUse),
+        new(
+            "compaction",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsCompactionInstructionLabel, "Compaction Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsCompactionDescription, "Controls how long conversations are summarized when the context window needs room."),
+            "lucide:archive",
+            CompactionVariables,
+            prompts => prompts.Compaction),
+        new(
+            "memory",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsMemorySystemPromptLabel, "Memory System Prompt"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsMemorySystemDescription, "Shapes how saved memories are presented to the agent as context."),
+            "lucide:brain",
+            MemoryVariables,
+            prompts => prompts.Memory),
+        new(
+            "environment",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsEnvironmentPromptLabel, "Environment Prompt"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsEnvironmentPromptDescription, "Builds the runtime environment context added to agent instructions."),
+            "lucide:terminal",
+            EnvironmentVariables,
+            prompts => prompts.Environment),
+        new(
+            "library",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsLibraryPromptLabel, "Library Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsLibraryPromptDescription, "Guides how agents search persistent Library files and distinguish them from conversation memory."),
+            "lucide:library",
+            LibraryVariables,
+            prompts => prompts.Library),
+        new(
+            "tool-search",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsToolSearchPromptLabel, "Tool Discovery Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsToolSearchPromptDescription, "Guides how agents search for tools when large tool sets are deferred."),
+            "lucide:search",
+            [],
+            prompts => prompts.ToolSearch),
+        new(
+            "todo-provider",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsTodoProviderPromptLabel, "Task List Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsTodoProviderPromptDescription, "Guides how opted-in agents create and maintain their task list during complex work."),
+            "lucide:list-checks",
+            [],
+            prompts => prompts.TodoProvider),
+        new(
+            "subagents",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsSubagentsPromptLabel, "Subagents Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsSubagentsPromptDescription, "Guides how agents with subagents turned on delegate work to separate instances of themselves."),
+            "lucide:git-fork",
+            [],
+            prompts => prompts.Subagents),
+        new(
+            "skills",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsSkillsPromptLabel, "Skills Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsSkillsPromptDescription, "Guides how agents discover, load, and use assigned skills."),
+            "lucide:book-open-check",
+            SkillsVariables,
+            prompts => prompts.Skills),
+        new(
+            "avatar-markup",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsAvatarMarkupPromptLabel, "Avatar Emotion Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsAvatarMarkupPromptDescription, "Guides when the agent marks feelings with emotion tags while the avatar speaks replies."),
+            "lucide:smile",
+            AvatarMarkupVariables,
+            prompts => prompts.AvatarMarkup),
+        new(
+            "chat-continuation",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsChatContinuationInstructionLabel, "Chat Resume Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsChatContinuationDescription, "Guides how an interrupted chat resumes its last request."),
+            "lucide:archive",
+            [],
+            prompts => prompts.ChatContinuation),
+        new(
+            "goal-judge",
+            Loc.GetOrDefault(SettingsTextKeys.GoalJudgeInstruction, "Goal Judge Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.GoalJudgeDescription, "Decides whether the current goal is achieved."),
+            "lucide:search", [], prompts => prompts.GoalJudge),
+        new(
+            "goal-continuation",
+            Loc.GetOrDefault(SettingsTextKeys.GoalContinuationInstruction, "Goal Continuation Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.GoalContinuationDescription, "Turns the completion check's gap analysis into the worker's next instruction."),
+            "lucide:play", [new("{gap_analysis}", Loc.GetOrDefault(SettingsTextKeys.GoalGapAnalysis, "Work still missing according to the completion check."))], prompts => prompts.GoalContinuation),
+        new(
+            "chat-title",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsChatTitleInstructionLabel, "Chat Title Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsChatTitleDescription, "Guides the automatic titles created for chats."),
+            "lucide:search",
+            CompactionVariables,
+            prompts => prompts.ChatTitle),
+        new(
+            "tool-failure-recovery",
+            Loc.GetOrDefault(SettingsTextKeys.PromptsToolFailureRecoveryInstructionLabel, "Tool Failure Recovery Instruction"),
+            Loc.GetOrDefault(SettingsTextKeys.PromptsToolFailureRecoveryDescription, "Guides how agents recover after repeated tool failures."),
+            "lucide:terminal",
+            [],
+            prompts => prompts.ToolFailureRecovery)
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPromptsAsync();
+    }
+
+    private async Task OpenPromptEditorAsync(PromptDefinition prompt)
+    {
+        var document = prompt.GetDocument(_prompts);
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Title"] = prompt.Title,
+            ["FileName"] = document.FileName,
+            ["InitialContent"] = document.Content,
+            ["DefaultContent"] = document.DefaultContent,
+            ["InstructionMode"] = document.Mode,
+            ["Variables"] = prompt.Variables,
+            ["SaveContentAsync"] = (Func<SavePromptRequest, Task>)(request => SettingsApiClient.SavePromptAsync(prompt.Key, request))
+        };
+
+        var result = await DialogService.ShowAsync<PromptEditorDialog>(parameters);
+        if (result == DialogResult.Ok)
+        {
+            await LoadPromptsAsync();
+        }
+    }
+
+    private async Task LoadPromptsAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _prompts = await SettingsApiClient.GetPromptsAsync();
+        }
+        catch (HttpRequestException ex)
+        {
+            Logger.LogError(ex, "Instruction catalogue request failed.");
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.PromptsLoadFailed, "Instructions could not be loaded."), ToastType.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string FormatPromptCount()
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(SettingsTextKeys.PromptsCatalogCountBadge, "{0} prompts"),
+            PromptDefinitions.Count(prompt => prompt.GetDocument(_prompts).DefaultContent is not null));
+    }
+
+    private string FormatVariablesBadge(int count)
+    {
+        return count == 0
+            ? Loc.GetOrDefault(SettingsTextKeys.PromptsNoVariablesBadge, "No variables")
+            : string.Format(
+                CultureInfo.CurrentCulture,
+                Loc.GetOrDefault(SettingsTextKeys.PromptsVariablesBadge, "{0} variables"),
+                count);
+    }
+
+    private sealed record PromptDefinition(
+        string Key,
+        string Title,
+        string Description,
+        string Icon,
+        IReadOnlyList<PromptVariableOption> Variables,
+        Func<PromptCollection, PromptDocument> GetDocument);
+}

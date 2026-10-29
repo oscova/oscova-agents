@@ -1,0 +1,140 @@
+@using Oscova.Agents.Core.ApiContracts.Nodes
+@using Oscova.Agents.Host.Server.Nodes
+@inject ProjectsApiClient ProjectsApiClient
+@inject NodesApiClient NodesApiClient
+@inject NodeBroker NodeBroker
+@inject UserServiceScope UserScope
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<AddProjectDialog> Logger
+@implements IDisposable
+
+<AppDialogShell Title="@Loc[ChatTextKeys.ProjectAdd]" HelpTopic="@HelpTopics.AddProject"
+                Icon="lucide:folder" MaxWidthClass="max-w-lg" CloseResult="@DialogResult.Cancel" CanClose="@(!_saving)">
+    <ChildContent>
+        <form id="add-project-form" @onsubmit="SaveAsync" @onsubmit:preventDefault>
+            <fieldset class="fieldset p-0" disabled="@(_saving || _loading)">
+                <label class="fieldset-legend" for="project-device">@Loc[ChatTextKeys.ProjectDevice]</label>
+                <select id="project-device" class="select w-full" @bind="_nodeId" aria-describedby="project-device-help">
+                    @if (_catalog.IsOperator)
+                    {
+                        <option value="">@Loc[ChatTextKeys.ProjectServerDevice]</option>
+                    }
+                    else
+                    {
+                        <option value="">@Loc[ChatTextKeys.ProjectSelectDevice]</option>
+                    }
+                    @foreach (var node in _catalog.Nodes)
+                    {
+                        <option value="@node.Node.Id" disabled="@(!NodeCatalog.IsProjectNode(node))">
+                            @(NodeCatalog.IsProjectNode(node) ? node.Node.Name : $"{node.Node.Name} ({Loc[ChatTextKeys.ProjectDeviceUnavailable]})")
+                        </option>
+                    }
+                </select>
+                <p id="project-device-help" class="fieldset-label whitespace-normal" role="status">
+                    @if (_loading) { @CommonLoc[CommonTextKeys.Loading] }
+                    else if (!_catalog.ProjectsEnabled) { @Loc[ChatTextKeys.ProjectPermissionDisabled] }
+                    else if (!_catalog.CanCreateProjects) { @Loc[ChatTextKeys.ProjectNodeRequired] }
+                </p>
+                <label class="fieldset-legend" for="project-name">@Loc[ChatTextKeys.ProjectName]</label>
+                <input id="project-name" class="input w-full" maxlength="100" @bind="_name" @bind:event="oninput" />
+                <label class="fieldset-legend" for="project-folder">@Loc[ChatTextKeys.ProjectHostFolder]</label>
+                <input id="project-folder" class="input w-full" @bind="_path" @bind:event="oninput" aria-describedby="project-access-help" />
+                <p id="project-access-help" class="fieldset-label whitespace-normal">@Loc[ChatTextKeys.ProjectAccessHelp]</p>
+            </fieldset>
+            @if (_error is not null)
+            {
+                <p class="text-error mt-3 text-sm wrap-anywhere" role="alert">@_error</p>
+            }
+        </form>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="Cancel">@CommonLoc[CommonTextKeys.Cancel]</button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(!CanSave)" @onclick="SaveAsync">
+            @if (_saving) { <span class="loading loading-spinner loading-xs" aria-hidden="true"></span> }
+            @Loc[ChatTextKeys.ProjectAdd]
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    private NodeCatalog _catalog = new([], [], false);
+    private string _nodeId = string.Empty;
+    private string _name = string.Empty;
+    private string _path = string.Empty;
+    private string? _error;
+    private bool _saving;
+    private bool _loading = true;
+    private readonly CancellationTokenSource _disposeCts = new();
+    private bool CanSave => !_saving && !_loading && _catalog.ProjectsEnabled &&
+        !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_path) &&
+        (_nodeId.Length == 0 ? _catalog.IsOperator :
+            _catalog.Nodes.Any(node => node.Node.Id == _nodeId && NodeCatalog.IsProjectNode(node)));
+
+    protected override async Task OnInitializedAsync()
+    {
+        NodeBroker.StateChanged += OnNodeStateChanged;
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        if (_disposeCts.IsCancellationRequested) { return; }
+        _loading = true;
+        try
+        {
+            _catalog = await NodesApiClient.GetAsync(_disposeCts.Token);
+            if (_nodeId.Length == 0 && !_catalog.IsOperator)
+            {
+                _nodeId = _catalog.Nodes.FirstOrDefault(NodeCatalog.IsProjectNode)?.Node.Id ?? string.Empty;
+            }
+            _error = null;
+        }
+        catch (OperationCanceledException) when (_disposeCts.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not load project devices.");
+            _error = ex.Message;
+            _catalog = new([], [], false);
+        }
+        finally { _loading = false; }
+        if (!_disposeCts.IsCancellationRequested) { StateHasChanged(); }
+    }
+
+    private void OnNodeStateChanged(string userId)
+    {
+        if (userId == UserScope.UserId && !_disposeCts.IsCancellationRequested)
+        {
+            _ = InvokeAsync(RefreshAsync);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (!CanSave) { return; }
+        _saving = true;
+        _error = null;
+        try
+        {
+            var project = await ProjectsApiClient.CreateAsync(new(_name, _path, _nodeId.Length == 0 ? null : _nodeId), _disposeCts.Token);
+            if (!_disposeCts.IsCancellationRequested) { DialogInstance.Close(DialogResult.Ok, project); }
+        }
+        catch (OperationCanceledException) when (_disposeCts.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not add a project on device {NodeId}.", _nodeId);
+            _error = ex.Message;
+        }
+        finally { _saving = false; }
+    }
+
+    private void Cancel() => DialogInstance.Close<ProjectDefinition>(DialogResult.Cancel, null);
+
+    public void Dispose()
+    {
+        NodeBroker.StateChanged -= OnNodeStateChanged;
+        _disposeCts.Cancel();
+        _disposeCts.Dispose();
+    }
+}

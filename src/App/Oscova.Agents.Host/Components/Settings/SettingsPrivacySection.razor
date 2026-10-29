@@ -1,0 +1,245 @@
+@using Oscova.Agents.Core.ApiContracts.Privacy
+@inject SettingsApiClient SettingsApiClient
+@inject IToastService ToastService
+@inject ILogger<SettingsPrivacySection> Logger
+@inject IStringLocalizer<SettingsText> Loc
+
+<UnsavedChangesGuard IsDirty="@IsDirty" />
+
+@* Freeze the submitted draft until its save and reload finish. *@
+<fieldset disabled="@_isSaving">
+
+@if (_summary is null)
+{
+    <div class="alert alert-info alert-soft">
+        <iconify-icon icon="lucide:loader-circle"></iconify-icon>
+        <span>@Loc.GetOrDefault(SettingsTextKeys.PrivacyLoadingMessage, "Loading privacy settings...")</span>
+    </div>
+}
+else
+{
+    <div class="space-y-6">
+        <section class="custom-settings-group custom-settings-form">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                    <h4 class="font-semibold mb-2">@Loc.GetOrDefault(SettingsTextKeys.PrivacyOfflineModeTitle, "Offline mode")</h4>
+                    <p class="text-sm opacity-70">
+                        @Loc.GetOrDefault(SettingsTextKeys.PrivacyOfflineModeDescription, "When enabled, your agent can use local models, local tools, and LAN endpoints, but public internet providers and egress tools are blocked.")
+                    </p>
+                </div>
+                <span class="@(_draft.IsLocalOnly ? "badge badge-success badge-soft" : "badge badge-ghost")">
+                    @(_draft.IsLocalOnly
+                        ? Loc.GetOrDefault(SettingsTextKeys.PrivacyOfflineModeOnBadge, "On")
+                        : Loc.GetOrDefault(SettingsTextKeys.PrivacyOfflineModeOffBadge, "Off"))
+                </span>
+            </div>
+
+            <label class="label cursor-pointer justify-start gap-3 pl-0 mt-4">
+                <input type="checkbox"
+                       class="toggle toggle-primary"
+                       @bind="_draft.IsLocalOnly" />
+                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.PrivacyOfflineModeLabel, "Keep agent runs offline")</span>
+            </label>
+        </section>
+
+
+        <section>
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.PrivacyEffectsTitle, "Live effect")</h4>
+            @if (_draft.IsLocalOnly)
+            {
+                <div class="grid gap-4 lg:grid-cols-2">
+                    <div class="card custom-settings-catalog-card">
+                        <div class="card-body gap-3">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <h5 class="card-title text-base">@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderNetwork, "Internet")</h5>
+                                <span class="badge badge-warning badge-soft">
+                                    @Format(SettingsTextKeys.PrivacyDisabledToolsCount, "{0} tools disabled", _summary.DisabledNetworkToolCount)
+                                </span>
+                            </div>
+                            <p class="text-sm opacity-70">
+                                @Loc.GetOrDefault(SettingsTextKeys.PrivacyLocalNetworkDescription, "Loopback and local-network addresses stay available, including local Ollama or an avatar engine on another machine.")
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card custom-settings-catalog-card">
+                        <div class="card-body gap-3">
+                            <h5 class="card-title text-base">@Loc.GetOrDefault(SettingsTextKeys.PrivacyCloudProvidersTitle, "Cloud providers blocked")</h5>
+                            @if (_summary.CloudProviderNames.Count == 0)
+                            {
+                                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PrivacyNoCloudProviders, "No configured cloud providers are currently blocked.")</p>
+                            }
+                            else
+                            {
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var provider in _summary.CloudProviderNames)
+                                    {
+                                        <span class="badge badge-outline" @key="provider">@provider</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info alert-soft">
+                    <iconify-icon icon="lucide:info"></iconify-icon>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.PrivacyEffectsOff, "Offline limits are inactive. Your configured providers and tools can use their normal network access.")</span>
+                </div>
+            }
+        </section>
+
+
+        <section>
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.PrivacyLocalNetworkTitle, "Local network")</h4>
+            <div class="alert alert-success alert-soft">
+                <iconify-icon icon="lucide:router"></iconify-icon>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.PrivacyLocalNetworkDescription, "Loopback and local-network addresses stay available, including local Ollama or an avatar engine on another machine.")</span>
+            </div>
+        </section>
+
+        <div class="grid gap-4 lg:grid-cols-2">
+            <div class="card custom-settings-catalog-card">
+                <div class="card-body gap-3">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <h4 class="card-title text-base">@Loc.GetOrDefault(SettingsTextKeys.PrivacyRedactionTitle, "Redaction")</h4>
+                        <span class="badge badge-success badge-soft">@Loc.GetOrDefault(SettingsTextKeys.PrivacyRedactionBadge, "Always on")</span>
+                    </div>
+                    <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PrivacyRedactionDescription, "Saved secrets are masked in agent logs, approvals, and captured request details. This protection cannot be turned off.")</p>
+                </div>
+            </div>
+
+            <div class="card custom-settings-catalog-card">
+                <div class="card-body gap-3">
+                    <h4 class="card-title text-base">@Loc.GetOrDefault(SettingsTextKeys.PrivacyChannelsTitle, "Connected channels")</h4>
+                    <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PrivacyChannelsDescription, "Discord, Telegram, and Slack relay your messages through their own servers when enabled.")</p>
+                </div>
+            </div>
+        </div>
+
+
+        <section class="custom-settings-group custom-settings-form">
+            <h4 class="font-semibold mb-2">@Loc.GetOrDefault(SettingsTextKeys.PrivacyAutoLogoutTitle, "Automatic sign-out")</h4>
+            <p class="text-sm opacity-70 mb-4">
+                @Loc.GetOrDefault(SettingsTextKeys.PrivacyAutoLogoutDescription, "Sign out this browser after the selected time without mouse, touch, keyboard, scrolling, or submitting a message in any open Oscova tab.")
+            </p>
+            <label for="privacy-idle-logout" class="label pl-0">
+                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.PrivacyAutoLogoutLabel, "Sign out after")</span>
+            </label>
+            <select id="privacy-idle-logout"
+                    class="select select-bordered w-full max-w-xs"
+                    @bind="_draft.IdleLogoutMinutes">
+                @foreach (var minutes in PrivacySettings.AllowedIdleLogoutMinutes)
+                {
+                    <option value="@minutes">@FormatIdleLogoutOption(minutes)</option>
+                }
+            </select>
+        </section>
+
+        <div class="flex flex-wrap justify-end gap-2">
+            <button type="button"
+                    class="btn btn-outline btn-sm"
+                    disabled="@(!IsDirty || _isSaving)"
+                    @onclick="ResetDraft">
+                @Loc.GetOrDefault(SettingsTextKeys.PrivacyResetButton, "Reset")
+            </button>
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!IsDirty || _isSaving)"
+                    @onclick="SaveAsync">
+                <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+                @Loc.GetOrDefault(SettingsTextKeys.PrivacySaveButton, "Save Privacy Settings")
+            </button>
+        </div>
+    </div>
+}
+
+</fieldset>
+
+@code {
+    private PrivacySettingsSummary? _summary;
+    private UpdatePrivacySettingsRequest _saved = new();
+    private UpdatePrivacySettingsRequest _draft = new();
+    private bool _isSaving;
+
+    private bool IsDirty =>
+        _saved.IsLocalOnly != _draft.IsLocalOnly ||
+        _saved.IdleLogoutMinutes != _draft.IdleLogoutMinutes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettingsAsync();
+    }
+
+    private async Task LoadSettingsAsync()
+    {
+        try
+        {
+            _summary = await SettingsApiClient.GetPrivacySettingsAsync();
+            _saved = CreateRequest(_summary);
+            _draft = CreateRequest(_summary);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load privacy settings.");
+            ToastService.Show(
+                Format(SettingsTextKeys.PrivacyLoadErrorToast, "Privacy settings load error: {0}", ex.Message),
+                ToastType.Error);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (!IsDirty || _isSaving)
+        {
+            return;
+        }
+
+        _isSaving = true;
+        try
+        {
+            await SettingsApiClient.SavePrivacySettingsAsync(_draft);
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.PrivacySaveSuccessToast, "Privacy settings saved"), ToastType.Success);
+            await LoadSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save privacy settings.");
+            ToastService.Show(
+                Format(SettingsTextKeys.PrivacySaveFailedWithMessageToast, "Failed to save privacy settings: {0}", ex.Message),
+                ToastType.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private void ResetDraft()
+    {
+        _draft = CreateRequest(_summary);
+    }
+
+    private static UpdatePrivacySettingsRequest CreateRequest(PrivacySettingsSummary? summary)
+    {
+        return new UpdatePrivacySettingsRequest
+        {
+            IsLocalOnly = summary?.IsLocalOnly ?? false,
+            IdleLogoutMinutes = summary?.IdleLogoutMinutes ?? 0
+        };
+    }
+
+    private string FormatIdleLogoutOption(int minutes)
+    {
+        return minutes == 0
+            ? Loc.GetOrDefault(SettingsTextKeys.PrivacyAutoLogoutOffOption, "Off")
+            : Format(SettingsTextKeys.PrivacyAutoLogoutMinutesOption, "{0} minutes", minutes);
+    }
+
+    private string Format(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}

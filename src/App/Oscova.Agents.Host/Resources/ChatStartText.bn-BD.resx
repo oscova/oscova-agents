@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.Start.Dynamic.Common.Returns.Greeting">
+		<value>{0} ফিরে এসেছেন।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.Returns.Question">
+		<value>আমরা একসাথে কী নিয়ে ভাবব?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.FirstChat.Welcome.Greeting">
+		<value>Oscova-তে স্বাগতম, {0}।</value>
+	</data>
+	<data name="Chat.Start.Dynamic.FirstChat.Welcome.Question">
+		<value>এখানে কোনো কিছু কীভাবে কাজ করে আমাকে জিজ্ঞেস করুন, অথবা নিচের একটি আইডিয়া বেছে নিন।</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.Alright.Greeting">
+		<value>সব ঠিক আছে তো, {0}?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ThereYouAre.Greeting">
+		<value>এই তো আপনি, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ThereYouAre.Question">
+		<value>প্রথমে আমরা কী সমাধান করব?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ReadyWhen.Greeting">
+		<value>আপনি প্রস্তুত হলেই শুরু, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ReadyWhen.Question">
+		<value>যেকোনো জায়গা থেকে শুরু করুন।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.FloorYours.Greeting">
+		<value>এবার আপনার কথা শুনব, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.FloorYours.Question">
+		<value>আজ আমরা কী রূপ দিচ্ছি?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.BackBoard.Greeting">
+		<value>আবার কাজে ফিরি, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.BackBoard.Question">
+		<value>কোনটি আরও স্পষ্ট রূপ পাওয়ার যোগ্য?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.LetsBegin.Greeting">
+		<value>চলুন শুরু করি, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.LetsBegin.Question">
+		<value>অগোছালো খসড়াটাই আমাকে দিন।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.YouMadeIt.Greeting">
+		<value>আপনি এসে গেছেন, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.YouMadeIt.Question">
+		<value>কোন বিষয়ে আপনার মনোযোগ দরকার?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.GoodMorning.Greeting">
+		<value>শুভ সকাল, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.GoodMorning.Question">
+		<value>কোথা থেকে শুরু করা উচিত?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.FreshStart.Greeting">
+		<value>নতুন শুরু, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.FreshStart.Question">
+		<value>প্রথম কার্যকর কাজটি কী?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.YoureEarly.Greeting">
+		<value>আপনি আগেভাগেই চলে এসেছেন, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.YoureEarly.Question">
+		<value>আমরা কী এগিয়ে নিয়ে যাব?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.Morning.Greeting">
+		<value>শুভ সকাল, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.Morning.Question">
+		<value>কোনো পরিকল্পনা, খসড়া নাকি দ্বিতীয় মস্তিষ্কের প্রয়োজন?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.GoodAfternoon.Greeting">
+		<value>শুভ দুপুর, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.GoodAfternoon.Question">
+		<value>আমরা কী নিয়ে কাজ করছি?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.NextThing.Greeting">
+		<value>পরবর্তী কাজের জন্য প্রস্তুত, {0}?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Focus.Greeting">
+		<value>দুপুরে কাজে মন দিই, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Focus.Question">
+		<value>কী আরও স্পষ্ট করা দরকার?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Useful.Greeting">
+		<value>চলুন দুপুরটাকে কাজে লাগাই, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Useful.Question">
+		<value>কোন কাজটি আমরা সহজ করে তুলব?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.GoodEvening.Greeting">
+		<value>শুভ সন্ধ্যা, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.GoodEvening.Question">
+		<value>আমরা কী নিয়ে চিন্তা করব?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.QuietHours.Greeting">
+		<value>শান্ত সময়, ধারালো চিন্তা, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.QuietHours.Question">
+		<value>কোন বিষয়ে একটু শান্ত মনোযোগ প্রয়োজন?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.StillThinking.Greeting">
+		<value>এখনও ভাবছেন, {0}?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.WrapOrRefine.Greeting">
+		<value>শুভ সন্ধ্যা, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.WrapOrRefine.Question">
+		<value>কোনটি শেষ বা পরিমার্জন করব?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.LateMode.Greeting">
+		<value>গভীর রাতের মোড, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.LateMode.Question">
+		<value>আজ রাতে আমরা কী জট খোলার সাহস রাখছি?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.UpLate.Greeting">
+		<value>এত রাত পর্যন্ত জেগে, {0}?</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.NightShift.Greeting">
+		<value>রাতের শিফট, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.NightShift.Question">
+		<value>অগোছালো খসড়াটাই আমাকে দিন।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.QuietHours.Greeting">
+		<value>নিস্তব্ধ প্রহর, {0}।</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.QuietHours.Question">
+		<value>কোনটি আরও পরিচ্ছন্ন রূপ পাওয়ার যোগ্য?</value>
+
+	</data>
+</root>

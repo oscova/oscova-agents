@@ -1,0 +1,700 @@
+@inject UserServiceScope UserScope
+@using System.Text.Json.Serialization
+@using Oscova.Agents.Core.ApiContracts.Hooks
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Hooks
+@inject ManagementApiClient ManagementApiClient
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<UnsavedChangesGuard IsDirty="@IsDirty" />
+
+@if (_isLoading)
+{
+    <div class="alert alert-info">
+        <iconify-icon icon="lucide:loader-circle"></iconify-icon>
+        <span>@Loc.GetOrDefault(SettingsTextKeys.HooksLoadingMessage, "Loading hook settings...")</span>
+    </div>
+}
+else
+{
+    <div class="custom-settings-hooks grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <section class="custom-settings-group custom-settings-form space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.HooksSectionTitle, "Hook handlers")</h4>
+                    <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.HooksSectionDescription, "Run commands or HTTP endpoints when agent and task events happen.")</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <div role="tablist" class="tabs tabs-box tabs-sm">
+                        <button type="button" role="tab" aria-selected="@(_editorMode == HookEditorMode.Visual ? "true" : "false")" class="tab @(_editorMode == HookEditorMode.Visual ? "tab-active" : null)" @onclick="ShowVisualEditor">
+                            @Loc.GetOrDefault(SettingsTextKeys.HooksVisualTab, "Visual")
+                        </button>
+                        <button type="button" role="tab" aria-selected="@(_editorMode == HookEditorMode.Json ? "true" : "false")" class="tab @(_editorMode == HookEditorMode.Json ? "tab-active" : null)" @onclick="ShowJsonEditor">
+                            @Loc.GetOrDefault(SettingsTextKeys.HooksJsonTab, "JSON")
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" disabled="@_isBusy" @onclick="OpenAddHookDialogAsync">
+                        <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.HooksAddHookButton, "Add hook")
+                    </button>
+                </div>
+            </div>
+
+            @if (_editorMode == HookEditorMode.Json)
+            {
+                <div class="custom-settings-group custom-settings-form">
+                    <label class="label py-1" for="hooks-json-editor">
+                        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.HooksJsonLabel, "Hook settings JSON")</span>
+                    </label>
+                    @* A pending save must not replace a newer JSON draft. *@
+                    <textarea disabled="@_isBusy" id="hooks-json-editor" class="textarea textarea-bordered min-h-80 w-full font-mono text-xs" @bind="_jsonDraft"></textarea>
+                    <div class="mt-3 flex flex-wrap justify-end gap-2">
+                        <button type="button" class="btn btn-ghost btn-sm" @onclick="CopyJsonAsync">
+                            <span class="iconify lucide--copy size-4" aria-hidden="true"></span>
+                            @Loc.GetOrDefault(SettingsTextKeys.HooksCopyJsonButton, "Copy JSON")
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" disabled="@_isBusy" @onclick="ApplyJson">
+                            <span class="iconify lucide--clipboard-check size-4" aria-hidden="true"></span>
+                            @Loc.GetOrDefault(SettingsTextKeys.HooksApplyJsonButton, "Apply JSON")
+                        </button>
+                    </div>
+                </div>
+            }
+            else if (_hooks.Count == 0)
+            {
+                <div class="custom-settings-group custom-settings-form text-sm opacity-70">
+                    @Loc.GetOrDefault(SettingsTextKeys.HooksNoHooksMessage, "No outbound hooks configured.")
+                </div>
+            }
+            else
+            {
+                <div class="custom-settings-table-container overflow-x-auto">
+                    <table class="table table-pin-rows custom-settings-adaptive-table">
+                        <thead>
+                            <tr>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</th>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.HooksEventsLabel, "Events")</th>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.HooksTargetLabel, "Target")</th>
+                                <th class="custom-settings-actions text-right">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var hook in _hooks)
+                            {
+                                <tr @key="hook.Id">
+                                    <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")">
+                                        <div class="max-w-xs truncate font-medium">
+                                            @(string.IsNullOrWhiteSpace(hook.Name) ? Loc.GetOrDefault(SettingsTextKeys.HooksUnnamedHookLabel, "Unnamed hook") : hook.Name)
+                                        </div>
+                                        <div class="text-xs opacity-60">@GetFailureModeLabel(hook.FailureMode)</div>
+                                        <span class="badge badge-sm @(hook.IsEnabled ? "badge-success" : "badge-ghost")">@(hook.IsEnabled ? Loc.GetOrDefault(SettingsTextKeys.HooksEnabledStatus, "Enabled") : Loc.GetOrDefault(SettingsTextKeys.HooksDisabledStatus, "Disabled"))</span>
+                                    </td>
+                                    <td data-label="@Loc.GetOrDefault(SettingsTextKeys.HooksEventsLabel, "Events")">
+                                        <div class="flex max-w-sm flex-wrap gap-1">
+                                            @foreach (var hookEvent in hook.Events)
+                                            {
+                                                <span class="badge badge-sm badge-ghost h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@GetEventLabel(hookEvent)</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td data-label="@Loc.GetOrDefault(SettingsTextKeys.HooksTargetLabel, "Target")">
+                                        <span class="badge badge-sm badge-ghost">@GetHandlerLabel(hook.HandlerType)</span>
+                                        <div class="max-w-xs break-all text-xs opacity-80">@GetHookTarget(hook)</div>
+                                        <div class="text-xs opacity-60">@Loc[SettingsTextKeys.HooksTimeoutLabel]: @hook.TimeoutSeconds</div>
+                                    </td>
+                                    <td class="custom-settings-actions" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                        <div class="flex flex-wrap justify-end gap-2">
+                                            <button type="button" class="btn btn-ghost btn-xs btn-square" title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")" disabled="@_isBusy" @onclick="() => OpenEditHookDialogAsync(hook)"><span class="iconify lucide--pencil size-4" aria-hidden="true"></span></button>
+                                            <button type="button" class="btn btn-ghost btn-xs btn-square" title="@CommonLoc.GetOrDefault(CommonTextKeys.Duplicate, "Duplicate")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Duplicate, "Duplicate")" disabled="@_isBusy" @onclick="() => DuplicateHook(hook)"><span class="iconify lucide--copy size-4" aria-hidden="true"></span></button>
+                                            <button type="button" class="btn btn-ghost text-error btn-xs btn-square" title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")" disabled="@_isBusy" @onclick="() => DeleteHook(hook)"><span class="iconify lucide--trash-2 size-4" aria-hidden="true"></span></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <div class="flex flex-wrap justify-end gap-2">
+                <button type="button" class="btn btn-outline btn-sm" disabled="@(!IsDirty || _isBusy)" @onclick="ResetHooks">
+                    @Loc.GetOrDefault(SettingsTextKeys.HooksResetButton, "Reset")
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" disabled="@(!IsDirty || _isBusy)" @onclick="SaveHooksAsync">
+                    <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.HooksSaveButton, "Save hooks")
+                </button>
+            </div>
+        </section>
+
+        <aside class="space-y-4">
+            <section class="custom-settings-group custom-settings-form">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-semibold">@Loc.GetOrDefault(SettingsTextKeys.HooksApiKeysTitle, "Task webhook API keys")</h4>
+                        <p class="mt-1 text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.HooksApiKeysDescription, "Create bearer tokens for external systems that trigger allowed tasks.")</p>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-xs shrink-0" disabled="@_isBusy" @onclick="OpenCreateApiKeyDialogAsync">
+                        <span class="iconify lucide--plus size-3" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.HooksCreateApiKeyButton, "Create API key")
+                    </button>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(_createdApiToken))
+                {
+                    <div role="alert" class="alert alert-success alert-soft mt-3">
+                        <iconify-icon icon="lucide:key-round"></iconify-icon>
+                        <div class="min-w-0">
+                            <div class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.HooksCreatedTokenTitle, "Copy this token now")</div>
+                            <div class="break-all font-mono text-xs">@_createdApiToken</div>
+                        </div>
+                        <button type="button" class="btn btn-xs" @onclick="CopyCreatedTokenAsync">@Loc.GetOrDefault(SettingsTextKeys.HooksCopyTokenButton, "Copy")</button>
+                    </div>
+                }
+                <div class="divider my-3"></div>
+                @if (_apiKeys.Count == 0)
+                {
+                    <p class="text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.HooksNoApiKeysMessage, "No task webhook API keys yet.")</p>
+                }
+                else
+                {
+                    <div class="custom-settings-table-container overflow-x-auto">
+                        <table class="table table-pin-rows table-sm custom-settings-adaptive-table">
+                            <thead>
+                                <tr>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</th>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")</th>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")</th>
+                                    <th class="custom-settings-actions text-right">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var apiKey in _apiKeys)
+                                {
+                                    <tr @key="apiKey.Id">
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")">
+                                            <div class="max-w-40 truncate font-medium">@apiKey.Name</div>
+                                            <div class="font-mono text-xs opacity-60">@apiKey.TokenPrefix...</div>
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")">
+                                            <input type="checkbox" class="toggle toggle-primary toggle-sm" checked="@apiKey.IsEnabled" @onchange="args => SetApiKeyEnabledAsync(apiKey, args.Value is true)" />
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")">
+                                            <div class="space-y-1 text-xs opacity-70">
+                                                <div>@FormatSettingsText(SettingsTextKeys.HooksApiKeyCreatedLabel, "Created {0}", FormatDate(apiKey.CreatedAt))</div>
+                                                <div>@FormatSettingsText(SettingsTextKeys.HooksApiKeyLastUsedLabel, "Last used {0}", FormatLastUsed(apiKey.LastUsedAt))</div>
+                                                <div>@Loc.GetOrDefault(SettingsTextKeys.HooksApiKeyScopesLabel, "Scopes"): @FormatList(apiKey.Scopes)</div>
+                                                <div>@Loc.GetOrDefault(SettingsTextKeys.HooksApiKeyAllowedSlugsLabel, "Allowed slugs"): @FormatList(apiKey.AllowedTaskSlugs)</div>
+                                            </div>
+                                        </td>
+                                        <td class="custom-settings-actions" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                            <div class="flex justify-end">
+                                                <button type="button" class="btn btn-error btn-xs" disabled="@_isBusy" @onclick="() => DeleteApiKeyAsync(apiKey)">@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+
+            <section class="custom-settings-group custom-settings-form">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm font-semibold">@Loc.GetOrDefault(SettingsTextKeys.HooksSecretsTitle, "Outbound HTTP hook secrets")</h4>
+                        <p class="mt-1 text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.HooksSecretsDescription, "Store header values Oscova sends to external HTTP hook endpoints.")</p>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-xs shrink-0" disabled="@_isBusy" @onclick="() => OpenSecretDialogAsync(null)">
+                        <span class="iconify lucide--plus size-3" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.HooksNewSecretButton, "New")
+                    </button>
+                </div>
+                <div class="divider my-3"></div>
+                @if (_secretCredentials.Count == 0)
+                {
+                    <p class="text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.HooksNoSecretsMessage, "No outbound HTTP hook secrets saved yet.")</p>
+                }
+                else
+                {
+                    <div class="custom-settings-table-container overflow-x-auto">
+                        <table class="table table-pin-rows table-sm custom-settings-adaptive-table">
+                            <thead>
+                                <tr>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</th>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")</th>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")</th>
+                                    <th class="custom-settings-actions text-right">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var secret in _secretCredentials)
+                                {
+                                    <tr @key="secret.CredentialKey">
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")">
+                                            <div class="max-w-40 truncate font-medium">@secret.Alias</div>
+                                            <div class="truncate font-mono text-xs opacity-60">@secret.CredentialKey</div>
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")">
+                                            <div class="max-w-48 text-xs opacity-70">
+                                                <div class="truncate">@(string.IsNullOrWhiteSpace(secret.Description) ? "-" : secret.Description)</div>
+                                                <div>@FormatSettingsText(SettingsTextKeys.HooksSecretUpdatedLabel, "Updated {0}", FormatDate(secret.UpdatedAt))</div>
+                                            </div>
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")">
+                                            <span class="badge badge-sm @(secret.IsSet ? "badge-success" : "badge-warning")">@(secret.IsSet ? Loc.GetOrDefault(SettingsTextKeys.HooksSecretSetStatus, "Set") : CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set"))</span>
+                                        </td>
+                                        <td class="custom-settings-actions" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                            <div class="flex flex-wrap justify-end gap-2">
+                                                <button type="button" class="btn btn-ghost btn-xs" disabled="@_isBusy" @onclick="() => OpenSecretDialogAsync(secret)">@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")</button>
+                                                <button type="button" class="btn btn-error btn-xs" disabled="@_isBusy" @onclick="() => DeleteSecretAsync(secret)">@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+        </aside>
+    </div>
+}
+
+@code {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
+    private readonly List<HookDefinition> _savedHooks = [];
+    private List<HookDefinition> _hooks = [];
+    private List<HookApiKeySummary> _apiKeys = [];
+    private List<HookSecretCredentialSummary> _secretCredentials = [];
+    private bool _isLoading = true;
+    private bool _isBusy;
+    private HookEditorMode _editorMode = HookEditorMode.Visual;
+    private string _jsonDraft = string.Empty;
+    private string _savedHooksSnapshot = SerializeHooks([]);
+    private string? _createdApiToken;
+
+    private bool IsDirty => SerializeHooks(_hooks) != _savedHooksSnapshot;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            var summary = await ManagementApiClient.GetHookSettingsAsync();
+            _savedHooks.Clear();
+            _savedHooks.AddRange(CloneHooks(summary.Hooks));
+            _hooks = CloneHooks(summary.Hooks);
+            _apiKeys = [.. summary.ApiKeys];
+            _secretCredentials = [.. await ManagementApiClient.GetHookSecretCredentialsAsync()];
+            _jsonDraft = SerializeHooks(_hooks);
+            _savedHooksSnapshot = _jsonDraft;
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.HooksLoadFailedToast, "Failed to load hook settings: {0}", ex.Message), ToastType.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task OpenAddHookDialogAsync()
+    {
+        var result = await DialogService.ShowAsync<HookEditorDialog, HookDefinition>(
+            new Dictionary<string, object?>
+            {
+                ["Hook"] = CreateNewHook(),
+                ["SecretCredentials"] = _secretCredentials,
+                ["IsEditing"] = false
+            });
+
+        if (result.IsOk && result.Data is not null)
+        {
+            _hooks.Add(result.Data);
+        }
+    }
+
+    private async Task OpenEditHookDialogAsync(HookDefinition hook)
+    {
+        var result = await DialogService.ShowAsync<HookEditorDialog, HookDefinition>(
+            new Dictionary<string, object?>
+            {
+                ["Hook"] = CloneHook(hook),
+                ["SecretCredentials"] = _secretCredentials,
+                ["IsEditing"] = true
+            });
+
+        if (result.IsOk && result.Data is not null)
+        {
+            ReplaceHookDraft(hook, result.Data);
+        }
+    }
+
+    private HookDefinition CreateNewHook()
+    {
+        return new HookDefinition
+        {
+            Name = Loc.GetOrDefault(SettingsTextKeys.HooksNewHookDefaultName, "New hook"),
+            Events = [HookEventKind.UserPromptSubmit],
+            HandlerType = HookHandlerType.Http,
+            FailureMode = HookFailureMode.FailClosed,
+            TimeoutSeconds = 10,
+            Http = new HttpHookOptions()
+        };
+    }
+
+    private void ReplaceHookDraft(HookDefinition original, HookDefinition updated)
+    {
+        var index = _hooks.IndexOf(original);
+        if (index >= 0)
+        {
+            _hooks[index] = updated;
+        }
+    }
+
+    private void DuplicateHook(HookDefinition hook)
+    {
+        var copy = CloneHook(hook);
+        copy.Id = Guid.NewGuid().ToString("N");
+        copy.Name = string.IsNullOrWhiteSpace(hook.Name)
+            ? Loc.GetOrDefault(SettingsTextKeys.HooksNewHookDefaultName, "New hook")
+            : FormatSettingsText(SettingsTextKeys.HooksCopyNameSuffix, "{0} (Copy)", hook.Name);
+        _hooks.Add(copy);
+    }
+
+    private void DeleteHook(HookDefinition hook)
+    {
+        _hooks.Remove(hook);
+    }
+
+    private void ResetHooks()
+    {
+        _hooks = CloneHooks(_savedHooks);
+        _jsonDraft = SerializeHooks(_hooks);
+    }
+
+    private async Task SaveHooksAsync()
+    {
+        if (_isBusy) return;
+        _isBusy = true;
+        try
+        {
+            var summary = await ManagementApiClient.SaveHookSettingsAsync(new UpdateHookSettingsRequest { Hooks = CloneHooks(_hooks) });
+            _savedHooks.Clear();
+            _savedHooks.AddRange(CloneHooks(summary.Hooks));
+            _hooks = CloneHooks(summary.Hooks);
+            _apiKeys = [.. summary.ApiKeys];
+            _jsonDraft = SerializeHooks(_hooks);
+            _savedHooksSnapshot = _jsonDraft;
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksSavedToast, "Hook settings saved."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.HooksSaveFailedToast, "Failed to save hook settings: {0}", ex.Message), ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private void ShowVisualEditor()
+    {
+        _editorMode = HookEditorMode.Visual;
+    }
+
+    private void ShowJsonEditor()
+    {
+        _jsonDraft = SerializeHooks(_hooks);
+        _editorMode = HookEditorMode.Json;
+    }
+
+    private async Task CopyJsonAsync()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _jsonDraft);
+    }
+
+    private void ApplyJson()
+    {
+        try
+        {
+            var imported = JsonSerializer.Deserialize<List<HookDefinition>>(_jsonDraft, JsonOptions) ?? [];
+            _hooks = CloneHooks(HookSettingsValidator.NormalizeOrThrow(imported));
+            _jsonDraft = SerializeHooks(_hooks);
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksJsonAppliedToast, "Hook JSON applied."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.HooksInvalidJsonToast, "Invalid hook JSON: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task OpenCreateApiKeyDialogAsync()
+    {
+        var result = await DialogService.ShowAsync<HookApiKeyEditorDialog, CreateHookApiKeyRequest>();
+        if (result.IsOk && result.Data is not null)
+        {
+            await CreateApiKeyAsync(result.Data);
+        }
+    }
+
+    private async Task CreateApiKeyAsync(CreateHookApiKeyRequest request)
+    {
+        if (_isBusy) return;
+        _isBusy = true;
+        try
+        {
+            var created = await ManagementApiClient.CreateHookApiKeyAsync(request);
+            _apiKeys.Add(created.Key);
+            _createdApiToken = created.PlaintextToken;
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksApiKeyCreatedToast, "Task webhook API key created."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task SetApiKeyEnabledAsync(HookApiKeySummary apiKey, bool isEnabled)
+    {
+        if (_isBusy) return;
+        _isBusy = true;
+        try
+        {
+            await ManagementApiClient.SetHookApiKeyEnabledAsync(apiKey.Id, isEnabled);
+            apiKey.IsEnabled = isEnabled;
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksApiKeyUpdatedToast, "Task webhook API key updated."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task DeleteApiKeyAsync(HookApiKeySummary apiKey)
+    {
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.HooksDeleteApiKeyConfirmTitle, "Delete task webhook API key"),
+            FormatSettingsText(SettingsTextKeys.HooksDeleteApiKeyConfirmMessage, "Delete task webhook API key \"{0}\"?", apiKey.Name));
+        if (result != DialogResult.Ok || _isBusy) return;
+
+        _isBusy = true;
+        try
+        {
+            await ManagementApiClient.DeleteHookApiKeyAsync(apiKey.Id);
+            _apiKeys.Remove(apiKey);
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksApiKeyDeletedToast, "Task webhook API key deleted."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task CopyCreatedTokenAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_createdApiToken))
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", _createdApiToken);
+        }
+    }
+
+    private async Task OpenSecretDialogAsync(HookSecretCredentialSummary? secret)
+    {
+        var result = await DialogService.ShowAsync<HookSecretEditorDialog, SaveHookSecretCredentialRequest>(
+            new Dictionary<string, object?>
+            {
+                ["Secret"] = secret
+            });
+
+        if (result.IsOk && result.Data is not null)
+        {
+            await SaveSecretAsync(result.Data);
+        }
+    }
+
+    private async Task SaveSecretAsync(SaveHookSecretCredentialRequest request)
+    {
+        if (_isBusy) return;
+        _isBusy = true;
+        try
+        {
+            await ManagementApiClient.SaveHookSecretCredentialAsync(request);
+            _secretCredentials = [.. await ManagementApiClient.GetHookSecretCredentialsAsync()];
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksSecretSavedToast, "Outbound HTTP hook secret saved."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task DeleteSecretAsync(HookSecretCredentialSummary secret)
+    {
+        var messageKey = IsSecretReferenced(secret.CredentialKey)
+            ? SettingsTextKeys.HooksDeleteSecretReferencedConfirmMessage
+            : SettingsTextKeys.HooksDeleteSecretConfirmMessage;
+        var fallback = IsSecretReferenced(secret.CredentialKey)
+            ? "Delete outbound HTTP hook secret \"{0}\"? One or more HTTP hooks still reference this credential."
+            : "Delete outbound HTTP hook secret \"{0}\"?";
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.HooksDeleteSecretConfirmTitle, "Delete outbound HTTP hook secret"),
+            FormatSettingsText(messageKey, fallback, secret.Alias));
+        if (result != DialogResult.Ok || _isBusy) return;
+
+        _isBusy = true;
+        try
+        {
+            await ManagementApiClient.DeleteHookSecretCredentialAsync(secret.CredentialKey);
+            _secretCredentials.Remove(secret);
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.HooksSecretDeletedToast, "Outbound HTTP hook secret deleted."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private string GetEventLabel(HookEventKind hookEvent) => hookEvent switch
+    {
+        HookEventKind.TaskStart => Loc.GetOrDefault(SettingsTextKeys.HooksEventTaskStart, "Task start"),
+        HookEventKind.TaskComplete => Loc.GetOrDefault(SettingsTextKeys.HooksEventTaskComplete, "Task complete"),
+        HookEventKind.TaskFailed => Loc.GetOrDefault(SettingsTextKeys.HooksEventTaskFailed, "Task failed"),
+        HookEventKind.SessionStart => Loc.GetOrDefault(SettingsTextKeys.HooksEventSessionStart, "Session start"),
+        HookEventKind.UserPromptSubmit => Loc.GetOrDefault(SettingsTextKeys.HooksEventUserPromptSubmit, "User prompt submit"),
+        HookEventKind.PreToolUse => Loc.GetOrDefault(SettingsTextKeys.HooksEventPreToolUse, "Before tool use"),
+        HookEventKind.PostToolUse => Loc.GetOrDefault(SettingsTextKeys.HooksEventPostToolUse, "After tool use"),
+        _ => hookEvent.ToString()
+    };
+
+    private string GetHandlerLabel(HookHandlerType handlerType) => handlerType switch
+    {
+        HookHandlerType.Command => Loc.GetOrDefault(SettingsTextKeys.HooksHandlerCommand, "Command"),
+        HookHandlerType.Http => Loc.GetOrDefault(SettingsTextKeys.HooksHandlerHttp, "HTTP"),
+        _ => handlerType.ToString()
+    };
+
+    private string GetFailureModeLabel(HookFailureMode failureMode) => failureMode switch
+    {
+        HookFailureMode.FailClosed => Loc.GetOrDefault(SettingsTextKeys.HooksFailureFailClosed, "Fail closed"),
+        HookFailureMode.FailOpen => Loc.GetOrDefault(SettingsTextKeys.HooksFailureFailOpen, "Fail open"),
+        _ => failureMode.ToString()
+    };
+
+    private string GetHookTarget(HookDefinition hook)
+    {
+        return hook.HandlerType == HookHandlerType.Command
+            ? string.IsNullOrWhiteSpace(hook.Command?.FileName) ? "-" : hook.Command.FileName
+            : string.IsNullOrWhiteSpace(hook.Http?.Url) ? "-" : hook.Http.Url;
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private string FormatLastUsed(DateTimeOffset? value)
+    {
+        return value is null
+            ? Loc.GetOrDefault(SettingsTextKeys.HooksApiKeyNeverUsed, "Never used")
+            : FormatDate(value.Value);
+    }
+
+    private string FormatDate(DateTimeOffset value)
+    {
+        return TimeZoneInfo.ConvertTime(value, UserScope.UiSettings.GetTimeZone()).ToString("g", CultureInfo.CurrentCulture);
+    }
+
+    private static string FormatList(IReadOnlyList<string> values)
+    {
+        return values.Count == 0 ? "-" : string.Join(", ", values);
+    }
+
+    private bool IsSecretReferenced(string credentialKey)
+    {
+        return _hooks.Any(hook => hook.Http?.SecretHeaders.Any(header =>
+            string.Equals(header.CredentialKey, credentialKey, StringComparison.OrdinalIgnoreCase)) == true);
+    }
+
+    private static string SerializeHooks(IReadOnlyList<HookDefinition> hooks)
+    {
+        return JsonSerializer.Serialize(hooks, JsonOptions);
+    }
+
+    private static List<HookDefinition> CloneHooks(IEnumerable<HookDefinition> hooks)
+    {
+        return hooks.Select(CloneHook).ToList();
+    }
+
+    private static HookDefinition CloneHook(HookDefinition hook)
+    {
+        return new HookDefinition
+        {
+            Id = hook.Id,
+            Name = hook.Name,
+            IsEnabled = hook.IsEnabled,
+            Events = [.. hook.Events],
+            HandlerType = hook.HandlerType,
+            FailureMode = hook.FailureMode,
+            TimeoutSeconds = hook.TimeoutSeconds,
+            Command = hook.Command is null ? null : new CommandHookOptions
+            {
+                FileName = hook.Command.FileName,
+                Arguments = [.. hook.Command.Arguments],
+                WorkingDirectory = hook.Command.WorkingDirectory
+            },
+            Http = hook.Http is null ? null : new HttpHookOptions
+            {
+                Url = hook.Http.Url,
+                Headers = hook.Http.Headers.Select(header => new HookHeader { Name = header.Name, Value = header.Value }).ToList(),
+                SecretHeaders = hook.Http.SecretHeaders.Select(header => new HookSecretHeader
+                {
+                    Name = header.Name,
+                    CredentialKey = header.CredentialKey,
+                    FieldName = header.FieldName
+                }).ToList()
+            }
+        };
+    }
+
+    private enum HookEditorMode
+    {
+        Visual,
+        Json
+    }
+}

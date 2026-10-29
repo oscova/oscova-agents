@@ -1,0 +1,1634 @@
+@using Microsoft.Extensions.AI
+@using Oscova.Agents.Llm
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Core.Secrets
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Infrastructure.Utils
+@using System.Globalization
+@using Oscova.Agents.Plugins
+@using Oscova.Agents.Core.Llm
+@using Oscova.Agents.Core.Hardware
+@implements IDisposable
+@inject PluginSettingsCatalog PluginPanels
+@inject IModelProviderCatalog Providers
+@inject HostHardwareProbe HardwareProbe
+@inject ILogger<ModelProviderEditorDialog> Logger
+@inject IDialogService DialogService
+@inject SettingsApiClient SettingsApiClient
+@inject ManagementApiClient ManagementApiClient
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(_managingCredentials ? Loc.GetOrDefault(SettingsTextKeys.CredentialsSavedCredentialsTitle, "Saved Credentials") : DialogTitle)"
+                MaxWidthClass="max-w-2xl"
+                HelpTopic="@(_managingCredentials ? HelpTopics.SettingsCredentials : HelpTopics.ModelProviderEditor)"
+                OnClose="CloseAsync">
+    <ChildContent>
+        @if (_managingCredentials)
+        {
+            <SettingsCredentialsSection />
+        }
+        else
+        {
+        <div role="tablist" class="tabs tabs-border mb-4">
+            <button type="button" role="tab" aria-selected="@(_activeTab == 0 ? "true" : "false")" class="tab @(_activeTab == 0 ? "tab-active" : "")" @onclick="() => _activeTab = 0">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDialogTabProvider, "Provider")</button>
+            <button type="button" role="tab" aria-selected="@(_activeTab == 1 ? "true" : "false")" class="tab @(_activeTab == 1 ? "tab-active" : "")" @onclick="() => _activeTab = 1">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDialogTabChatOptions, "Chat Options")</button>
+        </div>
+
+        @if (_activeTab == 0)
+        {
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div class="form-control w-full">
+                        <label class="label" for="provider-type">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderTypeLabel, "Provider Type")</span>
+                        </label>
+                        <select id="provider-type" class="select select-bordered w-full"
+                                @bind="_config.Type"
+                                @bind:after="HandleProviderTypeChangedAsync">
+                            @foreach (var type in _availableProviderTypes)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label" for="provider-name">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderNameLabel, "Provider Name") <span class="text-error">*</span></span>
+                        </label>
+                        <label class="input w-full validator">
+                            <span class="iconify lucide--id-card text-base-content/60 size-4.5"></span>
+                            <input id="provider-name" class="grow focus:outline-0"
+                                   @bind="_config.Name"
+                                   required
+                                   placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderNamePlaceholder, "e.g., Work OpenAI"))" />
+                        </label>
+                        <div class="validator-hint hidden">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderNameRequired, "Provider name is required")</div>
+                    </div>
+                </div>
+
+                @if (_config.Type == ModelProviderKeys.Local)
+                {
+                    <div class="form-control w-full">
+                        <label class="label" for="local-model">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelFileLabel, "Model File") <span class="text-error">*</span></span>
+                        </label>
+                        <div class="flex gap-2">
+                            <select id="local-model" class="select select-bordered flex-1"
+                                    @bind="_selectedLocalModel"
+                                    @bind:after="ApplySelectedLocalModelAsync">
+                                @if (!_availableLocalModels.Any())
+                                {
+                                    <option disabled value="">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoGgufFilesOption, "No GGUF files found")</option>
+                                }
+                                else
+                                {
+                                    <option value="">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSelectModelPlaceholder, "Select a model...")</option>
+                                    @foreach (var model in _availableLocalModels)
+                                    {
+                                        <option value="@model">@model</option>
+                                    }
+                                }
+                            </select>
+                            <button type="button" class="btn btn-square btn-sm" @onclick="RefreshLocalModelsAsync" title="@(CommonLoc.GetOrDefault(CommonTextKeys.Refresh, "Refresh"))">
+                                <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+                            </button>
+                        </div>
+                        <label class="label min-w-0 items-start">
+                            <span class="label-text-alt text-xs whitespace-normal break-all opacity-70">@FormatSettingsText(SettingsTextKeys.ModelProvidersGgufFilesLocation, "GGUF files in {0}", PathUtil.GgufModelsPath)</span>
+                        </label>
+                    </div>
+
+                    <div class="divider my-1 text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadSectionTitle, "Download a GGUF model")</div>
+
+                    <div class="form-control w-full">
+                        <label class="label" for="download-url">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadUrlLabel, "Download URL")</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <label class="input flex-1">
+                                <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                                <input id="download-url" class="grow focus:outline-0"
+                                       @bind="_downloadUrl"
+                                       @bind:event="oninput"
+                                       placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadUrlPlaceholder, "https://huggingface.co/.../model.gguf"))" />
+                            </label>
+                            <button type="button"
+                                    class="btn btn-primary btn-sm"
+                                    disabled="@(string.IsNullOrWhiteSpace(_downloadUrl))"
+                                    @onclick="StartModelDownloadAsync">
+                                <span class="iconify lucide--download size-4" aria-hidden="true"></span> @CommonLoc.GetOrDefault(CommonTextKeys.Download, "Download")
+                            </button>
+                        </div>
+                        <label class="label">
+                            <span class="label-text-alt text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadUrlHelp, "Paste a direct link to a GGUF file (e.g. from HuggingFace)")</span>
+                        </label>
+                        @if (_downloadUrlError is not null)
+                        {
+                            <p class="text-xs text-error mt-1">@_downloadUrlError</p>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        @if (ShouldShowBaseUrlField())
+                        {
+                            <div class="form-control w-full md:col-span-2">
+                                <label class="label" for="base-url">
+                                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlLabel, "Base URL")</span>
+                                </label>
+                                <label class="input w-full validator">
+                                    <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                                    <input id="base-url" class="grow focus:outline-0"
+                                           @bind="_config.BaseUrl"
+                                           type="url"
+                                           placeholder="@GetBaseUrlPlaceholder()" />
+                                </label>
+                                <div class="validator-hint hidden mt-1 text-xs leading-snug whitespace-normal break-words">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlInvalid, "Please enter a valid URL")</div>
+                                <label class="label min-w-0 items-start py-1">
+                                    <span class="label-text-alt text-xs leading-snug whitespace-normal break-words opacity-70">@GetBaseUrlHelpText()</span>
+                                </label>
+                            </div>
+                        }
+
+                        <div class="form-control w-full md:col-span-2">
+                            <label class="label" for="model-id">
+                                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelIdLabel, "Model ID") <span class="text-error">*</span></span>
+                            </label>
+                            <div class="validator grid grid-cols-1 sm:flex items-center gap-2">
+                                <label class="input w-full min-w-0 validator">
+                                    <span class="iconify lucide--box text-base-content/60 size-4.5"></span>
+                                    <input id="model-id" class="min-w-0 grow focus:outline-0"
+                                           @bind="_config.ModelId" @bind:event="oninput" @bind:after="() => _modelDownloadError = null"
+                                           required
+                                           placeholder="@GetModelIdPlaceholder()" />
+                                </label>
+                                @if (SupportsSelectedProviderDownload)
+                                {
+                                    <button type="button" class="btn btn-outline btn-sm h-10 w-40 whitespace-normal shrink-0 ml-auto"
+                                            disabled="@(string.IsNullOrWhiteSpace(_config.ModelId) || IsCurrentModelInstalled)"
+                                            @onclick="DownloadSelectedProviderModelAsync">
+                                        <span class="iconify lucide--download size-4 shrink-0" aria-hidden="true"></span>
+                                        @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadFetchedModelButton, "Download model")
+                                    </button>
+                                }
+                            </div>
+                            <div class="validator-hint hidden mt-1 text-xs leading-snug whitespace-normal break-words">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelIdRequired, "Model ID is required")</div>
+                            <label class="label min-w-0 items-start py-1">
+                                <span class="label-text-alt text-xs leading-snug whitespace-normal break-words opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelIdHelp, "Type any model ID manually, or fetch provider models below.")</span>
+                            </label>
+                            @if (SupportsSelectedProviderDownload && !string.IsNullOrWhiteSpace(_modelDownloadError))
+                            {
+                                <div class="text-xs text-error break-words mt-2" role="alert">@_modelDownloadError</div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-200/40 border border-base-300">
+                        <div class="card-body gap-3 p-4">
+                            <div class="grid grid-cols-1 sm:flex flex-wrap items-center justify-between gap-2">
+                                <div class="min-w-0 flex-1">
+                                    <h5 class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderModelsTitle, "Provider Models")</h5>
+                                    <p class="text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderModelsDescription, "Fetch available or suggested models, then copy one into the Model ID field.")</p>
+                                </div>
+                                <button type="button"
+                                        class="btn btn-outline btn-sm w-40 whitespace-normal shrink-0 ml-auto"
+                                        disabled="@_isFetchingAvailableModels"
+                                        @onclick="FetchAvailableModelsAsync">
+                                    @if (_isFetchingAvailableModels)
+                                    {
+                                        <span class="loading loading-spinner loading-sm mr-2"></span>
+                                    }
+                                    <span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFetchModelsButton, "Fetch models")
+                                </button>
+                            </div>
+
+                            @if (_availableRemoteModels.Count > 0)
+                            {
+                                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                    <div class="form-control w-full md:col-span-2">
+                                        <label class="label">
+                                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersChooseFetchedModelLabel, "Choose a fetched model")</span>
+                                            <span class="label-text-alt">@FormatSettingsText(SettingsTextKeys.ModelProvidersAvailableModelsLoadedLabel, "{0} loaded", _availableRemoteModels.Count)</span>
+                                        </label>
+                                        <SearchableSelect Options="@BuildModelOptions(_availableRemoteModels)"
+                                                          Value="@_selectedAvailableModel"
+                                                          ValueChanged="@OnFetchedModelChangedAsync"
+                                                          Placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSelectFetchedModelPlaceholder, "Select a fetched model..."))"
+                                                          AriaLabel="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersChooseFetchedModelLabel, "Choose a fetched model")" />
+                                    </div>
+
+                                    @if (SelectedAvailableModel is { } selectedModel && SupportsSelectedProviderDownload)
+                                    {
+                                        <div class="md:col-span-2 space-y-2 rounded-box border border-base-300 bg-base-100 p-3">
+                                            <p class="text-xs" role="status">@(EstimatedFootprint is { } footprint
+                                                ? Loc[SettingsTextKeys.ModelProvidersMemoryFootprint, ByteSize.Format(footprint)]
+                                                : Loc[SettingsTextKeys.ModelProvidersMemoryFitUnknown])</p>
+                                            @if (!string.IsNullOrWhiteSpace(selectedModel.License))
+                                            {
+                                                <p class="text-sm">
+                                                    <span class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelLicenseLabel, "License"):</span>
+                                                    <span class="whitespace-pre-wrap break-words"> @selectedModel.License</span>
+                                                </p>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(selectedModel.LicenseDescription))
+                                            {
+                                                <p class="text-xs whitespace-pre-wrap break-words opacity-80">@selectedModel.LicenseDescription</p>
+                                            }
+
+                                            @if (selectedModel.IsInstalled == true)
+                                            {
+                                                <span class="badge badge-success">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersInstalledModelBadge, "Installed")</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(_availableModelsMessage))
+                            {
+                                <div class="text-xs break-words @(_availableModelsMessageIsError ? "text-error" : "text-success")" role="status">
+                                    @if (_availableModelsMessageIsError)
+                                    {
+                                        <p>@Loc[SettingsTextKeys.ModelProvidersFetchRecovery]</p>
+                                    }
+                                    <p dir="auto">@_availableModelsMessage</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label" for="endpoint-scope">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeLabel, "Endpoint scope")</span>
+                        </label>
+                        <select id="endpoint-scope" class="select select-bordered w-full" @bind="LocalEndpointSelection">
+                            <option value="auto">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeAuto, "Auto-detect")</option>
+                            <option value="local">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeLocal, "Treat as local")</option>
+                            <option value="cloud">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeCloud, "Treat as cloud")</option>
+                        </select>
+                        <label class="label min-w-0 items-start py-1">
+                            <span class="label-text-alt text-xs leading-snug whitespace-normal break-words opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeDescription, "Use this when a custom endpoint is misclassified by Offline mode, such as a LAN gateway or a cloud proxy.")</span>
+                        </label>
+                    </div>
+                    <div class="space-y-3 rounded-box border border-base-300 bg-base-200/40 p-4">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <h5 class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialSectionTitle, "Credential")</h5>
+                                <p class="text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialDescription, "Link this provider to a saved API key instead of storing secrets on the provider itself.")</p>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm" @onclick="OpenCredentialsTab">
+                                <span class="iconify lucide--key-round size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNewCredentialButton, "Manage credentials")
+                            </button>
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label" for="saved-api-key">
+                                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSavedApiKeyLabel, "Saved API Key")</span>
+                            </label>
+                            <select id="saved-api-key" class="select select-bordered w-full" @bind="_config.CredentialKey">
+                                <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.NoneOption, "None")</option>
+                                @foreach (var credential in _apiKeyCredentials)
+                                {
+                                    <option value="@credential.CredentialKey">@FormatCredentialOption(credential)</option>
+                                }
+                            </select>
+                            <label class="label">
+                                <span class="label-text-alt text-xs opacity-70">@GetCredentialHelpText()</span>
+                            </label>
+                        </div>
+                    </div>
+                }
+
+                <div class="divider my-2"></div>
+
+                <div>
+                    <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelConfigurationTitle, "Model Configuration")</h4>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="checkbox" @bind="_config.SupportsImages" />
+                                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSupportsImagesLabel, "Supports images")</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="checkbox" @bind="_config.SupportsThinking" />
+                                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSupportsThinkingLabel, "Supports thinking outputs")</span>
+                                </label>
+                                @if (_config.Type is ModelProviderKeys.Anthropic or ModelProviderKeys.OpenAI or ModelProviderKeys.Google)
+                                {
+                                    <label class="label" for="reasoning-effort">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersReasoningEffortLabel, "Reasoning effort")</label>
+                                    <select id="reasoning-effort" class="select select-bordered w-full" @bind="ReasoningEffortValue">
+                                        <option value="">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDefaultBadge, "Default")</option>
+                                        <option value="None">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackNoneOption, "None")</option>
+                                        <option value="Low">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersReasoningEffortLow, "Low")</option>
+                                        <option value="Medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersReasoningEffortMedium, "Medium")</option>
+                                        <option value="High">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersReasoningEffortHigh, "High")</option>
+                                        @if (_config.Type != ModelProviderKeys.Google)
+                                        {
+                                            <option value="ExtraHigh">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersReasoningEffortExtraHigh, "Extra high")</option>
+                                        }
+                                    </select>
+                                    <p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersReasoningEffortHelp, "Default uses Medium for OpenAI with thinking outputs enabled and the model default otherwise. The selected model must support the chosen effort.")</p>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label" for="context-window-size">
+                                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersContextWindowSizeLabel, "Context Window Size")</span>
+                            </label>
+                            <label class="input w-full validator">
+                                <span class="iconify lucide--hash text-base-content/60 size-4.5"></span>
+                                <input id="context-window-size" class="grow focus:outline-0"
+                                       type="number"
+                                       min="0"
+                                       @bind="_config.ContextWindowSize" />
+                            </label>
+                            <div class="validator-hint hidden mt-1 text-xs leading-snug whitespace-normal break-words">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersContextWindowSizeInvalid, "Context window size must be positive")</div>
+                        </div>
+
+                        @if (ModelFit is { } fit)
+                        {
+                            <div role="status" class="alert @GetFitAlertClass(fit) alert-soft items-start text-sm">
+                                <span class="iconify @GetFitIcon(fit) size-4.5 shrink-0" aria-hidden="true"></span>
+                                <span class="min-w-0 whitespace-normal">@GetFitMessage(fit)</span>
+                            </div>
+                            <p class="text-xs opacity-70">@Loc[SettingsTextKeys.ModelProvidersMemoryFitEstimateHelp]</p>
+                            @if (EstimatedFootprint is { } footprint)
+                            {
+                                <p class="text-xs">@Loc[SettingsTextKeys.ModelProvidersMemoryFootprint, ByteSize.Format(footprint)]</p>
+                            }
+                        }
+
+                        @foreach (var panel in PluginPanels.Entries.Where(entry => entry.Panel.SlotId == PluginSettingsSlots.ModelProvider && entry.Panel.AssociationId == _config.Type))
+                        {
+                            <h5 class="font-medium">@Loc[SettingsTextKeys.ModelProvidersAdvancedOptions]</h5>
+                            <PluginSettingsPanel Entry="@panel" GetModelProviderSettings="@GetModelProviderSettings" />
+                        }
+
+                        @if (_config.Type == ModelProviderKeys.Ollama)
+                        {
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOllamaKeepAliveLabel, "Keep alive")</span>
+                                </label>
+                                <label class="input w-full">
+                                    <span class="iconify lucide--clock text-base-content/60 size-4.5"></span>
+                                    <input class="grow focus:outline-0"
+                                           @bind="_config.OllamaKeepAlive"
+                                           @bind:event="oninput"
+                                           aria-label="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOllamaKeepAliveLabel, "Keep alive"))"
+                                           placeholder="5m" />
+                                </label>
+                                <label class="label min-w-0 items-start py-1">
+                                    <span class="label-text-alt text-xs leading-snug whitespace-normal break-words opacity-70">
+                                        @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOllamaKeepAliveHelp, "Optional Ollama duration. Examples: 5m, 1h, -1, or 0. Blank uses the Ollama server default; 0 unloads after the response.")
+                                    </span>
+                                </label>
+                            </div>
+                        }
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersInputCostLabel, "Input price, USD per 1M tokens")</span>
+                            </label>
+                            <label class="@($"input w-full{(_inputCostHasError ? " input-error" : string.Empty)}")">
+                                <span class="iconify lucide--circle-dollar-sign text-base-content/60 size-4.5"></span>
+                                <input class="grow focus:outline-0"
+                                       type="number"
+                                       min="0"
+                                       step="any"
+                                       value="@_inputCostText"
+                                       aria-label="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersInputCostLabel, "Input price, USD per 1M tokens"))"
+                                       placeholder="0.00"
+                                       @oninput="HandleInputCostInput" />
+                            </label>
+                            @if (_inputCostHasError)
+                            {
+                                <p class="validator-hint mt-1 text-xs leading-snug whitespace-normal break-words">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCostPerMillionTokensInvalid, "Enter a non-negative amount or leave blank.")</p>
+                            }
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOutputCostLabel, "Output price, USD per 1M tokens")</span>
+                            </label>
+                            <label class="@($"input w-full{(_outputCostHasError ? " input-error" : string.Empty)}")">
+                                <span class="iconify lucide--circle-dollar-sign text-base-content/60 size-4.5"></span>
+                                <input class="grow focus:outline-0"
+                                       type="number"
+                                       min="0"
+                                       step="any"
+                                       value="@_outputCostText"
+                                       aria-label="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOutputCostLabel, "Output price, USD per 1M tokens"))"
+                                       placeholder="0.00"
+                                       @oninput="HandleOutputCostInput" />
+                            </label>
+                            @if (_outputCostHasError)
+                            {
+                                <p class="validator-hint mt-1 text-xs leading-snug whitespace-normal break-words">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCostPerMillionTokensInvalid, "Enter a non-negative amount or leave blank.")</p>
+                            }
+                            <label class="label min-w-0 items-start py-1">
+                                <span class="label-text-alt text-xs leading-snug whitespace-normal break-words opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCostEstimateHelp, "Optional standard rates for dashboard estimates. Cached input uses the input rate. Other charges are excluded.")</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-6">
+                <section class="grid gap-6 md:grid-cols-2">
+                    @if (_config.Type != ModelProviderKeys.OpenAI)
+                    {
+                    <div class="form-control">
+                        <div class="flex items-center justify-between">
+                            <label class="label pl-0" for="temperature">
+                                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTemperatureLabel, "Temperature")</span>
+                                <span class="label-text-alt">@FormatNullable(_config.ChatOptions.Temperature)</span>
+                            </label>
+                            <button type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    disabled="@(_config.ChatOptions.Temperature is null)"
+                                    @onclick="() => UpdateChatOptions(o => o.Temperature = null)">
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersClearButton, "Clear")
+                            </button>
+                        </div>
+                        <input id="temperature" type="range"
+                               min="0"
+                               max="2"
+                               step="0.01"
+                               class="range range-primary"
+                               value="@BindConverter.FormatValue(_temperatureValue, CultureInfo.InvariantCulture)"
+                               @oninput="HandleTemperatureInput"
+                               @onchange="HandleTemperatureChange" />
+                        <div class="flex justify-between px-2.5 mt-2 text-xs select-none">
+                            <span>0</span>
+                            <span>0.5</span>
+                            <span>1.0</span>
+                            <span>1.5</span>
+                            <span>2.0</span>
+                        </div>
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTemperatureDescription, "Higher values increase randomness; lower values make responses more focused.")
+                        </p>
+                    </div>
+                    }
+
+                    <div class="form-control">
+                        <div class="flex items-center justify-between">
+                            <label class="label pl-0" for="top-p">
+                                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTopPLabel, "Top P")</span>
+                                <span class="label-text-alt">@FormatNullable(_config.ChatOptions.TopP)</span>
+                            </label>
+                            <button type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    disabled="@(_config.ChatOptions.TopP is null)"
+                                    @onclick="() => UpdateChatOptions(o => o.TopP = null)">
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersClearButton, "Clear")
+                            </button>
+                        </div>
+                        <input id="top-p" type="range"
+                               min="0"
+                               max="1"
+                               step="0.01"
+                               class="range range-secondary"
+                               value="@BindConverter.FormatValue(_topPValue, CultureInfo.InvariantCulture)"
+                               @oninput="HandleTopPInput"
+                               @onchange="HandleTopPChange" />
+                        <div class="flex justify-between px-2.5 mt-2 text-xs select-none">
+                            <span>0</span>
+                            <span>0.25</span>
+                            <span>0.5</span>
+                            <span>0.75</span>
+                            <span>1</span>
+                        </div>
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTopPDescription, "Controls nucleus sampling. Lower values limit token choices.")
+                        </p>
+                    </div>
+                </section>
+
+                @if (_config.Type != ModelProviderKeys.Anthropic)
+                {
+                <section class="grid gap-6 md:grid-cols-2">
+                    <div class="form-control">
+                        <div class="flex items-center justify-between">
+                            <label class="label pl-0" for="frequency-penalty">
+                                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFrequencyPenaltyLabel, "Frequency Penalty")</span>
+                                <span class="label-text-alt">@FormatNullable(_config.ChatOptions.FrequencyPenalty)</span>
+                            </label>
+                            <button type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    disabled="@(_config.ChatOptions.FrequencyPenalty is null)"
+                                    @onclick="() => UpdateChatOptions(o => o.FrequencyPenalty = null)">
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersClearButton, "Clear")
+                            </button>
+                        </div>
+                        <input id="frequency-penalty" type="range"
+                               min="-2"
+                               max="2"
+                               step="0.1"
+                               class="range range-accent"
+                               value="@BindConverter.FormatValue(_frequencyPenaltyValue, CultureInfo.InvariantCulture)"
+                               @oninput="HandleFrequencyPenaltyInput"
+                               @onchange="HandleFrequencyPenaltyChange" />
+                        <div class="flex justify-between px-2.5 mt-2 text-xs select-none">
+                            <span>-2</span>
+                            <span>-1</span>
+                            <span>0</span>
+                            <span>1</span>
+                            <span>2</span>
+                        </div>
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFrequencyPenaltyDescription, "Positive values discourage repetition; negative values increase it.")
+                        </p>
+                    </div>
+
+                    <div class="form-control">
+                        <div class="flex items-center justify-between">
+                            <label class="label pl-0" for="presence-penalty">
+                                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersPresencePenaltyLabel, "Presence Penalty")</span>
+                                <span class="label-text-alt">@FormatNullable(_config.ChatOptions.PresencePenalty)</span>
+                            </label>
+                            <button type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    disabled="@(_config.ChatOptions.PresencePenalty is null)"
+                                    @onclick="() => UpdateChatOptions(o => o.PresencePenalty = null)">
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersClearButton, "Clear")
+                            </button>
+                        </div>
+                        <input id="presence-penalty" type="range"
+                               min="-2"
+                               max="2"
+                               step="0.1"
+                               class="range range-accent"
+                               value="@BindConverter.FormatValue(_presencePenaltyValue, CultureInfo.InvariantCulture)"
+                               @oninput="HandlePresencePenaltyInput"
+                               @onchange="HandlePresencePenaltyChange" />
+                        <div class="flex justify-between px-2.5 mt-2 text-xs select-none">
+                            <span>-2</span>
+                            <span>-1</span>
+                            <span>0</span>
+                            <span>1</span>
+                            <span>2</span>
+                        </div>
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersPresencePenaltyDescription, "Encourages the model to introduce new topics when positive.")
+                        </p>
+                    </div>
+                </section>
+                }
+
+                <section class="grid gap-6 md:grid-cols-2">
+                    <div class="form-control">
+                        <div class="flex items-center justify-between">
+                            <label class="label pl-0" for="top-k">
+                                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTopKLabel, "Top K")</span>
+                                <span class="label-text-alt">@FormatNullable(_config.ChatOptions.TopK)</span>
+                            </label>
+                            <button type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    disabled="@(_config.ChatOptions.TopK is null)"
+                                    @onclick="() => UpdateChatOptions(o => o.TopK = null)">
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersClearButton, "Clear")
+                            </button>
+                        </div>
+                        <input id="top-k" type="range"
+                               min="0"
+                               max="200"
+                               step="1"
+                               class="range range-info"
+                               value="@BindConverter.FormatValue(_topKValue)"
+                               @oninput="HandleTopKInput"
+                               @onchange="HandleTopKChange" />
+                        <div class="flex justify-between px-2.5 mt-2 text-xs select-none">
+                            <span>0</span>
+                            <span>50</span>
+                            <span>100</span>
+                            <span>150</span>
+                            <span>200</span>
+                        </div>
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTopKDescription, "Limits candidate tokens. Set to 0 to rely on the provider default.")
+                        </p>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label pl-0" for="max-output-tokens">
+                            <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersMaxOutputTokensLabel, "Max Output Tokens")</span>
+                            <span class="label-text-alt">@FormatNullable(_config.ChatOptions.MaxOutputTokens)</span>
+                        </label>
+                        <label class="@($"input w-full validator{(_maxTokensHasError ? " input-error" : string.Empty)}")">
+                            <span class="iconify lucide--hash text-base-content/60 size-4.5"></span>
+                            <input id="max-output-tokens" type="number"
+                                   class="grow focus:outline-0"
+                                   value="@_maxOutputTokensText"
+                                   @oninput="HandleMaxOutputTokensInput" />
+                        </label>
+                        @if (_maxTokensHasError)
+                        {
+                            <p class="validator-hint">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersMaxOutputTokensInvalid, "Enter a positive number or leave blank.")</p>
+                        }
+                        <p class="text-xs mt-2 opacity-60">
+                            @if (_config.Type == ModelProviderKeys.Anthropic)
+                            {
+                                @string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAnthropicMaxOutputTokensDescription, "Leave blank to use {0} output tokens."), ModelProviderConfigPresets.AnthropicDefaultMaxOutputTokens)
+                            }
+                            else
+                            {
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersMaxOutputTokensDescription, "Leave blank to let the provider decide the response length.")
+                            }
+                        </p>
+                    </div>
+                </section>
+
+                <section class="grid gap-6 md:grid-cols-2">
+                    @if (_config.Type != ModelProviderKeys.Anthropic)
+                    {
+                    <div class="form-control">
+                        <label class="label pl-0" for="seed">
+                            <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSeedLabel, "Seed")</span>
+                            <span class="label-text-alt">@FormatNullable(_config.ChatOptions.Seed)</span>
+                        </label>
+                        <label class="@($"input w-full validator{(_seedHasError ? " input-error" : string.Empty)}")">
+                            <span class="iconify lucide--hash text-base-content/60 size-4.5"></span>
+                            <input id="seed" type="number"
+                                   class="grow focus:outline-0"
+                                   value="@_seedText"
+                                   @oninput="HandleSeedInput" />
+                        </label>
+                        @if (_seedHasError)
+                        {
+                            <p class="validator-hint">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSeedInvalid, "Enter a non-negative number or leave blank.")</p>
+                        }
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSeedDescription, "Use for reproducible responses when supported by the model.")
+                        </p>
+                    </div>
+                    }
+
+                    <div class="form-control">
+                        <label class="label pl-0" for="tool-call-behavior">
+                            <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersToolCallBehaviorLabel, "Tool Call Behavior")</span>
+                            <span class="label-text-alt">@FormatAllowMultipleToolCalls()</span>
+                        </label>
+                        <select id="tool-call-behavior" class="select select-bordered w-full"
+                                @bind="AllowMultipleToolCallsSelection">
+                            <option value="unset">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersToolCallBehaviorAuto, "Auto")</option>
+                            <option value="true">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersToolCallBehaviorAllowMultiple, "Allow multiple tool calls")</option>
+                            <option value="false">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersToolCallBehaviorSingle, "Single tool call only")</option>
+                        </select>
+                        <p class="text-xs mt-2 opacity-60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersToolCallBehaviorDescription, "Choose how many tool calls the model may issue per request.")
+                        </p>
+                    </div>
+                </section>
+
+                <div class="flex justify-end">
+                    <button type="button" class="btn btn-outline btn-sm" @onclick="ResetChatOptionsToDefaults">
+                        @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersResetToDefaultsButton, "Reset to defaults")
+                    </button>
+                </div>
+            </div>
+        }
+
+        }
+    </ChildContent>
+    <FooterContent>
+        @if (_managingCredentials)
+        {
+            <button class="btn" type="button" @onclick="CloseAsync">@CommonLoc.GetOrDefault(CommonTextKeys.Back, "Back")</button>
+        }
+        else
+        {
+        <button class="btn" type="button" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button class="btn btn-primary" type="button" @onclick="Save">@CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")</button>
+        }
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+    private ModelProviderConfig _config = new();
+    private HostHardwareSnapshot? _hardware;
+    private readonly CancellationTokenSource _lifetime = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) { return; }
+        try
+        {
+            _hardware = await HardwareProbe.GetAsync(_lifetime.Token);
+            if (!_lifetime.IsCancellationRequested) { StateHasChanged(); }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() { _lifetime.Cancel(); _lifetime.Dispose(); }
+    private ModelProviderConfig? _originalConfig;
+    private IReadOnlyDictionary<string, string> _providerErrors = new Dictionary<string, string>();
+
+    private PluginModelProviderSettingsContext GetModelProviderSettings() => new(_config, _providerErrors, ProviderOptionsChangedAsync);
+
+    private Task ProviderOptionsChangedAsync()
+    {
+        _providerErrors = ModelProviderValidation.Validate(_config, Providers.Find(_config.Type), _originalConfig);
+        return InvokeAsync(StateHasChanged);
+    }
+    private string _previousProviderType = ModelProviderKeys.Ollama;
+    private bool _isEditing;
+    private int _activeTab;
+    private bool _managingCredentials;
+
+    private string ReasoningEffortValue
+    {
+        get => _config.ChatOptions.Reasoning?.Effort?.ToString() ?? string.Empty;
+        set => UpdateChatOptions(options => options.Reasoning = Enum.TryParse<ReasoningEffort>(value, out var effort)
+            ? new ReasoningOptions { Effort = effort }
+            : null);
+    }
+
+    private double _temperatureValue;
+    private double _topPValue;
+    private double _frequencyPenaltyValue;
+    private double _presencePenaltyValue;
+    private double _topKValue;
+
+    private string _maxOutputTokensText = string.Empty;
+    private string _seedText = string.Empty;
+    private bool _maxTokensHasError;
+    private bool _seedHasError;
+    private string _inputCostText = string.Empty;
+    private string _outputCostText = string.Empty;
+    private bool _inputCostHasError;
+    private bool _outputCostHasError;
+
+    // Local provider fields
+    private List<string> _availableLocalModels = [];
+    private string _selectedLocalModel = string.Empty;
+    private string _downloadUrl = string.Empty;
+    private string? _downloadUrlError;
+    private List<ModelDescriptor> _availableRemoteModels = [];
+    private ModelSizing? _localModelSizing;
+    private string? _localSizingModelId;
+    private (string Type, string? BaseUrl)? _availableModelsSource;
+    private string _selectedAvailableModel = string.Empty;
+    private bool _isFetchingAvailableModels;
+    private string? _availableModelsMessage;
+    private bool _availableModelsMessageIsError;
+    private string? _modelDownloadError;
+    private List<CredentialListItem> _apiKeyCredentials = [];
+    private List<string> _availableProviderTypes = [];
+    private List<ProviderTypeDefault> _providerTypeDefaults = [];
+    private ModelDescriptor? SelectedAvailableModel => _availableRemoteModels.FirstOrDefault(model =>
+        string.Equals(model.Id, _selectedAvailableModel, StringComparison.Ordinal));
+    private bool SupportsSelectedProviderDownload => FindProviderDefault(_config.Type)?.SupportsModelDownload == true;
+    private bool IsCurrentModelInstalled => _availableModelsSource is { } source
+        && source.Type == _config.Type && source.BaseUrl == _config.BaseUrl
+        && _availableRemoteModels.Any(model => model.IsInstalled == true
+            && string.Equals(model.Id, _config.ModelId?.Trim(), StringComparison.Ordinal));
+    private bool SupportsFitIndicator => Providers.Find(_config.Type) is IModelHardwareProvider || _config.Type is ModelProviderKeys.Ollama or ModelProviderKeys.Local;
+    private long? EstimatedFootprint
+    {
+        get
+        {
+            if (GetCurrentModelSizing() is not { } sizing) { return null; }
+
+            try { return ModelFitEstimator.EstimateRequiredBytes(sizing, _config.ContextWindowSize); }
+            catch (OverflowException) { return null; }
+        }
+    }
+    private ModelFitVerdict? ModelFit
+    {
+        get
+        {
+            if (!SupportsFitIndicator || _config.ContextWindowSize <= 0)
+            {
+                return null;
+            }
+
+            var sizing = GetCurrentModelSizing();
+            if (sizing is null)
+            {
+                return ModelFitVerdict.Unknown;
+            }
+
+            var profile = (Providers.Find(_config.Type) as IModelHardwareProvider)?.GetHardwareProfile(_config)
+                ?? (_config.Type == ModelProviderKeys.Ollama ? new ModelHardwareProfile("managed", "managed") : new("unknown", "unknown"));
+            return _hardware is null ? ModelFitVerdict.Unknown : ModelFitEstimator.Estimate(sizing, _config.ContextWindowSize, _hardware, profile);
+        }
+    }
+    private string DialogTitle => _isEditing
+        ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEditProviderDialogTitle, "Edit Provider")
+        : Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAddProviderDialogTitle, "Add Provider");
+
+    protected override async Task OnInitializedAsync()
+    {
+        _availableProviderTypes = DialogInstance.Get<List<string>?>("AvailableProviderTypes", null) ?? [];
+        if (_availableProviderTypes.Count == 0)
+        {
+            _availableProviderTypes = [.. ModelProviderEditorDefaults.BuiltInProviderTypes];
+        }
+
+        _providerTypeDefaults = DialogInstance.Get<List<ProviderTypeDefault>?>("ProviderTypeDefaults", null) ?? [];
+        var provider = DialogInstance.Get<ModelProviderConfig?>("Provider", null);
+        _originalConfig = provider?.Clone();
+
+        if (provider is not null)
+        {
+            _isEditing = true;
+            _config = provider.Clone();
+        }
+        else
+        {
+            _isEditing = false;
+            _config = new ModelProviderConfig { Id = Guid.NewGuid() };
+            ApplyPresetForType(_config.Type, preserveCustomBaseUrl: false, clearModelId: true);
+        }
+
+        _config.ChatOptions ??= new ChatOptions();
+        _previousProviderType = _config.Type;
+        _selectedLocalModel = _config.ModelId ?? string.Empty;
+        await LoadCredentialsAsync();
+        SyncChatOptionsEditors();
+
+        if (_config.Type == ModelProviderKeys.Local)
+        {
+            await RefreshLocalModelsAsync();
+        }
+        else
+        {
+            _selectedLocalModel = string.Empty;
+        }
+    }
+
+    private async Task HandleProviderTypeChangedAsync()
+    {
+        _config.Options = null;
+        _providerErrors = new Dictionary<string, string>();
+        var previousBaseUrl = _config.BaseUrl;
+        var previousDefaultBaseUrl = GetPresetBaseUrl(_previousProviderType);
+        var preserveCustomBaseUrl = !string.IsNullOrWhiteSpace(previousBaseUrl)
+            && !string.Equals(previousBaseUrl, previousDefaultBaseUrl, StringComparison.Ordinal);
+
+        ApplyPresetForType(_config.Type, preserveCustomBaseUrl, clearModelId: true, previousBaseUrl);
+        _previousProviderType = _config.Type;
+
+        _availableRemoteModels.Clear();
+        _availableModelsSource = null;
+        _selectedAvailableModel = string.Empty;
+        _modelDownloadError = null;
+        _availableModelsMessage = null;
+        _availableModelsMessageIsError = false;
+
+        if (_config.Type == ModelProviderKeys.Local)
+        {
+            await RefreshLocalModelsAsync();
+        }
+        else
+        {
+            _selectedLocalModel = string.Empty;
+        }
+    }
+
+    private void ApplyPresetForType(
+        string type,
+        bool preserveCustomBaseUrl,
+        bool clearModelId,
+        string? previousBaseUrl = null)
+    {
+        var hasPreset = ModelProviderEditorDefaults.TryGetPreset(type, out var preset);
+        _config.Name = ModelProviderEditorDefaults.GetChatProviderName(type);
+
+        if (!preserveCustomBaseUrl)
+        {
+            _config.BaseUrl = ModelProviderEditorDefaults.GetDefaultEndpoint(type, _providerTypeDefaults);
+        }
+        else
+        {
+            _config.BaseUrl = previousBaseUrl;
+        }
+
+        if (hasPreset && preset is not null)
+        {
+            _config.ContextWindowSize = preset.ContextWindowSize;
+            _config.InputCostPerMillionTokens = null;
+            _config.OutputCostPerMillionTokens = null;
+            _config.SupportsImages = preset.SupportsImages;
+            _config.SupportsThinking = preset.SupportsThinking;
+            _config.ChatOptions = preset.ChatOptions?.Clone() ?? new ChatOptions();
+        }
+        else
+        {
+            _config.ContextWindowSize = 0;
+            _config.InputCostPerMillionTokens = null;
+            _config.OutputCostPerMillionTokens = null;
+            _config.SupportsImages = false;
+            _config.SupportsThinking = false;
+            _config.ChatOptions = new ChatOptions();
+        }
+
+        if (clearModelId)
+        {
+            var providerDefault = FindProviderDefault(type);
+            _config.ModelId = providerDefault?.DefaultModel ?? string.Empty;
+            _selectedAvailableModel = string.Empty;
+            _selectedLocalModel = string.Empty;
+        }
+
+        if (type != ModelProviderKeys.Ollama)
+        {
+            _config.OllamaKeepAlive = null;
+        }
+
+        SyncChatOptionsEditors();
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close<ModelProviderConfig>(DialogResult.Cancel, null);
+    }
+
+    private async Task Save()
+    {
+        _providerErrors = ModelProviderValidation.Validate(_config, Providers.Find(_config.Type), _originalConfig);
+        if (_providerErrors.Count > 0) { return; }
+
+        if (string.IsNullOrWhiteSpace(_config.Name) || string.IsNullOrWhiteSpace(_config.ModelId))
+        {
+            return;
+        }
+
+        if (_config.Type != ModelProviderKeys.Local && !string.IsNullOrWhiteSpace(_config.BaseUrl) && !Uri.TryCreate(_config.BaseUrl, UriKind.Absolute, out _))
+        {
+            return;
+        }
+
+        if (_config.ContextWindowSize < 0)
+        {
+            return;
+        }
+
+        if (_maxTokensHasError || _seedHasError || _inputCostHasError || _outputCostHasError)
+        {
+            return;
+        }
+
+        if (_config.Type == ModelProviderKeys.Ollama)
+        {
+            _config.OllamaKeepAlive = NormalizeOptionalText(_config.OllamaKeepAlive);
+        }
+        else
+        {
+            _config.OllamaKeepAlive = null;
+        }
+
+        var config = _config.Clone();
+        DialogInstance.Close(DialogResult.Ok, config);
+    }
+
+    private static string? NormalizeOptionalText(string? value)
+    {
+        var trimmed = value?.Trim();
+        return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+    }
+
+    private void HandleTemperatureInput(ChangeEventArgs args)
+    {
+        _temperatureValue = ClampDouble(ParseDouble(args.Value, _temperatureValue), 0, 2);
+    }
+
+    private void HandleTemperatureChange(ChangeEventArgs args)
+    {
+        _temperatureValue = ClampDouble(ParseDouble(args.Value, _temperatureValue), 0, 2);
+        UpdateChatOptions(o => o.Temperature = (float)_temperatureValue);
+    }
+
+    private void HandleTopPInput(ChangeEventArgs args)
+    {
+        _topPValue = ClampDouble(ParseDouble(args.Value, _topPValue), 0, 1);
+    }
+
+    private void HandleTopPChange(ChangeEventArgs args)
+    {
+        _topPValue = ClampDouble(ParseDouble(args.Value, _topPValue), 0, 1);
+        UpdateChatOptions(o => o.TopP = (float)_topPValue);
+    }
+
+    private void HandleFrequencyPenaltyInput(ChangeEventArgs args)
+    {
+        _frequencyPenaltyValue = ClampDouble(ParseDouble(args.Value, _frequencyPenaltyValue), -2, 2);
+    }
+
+    private void HandleFrequencyPenaltyChange(ChangeEventArgs args)
+    {
+        _frequencyPenaltyValue = ClampDouble(ParseDouble(args.Value, _frequencyPenaltyValue), -2, 2);
+        UpdateChatOptions(o => o.FrequencyPenalty = (float)_frequencyPenaltyValue);
+    }
+
+    private void HandlePresencePenaltyInput(ChangeEventArgs args)
+    {
+        _presencePenaltyValue = ClampDouble(ParseDouble(args.Value, _presencePenaltyValue), -2, 2);
+    }
+
+    private void HandlePresencePenaltyChange(ChangeEventArgs args)
+    {
+        _presencePenaltyValue = ClampDouble(ParseDouble(args.Value, _presencePenaltyValue), -2, 2);
+        UpdateChatOptions(o => o.PresencePenalty = (float)_presencePenaltyValue);
+    }
+
+    private void HandleTopKInput(ChangeEventArgs args)
+    {
+        _topKValue = ClampDouble(ParseDouble(args.Value, _topKValue), 0, 200);
+    }
+
+    private void HandleTopKChange(ChangeEventArgs args)
+    {
+        _topKValue = ClampDouble(ParseDouble(args.Value, _topKValue), 0, 200);
+        UpdateChatOptions(o => o.TopK = (int)Math.Round(_topKValue));
+    }
+
+    private string AllowMultipleToolCallsSelection
+    {
+        get => _config.ChatOptions.AllowMultipleToolCalls switch
+        {
+            true => "true",
+            false => "false",
+            _ => "unset"
+        };
+        set => UpdateChatOptions(opts => opts.AllowMultipleToolCalls = value switch
+        {
+            "true" => true,
+            "false" => false,
+            _ => (bool?)null
+        });
+    }
+
+    private string LocalEndpointSelection
+    {
+        get => _config.IsLocalEndpoint switch
+        {
+            true => "local",
+            false => "cloud",
+            _ => "auto"
+        };
+        set => _config.IsLocalEndpoint = value switch
+        {
+            "local" => true,
+            "cloud" => false,
+            _ => (bool?)null
+        };
+    }
+
+    private void HandleMaxOutputTokensInput(ChangeEventArgs args)
+    {
+        _maxOutputTokensText = args.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_maxOutputTokensText))
+        {
+            _maxTokensHasError = false;
+            UpdateChatOptions(opts => opts.MaxOutputTokens = null);
+            return;
+        }
+
+        if (int.TryParse(_maxOutputTokensText, out var parsed) && parsed > 0)
+        {
+            _maxTokensHasError = false;
+            UpdateChatOptions(opts => opts.MaxOutputTokens = parsed);
+        }
+        else
+        {
+            _maxTokensHasError = true;
+        }
+    }
+
+    private void HandleSeedInput(ChangeEventArgs args)
+    {
+        _seedText = args.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_seedText))
+        {
+            _seedHasError = false;
+            UpdateChatOptions(opts => opts.Seed = null);
+            return;
+        }
+
+        if (long.TryParse(_seedText, out var parsed) && parsed >= 0)
+        {
+            _seedHasError = false;
+            UpdateChatOptions(opts => opts.Seed = parsed);
+        }
+        else
+        {
+            _seedHasError = true;
+        }
+    }
+
+    private void HandleInputCostInput(ChangeEventArgs args)
+    {
+        _inputCostText = args.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_inputCostText))
+        {
+            _inputCostHasError = false;
+            _config.InputCostPerMillionTokens = null;
+            return;
+        }
+
+        if (TryParseDecimal(_inputCostText, out var parsed) && parsed >= 0)
+        {
+            _inputCostHasError = false;
+            _config.InputCostPerMillionTokens = parsed;
+        }
+        else
+        {
+            _inputCostHasError = true;
+        }
+    }
+
+    private void HandleOutputCostInput(ChangeEventArgs args)
+    {
+        _outputCostText = args.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(_outputCostText))
+        {
+            _outputCostHasError = false;
+            _config.OutputCostPerMillionTokens = null;
+            return;
+        }
+
+        if (TryParseDecimal(_outputCostText, out var parsed) && parsed >= 0)
+        {
+            _outputCostHasError = false;
+            _config.OutputCostPerMillionTokens = parsed;
+        }
+        else
+        {
+            _outputCostHasError = true;
+        }
+    }
+
+    private void ResetChatOptionsToDefaults()
+    {
+        _config.ChatOptions = new ChatOptions();
+        SyncChatOptionsEditors();
+    }
+
+    private void UpdateChatOptions(Action<ChatOptions> updater)
+    {
+        updater(_config.ChatOptions);
+        SyncChatOptionsEditors();
+    }
+
+    private async Task FetchAvailableModelsAsync()
+    {
+        _availableModelsMessage = null;
+        _availableModelsMessageIsError = false;
+        _availableRemoteModels.Clear();
+        _availableModelsSource = null;
+        _selectedAvailableModel = string.Empty;
+
+        _isFetchingAvailableModels = true;
+        var requestConfig = _config.Clone();
+
+        try
+        {
+            var result = await ManagementApiClient.GetAvailableModelsAsync(requestConfig);
+            if (requestConfig.Type != _config.Type || requestConfig.BaseUrl != _config.BaseUrl)
+            {
+                return;
+            }
+
+            _availableRemoteModels = result.Models.ToList();
+
+            if (!result.Success || _availableRemoteModels.Count == 0)
+            {
+                _availableModelsMessage = string.IsNullOrWhiteSpace(result.Message)
+                    ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersConnectedNoModelsMessage, "Connected successfully, but the provider returned no models. You can still type a model ID manually.")
+                    : result.Message;
+                _availableModelsMessageIsError = !result.Success;
+                return;
+            }
+
+            _availableModelsSource = (requestConfig.Type, requestConfig.BaseUrl);
+            _availableModelsMessage = FormatSettingsText(SettingsTextKeys.ModelProvidersModelsLoadedMessage, "Loaded {0} models.", _availableRemoteModels.Count);
+        }
+        catch (Exception ex)
+        {
+            _availableModelsMessage = ex.Message;
+            _availableModelsMessageIsError = true;
+        }
+        finally
+        {
+            _isFetchingAvailableModels = false;
+        }
+    }
+
+    private Task ApplySelectedAvailableModelAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_selectedAvailableModel))
+        {
+            return Task.CompletedTask;
+        }
+
+        _config.ModelId = _selectedAvailableModel;
+        _modelDownloadError = null;
+
+        // Pre-fill the typed fields from the descriptor that already arrived with the fetch (no
+        // second round-trip). Only non-null metadata is applied; the fields stay user-editable.
+        var match = _availableRemoteModels.FirstOrDefault(model =>
+            string.Equals(model.Id, _selectedAvailableModel, StringComparison.Ordinal));
+        if (ModelProviderEditorDefaults.ApplyModelMetadata(_config, match))
+        {
+            _availableModelsMessage = Loc.GetOrDefault(
+                SettingsTextKeys.ModelProvidersModelDetailsPrefilledMessage,
+                "Auto-filled fields from the selected model. Review and adjust as needed.");
+            _availableModelsMessageIsError = false;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static List<SearchableSelectOption> BuildModelOptions(IEnumerable<ModelDescriptor> models)
+    {
+        return models.Select(model => new SearchableSelectOption(model.Id, model.Id)).ToList();
+    }
+
+    private async Task OnFetchedModelChangedAsync(string? value)
+    {
+        _selectedAvailableModel = value ?? string.Empty;
+        await ApplySelectedAvailableModelAsync();
+    }
+
+    private async Task DownloadSelectedProviderModelAsync()
+    {
+        if (!SupportsSelectedProviderDownload || string.IsNullOrWhiteSpace(_config.ModelId) || IsCurrentModelInstalled)
+        {
+            return;
+        }
+
+        var requestConfig = _config.Clone();
+        requestConfig.ModelId = _config.ModelId.Trim();
+        _config.ModelId = requestConfig.ModelId;
+        _modelDownloadError = null;
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Config"] = requestConfig
+        };
+        // The optional provider capability uses the typed ID, independent of model discovery.
+        var result = await DialogService.ShowAsync<ProviderModelDownloadDialog, string>(parameters);
+        if (!string.IsNullOrWhiteSpace(result.Data))
+        {
+            _modelDownloadError = FormatSettingsText(SettingsTextKeys.ModelProvidersDownloadFailedMessage,
+                "Could not download model '{0}': {1}", requestConfig.ModelId, result.Data);
+        }
+        if (!result.IsOk)
+        {
+            return;
+        }
+
+        await FetchAvailableModelsAsync();
+        _selectedAvailableModel = _availableRemoteModels.Any(model =>
+            string.Equals(model.Id, _config.ModelId, StringComparison.Ordinal))
+                ? _config.ModelId ?? string.Empty
+                : string.Empty;
+        await ApplySelectedAvailableModelAsync();
+    }
+
+    private Task ApplySelectedLocalModelAsync()
+    {
+        _config.ModelId = string.IsNullOrWhiteSpace(_selectedLocalModel)
+            ? string.Empty
+            : _selectedLocalModel;
+        RefreshLocalModelSizing();
+
+        return Task.CompletedTask;
+    }
+
+    private async Task RefreshLocalModelsAsync()
+    {
+        _availableLocalModels = (await ManagementApiClient.GetLocalModelsAsync()).ToList();
+        SyncSelectedLocalModel();
+        RefreshLocalModelSizing();
+    }
+
+    private void SyncSelectedLocalModel()
+    {
+        if (_config.Type != ModelProviderKeys.Local)
+        {
+            _selectedLocalModel = string.Empty;
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_config.ModelId) &&
+            _availableLocalModels.Contains(_config.ModelId, StringComparer.Ordinal))
+        {
+            _selectedLocalModel = _config.ModelId;
+            return;
+        }
+
+        _selectedLocalModel = string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(_config.ModelId))
+        {
+            _config.ModelId = string.Empty;
+        }
+    }
+
+    private async Task StartModelDownloadAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_downloadUrl))
+        {
+            return;
+        }
+
+        _downloadUrlError = null;
+        var dir = PathUtil.GgufModelsPath;
+        try
+        {
+            Directory.CreateDirectory(dir);
+        }
+        catch
+        {
+            return;
+        }
+
+        // Normalize HuggingFace blob URLs to resolve URLs (blob returns HTML, resolve returns the file)
+        var downloadUrl = _downloadUrl.Trim();
+        if (downloadUrl.Contains("huggingface.co/") && downloadUrl.Contains("/blob/"))
+        {
+            downloadUrl = downloadUrl.Replace("/blob/", "/resolve/");
+        }
+
+        // Validate the URL before use
+        if (!Uri.TryCreate(downloadUrl, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        {
+            _downloadUrlError = Loc.GetOrDefault(SettingsTextKeys.ModelProvidersInvalidDownloadUrl, "Please enter a valid http or https URL.");
+            return;
+        }
+
+        // Derive filename from URL
+        var fileName = Path.GetFileName(uri.LocalPath);
+        if (string.IsNullOrWhiteSpace(fileName) || !fileName.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase))
+        {
+            fileName = "model.gguf";
+        }
+
+        var destinationPath = Path.Combine(dir, fileName);
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["Url"] = downloadUrl,
+            ["DestinationPath"] = destinationPath
+        };
+
+        var result = await DialogService.ShowAsync<DownloadProgressDialog>(parameters);
+
+        if (result == DialogResult.Ok)
+        {
+            _downloadUrl = string.Empty;
+            _config.ModelId = fileName;
+            _selectedLocalModel = fileName;
+            await RefreshLocalModelsAsync();
+        }
+    }
+
+    /// <summary>Resolves sizing from the current file selection or fetched endpoint and model.</summary>
+    private ModelSizing? GetCurrentModelSizing()
+    {
+        if (_config.Type == ModelProviderKeys.Local)
+        {
+            return string.Equals(_localSizingModelId, _config.ModelId, StringComparison.Ordinal)
+                ? _localModelSizing
+                : null;
+        }
+
+        if (_config.Type != ModelProviderKeys.Ollama || _isFetchingAvailableModels
+            || _availableModelsSource is not { } source
+            || source.Type != _config.Type || source.BaseUrl != _config.BaseUrl)
+        {
+            return null;
+        }
+
+        var descriptor = _availableRemoteModels.FirstOrDefault(model =>
+            string.Equals(model.Id, _config.ModelId, StringComparison.Ordinal));
+        return descriptor is { SizeBytes: > 0, KvCacheBytesPerToken: > 0 }
+            ? new ModelSizing(descriptor.SizeBytes.Value, descriptor.KvCacheBytesPerToken.Value)
+            : null;
+    }
+
+    /// <summary>Reads the selected local file once when selection or the local list changes.</summary>
+    private void RefreshLocalModelSizing()
+    {
+        _localModelSizing = null;
+        _localSizingModelId = _config.ModelId;
+        if (_config.Type != ModelProviderKeys.Local || string.IsNullOrWhiteSpace(_config.ModelId)
+            || !_availableLocalModels.Contains(_config.ModelId, StringComparer.Ordinal))
+        {
+            return;
+        }
+
+        _localModelSizing = GgufMetadataReader.TryRead(
+            Path.Combine(PathUtil.GgufModelsPath, _config.ModelId),
+            Logger);
+    }
+
+    private static string GetFitAlertClass(ModelFitVerdict fit) => fit switch
+    {
+        ModelFitVerdict.Fits => "alert-success",
+        ModelFitVerdict.Tight => "alert-warning",
+        ModelFitVerdict.Unknown => "alert-info",
+        _ => "alert-error"
+    };
+
+    private static string GetFitIcon(ModelFitVerdict fit) => fit switch
+    {
+        ModelFitVerdict.Fits => "lucide--check-circle-2",
+        ModelFitVerdict.Tight => "lucide--triangle-alert",
+        ModelFitVerdict.Unknown => "lucide--info",
+        _ => "lucide--x-circle"
+    };
+
+    private string GetFitMessage(ModelFitVerdict fit) => _config.Type == ModelProviderKeys.Ollama
+        || (Providers.Find(_config.Type) as IModelHardwareProvider)?.GetHardwareProfile(_config).Placement == "managed"
+        ? Loc[SettingsTextKeys.ModelProvidersManagedHardware] : fit switch
+    {
+        ModelFitVerdict.Unknown => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersMemoryFitUnknown,
+            "Memory fit is unavailable for this model or placement. Save is still available."),
+        ModelFitVerdict.Fits => Loc.GetOrDefault(
+            SettingsTextKeys.ModelProvidersMemoryFitFits,
+            "Estimated memory fit for the computer running Oscova: fits."),
+        ModelFitVerdict.Tight => Loc.GetOrDefault(
+            SettingsTextKeys.ModelProvidersMemoryFitTight,
+            "Estimated memory fit for the computer running Oscova: tight. A lower context window reduces the estimate."),
+        _ => Loc.GetOrDefault(
+            SettingsTextKeys.ModelProvidersMemoryFitTooLarge,
+            "Estimated memory fit for the computer running Oscova: too large. Try a smaller model or a lower context window.")
+    };
+
+    private void SyncChatOptionsEditors()
+    {
+        _temperatureValue = _config.ChatOptions.Temperature ?? 0f;
+        _topPValue = _config.ChatOptions.TopP ?? 1f;
+        _frequencyPenaltyValue = _config.ChatOptions.FrequencyPenalty ?? 0f;
+        _presencePenaltyValue = _config.ChatOptions.PresencePenalty ?? 0f;
+        _topKValue = _config.ChatOptions.TopK ?? 0;
+
+        _maxOutputTokensText = _config.ChatOptions.MaxOutputTokens?.ToString() ?? string.Empty;
+        _seedText = _config.ChatOptions.Seed?.ToString() ?? string.Empty;
+        _maxTokensHasError = false;
+        _seedHasError = false;
+        SyncCostEditors();
+    }
+
+    private void SyncCostEditors()
+    {
+        _inputCostText = _config.InputCostPerMillionTokens?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+        _outputCostText = _config.OutputCostPerMillionTokens?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+        _inputCostHasError = false;
+        _outputCostHasError = false;
+    }
+
+    private string FormatNullable(float? value) => value?.ToString("0.00") ?? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAutoValue, "Auto");
+    private string FormatNullable(int? value) => value?.ToString() ?? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAutoValue, "Auto");
+    private string FormatNullable(long? value) => value?.ToString() ?? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAutoValue, "Auto");
+
+    private bool ShouldShowBaseUrlField()
+    {
+        return _config.Type is ModelProviderKeys.Ollama
+                or ModelProviderKeys.Groq
+                or ModelProviderKeys.DeepSeek
+                or ModelProviderKeys.OpenAICompatible
+                or ModelProviderKeys.OpenRouter
+                or ModelProviderKeys.NvidiaNim
+            || !string.IsNullOrWhiteSpace(_config.BaseUrl);
+    }
+
+    private string GetBaseUrlPlaceholder() => _config.Type switch
+    {
+        ModelProviderKeys.Ollama => "http://localhost:11434/",
+        ModelProviderKeys.Groq => "https://api.groq.com/openai/v1/",
+        ModelProviderKeys.DeepSeek => "https://api.deepseek.com/",
+        ModelProviderKeys.OpenAICompatible => "https://your-proxy.example/v1/",
+        ModelProviderKeys.OpenRouter => "https://openrouter.ai/api/v1/",
+        ModelProviderKeys.NvidiaNim => "https://integrate.api.nvidia.com/v1/",
+        _ => string.Empty
+    };
+
+    private string GetBaseUrlHelpText() => _config.Type switch
+    {
+        ModelProviderKeys.Ollama => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOllama, "Override the local Ollama endpoint if it is not running on the default address"),
+        ModelProviderKeys.Groq => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpGroq, "Override the Groq endpoint only if you are routing through a proxy or gateway"),
+        ModelProviderKeys.OpenAICompatible => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOpenAICompatible, "Set the endpoint for your compatible API, proxy, or gateway"),
+        ModelProviderKeys.OpenRouter => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOpenRouter, "Override the OpenRouter endpoint only if you are routing through a proxy or gateway"),
+        ModelProviderKeys.NvidiaNim => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOpenAICompatible, "Set the endpoint for your compatible API, proxy, or gateway"),
+        _ => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpDefault, "Override the default API endpoint")
+    };
+
+    private string GetModelIdPlaceholder() => _config.Type switch
+    {
+        ModelProviderKeys.Google => "gemini-2.0-flash",
+        ModelProviderKeys.Anthropic => ModelProviderConfigPresets.AnthropicDefaultModelId,
+        ModelProviderKeys.Ollama => "llama3.2",
+        ModelProviderKeys.DeepSeek => ModelProviderConfigPresets.GetPresets().Single(preset => preset.Type == ModelProviderKeys.DeepSeek).ModelId!,
+        ModelProviderKeys.OpenRouter => "openai/gpt-4o-mini",
+        ModelProviderKeys.NvidiaNim => ModelProviderConfigPresets.GetPresets().Single(preset => preset.Type == ModelProviderKeys.NvidiaNim).ModelId!,
+        _ => "gpt-4o-mini"
+    };
+
+    private string? GetPresetBaseUrl(string type)
+    {
+        return ModelProviderEditorDefaults.GetDefaultEndpoint(type, _providerTypeDefaults);
+    }
+
+    private ProviderTypeDefault? FindProviderDefault(string type)
+    {
+        return _providerTypeDefaults.FirstOrDefault(
+            providerDefault => string.Equals(providerDefault.Key, type, StringComparison.Ordinal));
+    }
+
+    private string FormatAllowMultipleToolCalls() => _config.ChatOptions.AllowMultipleToolCalls switch
+    {
+        true => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAllowValue, "Allow"),
+        false => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSingleValue, "Single"),
+        _ => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAutoValue, "Auto")
+    };
+
+    private static double ParseDouble(object? value, double fallback)
+    {
+        if (value is string text && double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+        {
+            return parsed;
+        }
+
+        return fallback;
+    }
+
+    private static bool TryParseDecimal(string text, out decimal value)
+    {
+        // HTML number inputs return an invariant decimal value in every UI locale.
+        return decimal.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+    }
+
+    private static double ClampDouble(double value, double min, double max) => Math.Min(Math.Max(value, min), max);
+
+    private async Task LoadCredentialsAsync()
+    {
+        var credentials = await SettingsApiClient.GetCredentialsAsync();
+        _apiKeyCredentials = credentials.ToList();
+    }
+
+    private void OpenCredentialsTab()
+    {
+        _managingCredentials = true;
+    }
+
+    private async Task CloseAsync()
+    {
+        if (_managingCredentials)
+        {
+            await LoadCredentialsAsync();
+            _managingCredentials = false;
+        }
+        else
+        {
+            Cancel();
+        }
+    }
+
+    private string FormatCredentialOption(CredentialListItem credential)
+    {
+        var valueState = credential.IsSet
+            ? Loc.GetOrDefault(SettingsTextKeys.CredentialsValueSetBadge, "Set")
+            : Loc.GetOrDefault(SettingsTextKeys.CredentialsValueNotSetBadge, "Not set");
+        return $"{credential.Alias} [{credential.CredentialKey}] - {valueState}";
+    }
+
+    private string GetCredentialHelpText()
+    {
+        if (_apiKeyCredentials.Count == 0)
+        {
+            return Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialHelpNoCredentials, "Create a credential in Settings > Credentials to use an authenticated provider.");
+        }
+
+        return _config.Type == ModelProviderKeys.Google
+            ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialHelpGoogle, "Google Gemini requires an API key credential.")
+            : Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialHelpDefault, "Leave empty only if this provider can be used without an API key.");
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}
+
+

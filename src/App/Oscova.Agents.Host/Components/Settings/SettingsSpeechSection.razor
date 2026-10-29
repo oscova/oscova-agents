@@ -1,0 +1,609 @@
+@using Oscova.Agents.Host.Services.UI
+@using Oscova.Agents.Plugins
+@using Oscova.Agents.Core.ApiContracts.Speech
+@using Oscova.Agents.Core.Interfaces
+@using Oscova.Agents.Core.Secrets.Credentials
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Core.Speech
+@using Oscova.Agents.Speech
+@using Oscova.Agents.Speech.Contracts
+@using Oscova.Agents.Host.Components
+@using Oscova.Agents.Host.Constants
+@using Oscova.Agents.Host.Services
+@using Oscova.Agents.Host.Services.Api
+@implements IDisposable
+@inject UserServiceScope UserScope
+@inject ILogger<SettingsSpeechSection> Logger
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@inject IStringLocalizer<SettingsText> Loc
+@inject IChatSpeechService SpeechService
+@inject IDownloadService DownloadService
+@inject SettingsApiClient SettingsApiClient
+@inject IToastService ToastService
+@inject ISpeechProviderCatalog SpeechCatalog
+@inject PluginSettingsCatalog PluginPanels
+
+<div class="custom-settings-speech space-y-6">
+    <section class="custom-settings-group custom-settings-form space-y-4">
+        <div>
+            <h2 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.SpeechRecognitionSectionTitle, "Speech recognition")</h2>
+            <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SpeechRecognitionProviderDescription, "Choose how microphone audio is transcribed after hands-free capture. Language: Automatic detection.")</p>
+        </div>
+
+        @if (RecognitionProviderKeys.Count == 0)
+        {
+            <p class="text-sm opacity-70">@(RecognitionProvider is null
+                ? Loc.GetOrDefault(SettingsTextKeys.SpeechInstallPluginHelp, "Install a speech plugin in Settings > Plugins, then restart.")
+                : Loc.GetOrDefault(SettingsTextKeys.SpeechProviderUnavailableHelp, "This provider is unavailable. Enable its plugin and restart, or choose an installed provider."))</p>
+        }
+        else
+        {
+        <div class="form-control max-w-sm">
+            <label class="label pl-0" for="speech-recognition-provider">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.SpeechProviderLabel, "Provider")</span>
+            </label>
+            <select id="speech-recognition-provider" class="select select-bordered w-full" @onchange="OnRecognitionProviderTypeChanged" value="@_recognitionProviderDraft.Type">
+                @if (RecognitionDraftProvider is null)
+                {
+                    <option value="@_recognitionProviderDraft.Type" disabled>@GetProviderLabel(_recognitionProviderDraft.Type)</option>
+                }
+                @foreach (var providerKey in RecognitionProviderKeys)
+                {
+                    <option value="@providerKey">@GetProviderLabel(providerKey)</option>
+                }
+            </select>
+        </div>
+
+        @if (RecognitionDraftProvider is null)
+        {
+            <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SpeechProviderUnavailableHelp, "This provider is unavailable. Enable its plugin and restart, or choose an installed provider.")</p>
+        }
+        @if (SpeechPanel(PluginSettingsSlots.SpeechRecognition, _recognitionProviderDraft.Type) is { } recognitionPanel)
+        {
+            <PluginSettingsPanel Entry="@recognitionPanel" GetSpeechSettings="@RecognitionPanelSettings" @key="@recognitionPanel" />
+        }
+
+        <button id="save-recognition-speech-settings" type="button" class="btn btn-primary btn-sm" @onclick="SaveDraftSpeechSettingsAsync" disabled="@(!HasRecognitionSettingsChanges)">
+            <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+            @Loc.GetOrDefault(SettingsTextKeys.SpeechSaveProviderButton, "Save speech settings")
+        </button>
+        }
+    </section>
+
+    <section class="custom-settings-group custom-settings-form space-y-4">
+        <div>
+            <h2 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.SpeechSynthesisSectionTitle, "Speech synthesis")</h2>
+            <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SpeechSynthesisProviderDescription, "Choose how assistant text is converted to audio.")</p>
+        </div>
+
+        @if (SynthesisProviderKeys.Count == 0)
+        {
+            <p class="text-sm opacity-70">@(SynthesisProvider is null
+                ? Loc.GetOrDefault(SettingsTextKeys.SpeechInstallPluginHelp, "Install a speech plugin in Settings > Plugins, then restart.")
+                : Loc.GetOrDefault(SettingsTextKeys.SpeechProviderUnavailableHelp, "This provider is unavailable. Enable its plugin and restart, or choose an installed provider."))</p>
+        }
+        else
+        {
+        <div class="form-control max-w-sm">
+            <label class="label pl-0" for="speech-synthesis-provider">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.SpeechProviderLabel, "Provider")</span>
+            </label>
+            <select id="speech-synthesis-provider" class="select select-bordered w-full" @onchange="OnSynthesisProviderTypeChanged" value="@_synthesisProviderDraft.Type">
+                @if (SynthesisDraftProvider is null)
+                {
+                    <option value="@_synthesisProviderDraft.Type" disabled>@GetProviderLabel(_synthesisProviderDraft.Type)</option>
+                }
+                @foreach (var providerKey in SynthesisProviderKeys)
+                {
+                    <option value="@providerKey">@GetProviderLabel(providerKey)</option>
+                }
+            </select>
+        </div>
+
+        @if (SynthesisDraftProvider is null)
+        {
+            <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SpeechProviderUnavailableHelp, "This provider is unavailable. Enable its plugin and restart, or choose an installed provider.")</p>
+        }
+        @if (SpeechPanel(PluginSettingsSlots.SpeechSynthesis, _synthesisProviderDraft.Type) is { } synthesisPanel)
+        {
+            @* Recreate catalog controls so the browser restores the retained voice after options reload. *@
+            <PluginSettingsPanel Entry="@synthesisPanel" GetSpeechSettings="@SynthesisPanelSettings" @key="@((synthesisPanel, _voices))" />
+        }
+        @if (_voiceCatalogFailed)
+        {
+            <p role="alert" class="text-sm text-warning">@Loc.GetOrDefault(SettingsTextKeys.SpeechVoiceCatalogFailed, "Could not load voices. Check the selected credential and voice permissions, then select the credential again.")</p>
+        }
+
+        <button id="save-synthesis-speech-settings" type="button" class="btn btn-primary btn-sm" @onclick="SaveDraftSpeechSettingsAsync" disabled="@(!HasSynthesisSettingsChanges)">
+            <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+            @Loc.GetOrDefault(SettingsTextKeys.SpeechSaveProviderButton, "Save speech settings")
+        </button>
+
+        <div class="form-control mt-4">
+            <label for="voice-preview-text" class="label block mb-1 pl-0">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.SpeechSampleTextLabel, "Sample text")</span>
+            </label>
+            <textarea id="voice-preview-text"
+                      class="textarea textarea-bordered w-full max-w-xl"
+                      rows="3"
+                      placeholder="@(Loc.GetOrDefault(SettingsTextKeys.SpeechSampleTextPlaceholder, "Type something to preview the selected voice..."))"
+                      @bind="_testText"></textarea>
+        </div>
+
+        <button class="btn btn-secondary btn-sm w-full sm:w-auto" @onclick="TestVoiceAsync" disabled="@(!_ttsReady || _isTesting || string.IsNullOrWhiteSpace(_testText))">
+            @if (_isTesting)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+                <span class="ml-2">@Loc.GetOrDefault(SettingsTextKeys.SpeechTestingButton, "Testing")</span>
+            }
+            else
+            {
+                <span class="iconify lucide--play size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.SpeechTestVoiceButton, "Test Voice")</span>
+            }
+        </button>
+        }
+    </section>
+
+    @if (IsAdmin)
+    {
+        <section class="custom-settings-group custom-settings-form">
+            <label for="assistant-speech-output" class="label block mb-1 pl-0">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.SpeechOutputModeLabel, "Assistant speech output")</span>
+            </label>
+            <select id="assistant-speech-output"
+                    class="select select-bordered w-full"
+                    @onchange="OnOutputModeChanged"
+                    value="@SpeechSettings.AssistantSpeechOutputMode">
+                <option value="@SpeechOutputMode.BrowserOnly">@Loc.GetOrDefault(SettingsTextKeys.SpeechOutputModeBrowserOnly, "Browser only")</option>
+                <option value="@SpeechOutputMode.BrowserAndAvatar">@Loc.GetOrDefault(SettingsTextKeys.SpeechOutputModeBrowserAndAvatar, "Browser and avatar")</option>
+                <option value="@SpeechOutputMode.AvatarOnly">@Loc.GetOrDefault(SettingsTextKeys.SpeechOutputModeAvatarOnly, "Avatar only")</option>
+            </select>
+        </section>
+    }
+</div>
+
+<audio id="tts-test-audio"></audio>
+
+@code {
+    private List<SpeechVoiceSummary> _voices = new();
+    private List<CredentialListItem> _credentials = new();
+    private bool _isTesting;
+    private IJSObjectReference? _audioQueueModule;
+    private string _testText = string.Empty;
+    private bool _ttsReady;
+    private SpeechProviderConfig _recognitionProviderDraft = new();
+    private SpeechProviderConfig _synthesisProviderDraft = new();
+    private string _selectedVoiceIdDraft = Oscova.Agents.Core.Settings.SpeechSettings.DefaultVoiceId;
+    private SpeechSettings SpeechSettings => UserScope.SpeechSettings;
+    private SpeechProviderConfig? RecognitionProvider => SpeechSettings.SelectedRecognitionProvider ?? SpeechSettings.RecognitionProviderConfigs.FirstOrDefault();
+    private SpeechProviderConfig? SynthesisProvider => SpeechSettings.SelectedSynthesisProvider ?? SpeechSettings.SynthesisProviderConfigs.FirstOrDefault();
+    private ISpeechRecognitionProvider? RecognitionDraftProvider => SpeechCatalog.Recognition
+        .FirstOrDefault(provider => provider.Type == _recognitionProviderDraft.Type);
+    private ISpeechSynthesisProvider? SynthesisDraftProvider => SpeechCatalog.Synthesis
+        .FirstOrDefault(provider => provider.Type == _synthesisProviderDraft.Type);
+    private bool HasRecognitionSettingsChanges =>
+        RecognitionDraftProvider is not null && !IsSelectedProviderUnchanged(SpeechSettings.SelectedRecognitionProviderId, SpeechSettings.RecognitionProviderConfigs, _recognitionProviderDraft);
+    private bool HasSynthesisSettingsChanges =>
+        SynthesisDraftProvider is not null && (!IsSelectedProviderUnchanged(SpeechSettings.SelectedSynthesisProviderId, SpeechSettings.SynthesisProviderConfigs, _synthesisProviderDraft) ||
+        !string.Equals(SpeechSettings.SelectedVoiceId, _selectedVoiceIdDraft, StringComparison.Ordinal));
+    private bool IsAdmin => UserScope.IsInRole("Admin");
+    private IReadOnlyList<string> RecognitionProviderKeys => [.. SpeechCatalog.Recognition
+        .Select(provider => provider.Type)
+        .Distinct(StringComparer.Ordinal)
+        .OrderBy(type => type, StringComparer.Ordinal)];
+    private IReadOnlyList<string> SynthesisProviderKeys => [.. SpeechCatalog.Synthesis
+        .Select(provider => provider.Type)
+        .Distinct(StringComparer.Ordinal)
+        .OrderBy(type => type, StringComparer.Ordinal)];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _testText = Loc.GetOrDefault(SettingsTextKeys.SpeechDefaultSampleText, "This is a quick voice preview.");
+        ResetSpeechDrafts();
+        DownloadService.DownloadsChanged += OnDownloadsChanged;
+        await LoadCredentialsAsync();
+        await RefreshVoicesAsync();
+        await RefreshTtsReadyAsync();
+    }
+
+    private async Task LoadCredentialsAsync()
+    {
+        try
+        {
+            _credentials = [.. await SettingsApiClient.GetCredentialsAsync()];
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load credentials for speech settings.");
+            _credentials = [];
+        }
+    }
+
+    private async Task RefreshVoicesAsync()
+    {
+        var draft = _synthesisProviderDraft;
+        var snapshot = draft.Clone();
+        // Account voice lists belong only to the provider and credential that requested them.
+        bool IsCurrent() => !_disposed && _synthesisProviderDraft.Id == snapshot.Id && _synthesisProviderDraft.Type == snapshot.Type
+            && _synthesisProviderDraft.CredentialKey == snapshot.CredentialKey && _synthesisProviderDraft.BaseUrl == snapshot.BaseUrl
+            && _synthesisProviderDraft.ModelId == snapshot.ModelId;
+        _voices = [];
+        _voiceCatalogFailed = false;
+        if (SynthesisDraftProvider is null)
+        {
+            _voices = [];
+            return;
+        }
+        try
+        {
+            var list = await PreviewVoicesAsync(snapshot);
+            if (!IsCurrent()) { return; }
+            _voices = list ?? [];
+            EnsureSelectedVoiceIsAvailable();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load speech synthesis voices.");
+            if (!IsCurrent()) { return; }
+            _voices = [];
+            _voiceCatalogFailed = true;
+        }
+    }
+
+    private async Task<List<SpeechVoiceSummary>?> PreviewVoicesAsync(SpeechProviderConfig provider)
+    {
+        using var response = await Http.PostAsJsonAsync(ApiRoutes.SpeechSynthesis.VoicesPreview, new SpeechVoicePreviewRequest
+        {
+            Type = provider.Type,
+            BaseUrl = provider.BaseUrl,
+            ModelId = provider.ModelId,
+            CredentialKey = provider.CredentialKey,
+            VoiceId = provider.VoiceId
+        });
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<SpeechVoiceSummary>>();
+    }
+
+    private void EnsureSelectedVoiceIsAvailable()
+    {
+        if (_voices.Count == 0)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_selectedVoiceIdDraft) &&
+            _voices.Any(voice => string.Equals(voice.Id, _selectedVoiceIdDraft, StringComparison.Ordinal)))
+        {
+            _synthesisProviderDraft.VoiceId = _selectedVoiceIdDraft;
+            return;
+        }
+
+        var defaultVoice = SynthesisDraftProvider?.DefaultVoiceId;
+        var selected = _voices.Any(voice => string.Equals(voice.Id, defaultVoice, StringComparison.Ordinal))
+            ? defaultVoice!
+            : _voices[0].Id;
+        _selectedVoiceIdDraft = selected;
+        _synthesisProviderDraft.VoiceId = selected;
+    }
+
+    private void OnRecognitionProviderTypeChanged(ChangeEventArgs args)
+    {
+        var type = args.Value?.ToString();
+        if (!string.IsNullOrWhiteSpace(type))
+        {
+            _recognitionProviderDraft = CreateProviderDraft(SpeechSettings.RecognitionProviderConfigs, type, false);
+            _recognitionDownload = CreateModelDownload(_recognitionProviderDraft, false);
+        }
+    }
+
+    private async Task OnSynthesisProviderTypeChanged(ChangeEventArgs args)
+    {
+        var type = args.Value?.ToString();
+        if (!string.IsNullOrWhiteSpace(type))
+        {
+            _synthesisProviderDraft = CreateProviderDraft(SpeechSettings.SynthesisProviderConfigs, type, true);
+            _selectedVoiceIdDraft = _synthesisProviderDraft.VoiceId ?? Oscova.Agents.Core.Settings.SpeechSettings.DefaultVoiceId;
+            await RefreshVoicesAsync();
+            await RefreshTtsReadyAsync();
+            _synthesisDownload = CreateModelDownload(_synthesisProviderDraft, true);
+        }
+    }
+
+    private SpeechProviderConfig CreateProviderDraft(IEnumerable<SpeechProviderConfig> providers, string type, bool synthesis)
+    {
+        var existing = providers.FirstOrDefault(provider => provider.Type == type);
+        if (existing is not null)
+        {
+            return existing.Clone();
+        }
+
+        return new SpeechProviderConfig
+        {
+            Name = GetProviderLabel(type),
+            Type = type,
+            ModelId = synthesis
+                ? SpeechCatalog.Synthesis.FirstOrDefault(provider => provider.Type == type)?.DefaultModel
+                : SpeechCatalog.Recognition.FirstOrDefault(provider => provider.Type == type)?.DefaultModel,
+            VoiceId = synthesis ? SpeechCatalog.Synthesis.FirstOrDefault(provider => provider.Type == type)?.DefaultVoiceId : null
+        };
+    }
+
+    private string GetProviderLabel(string providerKey)
+    {
+        return providerKey switch
+        {
+            SpeechProviderKeys.Local => Loc.GetOrDefault(SettingsTextKeys.SpeechProviderLocal, "Local"),
+            SpeechProviderKeys.OpenAI => Loc.GetOrDefault(SettingsTextKeys.SpeechProviderOpenAI, "OpenAI"),
+            _ => providerKey
+        };
+    }
+
+    private Task SelectVoiceAsync(string selected)
+    {
+        if (!string.IsNullOrWhiteSpace(selected) && !string.Equals(selected, _selectedVoiceIdDraft, StringComparison.Ordinal))
+        {
+            _selectedVoiceIdDraft = selected;
+            _synthesisProviderDraft.VoiceId = selected;
+        }
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnOutputModeChanged(ChangeEventArgs e)
+    {
+        if (e?.Value is null)
+        {
+            return;
+        }
+
+        if (!Enum.TryParse<SpeechOutputMode>(e.Value.ToString(), ignoreCase: false, out var selected))
+        {
+            selected = SpeechOutputMode.BrowserOnly;
+        }
+
+        if (selected == SpeechSettings.AssistantSpeechOutputMode)
+        {
+            return;
+        }
+
+        SpeechSettings.AssistantSpeechOutputMode = selected;
+        await SpeechSettings.SaveAsync();
+    }
+
+    private async Task SaveDraftSpeechSettingsAsync()
+    {
+        if (RecognitionDraftProvider is not null)
+        {
+            SpeechSettings.SelectedRecognitionProviderId = ApplyProviderDraft(SpeechSettings.RecognitionProviderConfigs, _recognitionProviderDraft);
+        }
+        if (SynthesisDraftProvider is not null)
+        {
+            SpeechSettings.SelectedSynthesisProviderId = ApplyProviderDraft(SpeechSettings.SynthesisProviderConfigs, _synthesisProviderDraft);
+            SpeechSettings.SelectedVoiceId = _selectedVoiceIdDraft;
+        }
+        await SpeechSettings.SaveAsync();
+        ResetSpeechDrafts();
+        await RefreshTtsReadyAsync();
+        ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.SpeechSettingsSavedToast, "Speech settings saved."), ToastType.Success);
+    }
+
+    private void ResetSpeechDrafts()
+    {
+        _recognitionProviderDraft = RecognitionProvider?.Clone() ?? new SpeechProviderConfig();
+        _synthesisProviderDraft = SynthesisProvider?.Clone() ?? new SpeechProviderConfig();
+        _selectedVoiceIdDraft = SpeechSettings.SelectedVoiceId;
+        _recognitionDownload = CreateModelDownload(_recognitionProviderDraft, false);
+        _synthesisDownload = CreateModelDownload(_synthesisProviderDraft, true);
+    }
+
+    private static Guid ApplyProviderDraft(ICollection<SpeechProviderConfig> providers, SpeechProviderConfig draft)
+    {
+        var provider = providers.FirstOrDefault(item => item.Id == draft.Id);
+        if (provider is null)
+        {
+            providers.Add(draft.Clone());
+            return draft.Id;
+        }
+
+        provider.Name = draft.Name;
+        provider.Type = draft.Type;
+        provider.BaseUrl = draft.BaseUrl;
+        provider.ModelId = draft.ModelId;
+        provider.CredentialKey = draft.CredentialKey;
+        provider.VoiceId = draft.VoiceId;
+        return provider.Id;
+    }
+
+    private static bool IsSelectedProviderUnchanged(
+        Guid? selectedProviderId,
+        IEnumerable<SpeechProviderConfig> providers,
+        SpeechProviderConfig draft)
+    {
+        if (selectedProviderId != draft.Id)
+        {
+            return false;
+        }
+
+        var provider = providers.FirstOrDefault(item => item.Id == draft.Id);
+        return provider is not null && provider.EqualsConfiguration(draft);
+    }
+
+    private async Task EnsureAudioQueueAsync()
+    {
+        _audioQueueModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/audioQueue.js");
+        await _audioQueueModule.InvokeVoidAsync("init", "tts-test-audio");
+        await _audioQueueModule.InvokeVoidAsync("activate");
+    }
+
+    private async Task TestVoiceAsync()
+    {
+        if (_isTesting)
+        {
+            return;
+        }
+        _isTesting = true;
+        await InvokeAsync(StateHasChanged);
+        var sessionId = $"test_{Guid.NewGuid():N}";
+        var sessionStarted = false;
+        try
+        {
+            await EnsureAudioQueueAsync();
+
+            var sample = string.IsNullOrWhiteSpace(_testText)
+                ? Loc.GetOrDefault(SettingsTextKeys.SpeechDefaultSampleText, "This is a quick voice preview.")
+                : _testText;
+            using var startResponse = await Http.PostAsJsonAsync(ApiRoutes.SpeechSynthesis.Start(sessionId), new SpeechSynthesisRequest { VoiceId = SpeechSettings.SelectedVoiceId });
+            startResponse.EnsureSuccessStatusCode();
+            sessionStarted = true;
+
+            using var response = await Http.PostAsJsonAsync(ApiRoutes.SpeechSynthesis.Synthesize(sessionId), new SpeechSynthesisRequest
+            {
+                Text = sample,
+                IncludeWavHeader = true,
+                VoiceId = SpeechSettings.SelectedVoiceId,
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<SpeechSynthesisResponse>();
+                if (result != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(result.FileUrl))
+                    {
+                        await _audioQueueModule!.InvokeVoidAsync("enqueueUrl", result.FileUrl);
+                    }
+                    else if (result.Audio?.Length > 0)
+                    {
+                        var base64 = Convert.ToBase64String(result.Audio);
+                        await _audioQueueModule!.InvokeVoidAsync("enqueueBase64", base64, "audio/wav");
+                    }
+                    await _audioQueueModule!.InvokeVoidAsync("resume");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to test selected voice.");
+        }
+        finally
+        {
+            // Cached preview audio remains playable after its temporary synthesizer is released.
+            if (sessionStarted)
+            {
+                try
+                {
+                    using var stopResponse = await Http.PostAsync(ApiRoutes.SpeechSynthesis.Stop(sessionId), null);
+                    stopResponse.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Failed to stop voice preview session {SessionId}.", sessionId);
+                }
+            }
+            _isTesting = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void OnDownloadsChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await RefreshTtsReadyAsync();
+            StateHasChanged();
+        });
+    }
+
+    private async Task RefreshTtsReadyAsync()
+    {
+        if (SynthesisDraftProvider is null)
+        {
+            _ttsReady = false;
+            return;
+        }
+        try
+        {
+            _ttsReady = await SpeechService.IsTtsAvailableAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to refresh TTS availability.");
+        }
+    }
+
+    private PluginSpeechModelDownload? _recognitionDownload;
+    private PluginSpeechModelDownload? _synthesisDownload;
+    private PluginSettingsCatalog.Entry? SpeechPanel(string slot, string type) => PluginPanels.Entries
+        .SingleOrDefault(entry => entry.Panel.SlotId == slot && entry.Panel.AssociationId == type);
+    private PluginSpeechSettingsContext RecognitionPanelSettings() => PanelSettings(false);
+    private PluginSpeechSettingsContext SynthesisPanelSettings() => PanelSettings(true);
+    private PluginSpeechSettingsContext PanelSettings(bool synthesis)
+    {
+        var draft = synthesis ? _synthesisProviderDraft : _recognitionProviderDraft;
+        return new(draft, synthesis ? SynthesisDraftProvider?.DefaultModel : RecognitionDraftProvider?.DefaultModel,
+            [.. _credentials.Select(credential => new PluginSpeechCredential(credential.CredentialKey, credential.Alias, credential.IsSet))],
+            synthesis ? [.. _voices.Select(voice => new SpeechSynthesisVoice(voice.Id, voice.DisplayName, voice.Language, voice.Gender))] : [],
+            synthesis && SynthesisDraftProvider?.DefaultEndpoint is null && !_ttsReady,
+            async () =>
+            {
+                if (synthesis) { await RefreshVoicesAsync(); }
+                if (!_disposed) { await InvokeAsync(StateHasChanged); }
+            }, synthesis ? SelectVoiceAsync : voice =>
+            { draft.VoiceId = voice; return InvokeAsync(StateHasChanged); }, synthesis ? _synthesisDownload : _recognitionDownload);
+    }
+    private PluginSpeechModelDownload? CreateModelDownload(SpeechProviderConfig draft, bool synthesis)
+    {
+        var modelPath = synthesis ? SynthesisDraftProvider?.ModelPath : RecognitionDraftProvider?.ModelPath;
+        var selected = synthesis ? SpeechSettings.SelectedSynthesisProviderId : SpeechSettings.SelectedRecognitionProviderId;
+        if (modelPath is null || selected != draft.Id) { return null; }
+        // Downloads target saved settings. A retained panel must not act on a different selection.
+        void RequireSelection()
+        {
+            var current = synthesis ? SpeechSettings.SelectedSynthesisProviderId : SpeechSettings.SelectedRecognitionProviderId;
+            if (current != draft.Id) { throw new InvalidOperationException("Save this provider before downloading its model."); }
+        }
+        return new(GetDownloadTitle(draft), async () =>
+        {
+            RequireSelection();
+            var ready = synthesis ? await SpeechService.IsTtsAvailableAsync() : await SpeechService.IsAsrAvailableAsync();
+            var progress = synthesis ? await SpeechService.GetTtsModelProgressAsync() : await SpeechService.GetAsrModelProgressAsync();
+            return new(ready, progress is { Status: DownloadStatus.Pending or DownloadStatus.Downloading }, progress?.Percent);
+        }, () =>
+        {
+            RequireSelection();
+            return synthesis ? SpeechService.StartTtsModelDownloadAsync() : SpeechService.StartAsrModelDownloadAsync();
+        }, () =>
+        {
+            RequireSelection();
+            return synthesis ? SpeechService.CancelTtsModelDownloadAsync() : SpeechService.CancelAsrModelDownloadAsync();
+        }, callback =>
+        {
+            EventHandler handler = (_, _) => callback();
+            DownloadService.DownloadsChanged += handler;
+            return new DownloadSubscription(() => DownloadService.DownloadsChanged -= handler);
+        });
+    }
+    /// <summary>Detaches a plugin panel from host download notifications when it closes.</summary>
+    private sealed class DownloadSubscription(Action unsubscribe) : IDisposable
+    {
+        public void Dispose() => unsubscribe();
+    }
+
+    private static string? GetDownloadTitle(SpeechProviderConfig provider)
+    {
+        return provider.Type == SpeechProviderKeys.Local
+            ? null
+            : string.IsNullOrWhiteSpace(provider.Name) ? provider.Type : provider.Name;
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        DownloadService.DownloadsChanged -= OnDownloadsChanged;
+    }
+
+    private bool _disposed;
+    private bool _voiceCatalogFailed;
+}

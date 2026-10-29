@@ -1,0 +1,33 @@
+﻿@page "/Error"
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<PageTitle>@CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageTitle, "Error")</PageTitle>
+
+<h1 class="text-danger">@CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageHeading, "Error.")</h1>
+<h2 class="text-danger">@CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageMessage, "An error occurred while processing your request.")</h2>
+
+@if (ShowRequestId)
+{
+    <p>
+        <strong>@CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageRequestId, "Request ID:")</strong> <code>@RequestId</code>
+    </p>
+}
+
+<h3>@CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageDevelopmentMode, "Development Mode")</h3>
+<p>
+    @CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageDevelopmentModeDetails, "Swapping to Development environment will display more detailed information about the error that occurred.")
+</p>
+<p>
+    @CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageDevelopmentWarning, "The Development environment should not be enabled for deployed applications. It can result in displaying sensitive information from exceptions to end users. For local debugging, enable the Development environment by setting the ASPNETCORE_ENVIRONMENT environment variable to Development and restarting the app.")
+</p>
+
+@code{
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

@@ -1,0 +1,17 @@
+@if (!string.IsNullOrWhiteSpace(ImageSource))
+{
+    @* Use the SVG silhouette so plugin icons inherit each surface's theme color and opacity. *@
+    <span aria-hidden="true" class="plugin-presentation-icon @Class"
+          style="--plugin-icon-size:@(Size)px;--plugin-icon-source:url('@ImageSource')"></span>
+}
+else
+{
+    <iconify-icon icon="@Icon" width="@Size" height="@Size" class="@Class" aria-hidden="true"></iconify-icon>
+}
+
+@code {
+    [Parameter] public string? ImageSource { get; set; }
+    [Parameter] public string Icon { get; set; } = "lucide:radio-tower";
+    [Parameter] public int Size { get; set; } = 20;
+    [Parameter] public string? Class { get; set; }
+}

@@ -1,0 +1,4 @@
+.image-gallery-upload:focus-within {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}

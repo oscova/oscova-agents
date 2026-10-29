@@ -1,0 +1,226 @@
+@using Oscova.Agents.Core.ApiContracts.Plugins.Registry
+@using Oscova.Agents.Core.Plugins.Registry
+@inject SettingsApiClient SettingsApiClient
+@using Oscova.Agents.Plugins
+@inject ILogger<PluginRegistryBrowserDialog> Logger
+@inject IToastService ToastService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IDialogService DialogService
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineDialogTitle, "Find plugins online"))"
+                Icon="lucide:package-search"
+                MaxWidthClass="max-w-4xl"
+                HelpTopic="@HelpTopics.PluginRegistryBrowser"
+                TitleClass="truncate text-lg font-bold"
+                OnClose="@Close"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <label class="input input-bordered flex w-full items-center gap-2 sm:grow">
+                <iconify-icon icon="lucide:search"></iconify-icon>
+                <input type="text"
+                       id="plugin-search-input"
+                       class="grow"
+                       aria-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineSearchPlaceholder, "Search OscovaPlugin packages on NuGet.org...")"
+                       placeholder="@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineSearchPlaceholder, "Search OscovaPlugin packages on NuGet.org...")"
+                       @bind="_query"
+                       @bind:event="oninput"
+                       @onkeydown="OnQueryKeyDownAsync" />
+            </label>
+            <button type="button"
+                    class="btn btn-primary shrink-0"
+                    disabled="@(_loading || string.IsNullOrWhiteSpace(_query))"
+                    @onclick="SearchAsync">
+                @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineSearchButton, "Search")
+            </button>
+        </div>
+
+        @if (_loading)
+        {
+            <div class="mt-4 flex items-center gap-2 text-sm opacity-70">
+                <span class="loading loading-spinner loading-sm"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineSearching, "Searching NuGet.org...")</span>
+            </div>
+        }
+        else
+        {
+            @foreach (var error in _errors)
+            {
+                <div role="alert" class="alert alert-warning alert-soft mt-3">
+                    <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+                    <span class="text-sm">@error</span>
+                </div>
+            }
+
+            @if (!_hasSearched && _errors.Count == 0)
+            {
+                <div role="alert" class="alert alert-info alert-soft mt-3">
+                    <iconify-icon icon="lucide:info"></iconify-icon>
+                    <span class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineSearchPrompt, "Type a package name and press Enter to search OscovaPlugin packages on NuGet.org.")</span>
+                </div>
+            }
+
+            <div class="custom-settings-table-container mt-4 max-h-[60vh] overflow-auto rounded-box border border-base-300 bg-base-100">
+                <table class="table table-pin-rows custom-settings-adaptive-table custom-dialog-data-table custom-plugin-registry-table">
+                    <thead>
+                        <tr>
+                            <th>@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineTableHeaderPackage, "Package")</th>
+                            <th>@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineTableHeaderMetadata, "Metadata")</th>
+                            <th class="w-36 text-right">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in _results)
+                        {
+                            var key = EntryKey(entry);
+                            <tr class="align-top hover:bg-base-200/40" @key="key">
+                                <td data-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineTableHeaderPackage, "Package")">
+                                    <div class="min-w-0 space-y-2">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span class="min-w-0 break-words font-medium [overflow-wrap:anywhere]">@DisplayTitle(entry)</span>
+                                            <span class="badge badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatSettingsText(SettingsTextKeys.PluginsFindOnlineVersionLabel, "Version {0}", entry.Version)</span>
+                                            @if (entry.IsVerified)
+                                            {
+                                                <span class="badge badge-success badge-soft whitespace-nowrap">@Loc.GetOrDefault(SettingsTextKeys.PluginsVerifiedBadge, "Verified")</span>
+                                            }
+                                            @if (UnavailableText(entry) is { } unavailable)
+                                            {
+                                                <span class="badge badge-warning badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@unavailable</span>
+                                            }
+                                        </div>
+                                        <div class="break-words text-xs opacity-60 [overflow-wrap:anywhere]">@entry.Id</div>
+                                        @if (entry.Tags.Any(tag => tag.StartsWith(PluginHardwareRequirement.TagPrefix, StringComparison.Ordinal)))
+                                        {
+                                            <PluginHardwareGuidance Requirement="@PluginHardwareRequirement.FromTags(entry.Tags, AgentPluginLoader.SupportedRuntimeIdentifier)" />
+                                        }
+                                    </div>
+                                </td>
+                                <td data-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineTableHeaderMetadata, "Metadata")">
+                                    <div class="min-w-0 flex flex-wrap gap-x-3 gap-y-1 text-xs opacity-70">
+                                        <span class="break-words [overflow-wrap:anywhere]">@(string.IsNullOrWhiteSpace(entry.Authors) ? Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineUnknownAuthor, "Unknown author") : entry.Authors)</span>
+                                        @if (entry.DownloadCount is not null)
+                                        {
+                                            <span>@FormatSettingsText(SettingsTextKeys.PluginsFindOnlineDownloadsLabel, "{0:N0} downloads", entry.DownloadCount.Value)</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")" class="text-right">
+                                    <div class="inline-flex flex-col gap-1">
+                                        <button type="button" class="btn btn-ghost btn-xs" @onclick="() => ToggleAsync(entry)">
+                                            @(_expanded.Contains(key)
+                                                ? Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineHideButton, "Hide")
+                                                : Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineDetailsButton, "Details"))
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-primary btn-xs whitespace-nowrap"
+                                                disabled="@IsInstallDisabled(entry)"
+                                                @onclick="() => InstallAsync(entry)">
+                                            @if (_installs.TryGetValue(key, out var install) && install.InProgress)
+                                            {
+                                                <span class="loading loading-spinner loading-xs"></span>
+                                                @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineInstallingButton, "Installing...")
+                                            }
+                                            else if (install?.Success == true)
+                                            {
+                                                <span class="iconify lucide--check size-3" aria-hidden="true"></span>
+                                                @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineInstalledButton, "Installed")
+                                            }
+                                            else
+                                            {
+                                                <span class="iconify lucide--download size-3" aria-hidden="true"></span>
+                                                @(install?.Error is not null
+                                                    ? Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineRetryButton, "Retry")
+                                                    : Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineInstallButton, "Install or update"))
+                                            }
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            @if (_expanded.Contains(key) || _installs.TryGetValue(key, out var finished) && !finished.InProgress)
+                            {
+                                <tr>
+                                    <td colspan="3" class="bg-base-200/40">
+                                        @if (_expanded.Contains(key))
+                                        {
+                                            <div class="rounded-box bg-base-100 p-3 text-sm">
+                                                @if (_loadingMetadata.Contains(key))
+                                                {
+                                                    <span class="flex items-center gap-2 opacity-70">
+                                                        <span class="loading loading-spinner loading-xs"></span>
+                                                        @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineDescriptionLoading, "Loading details...")
+                                                    </span>
+                                                }
+                                                else if (_metadataErrors.Contains(key))
+                                                {
+                                                    <span class="text-error">@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineDetailsUnavailable, "Details could not be loaded.")</span>
+                                                }
+                                                else
+                                                {
+                                                    <div class="space-y-2">
+                                                        <p dir="auto" class="break-words [overflow-wrap:anywhere]">@(string.IsNullOrWhiteSpace(entry.Description)
+                                                            ? Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineNoDescription, "No description is available for this plugin.")
+                                                            : entry.Description)</p>
+                                                        <div class="flex flex-wrap items-center gap-2 text-xs opacity-70">
+                                                            @if (!string.IsNullOrWhiteSpace(entry.LicenseExpression))
+                                                            {
+                                                                <span>@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineLicenseLabel, "License") @entry.LicenseExpression</span>
+                                                            }
+                                                            @if (!string.IsNullOrWhiteSpace(entry.ProjectUrl))
+                                                            {
+                                                                <a class="link link-primary" href="@entry.ProjectUrl" target="_blank" rel="noopener noreferrer">
+                                                                    @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineProjectButton, "Project")
+                                                                </a>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+
+                                        @if (_installs.TryGetValue(key, out var state))
+                                        {
+                                            @if (state.Success)
+                                            {
+                                                <div role="alert" class="alert alert-success alert-soft mt-2">
+                                                    <iconify-icon icon="lucide:circle-check" class="text-xl"></iconify-icon>
+                                                    <span class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineInstallNotice, "Plugin package is ready. Confirm Load On Next Restart, then restart.")</span>
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(state.Error))
+                                            {
+                                                <div role="alert" class="alert alert-error alert-soft mt-2">
+                                                    <iconify-icon icon="lucide:circle-alert" class="text-xl"></iconify-icon>
+                                                    <span class="text-sm">@state.Error</span>
+                                                </div>
+                                                @if (state.Replacement is { } replacement)
+                                                {
+                                                    <button type="button" class="btn btn-warning btn-sm" disabled="@state.InProgress"
+                                                            @onclick="() => ReplaceAsync(entry, replacement)">
+                                                        @Loc.GetOrDefault(SettingsTextKeys.PluginsReplaceButton, "Replace plugin")
+                                                    </button>
+                                                }
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        @if (_hasSearched && _errors.Count == 0 && _results.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="3" class="text-sm opacity-60">
+                                    @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineEmptyResults, "No plugins match your search.")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-sm" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>

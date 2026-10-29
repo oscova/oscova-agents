@@ -1,0 +1,63 @@
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="card bg-base-200/40 mb-4">
+    <div class="card-body p-4">
+        <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+                <h3 class="font-medium">@Title</h3>
+                <p class="text-xs opacity-70">@StatusLabel</p>
+            </div>
+            <div class="flex w-full items-center gap-2 sm:w-auto">
+                @if (Downloading)
+                {
+                    <button class="btn btn-outline btn-error btn-sm w-full sm:w-auto" @onclick="OnCancel">
+                        <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                        <span>@Loc.GetOrDefault(SettingsTextKeys.CancelDownloadButton, "Cancel")</span>
+                    </button>
+                }
+                else if (!Ready)
+                {
+                    <button class="btn btn-primary btn-sm w-full sm:w-auto" @onclick="OnDownload">
+                        <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                        <span>@Loc.GetOrDefault(SettingsTextKeys.DownloadModelButton, "Download model")</span>
+                    </button>
+                }
+                else
+                {
+                    <span class="badge badge-success">@Loc.GetOrDefault(SettingsTextKeys.ModelReadyLabel, "Ready")</span>
+                }
+            </div>
+        </div>
+        @if (Downloading)
+        {
+            <ProgressBar Label="@Title" Percent="@Percent" CssClass="mt-3" />
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public bool Ready { get; set; }
+    [Parameter] public bool Downloading { get; set; }
+    [Parameter] public double? Percent { get; set; }
+    [Parameter] public EventCallback OnDownload { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private string StatusLabel
+    {
+        get
+        {
+            if (Ready)
+            {
+                return Loc.GetOrDefault(SettingsTextKeys.ModelReadyLabel, "Ready");
+            }
+            if (Downloading)
+            {
+                if (Percent is null) { return Loc.GetOrDefault(SettingsTextKeys.SkillsInstallStageDownloading, "Downloading"); }
+                var template = Loc.GetOrDefault(SettingsTextKeys.DownloadingLabel, "Downloading {0:0}%");
+                return string.Format(template, Percent);
+            }
+            return Loc.GetOrDefault(SettingsTextKeys.ModelMissingLabel, "Not downloaded");
+        }
+    }
+}

@@ -1,0 +1,35 @@
+@* Renders streaming reasoning segments inside the chat transcript. *@
+@inject IStringLocalizer<ChatText> Loc
+
+<div class="chat chat-start">
+    <div class="collapse bg-base-200 rounded-box @(IsExpanded ? "collapse-open" : string.Empty)">
+        <input type="checkbox" checked="@IsExpanded" />
+        <div class="collapse-title text-sm font-medium py-2 !min-h-0">@Title</div>
+        <div class="collapse-content">
+            <pre class="thinking-content max-h-40 overflow-y-auto text-sm" style="white-space:pre-wrap">@Segment.Text</pre>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ChatSegment Segment { get; set; } = default!;
+
+    private bool IsExpanded => Segment.State != ChatSegmentState.Completed;
+
+    private string Title
+    {
+        get
+        {
+            if (Segment.State != ChatSegmentState.Completed)
+            {
+                return Loc.GetOrDefault(ChatTextKeys.ThinkingLabel, "Thinking");
+            }
+
+            var seconds = Math.Max(0, Segment.Duration.TotalSeconds);
+            var key = seconds == 1 ? ChatTextKeys.ThoughtDurationOneFormat : ChatTextKeys.ThoughtDurationManyFormat;
+            var fallback = seconds == 1 ? "Thought for {0:F3} second" : "Thought for {0:F3} seconds";
+            return string.Format(System.Globalization.CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), seconds);
+        }
+    }
+}

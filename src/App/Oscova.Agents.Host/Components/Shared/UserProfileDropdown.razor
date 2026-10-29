@@ -1,0 +1,86 @@
+@inject IDialogService DialogService
+@inject IStringLocalizer<NavigationText> Loc
+
+<DropdownMenu RootClass="workspace-account"
+              Placement="dropdown-right dropdown-end"
+              TriggerClass="workspace-rail-button"
+              AriaLabel="@Loc.GetOrDefault(NavigationTextKeys.Account, "Account")"
+              Title="@Loc.GetOrDefault(NavigationTextKeys.Account, "Account")"
+              ContentClass="app-solid-overlay-surface bg-base-100 rounded-box shadow-base-content/4 mb-1 w-56 overflow-hidden shadow-[0px_-10px_40px_0px]"
+              CloseOnContentClick="@true">
+    <TriggerContent>
+        <img class="workspace-account-avatar" src="@ProfilePictureUrl" alt="" />
+    </TriggerContent>
+    <ChildContent>
+        <div class="border-base-200 border-b px-3 py-2.5">
+            <div class="flex min-w-0 items-start gap-2.5">
+                <div class="avatar shrink-0">
+                    <div class="bg-base-200 mask mask-squircle w-8">
+                        <img src="@ProfilePictureUrl" alt="" />
+                    </div>
+                </div>
+                <div class="min-w-0 grow">
+                    <p class="truncate text-sm font-medium">@CurrentUserName</p>
+                    <p class="text-base-content/60 truncate text-xs">@@@CurrentUserUserName</p>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(RoleLabel))
+                {
+                    <span class="badge badge-xs shrink-0 @RoleBadgeClass">@RoleLabel</span>
+                }
+            </div>
+        </div>
+        <ul class="menu p-1">
+            @* Settings stays directly accessible from the navigation rail. *@
+            <li>
+                <button type="button" @onclick="() => DialogService.ShowAsync<ProfileDialog>()">
+                    <iconify-icon icon="lucide:user" width="16" height="16"></iconify-icon>
+                    <span>@Loc.GetOrDefault(NavigationTextKeys.Account, "Account")</span>
+                </button>
+            </li>
+            @if (ShowAchievements)
+            {
+                <li>
+                    <a href="/achievements">
+                        <iconify-icon icon="lucide:award" width="16" height="16"></iconify-icon>
+                        <span>@Loc.GetOrDefault(NavigationTextKeys.Achievements, "Achievements")</span>
+                    </a>
+                </li>
+            }
+            <li>
+                <button type="button" @onclick="() => DialogService.ShowAsync<LogsDialog>()">
+                    <iconify-icon icon="lucide:file-text" width="16" height="16"></iconify-icon>
+                    <span>@Loc.GetOrDefault(NavigationTextKeys.Logs, "Logs")</span>
+                </button>
+            </li>
+            <li>
+                <button type="button" @onclick="OpenChatMemoryAsync">
+                    <iconify-icon icon="lucide:database-zap" width="16" height="16"></iconify-icon>
+                    <span>@Loc.GetOrDefault(NavigationTextKeys.ChatMemory, "Chat Memory")</span>
+                </button>
+            </li>
+            <li><div class="divider my-0.5"></div></li>
+            <li>
+                <button type="button" @onclick="OnLogoutClicked">
+                    <iconify-icon icon="lucide:log-out" width="16" height="16"></iconify-icon>
+                    <span>@Loc.GetOrDefault(NavigationTextKeys.LogOut, "Log out")</span>
+                </button>
+            </li>
+        </ul>
+    </ChildContent>
+</DropdownMenu>
+
+@code {
+    [CascadingParameter(Name = "UserTimeZone")] public TimeZoneInfo? UserTimeZone { get; set; }
+
+    private Task OpenChatMemoryAsync() => DialogService.ShowAsync<ChatMemoryDialog>(
+        new Dictionary<string, object?> { ["UserTimeZone"] = UserTimeZone });
+
+    [Parameter] public string CurrentUserName { get; set; } = "";
+    [Parameter] public string CurrentUserUserName { get; set; } = "";
+    [Parameter, EditorRequired] public string ProfilePictureUrl { get; set; }
+    [Parameter] public string RoleLabel { get; set; } = "";
+    [Parameter] public string RoleBadgeClass { get; set; } = "";
+    [Parameter] public bool ShowAchievements { get; set; }
+    [Parameter] public EventCallback OnLogoutClicked { get; set; }
+
+}

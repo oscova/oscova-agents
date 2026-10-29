@@ -1,0 +1,196 @@
+@using System
+@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Components
+@using Oscova.Agents.Core.Conversation
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="chat chat-start">
+    <div class="chat-image avatar avatar-placeholder">
+        <div class="bg-neutral text-neutral-content w-8 rounded-full">
+            @if (!string.IsNullOrWhiteSpace(AssistantPictureUrl))
+            {
+                <img src="@AssistantPictureUrl" alt="" />
+            }
+            else
+            {
+                <span class="text-xs">@(!string.IsNullOrWhiteSpace(AssistantInitials) ? AssistantInitials : "AI")</span>
+            }
+        </div>
+    </div>
+    <div class="chat-bubble custom-chat-prompt custom-chat-prompt-padded w-full max-w-md">
+        <div class="flex flex-col gap-3">
+            <p class="font-medium" dir="auto">@Request.Message</p>
+
+            @if (Request.EnumFields.Count > 0)
+            {
+                <div class="space-y-4 text-sm">
+                    @foreach (var field in Request.EnumFields)
+                    {
+                        var inputId = $"prompt-{Request.RequestId:N}-{Uri.EscapeDataString(field.Name)}";
+                        var errorId = $"{inputId}-error";
+                        var hasError = TryGetError(field.Name, out var error) && !string.IsNullOrEmpty(error);
+                        <div class="form-control w-full">
+                            <label class="label justify-between px-0" for="@inputId">
+                                <span class="label-text font-medium" dir="auto">@field.Label</span>
+                                @if (Request.IsFieldRequired(field.Name))
+                                {
+                                    <span class="label-text-alt text-error text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.Required, "Required")</span>
+                                }
+                            </label>
+                            @if (!string.IsNullOrWhiteSpace(field.Description))
+                            {
+                                <p class="mb-1 text-xs opacity-80" dir="auto">@field.Description</p>
+                            }
+                            <select id="@inputId" dir="auto" class="select select-bordered select-sm w-full"
+                                    disabled="@_isSubmitting"
+                                    aria-invalid="@(hasError ? "true" : null)"
+                                    aria-describedby="@(hasError ? errorId : null)"
+                                    @bind:get="GetValue(field.Name)"
+                                    @bind:set="value => SetValue(field.Name, value)">
+                                <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.ValidationSelectOption, "Select an option")</option>
+                                @foreach (var option in field.Options)
+                                {
+                                    <option value="@option.Value">@(string.IsNullOrWhiteSpace(option.Label) ? option.Value : option.Label)</option>
+                                }
+                            </select>
+                            @if (hasError)
+                            {
+                                <span id="@errorId" role="alert" class="mt-1 text-xs text-error">@error</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-primary"
+                        disabled="@_isSubmitting"
+                        @onclick="SubmitAsync">
+                    <span class="iconify lucide--send size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.ValidationSubmit, "Submit")
+                </button>
+                <button class="btn btn-sm btn-ghost"
+                        disabled="@_isSubmitting"
+                        @onclick="CancelAsync">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ElicitationRequest Request { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public EventCallback<EnumElicitationChoice> OnRespond { get; set; }
+
+    [Parameter]
+    public string? AssistantInitials { get; set; }
+
+    [Parameter]
+    public string? AssistantPictureUrl { get; set; }
+
+    private readonly Dictionary<string, string> _values = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _errors = new(StringComparer.OrdinalIgnoreCase);
+    private Guid _lastRequestId;
+    private bool _isSubmitting;
+
+    protected override void OnParametersSet()
+    {
+        if (_lastRequestId == Request.RequestId)
+        {
+            return;
+        }
+
+        _lastRequestId = Request.RequestId;
+        _values.Clear();
+        _errors.Clear();
+
+        foreach (var field in Request.EnumFields)
+        {
+            _values[field.Name] = field.Default ?? string.Empty;
+        }
+    }
+
+    private string GetValue(string fieldName) => _values.TryGetValue(fieldName, out var value) ? value : string.Empty;
+
+    private void SetValue(string fieldName, string? value)
+    {
+        _values[fieldName] = value ?? string.Empty;
+        _errors.Remove(fieldName);
+    }
+
+    private bool TryGetError(string fieldName, out string? error) => _errors.TryGetValue(fieldName, out error);
+
+    private async Task SubmitAsync()
+    {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        _errors.Clear();
+        var payload = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var field in Request.EnumFields)
+        {
+            var value = GetValue(field.Name);
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (Request.IsFieldRequired(field.Name))
+                {
+                    _errors[field.Name] = CommonLoc.GetOrDefault(CommonTextKeys.ValidationThisFieldRequired, "This field is required.");
+                }
+
+                continue;
+            }
+
+            if (!field.Options.Any(option => string.Equals(option.Value, value, StringComparison.Ordinal)))
+            {
+                _errors[field.Name] = CommonLoc.GetOrDefault(CommonTextKeys.ValidationSelectValidOption, "Select a valid option.");
+                continue;
+            }
+
+            payload[field.Name] = value;
+        }
+
+        if (_errors.Count > 0)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        try
+        {
+            await OnRespond.InvokeAsync(new EnumElicitationChoice(Request.RequestId, payload, false));
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private async Task CancelAsync()
+    {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        try
+        {
+            await OnRespond.InvokeAsync(new EnumElicitationChoice(Request.RequestId, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase), true));
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

@@ -1,0 +1,172 @@
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> Loc
+
+@* Edits the host-wide GitHub skill-search token in one focused workflow. *@
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialTitle, "GitHub Skill Search"))"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialDescription, "Optional Personal Access Token used by Find skills online. Raises the GitHub API rate limit from 60 to 5,000 requests per hour for the whole host."))"
+                Icon="lucide:github"
+                HelpTopic="@HelpTopics.GitHubSkillSearch"
+                CanClose="@(!IsBusy)"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <div class="space-y-4">
+            <div class="alert alert-soft">
+                <iconify-icon icon="lucide:info" width="18" height="18"></iconify-icon>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialHint, "Leave the field blank to keep an existing token. Use Clear to remove it.")</span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div role="alert" class="alert alert-error alert-soft">
+                    <iconify-icon icon="lucide:alert-circle"></iconify-icon>
+                    <span>@_errorMessage</span>
+                </div>
+            }
+
+            @if (_isLoading)
+            {
+                <div class="text-base-content/60 flex items-center gap-2 text-sm">
+                    <span class="loading loading-spinner loading-sm"></span>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialLoading, "Loading current status...")</span>
+                </div>
+            }
+            else
+            {
+                <div class="border-base-300 rounded-box border p-4">
+                    <div class="flex items-center gap-2">
+                        <h4 class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialFieldLabel, "Personal Access Token")</h4>
+                        <span class="badge badge-sm @(_isConfigured ? "badge-success badge-soft" : "badge-ghost")">
+                            @(_isConfigured ? CommonLoc.GetOrDefault(CommonTextKeys.OAuthConfiguredStatus, "Configured") : CommonLoc.GetOrDefault(CommonTextKeys.NotConfigured, "Not configured"))
+                        </span>
+                    </div>
+
+                    <fieldset class="fieldset mt-4">
+                        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialFieldLabel, "Personal Access Token")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                            <input id="github-token" class="grow focus:outline-0" type="password" aria-label="@(Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialFieldLabel, "Personal Access Token"))" disabled="@IsBusy" @bind="_tokenDraft" placeholder="@(_isConfigured ? Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialPlaceholderExists, "Leave blank to keep current token") : Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialPlaceholderNew, "Paste GitHub personal access token"))" />
+                        </label>
+                    </fieldset>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        @if (_isConfigured)
+        {
+            <button type="button" class="btn btn-error btn-sm" disabled="@IsBusy" @onclick="ClearAsync">
+                @if (_busyAction == BusyAction.Clear)
+                {
+                    <span class="loading loading-spinner loading-sm"></span>
+                }
+                else
+                {
+                    <span class="iconify lucide--trash-2 size-4" aria-hidden="true"></span>
+                }
+                @CommonLoc.GetOrDefault(CommonTextKeys.Clear, "Clear")
+            </button>
+        }
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@IsBusy" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@IsBusy" @onclick="SaveAsync">
+            @if (_busyAction == BusyAction.Save)
+            {
+                <span class="loading loading-spinner loading-sm"></span>
+            }
+            else
+            {
+                <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+            }
+            @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private bool _isLoading = true;
+    private bool _isConfigured;
+    private BusyAction? _busyAction;
+    private string _tokenDraft = string.Empty;
+    private string? _errorMessage;
+    private bool IsBusy => _isLoading || _busyAction is not null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _errorMessage = null;
+        try
+        {
+            _isConfigured = await SettingsApiClient.GetGitHubSkillsCredentialConfiguredAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private Task SaveAsync() => MutateAsync(
+        BusyAction.Save,
+        () => SettingsApiClient.SaveGitHubSkillsCredentialAsync(_tokenDraft),
+        Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialSavedToast, "GitHub skill search token saved."));
+
+    private async Task ClearAsync()
+    {
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.CredentialsDeleteConfirmTitle, "Delete credential"),
+            string.Format(
+                CultureInfo.CurrentCulture,
+                Loc.GetOrDefault(SettingsTextKeys.CredentialsDeleteConfirmMessage, "Are you sure you want to delete '{0}'?"),
+                Loc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialTitle, "GitHub Skill Search")));
+
+        if (result == DialogResult.Ok)
+        {
+            await MutateAsync(
+                BusyAction.Clear,
+                () => SettingsApiClient.ClearGitHubSkillsCredentialAsync(),
+                Loc.GetOrDefault(SettingsTextKeys.CredentialsDeletedToast, "Credential deleted."));
+        }
+    }
+
+    private async Task MutateAsync(BusyAction action, Func<Task> operation, string successMessage)
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        _errorMessage = null;
+        _busyAction = action;
+        try
+        {
+            await operation();
+            ToastService.Show(successMessage, ToastType.Success);
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _busyAction = null;
+        }
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+
+    private enum BusyAction
+    {
+        Save,
+        Clear
+    }
+}

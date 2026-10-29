@@ -1,0 +1,88 @@
+@inject ManagementApiClient ManagementApiClient
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="space-y-4">
+    <div class="flex flex-wrap items-center gap-3">
+        <button class="btn btn-ghost btn-sm" @onclick="() => OnBack.InvokeAsync()">
+            <span class="iconify lucide--arrow-left size-4" aria-hidden="true"></span>
+            @CommonLoc.GetOrDefault(CommonTextKeys.Back, "Back")
+        </button>
+        <span class="text-sm font-semibold opacity-70">@FormatSettingsText(SettingsTextKeys.SharedAgentPersonalContextCustomize, "Customize: {0}", Definition.Name)</span>
+    </div>
+
+    <div class="card custom-settings-catalog-card">
+        <div class="card-body custom-settings-form space-y-5">
+            <div class="space-y-1">
+                <h3 class="text-base font-semibold">@Definition.Name</h3>
+                @if (!string.IsNullOrWhiteSpace(Definition.Description))
+                {
+                    <p class="text-sm opacity-70">@Definition.Description</p>
+                }
+                <p class="text-sm opacity-60">@Loc.GetOrDefault(SettingsTextKeys.SharedAgentPersonalContextDescription, "Add personal context that will be injected into this shared agent's instructions for your sessions, such as preferred names or calling preferences.")</p>
+            </div>
+
+            <div class="form-control">
+                <label for="shared-agent-personal-context" class="label block mb-1 pl-0">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.SharedAgentPersonalContextLabel, "Personal Context")</span>
+                </label>
+                <textarea id="shared-agent-personal-context"
+                          class="textarea textarea-bordered w-full min-h-48"
+                          placeholder="@Loc.GetOrDefault(SettingsTextKeys.SharedAgentPersonalContextPlaceholder, "Add notes, preferences, background, or other personal context for this shared agent...")"
+                          @bind="_personalContextDraft"
+                          @bind:event="oninput"></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <p class="text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.GeneralUnsavedChangesHint, "Changes are not saved automatically.")</p>
+                <button type="button"
+                        class="btn btn-primary btn-sm"
+                        disabled="@(!IsDirty || _isSaving)"
+                        @onclick="SaveAsync">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public AgentDefinition Definition { get; set; } = default!;
+    [Parameter, EditorRequired] public EventCallback OnBack { get; set; }
+
+    private string _personalContextDraft = string.Empty;
+    private string _loadedPersonalContext = string.Empty;
+    private bool _isSaving;
+
+    private bool IsDirty => !string.Equals(_personalContextDraft, _loadedPersonalContext, StringComparison.Ordinal);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await ManagementApiClient.GetSharedAgentPersonalContextAsync(Definition.Id);
+        _personalContextDraft = response.Content;
+        _loadedPersonalContext = _personalContextDraft;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (!IsDirty || _isSaving)
+        {
+            return;
+        }
+
+        _isSaving = true;
+        var submitted = _personalContextDraft;
+        try
+        {
+            await ManagementApiClient.SaveSharedAgentPersonalContextAsync(Definition.Id, submitted);
+            // Later typing stays dirty until that draft is saved too.
+            _loadedPersonalContext = submitted;
+        }
+        finally { _isSaving = false; }
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}

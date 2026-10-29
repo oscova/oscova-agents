@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!--
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format
+		that is mostly human readable. The generation and parsing of the
+		various data types are done through the TypeConverter classes
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a
+		type or mimetype. Type corresponds to a .NET class that support
+		text/value conversion through the TypeConverter architecture.
+		Classes that don't support this are serialized and stored with the
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the
+		ResXResourceReader how to depersist the object. This is currently not
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format
+		that the ResXResourceWriter will generate, however the reader can
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Achievement.FirstThread.Name"><value>First Words</value></data>
+	<data name="Achievement.FirstThread.Description"><value>Start your first chat thread. Confidential threads are not counted.</value></data>
+	<data name="Achievement.TenThreads.Name"><value>Conversationalist</value></data>
+	<data name="Achievement.TenThreads.Description"><value>Keep 10 chat threads. Confidential threads are not counted.</value></data>
+	<data name="Achievement.FiftyThreads.Name"><value>Thread Weaver</value></data>
+	<data name="Achievement.FiftyThreads.Description"><value>Keep 50 chat threads. Confidential threads are not counted.</value></data>
+	<data name="Achievement.FirstAgent.Name"><value>Agent Maker</value></data>
+	<data name="Achievement.FirstAgent.Description"><value>Create your first custom agent.</value></data>
+	<data name="Achievement.ThreeAgents.Name"><value>Small Team</value></data>
+	<data name="Achievement.ThreeAgents.Description"><value>Create 3 custom agents.</value></data>
+	<data name="Achievement.FiveAgents.Name"><value>Full Roster</value></data>
+	<data name="Achievement.FiveAgents.Description"><value>Create 5 custom agents.</value></data>
+	<data name="Achievement.TenAgents.Name"><value>Agency</value></data>
+	<data name="Achievement.TenAgents.Description"><value>Create 10 custom agents.</value></data>
+	<data name="Achievement.FirstProvider.Name"><value>Plugged In</value></data>
+	<data name="Achievement.FirstProvider.Description"><value>Configure your first model provider.</value></data>
+	<data name="Achievement.ThreeProviders.Name"><value>Multi-Model</value></data>
+	<data name="Achievement.ThreeProviders.Description"><value>Configure 3 model providers.</value></data>
+	<data name="Achievement.FiveProviders.Name"><value>Provider Collector</value></data>
+	<data name="Achievement.FiveProviders.Description"><value>Configure 5 model providers.</value></data>
+	<data name="Achievement.FirstTask.Name"><value>Delegator</value></data>
+	<data name="Achievement.FirstTask.Description"><value>Create your first agent task.</value></data>
+	<data name="Achievement.FiveTasks.Name"><value>Automator</value></data>
+	<data name="Achievement.FiveTasks.Description"><value>Create 5 agent tasks.</value></data>
+	<data name="Achievement.FifteenTasks.Name"><value>Task Architect</value></data>
+	<data name="Achievement.FifteenTasks.Description"><value>Create 15 agent tasks.</value></data>
+	<data name="Achievement.FirstTaskRun.Name"><value>It Works</value></data>
+	<data name="Achievement.FirstTaskRun.Description"><value>Complete your first task run.</value></data>
+	<data name="Achievement.TwentyFiveTaskRuns.Name"><value>Reliable Hands</value></data>
+	<data name="Achievement.TwentyFiveTaskRuns.Description"><value>Complete 25 task runs.</value></data>
+	<data name="Achievement.HundredTaskRuns.Name"><value>Century of Runs</value></data>
+	<data name="Achievement.HundredTaskRuns.Description"><value>Complete 100 task runs.</value></data>
+	<data name="Achievement.FirstScheduledRun.Name"><value>Set and Forget</value></data>
+	<data name="Achievement.FirstScheduledRun.Description"><value>Let a scheduled task run once.</value></data>
+	<data name="Achievement.TenScheduledRuns.Name"><value>Clockwork</value></data>
+	<data name="Achievement.TenScheduledRuns.Description"><value>Let scheduled tasks run 10 times.</value></data>
+	<data name="Achievement.FirstMcpServer.Name"><value>Bridge Builder</value></data>
+	<data name="Achievement.FirstMcpServer.Description"><value>Connect your first MCP server.</value></data>
+	<data name="Achievement.ThreeMcpServers.Name"><value>Well Connected</value></data>
+	<data name="Achievement.ThreeMcpServers.Description"><value>Connect 3 MCP servers.</value></data>
+	<data name="Achievement.FiveMcpServers.Name"><value>Integration Hub</value></data>
+	<data name="Achievement.FiveMcpServers.Description"><value>Connect 5 MCP servers.</value></data>
+	<data name="Achievement.FirstSkill.Name"><value>Fast Learner</value></data>
+	<data name="Achievement.FirstSkill.Description"><value>Install or author your first skill.</value></data>
+	<data name="Achievement.FiveSkills.Name"><value>Skilled</value></data>
+	<data name="Achievement.FiveSkills.Description"><value>Keep 5 skills available.</value></data>
+	<data name="Achievement.TenSkills.Name"><value>Polymath</value></data>
+	<data name="Achievement.TenSkills.Description"><value>Keep 10 skills available.</value></data>
+	<data name="Achievement.FiveTools.Name"><value>Toolbox Opened</value></data>
+	<data name="Achievement.FiveTools.Description"><value>Use 5 different tools.</value></data>
+	<data name="Achievement.FifteenTools.Name"><value>Handy</value></data>
+	<data name="Achievement.FifteenTools.Description"><value>Use 15 different tools.</value></data>
+	<data name="Achievement.ThirtyTools.Name"><value>Master of Tools</value></data>
+	<data name="Achievement.ThirtyTools.Description"><value>Use 30 different tools.</value></data>
+	<data name="Achievement.FallbackSaved.Name"><value>Safety Net</value></data>
+	<data name="Achievement.FallbackSaved.Description"><value>Let the fallback provider rescue a run.</value></data>
+	<data name="Achievement.FirstLocalDay.Name"><value>Off the Grid</value></data>
+	<data name="Achievement.FirstLocalDay.Description"><value>Work a full day with no data leaving your machine.</value></data>
+	<data name="Achievement.SevenLocalDays.Name"><value>Private Week</value></data>
+	<data name="Achievement.SevenLocalDays.Description"><value>Work 7 days with no data leaving your machine.</value></data>
+	<data name="Achievement.ThirtyLocalDays.Name"><value>Fully Local</value></data>
+	<data name="Achievement.ThirtyLocalDays.Description"><value>Work 30 days with no data leaving your machine.</value></data>
+	<data name="Achievement.Page.Title"><value>Achievements</value></data>
+	<data name="Achievement.Page.Subtitle"><value>What you have discovered so far</value></data>
+	<data name="Achievement.Page.Discovered"><value>{0} of {1} discovered</value></data>
+	<data name="Achievement.Page.Empty"><value>Nothing unlocked yet</value></data>
+	<data name="Achievement.Page.EmptyHint"><value>Start a chat, add a model provider, or create an agent task.</value></data>
+	<data name="Achievement.Page.Error"><value>Could not load achievements.</value></data>
+	<data name="Achievement.Level"><value>Level {0}</value></data>
+	<data name="Achievement.Points"><value>{0} XP</value></data>
+	<data name="Achievement.Unlocked.Body"><value>Achievement unlocked.</value></data>
+</root>

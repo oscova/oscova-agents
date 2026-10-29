@@ -1,0 +1,39 @@
+@inject IStringLocalizer<ChatText> Loc
+
+<div class="chat-easter-egg-layer"
+     role="status"
+     aria-live="polite"
+     aria-atomic="true">
+    @if (_activationId > 0)
+    {
+        <div @key="_activationId"
+             class="chat-easter-egg-card bg-base-100 border-base-300 rounded-box border p-4 shadow-lg">
+            <img class="chat-easter-egg-art"
+                 src="images/chat/easter-eggs/cozy-conversation.png"
+                 alt=""
+                 aria-hidden="true" />
+            <p class="chat-easter-egg-message mt-2 text-sm font-medium text-base-content">
+                @Loc.GetOrDefault(ChatTextKeys.EasterEggCozyMessage, "Safe, sound, and yours.")
+            </p>
+        </div>
+    }
+</div>
+
+@code {
+    public const string Trigger = "::tuck-my-secrets-in::";
+
+    private int _activationId;
+
+    /// <summary>Shows the local chat surprise when the hidden composer token matches.</summary>
+    public async Task<bool> TryActivateAsync(string input)
+    {
+        if (!string.Equals(input, Trigger, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        _activationId++;
+        await InvokeAsync(StateHasChanged);
+        return true;
+    }
+}

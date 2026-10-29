@@ -1,0 +1,145 @@
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div tabindex="0" @onkeydown="HandleKeyDownAsync" @onkeydown:stopPropagation="true">
+    <ChatBubble IsUser="@false" AssistantInitials="@AssistantInitials" AssistantPictureUrl="@AssistantPictureUrl">
+        <div class="custom-chat-prompt custom-chat-prompt-padded flex flex-col gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                @for (var index = 0; index < Card.Questions.Count; index++)
+                {
+                    var position = index;
+                    <button type="button" class="btn btn-sm btn-ghost" aria-pressed="@(position == _index ? "true" : "false")"
+                            @onclick="() => _index = position"><bdi>@Card.Questions[position].Header</bdi></button>
+                }
+                <span class="text-xs">@string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                    Loc.GetOrDefault(ChatTextKeys.UserQuestionPosition, "{0} of {1}"), _index + 1, Card.Questions.Count)</span>
+            </div>
+            @if (State == UserQuestions.CardState.Pending)
+            {
+                <fieldset disabled="@(!CanAnswer || _submitting)" class="flex flex-col gap-3">
+                    <legend class="font-medium" dir="auto">@CurrentQuestion.Text</legend>
+                    @foreach (var option in CurrentQuestion.Options)
+                    {
+                        <label class="flex items-start gap-2">
+                            <input type="radio" class="radio radio-sm" name="@InputId"
+                                   checked="@(_choices.GetValueOrDefault(CurrentQuestion.Id)?.OptionId == option.Id)"
+                                   @onchange="() => _choices[CurrentQuestion.Id] = new(option.Id, null)" />
+                            <span class="min-w-0">
+                                <bdi>@option.Label</bdi>
+                                @if (option.Recommended)
+                                {
+                                    <span class="badge badge-sm">@Loc.GetOrDefault(ChatTextKeys.UserQuestionRecommended, "Recommended")</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(option.Description))
+                                {
+                                    <span class="block text-xs opacity-80" dir="auto">@option.Description</span>
+                                }
+                            </span>
+                        </label>
+                    }
+                    <label for="@InputId">@Loc.GetOrDefault(ChatTextKeys.UserQuestionCustomAnswer, "Your own answer")</label>
+                    <textarea id="@InputId" dir="auto" class="textarea textarea-bordered w-full" maxlength="4000"
+                              @bind="CustomAnswer" @bind:event="oninput"></textarea>
+                </fieldset>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-primary" disabled="@(!CanAnswer || _submitting)" @onclick="SubmitAsync">
+                        @Loc.GetOrDefault(ChatTextKeys.UserQuestionSubmitAnswers, "Submit answers")
+                    </button>
+                    <button type="button" class="btn btn-sm btn-ghost" disabled="@(!CanAnswer || _submitting)" @onclick="DismissAsync">
+                        @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+                    </button>
+                </div>
+            }
+            else
+            {
+                <p class="font-medium" dir="auto">@CurrentQuestion.Text</p>
+                <p class="text-sm opacity-80">@StatusLabel</p>
+            }
+            @if (_error is not null)
+            {
+                <p role="alert" class="text-sm text-error">@_error</p>
+            }
+        </div>
+    </ChatBubble>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public UserQuestions.Card Card { get; set; } = default!;
+    [Parameter] public UserQuestions.CardState State { get; set; }
+    [Parameter] public bool IsPreparing { get; set; }
+    [Parameter] public EventCallback<UserQuestionAnswer> OnSubmit { get; set; }
+    [Parameter] public EventCallback<UserQuestions.Card> OnDismiss { get; set; }
+    [Parameter] public string AssistantInitials { get; set; } = string.Empty;
+    [Parameter] public string? AssistantPictureUrl { get; set; }
+
+    private readonly Dictionary<string, UserQuestionAnswer.Choice> _choices = new(StringComparer.Ordinal);
+    private (string MessageId, string CallId) _identity;
+    private readonly string _domId = $"question_{Guid.NewGuid():N}";
+    private int _index;
+    private bool _submitting;
+    private string? _error;
+    // A pending question stays answerable during a run; the answer joins that run.
+    private bool CanAnswer => State == UserQuestions.CardState.Pending;
+    private UserQuestions.Question CurrentQuestion => Card.Questions[_index];
+    private string InputId => $"{_domId}_{_index}";
+    private string CustomAnswer
+    {
+        get => _choices.GetValueOrDefault(CurrentQuestion.Id)?.Text ?? string.Empty;
+        set => _choices[CurrentQuestion.Id] = new(null, value);
+    }
+
+    private string StatusLabel => State switch
+    {
+        UserQuestions.CardState.Unfinished when IsPreparing => CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading..."),
+        UserQuestions.CardState.Answered => Loc.GetOrDefault(ChatTextKeys.UserQuestionAnswered, "Answered"),
+        UserQuestions.CardState.Dismissed => Loc.GetOrDefault(ChatTextKeys.UserQuestionDismissed, "Cancelled"),
+        UserQuestions.CardState.Obsolete => Loc.GetOrDefault(ChatTextKeys.UserQuestionObsolete, "This question is no longer active."),
+        _ => Loc.GetOrDefault(ChatTextKeys.UserQuestionUnfinished, "This question could not be completed. Send a new message to continue.")
+    };
+
+    protected override void OnParametersSet()
+    {
+        if (_identity == (Card.MessageId, Card.CallId)) return;
+        _identity = (Card.MessageId, Card.CallId);
+        _choices.Clear();
+        _index = 0;
+        _error = null;
+    }
+
+    private async Task SubmitAsync()
+    {
+        if (!CanAnswer || _submitting) return;
+        _error = null;
+        if (!UserQuestions.TryFormatAnswers(Card, _choices, out _))
+        {
+            _error = Loc.GetOrDefault(ChatTextKeys.UserQuestionAnswerRequired, "Choose an answer or write your own for each question.");
+            return;
+        }
+        _submitting = true;
+        try
+        {
+            await OnSubmit.InvokeAsync(new(Card.MessageId, Card.CallId, new Dictionary<string, UserQuestionAnswer.Choice>(_choices, StringComparer.Ordinal)));
+        }
+        catch (Exception)
+        {
+            // The parent logs the failure and reconciles persisted state before another attempt.
+            _error = Loc.GetOrDefault(ChatTextKeys.UserQuestionSubmitFailed, "Couldn't submit your answers. Try again.");
+        }
+        finally { _submitting = false; }
+    }
+
+    private async Task DismissAsync()
+    {
+        if (!CanAnswer || _submitting) return;
+        _error = null;
+        _submitting = true;
+        try { await OnDismiss.InvokeAsync(Card); }
+        catch (Exception)
+        {
+            _error = Loc.GetOrDefault(ChatTextKeys.UserQuestionDismissFailed, "Couldn't cancel these questions. Try again.");
+        }
+        finally { _submitting = false; }
+    }
+
+    private Task HandleKeyDownAsync(KeyboardEventArgs args) => args.Key == "Escape" ? DismissAsync() : Task.CompletedTask;
+}

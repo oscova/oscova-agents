@@ -1,0 +1,417 @@
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IDialogService DialogService
+
+@* Shares model and conversation permission controls between new and active chat composers. *@
+@{
+    RenderFragment choices = @<text>
+        <div class="chat-run-options contents">
+            @AgentSelector
+            @if (SelectedProvider is { } providerConfig)
+            {
+                var modelLabel = string.IsNullOrWhiteSpace(providerConfig.ModelId)
+                    ? Loc.GetOrDefault(ChatTextKeys.ModelNotSetLabel, "Model not set")
+                    : providerConfig.ModelId;
+                var canSelectProvider = !ModelSelectionLocked && ModelProviders.Count > 1;
+                <DropdownMenu RootClass="chat-model-selector min-w-0 max-w-full"
+                              Placement="@DropdownDirectionClass"
+                              TriggerClass="@($"{(canSelectProvider ? "cursor-pointer hover:opacity-100" : "cursor-default")} flex min-w-0 max-w-full items-center gap-1 opacity-60 transition-opacity")"
+                              ContentClass="@($"bg-base-100 rounded-box z-[1] {MenuSpacingClass} w-72 max-w-[calc(100vw-1.5rem)] border border-base-300 p-2 shadow-lg")"
+                              Title="@(ModelSelectionExplanation ?? $"{providerConfig.Name} · {modelLabel}")"
+                              AriaLabel="@($"{providerConfig.Name} · {modelLabel}")"
+                              Disabled="@(!canSelectProvider)">
+                    <TriggerContent>
+                        <span class="truncate">
+                            @modelLabel
+                        </span>
+                        @if (canSelectProvider)
+                        {
+                            <iconify-icon icon="@ChevronIcon" width="10" height="10"></iconify-icon>
+                        }
+                    </TriggerContent>
+                    <ChildContent>
+                        <ul class="menu p-0">
+                            @ProviderChoices
+                        </ul>
+                    </ChildContent>
+                </DropdownMenu>
+            }
+            else if (ModelSelectionLocked)
+            {
+                <span class="opacity-60" title="@ModelSelectionExplanation">@Loc[ChatTextKeys.RecipientModelProviderUnavailable]</span>
+            }
+            else if (ModelProviders.Count > 0)
+            {
+                <DropdownMenu RootClass="chat-model-selector min-w-0 max-w-full"
+                              Placement="@DropdownDirectionClass"
+                              TriggerClass="flex min-w-0 max-w-full cursor-pointer items-center gap-1 opacity-60 transition-opacity hover:opacity-100"
+                              ContentClass="@($"bg-base-100 rounded-box z-[1] {MenuSpacingClass} w-72 max-w-[calc(100vw-1.5rem)] border border-base-300 p-2 shadow-lg")">
+                    <TriggerContent>
+                        <span class="truncate">@Loc.GetOrDefault(ChatTextKeys.NoDefaultModelProviderSelected, "No default model provider selected")</span>
+                        <iconify-icon icon="@ChevronIcon" width="10" height="10"></iconify-icon>
+                    </TriggerContent>
+                    <ChildContent>
+                        <ul class="menu p-0">
+                            @ProviderChoices
+                        </ul>
+                    </ChildContent>
+                </DropdownMenu>
+            }
+            else
+            {
+                <span class="opacity-60">@Loc.GetOrDefault(ChatTextKeys.NoModelProvidersConfigured, "No model providers configured")</span>
+            }
+
+            <span class="hidden opacity-30 sm:inline">|</span>
+            <DropdownMenu RootClass="chat-approval-selector" Placement="@DropdownDirectionClass"
+                          TriggerClass="@($"flex max-w-[calc(50vw-1rem)] cursor-pointer items-center gap-1 transition-opacity hover:opacity-100 sm:max-w-none {GetApprovalModeAccent(SelectedPreset, "opacity-60")}")"
+                          ContentClass="@($"bg-base-100 rounded-box z-[1] {MenuSpacingClass} w-64 max-w-[calc(100vw-1.5rem)] border border-base-300 p-2 shadow-lg")"
+                          OnOpen="@RefreshPermissionsAsync"
+                          Title="@GetApprovalModeMeaning(SelectedPreset)"
+                          AriaLabel="@($"{Loc.GetOrDefault(ChatTextKeys.ApprovalModeSelectorPrefix, "Approvals:")} {GetApprovalModeLabel(SelectedPreset)}")">
+                <TriggerContent>
+                    <span class="iconify lucide--shield size-3.5 shrink-0" aria-hidden="true"></span>
+                    <span class="truncate">@GetApprovalModeLabel(SelectedPreset)</span>
+                    <iconify-icon icon="@ChevronIcon" width="10" height="10"></iconify-icon>
+                </TriggerContent>
+                <ChildContent>
+                    @ApprovalChoices
+                </ChildContent>
+            </DropdownMenu>
+            @if (Permissions?.RunningPreset is { } running && running != SelectedPreset)
+            {
+                <span class="text-warning text-xs">@string.Format(Loc[ChatTextKeys.RunningPermission], GetApprovalModeLabel(running))</span>
+            }
+            <DropdownMenu RootClass="chat-session-permissions" Placement="@DropdownDirectionClass" TriggerClass="text-xs opacity-70" OnOpen="@OnRefreshPermissions"
+                          Title="@Loc[ChatTextKeys.SessionLifetime]"
+                          ContentClass="@($"bg-base-100 rounded-box z-[1] {MenuSpacingClass} w-96 max-w-[calc(100vw-1.5rem)] border border-base-300 p-3 shadow-lg")">
+                <TriggerContent><span>@Loc[ChatTextKeys.SessionPermissions]</span></TriggerContent>
+                <ChildContent>
+                    @SessionPermissions
+                </ChildContent>
+            </DropdownMenu>
+        </div>
+            </text>;
+    var modelLabel = SelectedProvider?.ModelId;
+}
+@if (IsSheet)
+{
+    <AppDialogShell Title="@PageTitle" ModalClass="custom-chat-options-sheet" BodyClass="custom-chat-options-sheet-body" HelpTopic="@HelpTopics.ChatOptions">
+        <HeaderContent>
+            <div class="custom-dialog-header flex items-center gap-2 px-4 py-3">
+                @if (_page != OptionsPage.Root)
+                {
+                    <button type="button" class="btn btn-ghost btn-circle" aria-label="@CommonLoc[CommonTextKeys.Back]" @onclick="Back">
+                        <iconify-icon icon="lucide:arrow-left" width="18" height="18"></iconify-icon>
+                    </button>
+                }
+                <h3 id="@($"{DialogInstance!.DialogId}-title")" class="min-w-0 grow truncate text-base font-semibold">@PageTitle</h3>
+                <HelpTriggerButton Topic="@HelpTopics.ChatOptions" />
+                <button type="button" class="btn btn-ghost btn-circle" aria-label="@CommonLoc[CommonTextKeys.Close]" @onclick="CloseSheet">
+                    <span class="iconify lucide--x size-4"></span>
+                </button>
+            </div>
+        </HeaderContent>
+        <ChildContent>
+            @switch (_page)
+            {
+                case OptionsPage.Root:
+                    @PageRow(OptionsPage.Agent, Loc[ChatTextKeys.ToolApprovalTaskAgentLabel], Options.ActiveAgent?.Name ?? string.Empty, !Options.ShowAgentSelector || Options.AgentSelectionLocked || Options.CustomAgents.Count == 0)
+                    @PageRow(OptionsPage.Model, CommonLoc[CommonTextKeys.TaskModelProviderLabel], CurrentModelLabel, Options.ModelSelectionLocked || Options.ModelProviders.Count == 0 || (Options.SelectedProvider is not null && Options.ModelProviders.Count == 1))
+                    @if (Options.ModelSelectionExplanation is { } explanation)
+                    {
+                        <p class="text-xs opacity-60">@explanation</p>
+                    }
+                    @PageRow(OptionsPage.Approvals, Loc[ChatTextKeys.ApprovalModeSelectorPrefix].Value.TrimEnd(':'), GetApprovalModeLabel(SelectedPreset), false)
+                    @PageRow(OptionsPage.Session, Loc[ChatTextKeys.SessionPermissions], (Options.Permissions?.Grants.Count ?? 0).ToString(CultureInfo.CurrentCulture), false)
+                    break;
+                case OptionsPage.Agent:
+                    <ul class="menu p-0">@AgentChoices</ul>
+                    break;
+                case OptionsPage.Model:
+                    <ul class="menu p-0">@ProviderChoices</ul>
+                    break;
+                case OptionsPage.Approvals:
+                    @ApprovalChoices
+                    break;
+                case OptionsPage.Session:
+                    @SessionPermissions
+                    break;
+            }
+            @if (Options.Permissions?.RunningPreset is { } running && running != SelectedPreset)
+            {
+                <p class="text-warning mt-2 text-xs">@string.Format(Loc[ChatTextKeys.RunningPermission], GetApprovalModeLabel(running))</p>
+            }
+        </ChildContent>
+    </AppDialogShell>
+}
+else
+{
+    <div class="chat-run-options-desktop">@choices</div>
+    <div class="chat-run-options-mobile min-w-0">
+        <button type="button" class="flex min-w-0 max-w-full items-center gap-1 text-xs opacity-70 hover:opacity-100"
+                aria-label="@Loc[ChatTextKeys.ComposerOptions]" title="@Loc[ChatTextKeys.ComposerOptions]" @onclick="OpenSheetAsync">
+            <span class="truncate">@(string.IsNullOrWhiteSpace(modelLabel) ? Loc[ChatTextKeys.ComposerOptions].Value : modelLabel)</span>
+            <span class="iconify lucide--sliders-horizontal size-4 shrink-0 @GetApprovalModeAccent(SelectedPreset)" aria-hidden="true"></span>
+        </button>
+    </div>
+}
+@code {
+    [CascadingParameter] public DialogInstance? DialogInstance { get; set; }
+    [Parameter] public AgentDefinition? MainAgent { get; set; }
+    [Parameter] public AgentDefinition? ActiveAgent { get; set; }
+    [Parameter] public IReadOnlyList<AgentDefinition> CustomAgents { get; set; } = [];
+    [Parameter] public bool ShowAgentSelector { get; set; }
+    [Parameter] public bool AgentSelectionLocked { get; set; }
+    [Parameter] public EventCallback<string?> OnSelectAgent { get; set; }
+    [Parameter] public IReadOnlyList<ModelProviderConfig> ModelProviders { get; set; } = [];
+    [Parameter] public ModelProviderConfig? SelectedProvider { get; set; }
+    [Parameter] public bool ModelSelectionLocked { get; set; }
+    [Parameter] public string? ModelSelectionExplanation { get; set; }
+    [Parameter] public Guid? SelectedModelProviderId { get; set; }
+    [Parameter] public ChatPermissions? Permissions { get; set; }
+    [Parameter] public EventCallback OnRefreshPermissions { get; set; }
+    [Parameter] public EventCallback<string?> OnRevokePermission { get; set; }
+    [Parameter] public bool OpenUpwards { get; set; }
+    [Parameter] public EventCallback<Guid?> OnSelectProvider { get; set; }
+    [Parameter] public EventCallback<ChatPermissionPreset> OnSelectApprovalMode { get; set; }
+
+    private ChatPermissionPreset? _hoveredPreset;
+    private ChatPermissionPreset? _focusedPreset;
+    private ChatPermissionPreset SelectedPreset => Options.Permissions?.Preset ?? ChatPermissionPreset.UseAgentPolicy;
+    private ChatPermissionPreset PreviewPreset => _hoveredPreset ?? _focusedPreset ?? SelectedPreset;
+    private IEnumerable<ChatPermissionPreset> AvailablePresets => Enum.GetValues<ChatPermissionPreset>()
+        .Where(mode => mode != ChatPermissionPreset.FullAccess || Options.Permissions?.CanUseFullAccess == true);
+    private string? SessionOverrideMeaning => SelectedPreset switch
+    {
+        ChatPermissionPreset.FullAccess => Loc[ChatTextKeys.SessionUnusedFullAccess].Value,
+        ChatPermissionPreset.AutoApprove => Loc[ChatTextKeys.SessionUnusedAutoApprove].Value,
+        ChatPermissionPreset.AutoReject => Loc[ChatTextKeys.SessionUnusedAutoReject].Value,
+        _ => null,
+    };
+
+    private async Task RefreshPermissionsAsync()
+    {
+        _hoveredPreset = null;
+        _focusedPreset = null;
+        await Options.OnRefreshPermissions.InvokeAsync();
+    }
+
+    private async Task SelectPresetAsync(ChatPermissionPreset mode)
+    {
+        _hoveredPreset = null;
+        _focusedPreset = null;
+        await Options.OnSelectApprovalMode.InvokeAsync(mode);
+        Back();
+    }
+
+    // Color distinguishes skipped approval prompts from unrestricted shell access.
+    private static string GetApprovalModeAccent(ChatPermissionPreset mode, string neutralClass = "") => mode switch
+    {
+        ChatPermissionPreset.AutoApprove => "text-warning",
+        ChatPermissionPreset.FullAccess => "text-orange-600 dark:text-orange-400",
+        _ => neutralClass,
+    };
+
+    private string GetApprovalModeMeaning(ChatPermissionPreset mode) => mode switch
+    {
+        ChatPermissionPreset.AutoApprove => Loc[ChatTextKeys.ModeMeaningAutoApprove],
+        ChatPermissionPreset.AutoReject => Loc[ChatTextKeys.ModeMeaningAutoReject],
+        ChatPermissionPreset.FullAccess => string.Format(Loc[ChatTextKeys.ModeMeaningFullAccess], Options.Permissions?.ExecutionMachine),
+        _ => Loc[ChatTextKeys.ModeMeaningUsePolicy],
+    };
+    private string DropdownDirectionClass => OpenUpwards ? "dropdown-top" : "dropdown-bottom";
+    private string MenuSpacingClass => OpenUpwards ? "mb-1" : "mt-1";
+    private string ChevronIcon => OpenUpwards ? "lucide:chevron-up" : "lucide:chevron-down";
+
+    private RenderFragment ProviderChoices => @<text>
+        @foreach (var provider in Options.ModelProviders)
+        {
+            var isSelected = provider.Id == Options.SelectedModelProviderId;
+            var providerModelLabel = string.IsNullOrWhiteSpace(provider.ModelId)
+                ? Loc.GetOrDefault(ChatTextKeys.ModelNotSetLabel, "Model not set")
+                : provider.ModelId;
+
+            <li @key="provider.Id">
+                <button type="button"
+                        class="text-sm @(isSelected ? "active" : "")"
+                        @onclick="() => SelectProviderAsync(provider.Id)">
+                    <div class="flex flex-col gap-0.5">
+                        <div class="flex items-center gap-2">
+                            @if (isSelected)
+                            {
+                                <iconify-icon icon="lucide:check" width="12" height="12"></iconify-icon>
+                            }
+                            <span class="font-semibold">@provider.Name</span>
+                        </div>
+                        <span class="text-xs opacity-70">@provider.Type • @providerModelLabel</span>
+                    </div>
+                </button>
+            </li>
+        }
+    </text>;
+
+    private string GetApprovalModeLabel(ChatPermissionPreset mode) => mode switch
+    {
+        ChatPermissionPreset.AutoApprove => Loc.GetOrDefault(ChatTextKeys.ApprovalModeAutoApprove, "Auto-approve"),
+        ChatPermissionPreset.AutoReject => Loc.GetOrDefault(ChatTextKeys.ApprovalModeAutoReject, "Auto-reject"),
+        ChatPermissionPreset.FullAccess => Loc[ChatTextKeys.FullAccess],
+        _ => Loc.GetOrDefault(ChatTextKeys.ApprovalModeUsePolicy, "Use agent policy"),
+    };
+
+    private enum OptionsPage { Root, Agent, Model, Approvals, Session }
+    private OptionsPage _page;
+
+    // The sheet reads the mounted composer's current state after its existing callbacks finish.
+    private ChatRunOptions Options => DialogInstance?.Get<ChatRunOptions>(nameof(ChatRunOptions)) ?? this;
+    private bool IsSheet => !ReferenceEquals(Options, this);
+    private string CurrentModelLabel => Options.SelectedProvider is { } provider
+        ? string.IsNullOrWhiteSpace(provider.ModelId) ? Loc[ChatTextKeys.ModelNotSetLabel] : provider.ModelId
+        : Options.ModelProviders.Count == 0 ? Loc[ChatTextKeys.NoModelProvidersConfigured] : Loc[ChatTextKeys.NoDefaultModelProviderSelected];
+    private string PageTitle => _page switch
+    {
+        OptionsPage.Agent => Loc[ChatTextKeys.ToolApprovalTaskAgentLabel],
+        OptionsPage.Model => CommonLoc[CommonTextKeys.TaskModelProviderLabel],
+        OptionsPage.Approvals => Loc[ChatTextKeys.ApprovalModeSelectorPrefix].Value.TrimEnd(':'),
+        OptionsPage.Session => Loc[ChatTextKeys.SessionPermissions],
+        _ => Loc[ChatTextKeys.ComposerOptions],
+    };
+
+    private async Task OpenSheetAsync()
+    {
+        await RefreshPermissionsAsync();
+        await DialogService.ShowAsync<ChatRunOptions>(new Dictionary<string, object?> { [nameof(ChatRunOptions)] = this });
+    }
+
+    private void CloseSheet() => DialogInstance!.Close(DialogResult.Cancel);
+    private void Back() { _page = OptionsPage.Root; _hoveredPreset = null; _focusedPreset = null; }
+
+    private async Task OpenPageAsync(OptionsPage page)
+    {
+        if (page is OptionsPage.Approvals or OptionsPage.Session) { await RefreshPermissionsAsync(); }
+        _page = page;
+    }
+
+    private async Task SelectProviderAsync(Guid id)
+    {
+        if (Options.ModelSelectionLocked) { return; }
+        await Options.OnSelectProvider.InvokeAsync(id);
+        Back();
+    }
+
+    private async Task SelectAgentAsync(string? id)
+    {
+        await Options.OnSelectAgent.InvokeAsync(id);
+        Back();
+    }
+
+    private Task RevokePermissionAsync(string? id) => Options.OnRevokePermission.InvokeAsync(id);
+
+    private RenderFragment PageRow(OptionsPage page, string label, string value, bool disabled) => @<button type="button"
+        class="custom-chat-options-row" disabled="@disabled" @onclick="() => OpenPageAsync(page)">
+        <span class="min-w-0 grow">@label</span>
+        <span class="custom-chat-options-value truncate @(page == OptionsPage.Approvals ? GetApprovalModeAccent(SelectedPreset) : string.Empty)" title="@value">@value</span>
+        @if (!disabled) { <iconify-icon icon="lucide:chevron-right" width="16" height="16"></iconify-icon> }
+    </button>;
+
+    private RenderFragment AgentSelector => @<text>
+        @if (ShowAgentSelector && ActiveAgent is not null)
+        {
+            @if (CustomAgents.Count > 0)
+            {
+                <DropdownMenu RootClass="chat-agent-selector max-w-full" Placement="dropdown-top"
+                    TriggerClass="flex max-w-full cursor-pointer items-center gap-1 opacity-60 transition-opacity hover:opacity-100"
+                    ContentClass="bg-base-100 rounded-box z-[1] mb-1 w-56 max-w-[calc(100vw-1.5rem)] border border-base-300 p-2 shadow-lg"
+                    Disabled="@AgentSelectionLocked">
+                    <TriggerContent>
+                        <span class="truncate">@Loc[ChatTextKeys.AgentSelectorPrefix] @ActiveAgent.Name</span>
+                        <iconify-icon icon="lucide:chevron-up" width="10" height="10"></iconify-icon>
+                    </TriggerContent>
+                    <ChildContent><ul class="menu p-0">@AgentChoices</ul></ChildContent>
+                </DropdownMenu>
+            }
+            else { <span class="chat-agent-selector truncate opacity-60">@Loc[ChatTextKeys.AgentSelectorPrefix] @ActiveAgent.Name</span> }
+            <span class="hidden opacity-30 sm:inline">|</span>
+        }
+    </text>;
+
+    private RenderFragment AgentChoices => @<text>
+        @foreach (var agent in new[] { Options.MainAgent }.Concat(Options.CustomAgents))
+        {
+            @if (agent is not null)
+            {
+                var selected = string.Equals(Options.ActiveAgent?.Id, agent.Id, StringComparison.Ordinal);
+                <li @key="agent.Id">
+                    <button type="button" class="text-sm @(selected ? "active" : "")" disabled="@Options.AgentSelectionLocked"
+                            @onclick="() => SelectAgentAsync(agent == Options.MainAgent ? null : agent.Id)">
+                        @if (selected) { <iconify-icon icon="lucide:check" width="12" height="12"></iconify-icon> }
+                        <span>@agent.Name</span>
+                    </button>
+                </li>
+            }
+        }
+    </text>;
+
+    private RenderFragment ApprovalChoices => @<text>
+    <ul class="menu p-0">
+        @foreach (var mode in AvailablePresets)
+        {
+            var isModeSelected = mode == SelectedPreset;
+            <li @key="mode">
+                <button type="button"
+                        class="text-sm @(isModeSelected ? "active" : "")"
+                        @onmouseenter="() => _hoveredPreset = mode"
+                        @onmouseleave="() => _hoveredPreset = null"
+                        @onfocus="() => _focusedPreset = mode"
+                        @onblur="() => _focusedPreset = null"
+                        @onclick="() => SelectPresetAsync(mode)">
+                    @if (isModeSelected)
+                    {
+                        <iconify-icon icon="lucide:check" width="12" height="12"></iconify-icon>
+                    }
+                    <span class="@GetApprovalModeAccent(mode)">@GetApprovalModeLabel(mode)</span>
+                </button>
+            </li>
+        }
+    </ul>
+    <div class="permission-mode-hint mt-1 grid border-t border-base-300 px-2 pt-2 text-xs @GetApprovalModeAccent(PreviewPreset, "opacity-60")" aria-live="polite">
+        @foreach (var mode in AvailablePresets)
+        {
+            <p class="col-start-1 row-start-1 [overflow-wrap:anywhere] @(mode == PreviewPreset ? "" : "invisible")"
+               aria-hidden="@(mode != PreviewPreset)">@GetApprovalModeMeaning(mode)</p>
+        }
+    </div>
+    </text>;
+
+    private RenderFragment SessionPermissions => @<text>
+    <section class="session-permissions-panel flex max-h-[calc(100dvh-8rem)] min-h-0 flex-col">
+        <header class="mb-2 flex shrink-0 items-center gap-2 text-xs">
+            <span class="grow font-medium" title="@Loc[ChatTextKeys.SessionLifetime]">@Loc[ChatTextKeys.SessionPermissions] · @(Options.Permissions?.Grants.Count ?? 0)</span>
+        </header>
+        @if (Options.Permissions?.Grants is { Count: > 0 } grants)
+        {
+            @if (SessionOverrideMeaning is { } status)
+            {
+                <p class="mb-2 shrink-0 text-xs opacity-60">@status</p>
+            }
+            <div class="session-permissions-list min-h-0 max-h-64 overflow-x-hidden overflow-y-auto overscroll-contain">
+                @foreach (var grant in grants)
+                {
+                    <div class="flex min-w-0 items-start gap-2 border-t border-base-300 py-2" @key="grant.Id">
+                        <div class="min-w-0 grow text-xs">
+                            <p class="truncate font-medium" title="@grant.ToolName">@ToolNaming.SplitQualifiedName(grant.ToolName).Tool.Replace('_', ' ')</p>
+                            <p class="truncate" title="@(grant.AgentName ?? grant.AgentId)">@(grant.AgentName ?? grant.AgentId)</p>
+                            @if (grant.ExecutionTarget is not null) { <p class="truncate" title="@($"{grant.ExecutionDevice} · {grant.ExecutionTarget}")">@grant.ExecutionDevice · @grant.ExecutionTarget</p> }
+                        </div>
+                        <button type="button" class="btn btn-xs btn-ghost shrink-0" @onclick="() => RevokePermissionAsync(grant.Id)">@Loc[ChatTextKeys.Revoke]</button>
+                    </div>
+                }
+            </div>
+            <footer class="shrink-0 border-t border-base-300 pt-2">
+                <button type="button" class="btn btn-xs btn-ghost" @onclick="() => RevokePermissionAsync(null)">@Loc[ChatTextKeys.RevokeAll]</button>
+            </footer>
+        }
+        else { <p class="text-xs opacity-60">@Loc[ChatTextKeys.NoSessionPermissions]</p> }
+    </section>
+    </text>;
+}

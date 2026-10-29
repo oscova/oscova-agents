@@ -1,0 +1,1032 @@
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<ChatStartText> StartLoc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<!-- Audio element for TTS -->
+<audio id="@_audioElementId"></audio>
+
+@{
+    var selectedAgentConversation = _agentConversations.FirstOrDefault(conversation =>
+        string.Equals(GetAgentConversationKey(conversation), _selectedAgentConversationKey, StringComparison.Ordinal));
+    // Both layouts share the same actions and state.
+    RenderFragment headerActions = @<div class="custom-chat-header-actions flex items-center gap-1 sm:gap-2">
+
+        @if (CanChangeIncognitoMode || ChatThread.IsIncognito)
+        {
+            <button type="button"
+                    class="btn btn-ghost btn-sm gap-1.5 @(ChatThread.IsIncognito ? "btn-active text-info" : "")"
+                    title="@(CanChangeIncognitoMode ? Loc.GetOrDefault(ChatTextKeys.IncognitoChatLabel, "Incognito") : Loc.GetOrDefault(ChatTextKeys.IncognitoChatUnavailableTooltip, "Incognito mode is fixed after a chat starts. Start a new chat to change it."))"
+                    aria-label="@Loc.GetOrDefault(ChatTextKeys.IncognitoChatLabel, "Incognito")"
+                    aria-pressed="@(ChatThread.IsIncognito ? "true" : "false")"
+                    disabled="@(!CanChangeIncognitoMode)"
+                    @onclick="ToggleIncognitoMode">
+                <span class="iconify lucide--eye-off size-4" aria-hidden="true"></span>
+                <span class="custom-chat-incognito-label hidden sm:inline">@Loc.GetOrDefault(ChatTextKeys.IncognitoChatLabel, "Incognito")</span>
+            </button>
+        }
+        @if (selectedAgentConversation is null)
+        {
+            @if (!ShouldShowStartScreen && _contextUsage is not null)
+            {
+                <button type="button"
+                        class="btn btn-ghost btn-circle btn-sm"
+                        title="@ContextUsageLabel"
+                        aria-label="@ContextUsageLabel"
+                        @onclick="ShowContextUsageAsync">
+                    <span class="relative size-5">
+                        <span class="absolute inset-0 rounded-full border border-base-content/30"
+                              style="border-width:3px;"></span>
+                        <span class="radial-progress @ContextUsageColorClass"
+                              style="--value:@ContextUsageRingValue; --size:1.25rem; --thickness:3px;">
+                        </span>
+                    </span>
+                </button>
+            }
+            <button class="btn btn-ghost btn-circle btn-sm @(_isSpeechSynthesisEnabled ? "text-secondary" : "")"
+                    @onclick="() => IsSpeechSynthesisEnabled = !IsSpeechSynthesisEnabled"
+                    title="@(!_isTtsAvailable ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : Loc.GetOrDefault(ChatTextKeys.ReadAloudLabel, "Read aloud"))"
+                    aria-label="@(!_isTtsAvailable ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : Loc.GetOrDefault(ChatTextKeys.ReadAloudLabel, "Read aloud"))"
+                    disabled=@(!IsServiceRunning || !_isTtsAvailable || IsVoiceModeActive)>
+                <iconify-icon icon="@(_isSpeechSynthesisEnabled ? "lucide:volume-2" : "lucide:volume")" width="16" height="16"></iconify-icon>
+                <span class="custom-chat-action-label">@Loc.GetOrDefault(ChatTextKeys.ReadAloudLabel, "Read aloud")</span>
+            </button>
+
+            <button class="btn btn-ghost btn-circle btn-sm @(IsVoiceModeActive ? "text-accent" : "")"
+                    @onclick="ToggleVoiceModeAsync"
+                    title=@((!_isAsrAvailable || !_isTtsAvailable) ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : (IsVoiceModeActive ? Loc.GetOrDefault(ChatTextKeys.StopVoiceModeLabel, "Stop voice mode") : Loc.GetOrDefault(ChatTextKeys.StartVoiceModeLabel, "Start voice mode")))
+                    aria-label=@((!_isAsrAvailable || !_isTtsAvailable) ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : (IsVoiceModeActive ? Loc.GetOrDefault(ChatTextKeys.StopVoiceModeLabel, "Stop voice mode") : Loc.GetOrDefault(ChatTextKeys.StartVoiceModeLabel, "Start voice mode")))
+                    disabled=@(_goalEditing is not null || !IsServiceRunning || !_isAsrAvailable || !_isTtsAvailable)>
+                <iconify-icon icon="@(IsVoiceModeActive ? "lucide:phone-off" : "lucide:phone")"
+                              width="16" height="16"
+                              class="@(_voiceModeState == VoiceModeState.Listening ? "animate-pulse" : "")"></iconify-icon>
+                <span class="custom-chat-action-label">@Loc.GetOrDefault(IsVoiceModeActive ? ChatTextKeys.StopVoiceModeLabel : ChatTextKeys.StartVoiceModeLabel, IsVoiceModeActive ? "Stop voice mode" : "Start voice mode")</span>
+            </button>
+
+            <button class="btn btn-ghost btn-circle btn-sm"
+                    title="@Loc.GetOrDefault(ChatTextKeys.InspectSessionTitle, "Inspect session")"
+                    aria-label="@Loc.GetOrDefault(ChatTextKeys.InspectSessionTitle, "Inspect session")"
+                    disabled="@(!IsSessionInspectorAvailable)"
+                    @onclick="ShowSessionInspectorAsync">
+                <iconify-icon icon="lucide:scan-search" width="16" height="16"></iconify-icon>
+            </button>
+        }
+        <button type="button" class="btn btn-ghost btn-circle btn-sm" data-workspace-toggle
+                title="@Loc[IsWorkspaceOpen ? ChatTextKeys.ActivityCollapse : ChatTextKeys.ActivityOpen]"
+                aria-label="@Loc[IsWorkspaceOpen ? ChatTextKeys.ActivityCollapse : ChatTextKeys.ActivityOpen]"
+                aria-expanded="@(IsWorkspaceOpen ? "true" : "false")" @onclick="OnToggleWorkspace">
+            <span class="iconify lucide--files size-4" aria-hidden="true"></span>
+        </button>
+    </div>;
+
+    RenderFragment attachmentInput = @<InputFile id="@_attachmentInputId"
+                                                OnChange="OnAttachmentsSelected"
+                                                multiple
+                                                accept="@AttachmentAccept"
+                                                class="sr-only"
+                                                aria-label="@Loc.GetOrDefault(ChatTextKeys.AttachFileLabel, "Attach file")"
+                                                disabled="@IsAttachmentInputDisabled" />;
+}
+
+<div @ref="_chatRoot" data-browser-enabled="@(UserScope.BrowserWorkspace?.IsAvailable == true ? "true" : "false")" data-browser-chat="@ChatThread.Id" class="custom-chat-workspace card bg-base-100 relative flex h-full flex-col overflow-hidden">
+    <!-- Card Header: Assistant info -->
+    <div class="custom-chat-header flex items-center gap-2 px-3 py-2 sm:gap-3 sm:px-4">
+        @if (!string.IsNullOrWhiteSpace(ThreadDrawerToggleId))
+        {
+            <button type="button" aria-controls="@ThreadDrawerToggleId" @onclick="OnShowChats"
+                   class="btn btn-ghost btn-sm btn-square lg:hidden"
+                   title="@Loc.GetOrDefault(ChatTextKeys.ShowChatsLabel, "Show chats")"
+                   aria-label="@Loc.GetOrDefault(ChatTextKeys.ShowChatsLabel, "Show chats")">
+                <iconify-icon icon="lucide:panel-left-open" width="18" height="18"></iconify-icon>
+            </button>
+        }
+        @if (!string.IsNullOrWhiteSpace(ActiveAgentPictureUrl))
+        {
+            <div class="avatar">
+                <div class="bg-base-200 mask mask-squircle w-8 sm:w-10">
+                    <img src="@ActiveAgentPictureUrl" alt="" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="avatar avatar-placeholder">
+                <div class="bg-neutral text-neutral-content mask mask-squircle w-8 sm:w-10">
+                    <span class="text-xs font-medium">@ActiveAgentInitials</span>
+                </div>
+            </div>
+        }
+        <div class="custom-chat-identity min-w-0 grow">
+            @if (ChatThread.ProjectId is not null)
+            {
+                <p class="mb-1 truncate text-xs text-base-content/60" title="@Project?.RootPath">
+                    @(Project?.Name ?? Loc[ChatTextKeys.ProjectUnavailable]) · @Project?.RootPath
+                </p>
+            }
+            else
+            {
+                <p class="mb-1 truncate text-xs text-base-content/60">@Loc[ChatTextKeys.ProjectGeneral]</p>
+            }
+            <div class="flex items-center gap-2">
+                <p class="leading-none font-medium">@ActiveAgentName</p>
+                <div class="status sm:hidden @(IsServiceRunning ? "status-success" : IsModelProviderSetupRequired ? "status-warning" : "status-error")"
+                     title="@GetAssistantPresenceLabel()"></div>
+            </div>
+            <div class="mt-0.5 hidden flex-wrap items-center gap-2 sm:flex">
+                <div class="status @(IsServiceRunning ? "status-success" : IsModelProviderSetupRequired ? "status-warning" : "status-error")"></div>
+                <p class="text-base-content/80 text-xs">@GetAssistantPresenceLabel()</p>
+                @if (CanRetryServiceCheck)
+                {
+                    <button class="btn btn-error btn-soft btn-xs h-7 min-h-7"
+                            title="@Loc.GetOrDefault(ChatTextKeys.RetryServiceCheckTitle, "Retry service check")"
+                            @onclick="OnRetryServiceCheck">
+                        <span class="iconify lucide--rotate-cw size-3" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(ChatTextKeys.RetryNow, "Retry now")
+                    </button>
+                }
+            </div>
+        </div>
+        <div class="custom-chat-desktop-actions">@headerActions</div>
+        <DropdownMenu RootClass="custom-chat-mobile-actions"
+                      TriggerClass="btn btn-ghost btn-circle btn-sm"
+                      ContentClass="custom-chat-mobile-actions-menu bg-base-100 rounded-box border border-base-300 p-2 shadow-lg"
+                      Placement="dropdown-end"
+                      AriaLabel="@Loc.GetOrDefault(ChatTextKeys.ThreadActionsLabel, "Thread actions")"
+                      CloseOnContentClick="true">
+            <TriggerContent><span class="iconify lucide--ellipsis-vertical size-5" aria-hidden="true"></span></TriggerContent>
+            <ChildContent>@headerActions</ChildContent>
+        </DropdownMenu>
+    </div>
+    <hr class="border-base-300" />
+
+    @if (ChatThread.IsIncognito)
+    {
+        <div class="px-4">
+            <button type="button"
+                    class="inline-flex cursor-pointer items-center gap-1.5 py-1.5 text-start text-xs text-base-content/60 hover:text-base-content"
+                    aria-expanded="@(_isIncognitoDisclosureExpanded ? "true" : "false")"
+                    @onclick="() => _isIncognitoDisclosureExpanded = !_isIncognitoDisclosureExpanded">
+                <span>@Loc.GetOrDefault(ChatTextKeys.IncognitoChatDisclosureSummary, "Not saved · Clears after ~30 min")</span>
+                <iconify-icon icon="@(_isIncognitoDisclosureExpanded ? "lucide:chevron-down" : "lucide:chevron-right")"
+                                width="13"
+                                height="13"
+                                class="shrink-0"
+                                aria-hidden="true"></iconify-icon>
+            </button>
+            @if (_isIncognitoDisclosureExpanded)
+            {
+                <div class="pb-2 text-xs text-base-content/60">
+                    @Loc.GetOrDefault(ChatTextKeys.IncognitoChatDisclosure, "This chat is not saved or added to memory. It is deleted when you sign out, after about 30 minutes of inactivity, or when Oscova restarts. Attachments are deleted with it. External models and tools may still receive what you send.")
+                </div>
+            }
+        </div>
+    }
+
+    @if (_agentConversations.Count > 0)
+    {
+        <div role="group"
+             class="tabs tabs-border shrink-0 overflow-x-auto px-3 sm:px-4"
+             aria-label="@Loc.GetOrDefault(ChatTextKeys.AgentConversationTabsLabel, "Agent conversations")">
+            <button type="button"
+                    class="tab whitespace-nowrap @(selectedAgentConversation is null ? "tab-active" : string.Empty)"
+                    aria-pressed="@(selectedAgentConversation is null ? "true" : "false")"
+                    @onclick="() => SelectAgentConversation(null)">
+                @ActiveAgentName
+            </button>
+            @foreach (var conversation in _agentConversations)
+            {
+                var key = GetAgentConversationKey(conversation);
+                var isSelected = string.Equals(key, _selectedAgentConversationKey, StringComparison.Ordinal);
+                <button type="button"
+                        class="tab whitespace-nowrap @(isSelected ? "tab-active" : string.Empty)"
+                        aria-pressed="@(isSelected ? "true" : "false")"
+                        @onclick="() => SelectAgentConversation(key)">
+                    @GetAgentConversationLabel(conversation)
+                    <span class="badge badge-ghost badge-sm ms-2" data-testid="agent-conversation-status">@GetAgentConversationStatus(conversation)</span>
+                </button>
+            }
+        </div>
+    }
+
+    @if (ShouldShowStartScreen)
+    {
+        var startOpening = GetStartOpeningText();
+        var startOpeningClass = startOpening.IsReady
+            ? "from-base-content to-primary inline-block bg-gradient-to-tr from-40% bg-clip-text text-transparent"
+            : startOpening.IsProblem ? "text-error" : "text-base-content";
+
+        <div class="chat-start-screen custom-scrollbar min-h-0 flex-1 overflow-y-auto @StartScreenClass">
+            <div class="custom-chat-welcome mx-auto flex min-h-full w-full flex-col px-4">
+                <div class="custom-chat-intro custom-scrollbar">
+                    <div class="custom-chat-greeting text-2xl font-medium tracking-tight">
+                        <p class="@startOpeningClass">
+                            @startOpening.Greeting
+                        </p>
+                        @if (!string.IsNullOrWhiteSpace(startOpening.Question))
+                        {
+                            <p class="chat-start-question text-base-content mt-1" @key="startOpening.Question">@startOpening.Question</p>
+                        }
+                    </div>
+
+                    @if (IsCheckingService)
+                    {
+                        <div class="chat-start-status mt-6 flex items-center gap-3 text-sm text-base-content/70">
+                            <span class="loading loading-dots loading-md"></span>
+                            <span>@Loc.GetOrDefault(ChatTextKeys.CheckingChatServiceStatus, "Checking chat service status...")</span>
+                        </div>
+                    }
+                    else if (HasNoModelProviders)
+                    {
+                        <div class="chat-start-status mt-6 flex flex-wrap items-center gap-3">
+                            <button class="btn btn-primary" @onclick="OpenModelProviderSettings">
+                                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                                @GetModelProviderSetupButtonText()
+                            </button>
+                        </div>
+                    }
+                    else if (CanRetryServiceCheck)
+                    {
+                        <div class="chat-start-status mt-6 flex flex-wrap items-center gap-3">
+                            <button class="btn btn-primary" @onclick="OnRetryServiceCheck">
+                                <span class="iconify lucide--rotate-cw size-4" aria-hidden="true"></span>
+                                @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+                            </button>
+                        </div>
+                    }
+
+                    @if (IsStartScreenReady)
+                    {
+                        <div class="chat-start-cards mt-6 grid gap-2 md:grid-cols-3">
+                            @foreach (var starterCard in StarterCards)
+                            {
+                                <button type="button"
+                                        class="custom-chat-starter card group cursor-pointer text-left transition-colors hover:bg-base-200"
+                                        @key="starterCard.Title"
+                                        @onclick="() => FillStarterPrompt(starterCard)">
+                                    <span class="card-body">
+                                        <span class="text-base-content/60 w-fit">
+                                            <iconify-icon icon="@starterCard.Icon" class="block size-4"></iconify-icon>
+                                        </span>
+                                        <span class="mt-3 font-medium">@starterCard.Title</span>
+                                        <span class="text-base-content/80 mt-1 line-clamp-2 text-sm text-ellipsis">@starterCard.Description</span>
+                                        <span class="text-base-content/60 group-hover:text-base-content mt-3 flex items-center gap-1.5 transition-all">
+                                            <span class="text-sm">@starterCard.Action</span>
+                                            <iconify-icon icon="lucide:chevron-right" class="size-3.5"></iconify-icon>
+                                        </span>
+                                    </span>
+                                </button>
+                            }
+                        </div>
+                    }
+
+                </div>
+                @if (CurrentBudget is { } startBudget)
+                {
+                    <div class="mt-4 px-3"><ModelBudgetSummary Status="@startBudget" /></div>
+                }
+                <div class="custom-chat-start-input mt-6"
+                     style="@(CurrentBudget is not null ? "margin-top: .5rem" : null)">
+                    <ChatGoalStrip Goal="@_goal" Editing="@_goalEditing" Saving="@(_goalSaving || _loadingAttachments)" CanSave="@(!string.IsNullOrWhiteSpace(_inputText))"
+                                       Message="@_goalControlMessage" OnSave="@SaveComposerGoalAsync" OnCancel="@CancelComposerGoalAsync"
+                                       OnPause="@PauseComposerGoalAsync" OnResume="@ResumeComposerGoalAsync" OnEdit="@EditComposerGoal" OnClear="@ClearComposerGoalAsync" />
+                <div class="custom-chat-composer chat-start-composer card bg-base-200">
+                    <div class="card-body p-3">
+                        <div class="dropdown dropdown-top dropdown-start w-full @(IsSlashCommandMenuOpen ? "dropdown-open" : null)">
+                            <textarea @ref="_composerInput" class="textarea m-0 w-full resize-none border-0 bg-transparent p-1 text-base focus:outline-none disabled:bg-transparent disabled:text-base-content/40 disabled:placeholder:text-base-content/35 @(GetInputStateClass())"
+                                      data-chat-composer
+                                      role="combobox"
+                                      aria-autocomplete="list"
+                                      aria-expanded="@(IsSlashCommandMenuOpen ? "true" : "false")"
+                                      aria-controls="@(IsSlashCommandMenuOpen ? "chat-start-commands" : null)"
+                                      aria-activedescendant="@(IsSlashCommandMenuOpen ? $"chat-start-command-{_selectedSlashCommandIndex}" : null)"
+                                      data-chat-slash-menu-open="@(IsSlashCommandMenuOpen ? "true" : "false")"
+                                      placeholder="@StartInputPlaceholderText"
+                                      aria-label="@StartInputPlaceholderText"
+                                      @bind="_inputText"
+                                      @bind:event="oninput"
+                                      @bind:after="OnComposerInputChanged"
+                                      @onkeydown="HandleStartComposerKeyDown"
+                                      disabled="@(!IsStartScreenReady || IsInputLocked || IsVoiceModeActive)"></textarea>
+
+                            @if (IsSlashCommandMenuOpen)
+                            {
+                                var commands = FilteredSlashCommands;
+                                <ul class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-30 mb-2 w-72 max-w-[calc(100vw-1.5rem)] border p-2 shadow-lg"
+                                    id="chat-start-commands" role="listbox"
+                                    aria-label="@Loc.GetOrDefault(ChatTextKeys.SlashMenuLabel, "Conversation commands")">
+                                    @for (var index = 0; index < commands.Count; index++)
+                                    {
+                                        var command = commands[index];
+                                        <li @key="command.Name">
+                                            <button id="@($"chat-start-command-{index}")" type="button"
+                                                    role="option"
+                                                    aria-selected="@(index == _selectedSlashCommandIndex ? "true" : "false")"
+                                                    class="@(index == _selectedSlashCommandIndex ? "menu-active" : null)"
+                                                    @onmousedown:preventDefault="true"
+                                                    @onclick="() => ExecuteSlashCommandAsync(command.Name)">
+                                                <iconify-icon icon="@command.Icon" width="16" height="16"></iconify-icon>
+                                                <span class="min-w-0">
+                                                    <span class="block font-medium">@command.Name</span>
+                                                    <span class="block truncate text-xs opacity-65">@Loc.GetOrDefault(command.DescriptionKey, command.Fallback)</span>
+                                                </span>
+                                            </button>
+                                        </li>
+                                    }
+                                    @if (commands.Count == 0)
+                                    {
+                                        <li class="menu-disabled">
+                                            <span class="opacity-60">@CommonLoc.GetOrDefault(CommonTextKeys.NoResults, "No results")</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+
+                        @if (_pendingAttachments.Count > 0 || _pendingFiles.Count > 0)
+                        {
+                            <div class="bg-base-200/80 rounded-box border border-base-300 p-3">
+                                <div class="mb-2 flex items-center gap-2 text-xs text-base-content/65">
+                                    <iconify-icon icon="lucide:paperclip" width="13" height="13"></iconify-icon>
+                                    <span>@GetPendingAttachmentCountLabel()</span>
+                                </div>
+                                <div class="custom-chat-pending-attachments custom-scrollbar flex flex-wrap gap-2">
+                                    @PendingWorkspaceFiles
+                        @foreach (var attachment in _pendingAttachments)
+                                    {
+                                        var attachmentKind = GetPendingAttachmentKind(attachment);
+                                        <div class="border-base-300 bg-base-100 rounded-box flex max-w-full items-center gap-2 border px-2 py-1"
+                                             @key="attachment.Id">
+                                            <iconify-icon icon="@GetAttachmentIcon(attachmentKind)" class="size-3.5 shrink-0 text-base-content/70"></iconify-icon>
+                                            <span class="flex min-w-0 items-baseline gap-2">
+                                                <span class="min-w-0 max-w-[14rem] truncate text-sm leading-5 font-medium">@attachment.File.Name</span>
+                                                <span class="shrink-0 text-[11px] leading-5 text-base-content/60">
+                                                    @GetAttachmentKindLabel(attachmentKind) &middot; @FormatAttachmentSize(attachment.File.Size)
+                                                </span>
+                                            </span>
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-xs btn-circle size-5 min-h-5 shrink-0"
+                                                    @onclick="() => RemovePendingAttachment(attachment.Id)"
+                                                    disabled="@IsInputLocked"
+                                                    aria-label="@FormatChatText(ChatTextKeys.RemoveAttachmentLabel, "Remove attachment: {0}", attachment.File.Name)">
+                                                <iconify-icon icon="lucide:x" width="12" height="12"></iconify-icon>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <div class="custom-chat-composer-footer mt-2 flex items-end justify-between gap-2">
+                            <div class="inline-flex items-center gap-0.5">
+                                <button type="button"
+                                        class="btn btn-ghost btn-circle btn-sm @(_isRecordingAudio ? "text-secondary" : "")"
+                                        @onclick="ToggleVoiceInput"
+                                        title="@(!_isAsrAvailable ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : (_isRecordingAudio ? Loc.GetOrDefault(ChatTextKeys.StopListeningLabel, "Stop listening") : Loc.GetOrDefault(ChatTextKeys.StartListeningLabel, "Start listening")))"
+                                        aria-label="@(!_isAsrAvailable ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : (_isRecordingAudio ? Loc.GetOrDefault(ChatTextKeys.StopListeningLabel, "Stop listening") : Loc.GetOrDefault(ChatTextKeys.StartListeningLabel, "Start listening")))"
+                                        disabled="@(_goalEditing is not null || !IsStartScreenReady || (IsInputLocked && !_isRecordingAudio) || _isTranscribing || !_isAsrAvailable || IsVoiceModeActive)">
+                                    <iconify-icon icon="lucide:mic" width="18" height="18" class="block @(_isRecordingAudio ? "animate-pulse" : "")"></iconify-icon>
+                                </button>
+
+                                <label for="@_attachmentInputId"
+                                       class="btn btn-ghost btn-circle btn-sm"
+                                       title="@Loc.GetOrDefault(ChatTextKeys.AttachFileLabel, "Attach file")">
+                                    @attachmentInput
+                                    <iconify-icon icon="lucide:paperclip" width="18" height="18" class="block"></iconify-icon>
+                                </label>
+                            </div>
+
+                            <div class="custom-chat-options flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 px-1 text-xs">
+                                <ChatRunOptions ShowAgentSelector="@true" MainAgent="@MainAgent" ActiveAgent="@ActiveAgentDefinition" CustomAgents="@CustomAgents" AgentSelectionLocked="@IsInputLocked" OnSelectAgent="SelectAgentAsync" ModelProviders="@ModelProviders"
+                                                SelectedProvider="@SelectedProvider"
+                                                SelectedModelProviderId="@SelectedModelProviderId"
+                                                Permissions="@_chatPermissions"
+                                                OnRefreshPermissions="RefreshPermissionsAsync"
+                                                OnRevokePermission="RevokePermissionAsync"
+                                                OpenUpwards="@true"
+                                                OnSelectProvider="SelectProviderAsync"
+                                                OnSelectApprovalMode="SelectApprovalMode" />
+                            </div>
+
+                            @if (_goalEditing is null)
+                            {
+                            <button class="btn btn-primary btn-circle btn-sm"
+                                    @onclick="ProcessStartScreenInputAsync"
+                                    title="@Loc.GetOrDefault(ChatTextKeys.SendLabel, "Send")"
+                                    aria-label="@Loc.GetOrDefault(ChatTextKeys.SendLabel, "Send")"
+                                    disabled="@((!IsStartScreenReady || IsInputLocked || IsPushToTalkActive || IsVoiceModeActive || !CanSend) ? "disabled" : false)">
+                                <span class="iconify lucide--arrow-right size-4"></span>
+                            </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+    <!-- Chat history -->
+    <div class="relative min-h-0 flex-1">
+    <div @ref="_chatScrollBody"
+         class="chat-scroll-body custom-scrollbar relative h-full overflow-y-auto p-3 sm:p-5 @ChatSurfaceClass"
+         @onscroll="OnChatScrolledAsync">
+        @if (IsConversationLoading)
+        {
+            <div class="absolute inset-0 flex select-none flex-col items-center justify-center gap-3 text-base-content/60" role="status">
+                <span class="loading loading-ring loading-md" aria-hidden="true"></span>
+                <span class="text-sm">@Loc.GetOrDefault(ChatTextKeys.LoadingConversation, "Loading conversation…")</span>
+            </div>
+        }
+        else if (selectedAgentConversation is null && !ChatThread.DisplayMessages.Any())
+        {
+            <div class="absolute inset-0 z-10 flex select-none flex-col items-center justify-center @((CanRetryServiceCheck || IsModelProviderSetupRequired) ? string.Empty : "pointer-events-none")">
+                @if (IsCheckingService)
+                {
+                    <div class="mt-4 flex flex-col items-center gap-2 text-sm opacity-80">
+                        <span class="loading loading-dots loading-lg"></span>
+                        <span>@Loc.GetOrDefault(ChatTextKeys.CheckingChatServiceStatus, "Checking chat service status...")</span>
+                    </div>
+                }
+                else if (IsModelProviderSetupRequired)
+                {
+                    <div class="mt-4 flex flex-col items-center gap-3 text-center text-sm">
+                        <p class="text-md mt-1 text-base-content/70">
+                            @GetModelProviderSetupMessage()
+                        </p>
+                        @if (HasNoModelProviders)
+                        {
+                            <button class="btn btn-primary" @onclick="OpenModelProviderSettings">
+                                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                                @GetModelProviderSetupButtonText()
+                            </button>
+                        }
+                    </div>
+                }
+                else if (!IsServiceRunning)
+                {
+                    <div class="mt-4 flex flex-col items-center gap-3 text-sm">
+                        <p class="text-md mt-1 text-error">
+                            @(string.IsNullOrWhiteSpace(ServiceStatusMessage) ? Loc.GetOrDefault(ChatTextKeys.ServiceNotRunning, "The chat service is not running. Start it and retry.") : ServiceStatusMessage)
+                        </p>
+                        <button class="btn btn-primary" @onclick="OnRetryServiceCheck">
+                            <span class="iconify lucide--rotate-cw size-4" aria-hidden="true"></span>
+                            @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (!IsConversationLoading && selectedAgentConversation is { } childConversation)
+        {
+            <div class="chat-panel"
+                 role="region"
+                 aria-label="@GetAgentConversationLabel(childConversation)">
+                <div class="mb-3 flex justify-center">
+                    <span class="badge badge-ghost badge-sm">
+                        @Loc.GetOrDefault(ChatTextKeys.AgentConversationReadOnly, "Read only")
+                    </span>
+                </div>
+                @foreach (var message in _selectedAgentMessages)
+                {
+                    if (message.From == MessageOwner.User)
+                    {
+                        <ChatBubble IsUser="true"
+                                    UserPictureUrl="@ActiveAgentPictureUrl"
+                                    Timestamp="@(message.CreatedAt == default ? null : message.CreatedAt)">
+                            <span class="whitespace-pre-wrap" dir="auto">@message.Text</span>
+                        </ChatBubble>
+                    }
+                    else
+                    {
+                        <BotMessageView @key="message"
+                                        Message="@message"
+                                        IsReadOnly="true"
+                                        AssistantPictureUrl="@GetAgentPictureUrl(childConversation.AgentId)" />
+                    }
+                }
+            </div>
+        }
+        else if (!IsConversationLoading)
+        {
+        <div class="chat-panel">
+            @if (ThreadView is not null && ChatThread.DisplayMessages.Count > 0)
+            {
+                <div class="mb-5 flex min-h-11 items-center justify-center">
+                    @if (ThreadView.HasOlderMessages)
+                    {
+                        <button type="button" class="btn btn-outline btn-sm min-h-11 rounded-full px-5 text-base-content/70"
+                                disabled="@_loadingOlderMessages" aria-busy="@(_loadingOlderMessages ? "true" : "false")"
+                                @onclick="LoadOlderMessagesAsync">
+                            @if (_loadingOlderMessages) { <span class="loading loading-spinner loading-xs" aria-hidden="true"></span> }
+                            @(_loadingOlderMessages ? Loc.GetOrDefault(ChatTextKeys.LoadingOlderMessages, "Loading older messages…") : Loc.GetOrDefault(ChatTextKeys.LoadOlderMessages, "Load older messages"))
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="text-xs text-base-content/50">@Loc.GetOrDefault(ChatTextKeys.StartOfConversation, "Start of conversation")</span>
+                    }
+                </div>
+            }
+            @{
+                var branchBoundaryMessageId = GetBranchBoundaryMessageId();
+                // Share path attribution across messages instead of rescanning the transcript for every bubble.
+                var artifacts = ThreadArtifactProjector.Project(ChatThread.DisplayMessages, ChatThread.ProjectId is not null).Artifacts;
+            }
+            @foreach (var message in ChatThread.DisplayMessages)
+            {
+                if (message.From == MessageOwner.User && message.IsInteractionResponse && message.Attachments.Count == 0)
+                {
+                    <div class="text-base-content/70 whitespace-pre-wrap px-3 py-1 text-sm" dir="auto" @key="message">@message.Text</div>
+                }
+                else if (message.From == MessageOwner.User)
+                {
+                    <ChatBubble @key="message" IsUser="true" UserPictureUrl="@UserPictureUrl" Timestamp="@message.CreatedAt">
+                        @WorkspaceFileCards(message.WorkspaceFiles)
+                        @if (message.Attachments.Count > 0)
+                        {
+                            <div class="mb-3 flex flex-col gap-2">
+                                @foreach (var attachment in message.Attachments)
+                                {
+                                    var opensInTab = ArtifactFilePresentation.OpensInBrowserTab(attachment.DisplayName);
+                                    @* Previewable files open in a new tab, other kinds download through the same owner-only endpoint. *@
+                                    <a class="border-base-300 bg-base-100 hover:bg-base-200 rounded-box flex max-w-full items-center gap-2 border px-2 py-1 text-base-content"
+                                       @key="attachment.Id"
+                                       href="@ApiRoutes.Chat.Attachment(ChatThread.Id, attachment.Id)"
+                                       target="@(opensInTab ? "_blank" : null)"
+                                       rel="@(opensInTab ? "noopener" : null)"
+                                       download="@(opensInTab ? null : attachment.DisplayName)">
+                                        <iconify-icon icon="@GetAttachmentIcon(attachment.Kind)" class="size-3.5 shrink-0 text-base-content/70"></iconify-icon>
+                                        <span class="flex min-w-0 items-baseline gap-2">
+                                            <span class="min-w-0 truncate text-sm leading-5 font-medium">@attachment.DisplayName</span>
+                                            <span class="shrink-0 text-[11px] leading-5 text-base-content/60">
+                                                @GetAttachmentKindLabel(attachment.Kind) &middot; @FormatAttachmentSize(attachment.SizeBytes)
+                                            </span>
+                                        </span>
+                                    </a>
+                                }
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(message.Text))
+                        {
+                            @* pre-wrap: the user's own newlines are literal, not markdown, so they must survive rendering. *@
+                            <span class="whitespace-pre-wrap" dir="auto">@message.Text</span>
+                        }
+                    </ChatBubble>
+                }
+                else
+                {
+                    <BotMessageView @key="message"
+                                    Message="@message"
+                                    Thread="@ChatThread"
+                                    Artifacts="@artifacts"
+                                    AvatarEmotions="@_avatarEmotions"
+                                    OnSubmitQuestions="@SubmitUserQuestionsAsync"
+                                    OnDismissQuestions="@DismissUserQuestionsAsync"
+                                    AssistantInitials="@(string.IsNullOrWhiteSpace(message.AgentName) ? ActiveAgentInitials : message.AgentName[..1].ToUpperInvariant())"
+                                    AssistantPictureUrl="@GetAgentPictureUrl(message.AgentId ?? ActiveAgentDefinition.Id)"
+                                    IsRunActive="@IsRunActive"
+                                    IsLastMessage="@(message == ChatThread.DisplayMessages.LastOrDefault())"
+                                    OnRegenerate="@RegenerateResponseAsync"
+                                    OnBranch="@BranchResponseAsync"
+                                    IsBranching="@(_isBranching || IsInputLocked)"
+                                    OnToolApprovalResponse="@HandleToolApprovalResponse"
+                                    OnBooleanElicitationResponse="@HandleBooleanElicitationResponse"
+                                    OnStringElicitationResponse="@HandleStringElicitationResponse"
+                                    OnNumberElicitationResponse="@HandleNumberElicitationResponse"
+                                    OnEnumElicitationResponse="@HandleEnumElicitationResponse"
+                                    RequestScrollAsync="@ScrollLatestThrottledAsync" />
+                }
+                @if (ChatThread.BranchOrigin is { } origin && message.MessageId == branchBoundaryMessageId)
+                {
+                    <div class="custom-chat-source">
+                        @if (ChatThread.SourceThreadAvailable)
+                        {
+                            <a href="@NavigationManager.GetUriWithQueryParameter("threadId", origin.ParentThreadId)">
+                                @Loc.GetOrDefault(ChatTextKeys.ContinuedFromChat, "Continued from chat")
+                            </a>
+                        }
+                        else
+                        {
+                            <span aria-disabled="true">
+                                @Loc.GetOrDefault(ChatTextKeys.SourceChatUnavailable, "Source chat unavailable")
+                            </span>
+                        }
+                    </div>
+                }
+            }
+            @if (ShouldShowActiveRunPlaceholder)
+            {
+                <ChatBubble IsUser="false"
+                            AssistantInitials="@ActiveAgentInitials"
+                            AssistantPictureUrl="@ActiveAgentPictureUrl">
+                    <span class="loading loading-dots loading-md"
+                          role="status"
+                          aria-label="@Loc.GetOrDefault(ChatTextKeys.GeneratingResponseStatus, "Generating response")"></span>
+                </ChatBubble>
+            }
+            @if (SubagentWaitStatus is { } waitStatus)
+            {
+                <div class="mt-3 flex items-center gap-2 text-sm text-base-content/70" role="status" data-testid="subagent-wait-status">
+                    <span class="loading loading-dots loading-sm" aria-hidden="true"></span>
+                    <span>@waitStatus</span>
+                </div>
+            }
+            @if (_showFailedRunNotice)
+            {
+                <div class="alert alert-error mt-3" role="alert">
+                    <span>@FailedRunMessage</span>
+                    @if (CanRetryFailedRun)
+                    {
+                        <button type="button" class="btn btn-sm" @onclick="RetryFailedRunAsync">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+                        </button>
+                    }
+                </div>
+            }
+            @* Keep the latest response comfortably above the composer when auto-scroll lands at the end. *@
+            <div class="chat-panel-reading-spacer h-8 sm:h-16" aria-hidden="true"></div>
+        </div>
+        }
+    </div>
+    @if (selectedAgentConversation is null && !_followLatest && ChatThread.DisplayMessages.Count > 0)
+    {
+        <button type="button"
+                class="chat-jump-to-latest btn btn-circle btn-sm absolute bottom-4 left-1/2 z-[2] -translate-x-1/2 shadow-md"
+                title="@Loc.GetOrDefault(ChatTextKeys.ActivityJumpToLatest, "Jump to latest")"
+                aria-label="@Loc.GetOrDefault(ChatTextKeys.ActivityJumpToLatest, "Jump to latest")"
+                @onclick="JumpToLatestAsync">
+            <span class="iconify lucide--arrow-down size-4" aria-hidden="true"></span>
+        </button>
+    }
+    </div>
+
+    @if (selectedAgentConversation is null)
+    {
+    @if (CurrentBudget is { } budget)
+    {
+        <div class="px-3 py-2 shrink-0"><ModelBudgetSummary Status="@budget" /></div>
+    }
+    @if (ShowFollowUpPanel)
+    {
+        <div class="custom-chat-followups shrink-0">
+            <ul class="m-0 px-2 py-1"
+                aria-label="@Loc.GetOrDefault(ChatTextKeys.FollowUpsLabel, "Follow-up messages")">
+                @foreach (var followUp in SteeringFollowUps)
+                {
+                    <li class="flex min-w-0 items-center gap-2 px-2 py-1 text-sm" @key="followUp.MessageId">
+                        <span class="iconify lucide--zap size-4 shrink-0 text-primary"></span>
+                        <div class="min-w-0 grow truncate">
+                            @if (followUp.RecipientAgentId is { } recipientId && recipientId != ActiveAgentDefinition.Id)
+                            {
+                                <span class="font-medium">@@@(CustomAgents.FirstOrDefault(agent => agent.Id == recipientId)?.Name ?? recipientId)</span>
+                            }
+                            @followUp.Text
+                            @WorkspaceFileCards(followUp.WorkspaceFiles)
+                        </div>
+                        <span class="badge badge-ghost badge-sm shrink-0 whitespace-nowrap">@Loc.GetOrDefault(ChatTextKeys.FollowUpSteeringBadge, "Steering")</span>
+                    </li>
+                }
+                @foreach (var followUp in _queuedFollowUps)
+                {
+                    <li class="flex min-w-0 items-center gap-2 px-2 py-1 text-sm" @key="followUp.MessageId">
+                        <span class="iconify lucide--list-ordered size-4 shrink-0 text-base-content/60"></span>
+                        <div class="min-w-0 grow truncate">
+                            @if (followUp.RecipientAgentId is { } recipientId && recipientId != ActiveAgentDefinition.Id)
+                            {
+                                <span class="font-medium">@@@(CustomAgents.FirstOrDefault(agent => agent.Id == recipientId)?.Name ?? recipientId)</span>
+                            }
+                            @followUp.Text
+                            @WorkspaceFileCards(followUp.WorkspaceFiles)
+                        </div>
+                        <button type="button"
+                                class="btn btn-ghost btn-xs shrink-0 whitespace-nowrap"
+                                @onclick="() => SteerFollowUpAsync(followUp)">
+                            <span class="iconify lucide--zap size-3.5"></span>
+                            @Loc.GetOrDefault(ChatTextKeys.FollowUpSteerLabel, "Steer")
+                        </button>
+                        <button type="button"
+                                class="btn btn-ghost btn-circle btn-xs shrink-0"
+                                title="@Loc.GetOrDefault(ChatTextKeys.FollowUpDeleteLabel, "Delete")"
+                                aria-label="@Loc.GetOrDefault(ChatTextKeys.FollowUpDeleteLabel, "Delete")"
+                                @onclick="() => DeleteFollowUpAsync(followUp)">
+                            <span class="iconify lucide--trash-2 size-3.5"></span>
+                        </button>
+                        <DropdownMenu RootClass="shrink-0"
+                                      Placement="dropdown-top dropdown-end"
+                                      TriggerClass="btn btn-ghost btn-circle btn-xs"
+                                      ContentClass="bg-base-100 rounded-box border-base-300 z-[2] mb-2 w-48 border p-1 shadow-lg"
+                                      AriaLabel="@Loc.GetOrDefault(ChatTextKeys.FollowUpMoreLabel, "More actions")"
+                                      Title="@Loc.GetOrDefault(ChatTextKeys.FollowUpMoreLabel, "More actions")"
+                                      CloseOnContentClick="@true">
+                            <TriggerContent>
+                                <span class="iconify lucide--ellipsis-vertical size-3.5"></span>
+                            </TriggerContent>
+                            <ChildContent>
+                                <ul class="menu w-full p-0">
+                                    <li>
+                                        <button type="button" class="whitespace-nowrap" @onclick="() => EditFollowUpAsync(followUp)">
+                                            <span class="iconify lucide--pencil size-3.5"></span>
+                                            @Loc.GetOrDefault(ChatTextKeys.FollowUpEditLabel, "Edit message")
+                                        </button>
+                                    </li>
+                                </ul>
+                            </ChildContent>
+                        </DropdownMenu>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Input bar -->
+    <ChatGoalStrip Goal="@_goal" Editing="@_goalEditing" Saving="@(_goalSaving || _loadingAttachments)" CanSave="@(!string.IsNullOrWhiteSpace(_inputText))"
+                   Message="@_goalControlMessage" OnSave="@SaveComposerGoalAsync" OnCancel="@CancelComposerGoalAsync"
+                   OnPause="@PauseComposerGoalAsync" OnResume="@ResumeComposerGoalAsync" OnEdit="@EditComposerGoal" OnClear="@ClearComposerGoalAsync" />
+    <div class="custom-chat-composer custom-chat-active-composer bg-base-200 shrink-0">
+        @if (ShowTodoPanel)
+        {
+            <div class="px-3 pt-2 sm:px-4">
+                <DropdownMenu RootClass="w-full"
+                              Placement="dropdown-top"
+                              TriggerClass="border-base-300 bg-base-100/80 hover:bg-base-100 rounded-box flex w-full items-center justify-between gap-3 border px-3 py-2 text-left shadow-xs transition-colors"
+                              ContentClass="bg-base-100 rounded-box border-base-300 z-[2] mb-2 border p-2 shadow-lg"
+                              MatchTriggerWidth="@true">
+                    <TriggerContent>
+                        <div class="flex min-w-0 items-center gap-2">
+                            <span class="iconify lucide--clipboard-list size-4 shrink-0 text-base-content/70"></span>
+                            <span class="truncate text-sm font-medium">@Loc.GetOrDefault(ChatTextKeys.TodoPanelTitle, "Tasks")</span>
+                        </div>
+                        <div class="flex shrink-0 items-center gap-2">
+                            <span class="badge badge-ghost badge-sm">@TodoPanelProgressText</span>
+                            <span class="iconify lucide--chevron-up size-3.5 text-base-content/60"></span>
+                        </div>
+                    </TriggerContent>
+                    <ChildContent>
+                        <div class="max-h-64 overflow-y-auto">
+                            @if (_todos.Count == 0)
+                            {
+                                <div class="px-2 py-3 text-sm text-base-content/60">
+                                    @Loc.GetOrDefault(ChatTextKeys.TodoPanelEmpty, "No tasks yet.")
+                                </div>
+                            }
+                            else
+                            {
+                                <ul class="space-y-1">
+                                    @foreach (var todo in _todos)
+                                    {
+                                        <li class="rounded-box flex items-start gap-2 px-2 py-2 text-sm hover:bg-base-200/70"
+                                            @key="todo.Id">
+                                            <span class="iconify @(todo.IsComplete ? "lucide--check-circle-2 text-success" : "lucide--circle-dot text-base-content/45") mt-0.5 size-4 shrink-0"></span>
+                                            <span class="min-w-0">
+                                                <span class="block break-words font-medium @(todo.IsComplete ? "text-base-content/55 line-through" : "text-base-content")">@todo.Title</span>
+                                                @if (!string.IsNullOrWhiteSpace(todo.Description))
+                                                {
+                                                    <span class="mt-0.5 block break-words text-xs text-base-content/60">@todo.Description</span>
+                                                }
+                                            </span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </ChildContent>
+                </DropdownMenu>
+            </div>
+        }
+
+        @if (_pendingAttachments.Count > 0 || _pendingFiles.Count > 0)
+        {
+            <div class="px-4 pt-2">
+                <div class="bg-base-100/80 rounded-box border border-base-300 p-3 shadow-xs">
+                    <div class="mb-2 flex items-center gap-2 text-xs text-base-content/65">
+                        <iconify-icon icon="lucide:paperclip" width="13" height="13"></iconify-icon>
+                        <span>@GetPendingAttachmentCountLabel()</span>
+                    </div>
+                    <div class="custom-chat-pending-attachments custom-scrollbar flex flex-wrap gap-2">
+                        @PendingWorkspaceFiles
+                        @foreach (var attachment in _pendingAttachments)
+                        {
+                            var attachmentKind = GetPendingAttachmentKind(attachment);
+                            <div class="border-base-300 bg-base-100 rounded-box flex max-w-full items-center gap-2 border px-2 py-1"
+                                 @key="attachment.Id">
+                                <iconify-icon icon="@GetAttachmentIcon(attachmentKind)" class="size-3.5 shrink-0 text-base-content/70"></iconify-icon>
+                                <span class="flex min-w-0 items-baseline gap-2">
+                                    <span class="min-w-0 max-w-[14rem] truncate text-sm leading-5 font-medium">@attachment.File.Name</span>
+                                    <span class="shrink-0 text-[11px] leading-5 text-base-content/60">
+                                        @GetAttachmentKindLabel(attachmentKind) &middot; @FormatAttachmentSize(attachment.File.Size)
+                                    </span>
+                                </span>
+                                <button type="button"
+                                        class="btn btn-ghost btn-xs btn-circle size-5 min-h-5 shrink-0"
+                                        @onclick="() => RemovePendingAttachment(attachment.Id)"
+                                        disabled="@IsInputLocked"
+                                        aria-label="@FormatChatText(ChatTextKeys.RemoveAttachmentLabel, "Remove attachment: {0}", attachment.File.Name)">
+                                    <iconify-icon icon="lucide:x" width="12" height="12"></iconify-icon>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Input row -->
+        <div class="custom-chat-input-row grid items-end gap-2 p-3 @(!IsServiceRunning ? "opacity-60" : "")">
+            <label for="@_attachmentInputId"
+                   class="btn btn-ghost btn-circle btn-xs sm:btn-sm"
+                   title="@Loc.GetOrDefault(ChatTextKeys.AttachFileLabel, "Attach file")">
+                @attachmentInput
+                <iconify-icon icon="lucide:paperclip" width="18" height="18" class="block"></iconify-icon>
+            </label>
+
+
+            <div class="custom-chat-options flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                <ChatRunOptions ActiveAgent="@ActiveAgentDefinition" ModelProviders="@ModelProviders"
+                                SelectedProvider="@ComposerProvider"
+                                SelectedModelProviderId="@ComposerProvider?.Id"
+                                ModelSelectionLocked="@IsComposerModelLocked"
+                                ModelSelectionExplanation="@ComposerModelExplanation"
+                                Permissions="@_chatPermissions"
+                                                OnRefreshPermissions="RefreshPermissionsAsync"
+                                                OnRevokePermission="RevokePermissionAsync"
+                                OpenUpwards="@true"
+                                OnSelectProvider="SelectProviderAsync"
+                                OnSelectApprovalMode="SelectApprovalMode" />
+            </div>
+
+            <div class="dropdown dropdown-top dropdown-start min-w-0 grow @((IsSlashCommandMenuOpen || IsRecipientMenuOpen) ? "dropdown-open" : null)">
+                @if (SelectedRecipient is { } recipient)
+                {
+                    <button type="button" class="btn btn-soft btn-xs mb-1 max-w-full"
+                            @onclick="RemoveRecipientAsync" aria-label="@Loc.GetOrDefault(ChatTextKeys.RemoveRecipient, "Remove recipient")">
+                        <span class="truncate">@@@recipient.Name</span><span aria-hidden="true">×</span>
+                    </button>
+                }
+                <textarea @ref="_composerInput" id="chat-input"
+                          data-chat-composer
+                          role="combobox"
+                          aria-autocomplete="list"
+                          aria-expanded="@(IsRecipientMenuOpen || IsSlashCommandMenuOpen ? "true" : "false")"
+                          aria-controls="@(IsRecipientMenuOpen ? "chat-recipients" : IsSlashCommandMenuOpen ? "chat-commands" : null)"
+                          aria-activedescendant="@(IsRecipientMenuOpen && RecipientCandidates.Count > 0 ? $"chat-recipient-{Math.Min(_recipientIndex, RecipientCandidates.Count - 1)}" : IsSlashCommandMenuOpen ? $"chat-command-{_selectedSlashCommandIndex}" : null)"
+                          data-chat-slash-menu-open="@((IsSlashCommandMenuOpen || IsRecipientMenuOpen) ? "true" : "false")"
+                          rows="1"
+                          class="textarea textarea-sm min-h-0 w-full resize-none field-sizing-content max-h-40 sm:textarea-md @(GetInputStateClass())"
+                          aria-label="@InputPlaceholder"
+                          placeholder="@InputPlaceholder"
+                          @bind="_inputText"
+                          @bind:event="oninput"
+                          @bind:after="OnComposerInputChanged"
+                          @onkeydown="HandleKeyDown"
+                          disabled=@(!IsServiceRunning || IsVoiceModeActive || (IsInputLocked && !HasLiveRun))></textarea>
+
+                @if (IsRecipientMenuOpen)
+                {
+                    var candidates = RecipientCandidates;
+                    <ul class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-30 mb-2 w-72 max-w-[calc(100vw-1.5rem)] max-h-64 overflow-y-auto border p-2 shadow-lg"
+                        id="chat-recipients" role="listbox" aria-label="@Loc.GetOrDefault(ChatTextKeys.ConsultAgent, "Consult an agent")">
+                        @if (candidates.Count == 0)
+                        {
+                            <li class="p-2 text-sm text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.NoMatchingAgents, "No matching agents")</li>
+                        }
+                        @for (var index = 0; index < candidates.Count; index++)
+                        {
+                            var agent = candidates[index];
+                            <li @key="agent.Id">
+                                <button id="@($"chat-recipient-{index}")" type="button" role="option" aria-selected="@(index == Math.Min(_recipientIndex, candidates.Count - 1) ? "true" : "false")"
+                                        class="@(index == Math.Min(_recipientIndex, candidates.Count - 1) ? "menu-active" : null)"
+                                        @onmousedown:preventDefault="true" @onclick="() => SelectRecipientAsync(agent)">
+                                    <img src="@GetAgentPictureUrl(agent.Id)" class="size-7 shrink-0 rounded-full" alt="" />
+                                    <span class="min-w-0"><span class="block truncate">@agent.Name</span><span class="block truncate text-xs opacity-70">@agent.Description</span></span>
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                @if (IsSlashCommandMenuOpen)
+                {
+                    var commands = FilteredSlashCommands;
+                    <ul class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-30 mb-2 w-72 max-w-[calc(100vw-1.5rem)] border p-2 shadow-lg"
+                        id="chat-commands" role="listbox"
+                        aria-label="@Loc.GetOrDefault(ChatTextKeys.SlashMenuLabel, "Conversation commands")">
+                        @for (var index = 0; index < commands.Count; index++)
+                        {
+                            var command = commands[index];
+                            <li @key="command.Name">
+                                <button id="@($"chat-command-{index}")" type="button"
+                                        role="option"
+                                        aria-selected="@(index == _selectedSlashCommandIndex ? "true" : "false")"
+                                        class="@(index == _selectedSlashCommandIndex ? "menu-active" : null)"
+                                        @onmousedown:preventDefault="true"
+                                        @onclick="() => ExecuteSlashCommandAsync(command.Name)">
+                                    <iconify-icon icon="@command.Icon" width="16" height="16"></iconify-icon>
+                                    <span class="min-w-0">
+                                        <span class="block font-medium">@command.Name</span>
+                                        <span class="block truncate text-xs opacity-65">@Loc.GetOrDefault(command.DescriptionKey, command.Fallback)</span>
+                                    </span>
+                                </button>
+                            </li>
+                        }
+                        @if (commands.Count == 0)
+                        {
+                            <li class="menu-disabled">
+                                <span class="opacity-60">@CommonLoc.GetOrDefault(CommonTextKeys.NoResults, "No results")</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            <div class="custom-chat-submit-actions flex items-center gap-2">
+                @if (_goalEditing is null)
+                {
+                <button type="button" class="btn btn-primary btn-circle btn-sm"
+                        @onclick="SubmitComposerAsync"
+                        title="@(CanContinueSession ? CommonLoc.GetOrDefault(CommonTextKeys.Resume, "Resume") : Loc.GetOrDefault(ChatTextKeys.SendLabel, "Send"))"
+                        aria-label="@(CanContinueSession ? CommonLoc.GetOrDefault(CommonTextKeys.Resume, "Resume") : Loc.GetOrDefault(ChatTextKeys.SendLabel, "Send"))"
+                        disabled="@(!IsServiceRunning || IsVoiceModeActive || IsPushToTalkActive ||
+                            (IsInputLocked && !HasLiveRun) || (!CanSend && !CanContinueSession) ||
+                            (HasLiveRun && string.IsNullOrWhiteSpace(_inputText)))">
+                    <span class="iconify @(CanContinueSession ? "lucide--play" : "lucide--arrow-right") size-4"></span>
+                </button>
+                }
+                @if (HasLiveRun)
+                {
+                    <button type="button" class="btn btn-primary btn-circle btn-sm"
+                            @onclick="CancelResponse"
+                            title="@Loc.GetOrDefault(ChatTextKeys.StopLabel, "Stop")"
+                            aria-label="@Loc.GetOrDefault(ChatTextKeys.StopLabel, "Stop")">
+                        <span class="iconify lucide--square size-4"></span>
+                    </button>
+                }
+            </div>
+
+            <button class="btn btn-ghost btn-circle btn-xs sm:btn-sm @(_isRecordingAudio ? "text-secondary" : "")"
+                    @onclick="ToggleVoiceInput"
+                    title=@(!_isAsrAvailable ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : (_isRecordingAudio ? Loc.GetOrDefault(ChatTextKeys.StopListeningLabel, "Stop listening") : Loc.GetOrDefault(ChatTextKeys.StartListeningLabel, "Start listening")))
+                    aria-label=@(!_isAsrAvailable ? Loc.GetOrDefault(ChatTextKeys.SpeechModelsUnavailableTooltip, "Speech models are unavailable. Set up speech in Settings → Speech.") : (_isRecordingAudio ? Loc.GetOrDefault(ChatTextKeys.StopListeningLabel, "Stop listening") : Loc.GetOrDefault(ChatTextKeys.StartListeningLabel, "Start listening")))
+                    disabled=@(_goalEditing is not null || !IsServiceRunning || (IsInputLocked && !_isRecordingAudio) || _isTranscribing || !_isAsrAvailable || IsVoiceModeActive)>
+                <iconify-icon icon="lucide:mic" width="18" height="18" class="block @(_isRecordingAudio ? "animate-pulse" : "")"></iconify-icon>
+            </button>
+        </div>
+    </div>
+    }
+    else if (HasLiveRun)
+    {
+        <div class="flex justify-end p-3 sm:p-4">
+            <button type="button"
+                    class="btn btn-primary btn-circle btn-sm"
+                    @onclick="CancelResponse"
+                    title="@Loc.GetOrDefault(ChatTextKeys.StopLabel, "Stop")"
+                    aria-label="@Loc.GetOrDefault(ChatTextKeys.StopLabel, "Stop")">
+                <span class="iconify lucide--square size-4" aria-hidden="true"></span>
+            </button>
+        </div>
+    }
+    }
+
+    <ChatEasterEgg @ref="_chatEasterEgg" />
+    <div aria-live="polite" aria-atomic="true" class="sr-only">@_liveAnnouncement</div>
+</div>
+
+@code {
+    private RenderFragment WorkspaceFileCards(IReadOnlyList<WorkspaceFileReference> files) => @<text>
+        @if (files.Count > 0)
+        {
+            <div class="mb-3 flex flex-wrap gap-2">
+                @foreach (var file in files)
+                {
+                    <span class="border-base-300 bg-base-100 rounded-box flex max-w-full items-center gap-2 border px-2 py-1 text-sm" title="@(file.Source + ": " + file.AgentPath)">
+                        <iconify-icon icon="@FileIconResolver.Resolve(file.Name)" width="14" height="14" aria-hidden="true"></iconify-icon>
+                        <span class="truncate">@file.Name</span>
+                    </span>
+                }
+            </div>
+        }
+    </text>;
+
+    private RenderFragment PendingWorkspaceFiles => @<text>
+        @foreach (var file in _pendingFiles)
+        {
+            <div class="border-base-300 bg-base-100 rounded-box flex max-w-full items-center gap-2 border px-2 py-1" @key="file" title="@(file.Source + ": " + file.AgentPath)">
+                <iconify-icon icon="@FileIconResolver.Resolve(file.Name)" class="size-3.5 shrink-0 text-base-content/70"></iconify-icon>
+                <span class="flex min-w-0 flex-col">
+                    <span class="max-w-[14rem] truncate text-sm font-medium">@file.Name</span>
+                    <span class="max-w-[18rem] truncate text-[11px] text-base-content/60">@file.Source · @file.AgentPath</span>
+                </span>
+                <button type="button" class="btn btn-ghost btn-xs btn-circle size-5 min-h-5 shrink-0"
+                        @onclick="() => _pendingFiles.Remove(file)" disabled="@IsInputLocked"
+                        aria-label="@FormatChatText(ChatTextKeys.RemoveAttachmentLabel, "Remove attachment: {0}", file.Name)">
+                    <iconify-icon icon="lucide:x" width="12" height="12"></iconify-icon>
+                </button>
+            </div>
+        }
+    </text>;
+
+    [Parameter] public bool IsWorkspaceOpen { get; set; }
+    [Parameter] public EventCallback OnToggleWorkspace { get; set; }
+}
+

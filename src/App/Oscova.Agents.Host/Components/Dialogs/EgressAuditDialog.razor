@@ -1,0 +1,222 @@
+@inject ManagementApiClient ManagementApiClient
+@inject ChatApiClient ChatApiClient
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject UserServiceScope UserScope
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<EgressAuditDialog> Logger
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditDialogTitle, "Egress Audit")"
+                Subtitle="@Subtitle"
+                Icon="lucide:cloud"
+                MaxWidthClass="max-w-7xl"
+                BodyClass="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-4"
+                HelpTopic="@HelpTopics.EgressAudit"
+                CloseResult="@DialogResult.Ok">
+    <ChildContent>
+        <EgressAuditDetailsPanel Entries="@(_page?.Entries ?? [])"
+                                 Summary="@(_page?.Summary ?? EmptySummary)"
+                                 IsLoading="@_isLoading"
+                                 Error="@_error"
+                                 ShowUserColumn="@IsSystemScope"
+                                 ShowFilters="@true"
+                                 CurrentPage="@(_page?.CurrentPage ?? _currentPage)"
+                                 TotalPages="@(_page?.TotalPages ?? 1)"
+                                 TotalCount="@(_page?.TotalCount ?? 0)"
+                                 SelectedRange="@_range"
+                                 SelectedKind="@_kind"
+                                 SelectedSource="@_source"
+                                 SearchTerm="@_searchTerm"
+                                 OnRefresh="@RefreshAsync"
+                                 OnPageChanged="@GoToPageAsync"
+                                 OnRangeChanged="@ChangeRangeAsync"
+                                 OnKindChanged="@ChangeKindAsync"
+                                 OnSourceChanged="@ChangeSourceAsync"
+                                 OnSearchTermChanged="@ChangeSearchTermAsync"
+                                 OnSearchSubmitted="@SubmitSearchAsync"
+                                 OnInspectEntry="@InspectEntryAsync"
+                                 IsEntryInspectable="@CanInspect" />
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+    private const int PageSize = 50;
+    private static readonly EgressAuditSummary EmptySummary = new(0, 0, 0, 0);
+
+    [Parameter]
+    public string InitialScope { get; set; } = "self";
+
+    private EgressAuditPage? _page;
+    private string _range = "last30";
+    private string? _kind;
+    private string? _source;
+    private string? _searchTerm;
+    private int _currentPage = 1;
+    private bool _isLoading;
+    private string? _error;
+
+    private bool IsSystemScope => string.Equals(InitialScope, "system", StringComparison.OrdinalIgnoreCase);
+
+    private string Scope => IsSystemScope ? "system" : "self";
+
+    private string Subtitle => _range == "all"
+        ? CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditRangeAllTime, "All time")
+        : CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditRangeLastThirtyDays, "Last 30 days");
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task GoToPageAsync(int page)
+    {
+        _currentPage = Math.Max(1, page);
+        await LoadAsync();
+    }
+
+    private async Task ChangeRangeAsync(string range)
+    {
+        _range = string.Equals(range, "all", StringComparison.OrdinalIgnoreCase) ? "all" : "last30";
+        _currentPage = 1;
+        await LoadAsync();
+    }
+
+    private async Task ChangeKindAsync(string? kind)
+    {
+        _kind = kind;
+        _currentPage = 1;
+        await LoadAsync();
+    }
+
+    private async Task ChangeSourceAsync(string? source)
+    {
+        _source = source;
+        _currentPage = 1;
+        await LoadAsync();
+    }
+
+    private Task ChangeSearchTermAsync(string? searchTerm)
+    {
+        _searchTerm = searchTerm;
+        return Task.CompletedTask;
+    }
+
+    private async Task SubmitSearchAsync()
+    {
+        _currentPage = 1;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            _error = null;
+            StateHasChanged();
+
+            _page = await ManagementApiClient.GetEgressAuditPageAsync(Scope, BuildRequest());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load egress audit page for scope {Scope}.", Scope);
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditLoadFailed, "Could not load egress audit details.");
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private EgressAuditQueryRequest BuildRequest()
+    {
+        return new EgressAuditQueryRequest
+        {
+            Page = _currentPage,
+            PageSize = PageSize,
+            FromUtc = _range == "all" ? null : DateTimeOffset.UtcNow.AddDays(-30),
+            ToUtc = null,
+            Kind = _kind,
+            Source = _source,
+            SearchTerm = _searchTerm
+        };
+    }
+
+    private bool CanInspect(EgressAuditEntry entry)
+    {
+        return !IsSystemScope ||
+               string.Equals(entry.OwnerUserId, UserScope.UserId, StringComparison.Ordinal);
+    }
+
+    private async Task InspectEntryAsync(EgressAuditEntry entry)
+    {
+        if (!CanInspect(entry))
+        {
+            return;
+        }
+
+        var record = entry.Record;
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(record.TaskId) && !string.IsNullOrWhiteSpace(record.RunId))
+            {
+                var run = await ManagementApiClient.GetTaskRunAsync(record.TaskId, record.RunId);
+                if (run is null)
+                {
+                    ShowUnavailableToast();
+                    return;
+                }
+
+                await DialogService.ShowAsync<SessionInspectorDialog>(new Dictionary<string, object?>
+                {
+                    ["Run"] = run,
+                    ["UserId"] = UserScope.UserId
+                });
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(record.ThreadId))
+            {
+                var snapshot = await ChatApiClient.GetSessionInspectorAsync(record.ThreadId);
+                if (snapshot.Messages.Count == 0 &&
+                    snapshot.EgressEntries.Count == 0 &&
+                    string.IsNullOrWhiteSpace(snapshot.SystemInstruction))
+                {
+                    ShowUnavailableToast();
+                    return;
+                }
+
+                await DialogService.ShowAsync<SessionInspectorDialog>(new Dictionary<string, object?>
+                {
+                    ["Messages"] = snapshot.Messages,
+                    ["SystemInstruction"] = snapshot.SystemInstruction,
+                    ["EgressEntries"] = snapshot.EgressEntries,
+                    ["ThreadId"] = record.ThreadId
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(
+                ex,
+                "Failed to inspect egress audit entry for thread {ThreadId}, task {TaskId}, run {RunId}.",
+                record.ThreadId,
+                record.TaskId,
+                record.RunId);
+            ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditLoadFailed, "Could not load egress audit details."), ToastType.Error);
+        }
+    }
+
+    private void ShowUnavailableToast()
+    {
+        ToastService.Show(
+            CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditSessionUnavailable, "The session for this entry is no longer available."),
+            ToastType.Info);
+    }
+}

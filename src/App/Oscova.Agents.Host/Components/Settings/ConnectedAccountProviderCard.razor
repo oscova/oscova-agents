@@ -1,0 +1,91 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="card custom-settings-catalog-card custom-settings-account-card">
+    <div class="card-body gap-4">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="card-title">@Name</h2>
+                    <span class="badge badge-sm @(Status.IsConfigured ? "badge-info badge-soft" : "badge-ghost")">
+                        @(Status.IsConfigured
+                            ? Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsAvailableBadge, "Available")
+                            : Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsUnavailableBadge, "Unavailable"))
+                    </span>
+                </div>
+                <p class="text-sm opacity-70">@Services</p>
+            </div>
+        </div>
+
+        <div class="rounded-box border border-base-300 p-4">
+            @if (!Status.IsConfigured)
+            {
+                <div class="flex flex-wrap items-center gap-2 text-sm opacity-70">
+                    <span class="badge badge-ghost badge-xs"></span>
+                    @* The operator is the administrator, so point them at the setup instead of at themselves. *@
+                    <span>@(IsAdmin
+                        ? Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsNotConfiguredAdminMessage, "Not set up yet. Use Manage providers to add its OAuth app.")
+                        : Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsNotConfiguredMessage, "Not available. Contact an administrator to configure this provider."))</span>
+                </div>
+            }
+            else if (Status.IsConnected)
+            {
+                <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <span class="badge badge-success badge-xs"></span>
+                    <span>
+                        @string.Format(
+                            CultureInfo.CurrentCulture,
+                            Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsConnectedAsMessage, "Connected as {0}."),
+                            Status.ConnectedEmail ?? Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsAuthenticatedAccountFallback, "an authenticated account"))
+                    </span>
+                </div>
+            }
+            else
+            {
+                <div class="flex flex-wrap items-center gap-2 text-sm opacity-70">
+                    <span class="badge badge-ghost badge-xs"></span>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsNotConnectedMessage, "Not connected.")</span>
+                </div>
+            }
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+            @* A token can outlive a cleared provider, so setup stays reachable beside Disconnect. *@
+            @if (!Status.IsConfigured && IsAdmin)
+            {
+                <a href="admin" class="btn btn-primary btn-sm">
+                    <span class="iconify lucide--key-round size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.AdminManageOAuthProvidersButton, "Manage providers")
+                </a>
+            }
+            @if (Status.IsConnected)
+            {
+                <button class="btn btn-outline btn-error btn-sm" @onclick="OnDisconnect" disabled="@IsDisconnecting">
+                    @if (IsDisconnecting)
+                    {
+                        <span class="loading loading-spinner loading-sm"></span>
+                    }
+                    <span class="iconify lucide--x-circle size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsDisconnectButton, "Disconnect")
+                </button>
+            }
+            else if (Status.IsConfigured || !IsAdmin)
+            {
+                <button class="btn btn-primary btn-sm" @onclick="OnConnect" disabled="@(!Status.IsConfigured)">
+                    <span class="iconify lucide--link size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsConnectButton, "Connect")
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Services { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public OAuthProviderStatus Status { get; set; } = default!;
+    [Parameter] public bool IsAdmin { get; set; }
+    [Parameter] public bool IsDisconnecting { get; set; }
+    [Parameter] public EventCallback OnConnect { get; set; }
+    [Parameter] public EventCallback OnDisconnect { get; set; }
+}

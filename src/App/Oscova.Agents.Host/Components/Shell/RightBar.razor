@@ -1,0 +1,268 @@
+@inject Services.LayoutCustomizerService LayoutCustomizer
+@inject WallpaperRefreshState WallpaperRefreshState
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<NavigationText> Loc
+@inject IJSRuntime JS
+@inject IToastService ToastService
+
+<!-- Customization Panel (Right Side) -->
+<div id="layout-rightbar" class="@(_isOpen ? "rightbar-open" : "")">
+    <div class="rightbar-overlay" @onclick="CloseAsync" aria-hidden="true"></div>
+    <div class="app-solid-overlay-surface rightbar-panel bg-base-100 text-base-content w-72 sm:w-96"
+         role="dialog"
+         aria-label="@Loc.GetOrDefault(NavigationTextKeys.Customization, "Customization")"
+         aria-hidden="@(_isOpen ? null : "true")"
+         inert="@(_isOpen ? null : "")"
+         @onkeydown="HandleKeyDown">
+        <!-- Header -->
+        <div class="bg-base-200/30 border-base-200 flex h-16 min-h-16 items-center justify-between border-b px-5">
+            <p class="text-lg font-medium">@Loc.GetOrDefault(NavigationTextKeys.Customization, "Customization")</p>
+            <div class="inline-flex gap-1">
+                <button class="btn btn-ghost btn-sm btn-circle relative" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Reset, "Reset")" @onclick="ResetAsync">
+                    <iconify-icon icon="lucide:rotate-cw" width="20" height="20"></iconify-icon>
+                    <span class="bg-error absolute end-0.5 top-0.5 rounded-full p-0 opacity-0 transition-all group-data-[changed]/html:p-[2px] group-data-[changed]/html:opacity-100"></span>
+                </button>
+                <button class="btn btn-ghost btn-sm btn-circle" aria-label="@Loc.GetOrDefault(NavigationTextKeys.FullScreen, "Full Screen")" @onclick="ToggleFullscreenAsync">
+                    <iconify-icon icon="lucide:fullscreen" width="20" height="20"></iconify-icon>
+                </button>
+                <button @ref="_closeButtonRef" class="btn btn-ghost btn-sm btn-circle" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")" @onclick="CloseAsync">
+                    <iconify-icon icon="lucide:x" width="20" height="20"></iconify-icon>
+                </button>
+            </div>
+        </div>
+
+            <div class="custom-scrollbar overflow-y-auto p-5" style="height: calc(100% - 4rem);">
+                <!-- Theme Section -->
+                <p class="font-medium">@Loc.GetOrDefault(NavigationTextKeys.Theme, "Theme")</p>
+                <div class="mt-3 grid grid-cols-3 gap-3">
+                    @foreach (var theme in LayoutCustomizer.AvailableThemes)
+                    {
+                        <button type="button" data-theme="@(theme.Key != "system" ? theme.Key : null)"
+                                class="rounded-box group relative cursor-pointer border-0 bg-transparent p-0 text-start"
+                                aria-pressed="@(IsThemeSelected(theme.Key) ? "true" : "false")"
+                                @onclick="() => SetThemeAsync(theme.Key)">
+                            <div class="bg-base-200 rounded-box pt-5 pb-3 text-center">
+                                <div class="flex items-center justify-center gap-1">
+                                    <span class="rounded-box bg-primary h-6 w-2 sm:w-3"></span>
+                                    <span class="rounded-box bg-secondary h-6 w-2 sm:w-3"></span>
+                                    <span class="rounded-box bg-accent h-6 w-2 sm:w-3"></span>
+                                    <span class="rounded-box bg-success h-6 w-2 sm:w-3"></span>
+                                </div>
+                                <p class="mt-1.5 text-sm sm:text-base">@(theme.Key switch
+                                {
+                                    "light" => Loc[NavigationTextKeys.Light].Value,
+                                    "dark" => Loc[NavigationTextKeys.Dark].Value,
+                                    "system" => CommonLoc[CommonTextKeys.System].Value,
+                                    _ => theme.Label
+                                })</p>
+                            </div>
+                            @if (theme.Key == "system")
+                            {
+                                <span class="bg-primary text-primary-content absolute end-2 top-2 rounded-full p-0 opacity-0 transition-all group-[:not([data-theme])]/html:p-1 group-[:not([data-theme])]/html:opacity-100"></span>
+                            }
+                            else
+                            {
+                                <span class="bg-primary text-primary-content absolute end-2 top-2 rounded-full p-0 opacity-0 transition-all group-data-[theme=@(theme.Key)]/html:p-1 group-data-[theme=@(theme.Key)]/html:opacity-100"></span>
+                            }
+                        </button>
+                    }
+                </div>
+
+                <SettingsToggleRow Checked="@_wallpaperEffectsEnabled"
+                                   CheckedChanged="@SetWallpaperEffectsEnabledAsync"
+                                   Label="@CommonLoc.GetOrDefault(
+                                       CommonTextKeys.WallpaperEffects,
+                                       "Wallpaper and glass effects")"
+                                   Description="@CommonLoc.GetOrDefault(
+                                       CommonTextKeys.WallpaperEffectsDescription,
+                                       "Turn off to remove the wallpaper and use solid, non-transparent surfaces.")"
+                                   Class="mt-6"
+                                   ToggleClass="toggle toggle-primary toggle-sm shrink-0" />
+
+                <ImagePicker PictureUrl="@WallpaperUrl"
+                             Target="@ImageGalleryTarget.Wallpaper"
+                             ContainerClass="mt-3"
+                             OnChanged="OnWallpaperChanged" />
+
+                <!-- Sidebar Theme (only for the Light theme) -->
+                <div class="pointer-events-none opacity-50 group-data-[theme=light]/html:pointer-events-auto group-data-[theme=light]/html:opacity-100">
+                    <p class="mt-6 font-medium">
+                        @Loc.GetOrDefault(NavigationTextKeys.Sidebar, "Sidebar")
+                        <span class="ms-1 inline text-xs group-data-[theme=light]/html:hidden md:text-sm">
+                            @Loc.GetOrDefault(NavigationTextKeys.SidebarThemeAvailability, "(*Only available in the Light theme)")
+                        </span>
+                    </p>
+                    <div class="mt-3 grid grid-cols-2 gap-3">
+                        <button type="button" class="border-base-300 hover:bg-base-200 rounded-box group-data-[sidebar-theme=light]/html:bg-base-200 inline-flex cursor-pointer items-center justify-center gap-2 border p-2"
+                                aria-pressed="@(IsSidebarThemeSelected("light") ? "true" : "false")"
+                                @onclick="@(() => SetSidebarThemeAsync("light"))">
+                            <iconify-icon icon="lucide:sun" width="18" height="18"></iconify-icon>
+                            @Loc.GetOrDefault(NavigationTextKeys.Light, "Light")
+                        </button>
+                        <button type="button" class="border-base-300 hover:bg-base-200 rounded-box group-data-[sidebar-theme=dark]/html:bg-base-200 inline-flex cursor-pointer items-center justify-center gap-2 border p-2"
+                                aria-pressed="@(IsSidebarThemeSelected("dark") ? "true" : "false")"
+                                @onclick="@(() => SetSidebarThemeAsync("dark"))">
+                            <iconify-icon icon="lucide:moon" width="18" height="18"></iconify-icon>
+                            @Loc.GetOrDefault(NavigationTextKeys.Dark, "Dark")
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Font Family -->
+                    <p class="mt-6 font-medium">@Loc.GetOrDefault(NavigationTextKeys.FontFamily, "Font Family")</p>
+                    <div class="mt-3 grid grid-cols-2 gap-3">
+                        @foreach (var font in LayoutCustomizer.AvailableFonts)
+                        {
+                            var isDefault = font.Key == "inclusive";
+                            var fontKey = isDefault ? "default" : font.Key;
+                            <button type="button" class="border-base-300 hover:bg-base-200 rounded-box @(isDefault ? "group-[:not([data-font-family])]/html:bg-base-200" : "") group-[[data-font-family=@(font.Key)]]/html:bg-base-200 inline-flex cursor-pointer items-center justify-center gap-2 border p-2"
+                                    aria-pressed="@(IsFontSelected(fontKey) ? "true" : "false")"
+                                    @onclick="() => SetFontFamilyAsync(fontKey)">
+                                <p data-font-family="@font.Key" class="font-sans">@font.Label</p>
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Direction -->
+                    <p class="mt-6 font-medium">@Loc.GetOrDefault(NavigationTextKeys.Direction, "Direction")</p>
+                    <div class="mt-3 grid grid-cols-2 gap-3">
+                        <button type="button" class="border-base-300 hover:bg-base-200 rounded-box group-[[dir=ltr]]/html:bg-base-200 group-[:not([dir])]/html:bg-base-200 inline-flex cursor-pointer items-center justify-center gap-2 border p-2"
+                                aria-pressed="@(IsDirectionSelected("ltr") ? "true" : "false")"
+                                @onclick="@(() => SetDirectionAsync("ltr"))">
+                            <iconify-icon icon="lucide:pilcrow-left" width="18" height="18"></iconify-icon>
+                            <span class="hidden sm:inline">@Loc.GetOrDefault(NavigationTextKeys.LeftToRight, "Left to Right")</span>
+                            <span class="inline sm:hidden">@Loc.GetOrDefault(NavigationTextKeys.LeftToRightShort, "LTR")</span>
+                        </button>
+                        <button type="button" class="border-base-300 hover:bg-base-200 rounded-box group-[[dir=rtl]]/html:bg-base-200 inline-flex cursor-pointer items-center justify-center gap-2 border p-2"
+                                aria-pressed="@(IsDirectionSelected("rtl") ? "true" : "false")"
+                                @onclick="@(() => SetDirectionAsync("rtl"))">
+                            <iconify-icon icon="lucide:pilcrow-right" width="18" height="18"></iconify-icon>
+                            <span class="hidden sm:inline">@Loc.GetOrDefault(NavigationTextKeys.RightToLeft, "Right to Left")</span>
+                            <span class="inline sm:hidden">@Loc.GetOrDefault(NavigationTextKeys.RightToLeftShort, "RTL")</span>
+                        </button>
+                    </div>
+            </div>
+    </div>
+</div>
+
+@code {
+    // Closing returns keyboard navigation to the workspace's rendered opener.
+    private const string CustomizerTriggerId = "workspace-customizer-btn";
+
+    private bool _isOpen;
+    private bool _wallpaperEffectsEnabled = true;
+    private string WallpaperUrl => $"/{ApiRoutes.Wallpapers.User}?v={WallpaperRefreshState.Version}";
+
+    private LayoutConfig _config = new();
+    private IJSObjectReference? _uiModule;
+    private ElementReference _closeButtonRef;
+    private bool _focusPending;
+
+    /// <summary>Opens the customizer with its current browser-local layout state.</summary>
+    public async Task OpenAsync()
+    {
+        _config = await LayoutCustomizer.GetConfigAsync();
+        _wallpaperEffectsEnabled = _config.WallpaperEffectsEnabled;
+        _isOpen = true;
+        _focusPending = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Closes the panel and hands focus back to the control that opened it.</summary>
+    public async Task CloseAsync()
+    {
+        _isOpen = false;
+        StateHasChanged();
+        try
+        {
+            _uiModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/ui-services.js");
+            await _uiModule.InvokeVoidAsync("focusElement", CustomizerTriggerId);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit can disconnect during navigation or shutdown.
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            await CloseAsync();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_focusPending)
+        {
+            return;
+        }
+
+        _focusPending = false;
+        try
+        {
+            await _closeButtonRef.FocusAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit can disconnect during navigation or shutdown.
+        }
+    }
+
+    // Selection state for aria-pressed. The visual indicators are CSS-driven from the html
+    // element's data attributes, so the panel keeps its own copy for assistive tech.
+    private bool IsThemeSelected(string theme) => string.Equals(_config.Theme, theme, StringComparison.Ordinal);
+    private bool IsSidebarThemeSelected(string sidebarTheme) => string.Equals(_config.SidebarTheme, sidebarTheme, StringComparison.Ordinal);
+    private bool IsFontSelected(string fontFamily) => string.Equals(_config.FontFamily, fontFamily, StringComparison.Ordinal);
+    private bool IsDirectionSelected(string direction) => string.Equals(_config.Direction, direction, StringComparison.Ordinal);
+
+    private Task SetThemeAsync(string theme)
+    {
+        _config.Theme = theme;
+        return LayoutCustomizer.SetThemeAsync(theme);
+    }
+
+    private Task SetSidebarThemeAsync(string sidebarTheme)
+    {
+        _config.SidebarTheme = sidebarTheme;
+        return LayoutCustomizer.SetSidebarThemeAsync(sidebarTheme);
+    }
+
+    private Task SetFontFamilyAsync(string fontFamily)
+    {
+        _config.FontFamily = fontFamily;
+        return LayoutCustomizer.SetFontFamilyAsync(fontFamily);
+    }
+
+    private Task SetDirectionAsync(string direction)
+    {
+        _config.Direction = direction;
+        return LayoutCustomizer.SetDirectionAsync(direction);
+    }
+
+    private Task ToggleFullscreenAsync() => LayoutCustomizer.ToggleFullscreenAsync();
+
+    private async Task SetWallpaperEffectsEnabledAsync(bool enabled)
+    {
+        _wallpaperEffectsEnabled = enabled;
+        await LayoutCustomizer.SetWallpaperEffectsEnabledAsync(enabled);
+    }
+
+    private async Task ResetAsync()
+    {
+        _config = await LayoutCustomizer.ResetAsync();
+        _wallpaperEffectsEnabled = _config.WallpaperEffectsEnabled;
+        ToastService.Show(
+            Loc.GetOrDefault(
+                NavigationTextKeys.CustomizationResetToast,
+                "Customization reset to defaults."),
+            ToastType.Success);
+    }
+
+    private Task OnWallpaperChanged()
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+}

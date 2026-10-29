@@ -1,0 +1,1129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.RetryServiceCheckTitle">
+		<value>Retry service check</value>
+	</data>
+	<data name="Chat.RetryNow">
+		<value>Retry now</value>
+	</data>
+	<data name="Chat.CheckingChatServiceStatus">
+		<value>Checking chat service status...</value>
+	</data>
+	<data name="Chat.ServiceNotRunning">
+		<value>The chat service is not running. Start it and retry.</value>
+	</data>
+	<data name="Chat.AgentSelectorPrefix">
+		<value>Agent:</value>
+	</data>
+	<data name="Chat.AgentConversation.ReadOnly">
+		<value>Read only</value>
+	</data>
+	<data name="Chat.AgentConversation.TabsLabel">
+		<value>Agent conversations</value>
+	</data>
+	<data name="Chat.AssistantFallbackName">
+		<value>Assistant</value>
+	</data>
+	<data name="Chat.AttachFileLabel">
+		<value>Attach file</value>
+	</data>
+	<data name="Chat.CheckingAvailability">
+		<value>Checking availability</value>
+	</data>
+	<data name="Chat.DefaultInputPlaceholder">
+		<value>Type your message...</value>
+	</data>
+	<data name="Chat.DeleteThreadConfirmMessage">
+		<value>Delete this chat? This cannot be undone. Its staged attachments and tool-output files are deleted too, even if you save edits to them first. Ordinary workspace and project files remain.</value>
+	</data>
+	<data name="Chat.DeleteThreadConfirmTitle">
+		<value>Confirm Thread Deletion</value>
+	</data>
+	<data name="Chat.FileSizeExceeded">
+		<value>'{0}' is over the {1} size limit.</value>
+	</data>
+	<data name="Chat.GeneratingResponseStatus">
+		<value>Generating response</value>
+	</data>
+	<data name="Chat.ResponseComplete">
+		<value>Response complete.</value>
+	</data>
+	<data name="Chat.ResponseFailed">
+		<value>The chat response could not be completed.</value>
+	</data>
+	<data name="Chat.ImageAttachmentKind">
+		<value>Image</value>
+	</data>
+	<data name="Chat.InspectSessionTitle">
+		<value>Inspect session</value>
+	</data>
+	<data name="Chat.LiveAndReady">
+		<value>Live and ready</value>
+	</data>
+	<data name="Chat.ModelNotSetLabel">
+		<value>Model not set</value>
+	</data>
+	<data name="Chat.MultipleFilesReadyLabel">
+		<value>{0} files ready</value>
+	</data>
+	<data name="Chat.NewChatLabel">
+		<value>New Chat</value>
+	</data>
+	<data name="Chat.NoConversationsFound">
+		<value>No conversations found</value>
+	</data>
+	<data name="Chat.NoModelProviderConfigured">
+		<value>No model provider configured</value>
+	</data>
+	<data name="Chat.NoModelProvidersConfigured">
+		<value>No model providers configured</value>
+	</data>
+	<data name="Chat.NoDefaultModelProviderSelected">
+		<value>No default model provider selected</value>
+	</data>
+	<data name="Chat.NoModelProvidersPresence">
+		<value>Model provider needed</value>
+	</data>
+	<data name="Chat.ModelProviderSelectionRequiredPresence">
+		<value>Choose a model provider</value>
+	</data>
+	<data name="Chat.AddModelProviderToStartChatting">
+		<value>Add a model provider to start chatting.</value>
+	</data>
+	<data name="Chat.SelectModelProviderToStartChatting">
+		<value>Choose a model provider below to start chatting.</value>
+	</data>
+	<data name="Chat.AddModelProviderAction">
+		<value>Add provider</value>
+	</data>
+	<data name="Chat.OneFileReadyLabel">
+		<value>1 file ready</value>
+	</data>
+	<data name="Chat.ProcessingPlaceholder">
+		<value>Processing...</value>
+	</data>
+	<data name="Chat.ReadAloudLabel">
+		<value>Read aloud</value>
+	</data>
+	<data name="Chat.RemoveAttachmentLabel">
+		<value>Remove attachment: {0}</value>
+	</data>
+	<data name="Chat.RenameThread">
+		<value>Rename</value>
+	</data>
+	<data name="Chat.RenameThreadBusy">
+		<value>Wait for the response to finish, then try renaming again.</value>
+	</data>
+	<data name="Chat.RenameThreadDialogTitle">
+		<value>Rename conversation</value>
+	</data>
+	<data name="Chat.RenameThreadFailed">
+		<value>The conversation could not be renamed.</value>
+	</data>
+	<data name="Chat.SearchChatsLabel">
+		<value>Search chats</value>
+	</data>
+	<data name="Chat.SendLabel">
+		<value>Send</value>
+	</data>
+	<data name="Chat.ServiceOffline">
+		<value>Service offline</value>
+	</data>
+	<data name="Chat.ShowChatsLabel">
+		<value>Show chats</value>
+	</data>
+	<data name="Chat.SpeakingPlaceholder">
+		<value>Speaking...</value>
+	</data>
+	<data name="Chat.StartListeningLabel">
+		<value>Start listening</value>
+	</data>
+	<data name="Chat.StartVoiceModeLabel">
+		<value>Start voice mode</value>
+	</data>
+	<data name="Chat.StopLabel">
+		<value>Stop</value>
+	</data>
+	<data name="Chat.StopListeningLabel">
+		<value>Stop listening</value>
+	</data>
+	<data name="Chat.StopVoiceModeLabel">
+		<value>Stop voice mode</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Action">
+		<value>Build an agenda</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Description">
+		<value>Get a timed agenda for a meeting you&apos;re running.</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Prompt">
+		<value>Help me prepare an agenda for a meeting I&apos;m running, with time for each topic.</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Title">
+		<value>Prepare a meeting agenda</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Action">
+		<value>Start a budget</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Description">
+		<value>Lay out monthly income and spending in one view.</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Prompt">
+		<value>Help me put together a simple monthly budget from my income and expenses.</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Title">
+		<value>Make a simple budget</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Action">
+		<value>Make a chart</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Description">
+		<value>See numbers as a chart you can compare at a glance.</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Prompt">
+		<value>Make a chart from some numbers I&apos;ll share so I can compare them at a glance.</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Title">
+		<value>Chart some numbers</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Action">
+		<value>Make a checklist</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Description">
+		<value>Break a task into clear steps you can tick off.</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Prompt">
+		<value>Make a step-by-step checklist for a task I&apos;m about to do.</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Title">
+		<value>Make a checklist</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Action">
+		<value>Review code</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Description">
+		<value>Walk through what code does and spot likely bugs.</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Prompt">
+		<value>Explain what a piece of code I&apos;ll paste does, step by step, and point out any likely bugs.</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Title">
+		<value>Explain some code</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Action">
+		<value>Connect an app</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Description">
+		<value>Let Oscova work with an app you already use.</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Prompt">
+		<value>I&apos;d like you to work with an app I use. Find a way to connect it and set it up.</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Title">
+		<value>Connect an app</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Action">
+		<value>Start research</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Description">
+		<value>Get a short sourced report on a question you name.</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Prompt">
+		<value>Research a topic I&apos;ll name and give me a short report with sources.</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Title">
+		<value>Research a topic</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Action">
+		<value>Analyze data</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Description">
+		<value>Spot trends and odd values in a CSV file.</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Prompt">
+		<value>I&apos;ll attach a CSV file. Tell me what&apos;s in it and point out any trends or odd values.</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Title">
+		<value>Explore a spreadsheet</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Action">
+		<value>Compare options</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Description">
+		<value>Compare options with pros, cons and a recommendation.</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Prompt">
+		<value>Help me weigh a decision by listing the options, their pros and cons, and what you&apos;d recommend.</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Title">
+		<value>Weigh a decision</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Action">
+		<value>Draft a reply</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Description">
+		<value>Paste an email and get a clear, polite reply.</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Prompt">
+		<value>Help me reply to an email. I&apos;ll paste it next. Keep the reply clear and polite.</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Title">
+		<value>Reply to an email</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Action">
+		<value>Explain it</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Description">
+		<value>Understand a tricky topic with a plain example.</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Prompt">
+		<value>Explain a topic I&apos;m curious about in plain language, with a simple example.</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Title">
+		<value>Explain something simply</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Action">
+		<value>Start practicing</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Description">
+		<value>Rehearse answers with feedback after each question.</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Prompt">
+		<value>Run a mock job interview with me for a role I&apos;ll describe. Ask one question at a time and give feedback after each answer.</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Title">
+		<value>Practice an interview</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Action">
+		<value>Plan meals</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Description">
+		<value>Simple meals and one combined shopping list.</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Prompt">
+		<value>Plan simple meals for the week and give me one combined shopping list.</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Title">
+		<value>Plan the week&apos;s meals</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Action">
+		<value>Organize notes</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Description">
+		<value>Turn rough notes into decisions, owners and next steps.</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Prompt">
+		<value>I&apos;ll paste my meeting notes. Turn them into a short summary with decisions, owners and next steps.</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Title">
+		<value>Sort out meeting notes</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Action">
+		<value>Search a PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Description">
+		<value>Find and quote the parts of a PDF that matter.</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Prompt">
+		<value>I&apos;ll attach a PDF. Find the parts about a topic I name and quote them.</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Title">
+		<value>Search a PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Action">
+		<value>Draft a plan</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Description">
+		<value>Turn a rough idea into a practical next-step plan.</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Prompt">
+		<value>Help me turn a rough project idea into a practical plan with clear next steps.</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Title">
+		<value>Plan a project</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Action">
+		<value>Polish text</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Description">
+		<value>Improve clarity and tone, with the main changes explained.</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Prompt">
+		<value>Improve the clarity and tone of some writing I&apos;ll paste, and explain the main changes.</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Title">
+		<value>Polish my writing</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Action">
+		<value>Start a quiz</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Description">
+		<value>Learn by answering questions one at a time.</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Prompt">
+		<value>Quiz me on a topic I&apos;m learning, one question at a time, and explain anything I get wrong.</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Title">
+		<value>Quiz me on a topic</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Action">
+		<value>Schedule it</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Description">
+		<value>Get a weekday nudge to review your priorities.</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Prompt">
+		<value>Remind me every weekday at 9 AM to review my priorities for the day.</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Title">
+		<value>Set a daily reminder</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Action">
+		<value>Find a skill</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Description">
+		<value>Find and add a skill for a task you do often.</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Prompt">
+		<value>Find a skill that would help with a task I do often, and set it up for me.</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Title">
+		<value>Teach Oscova a skill</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Action">
+		<value>Summarize notes</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Description">
+		<value>Extract the important points from notes, docs, or files.</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Prompt">
+		<value>Help me summarize this document and list the key decisions, risks, and next actions.</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Title">
+		<value>Summarize a document</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Action">
+		<value>Take the tour</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Description">
+		<value>See what Oscova can do and what to set up first.</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Prompt">
+		<value>I&apos;m new to Oscova. What can you help me with, and what should I set up first?</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Title">
+		<value>Get to know Oscova</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Action">
+		<value>Translate</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Description">
+		<value>Translate while keeping the tone natural.</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Prompt">
+		<value>Translate some text I&apos;ll paste and keep its tone natural.</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Title">
+		<value>Translate text</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Action">
+		<value>Plan a trip</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Description">
+		<value>Get a day-by-day outline and a packing list.</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Prompt">
+		<value>Help me plan a short trip with a day-by-day outline and a packing list.</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Title">
+		<value>Plan a trip</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Action">
+		<value>Read a link</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Description">
+		<value>Get the key points from a link.</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Prompt">
+		<value>Read a web page I&apos;ll link and give me its key points.</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Title">
+		<value>Summarize a web page</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Action">
+		<value>Plan the week</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Description">
+		<value>Turn this week&apos;s commitments into a realistic plan.</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Prompt">
+		<value>Help me plan my week. I&apos;ll list my commitments, and you turn them into a realistic day-by-day plan.</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Title">
+		<value>Plan my week</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Action">
+		<value>Draft copy</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Description">
+		<value>Shape an email, reply, announcement, or short update.</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Prompt">
+		<value>Help me draft a clear, friendly message for this situation.</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Title">
+		<value>Write a message</value>
+	</data>
+	<data name="Chat.Start.CheckingQuestion">
+		<value>Getting your assistant ready...</value>
+	</data>
+	<data name="Chat.Start.Greeting">
+		<value>Hi there, {0}</value>
+	</data>
+	<data name="Chat.Start.InputPlaceholder">
+		<value>Let us know what you need...</value>
+	</data>
+	<data name="Chat.Start.Question">
+		<value>How can I assist you today?</value>
+	</data>
+	<data name="Chat.TextAttachmentKind">
+		<value>Text</value>
+	</data>
+	<data name="Chat.ThreadActionsLabel">
+		<value>Thread actions</value>
+	</data>
+	<data name="Chat.ThreadTitleHelp">
+		<value>Enter 1 to 120 characters.</value>
+	</data>
+	<data name="Chat.ThreadTitleLabel">
+		<value>Conversation title</value>
+	</data>
+	<data name="Chat.ThreadUnreadLabel">
+		<value>Unread</value>
+	</data>
+	<data name="Chat.TodoPanel.Empty">
+		<value>No tasks yet.</value>
+	</data>
+	<data name="Chat.TodoPanel.ProgressFormat">
+		<value>{0} of {1} done</value>
+	</data>
+	<data name="Chat.TodoPanel.Title">
+		<value>Tasks</value>
+	</data>
+	<data name="Chat.TooManyFilesAttached">
+		<value>You can attach at most {0} files per message.</value>
+	</data>
+	<data name="Chat.TranscribingPlaceholder">
+		<value>Transcribing...</value>
+	</data>
+	<data name="Chat.TypeYourMessagePlaceholder">
+		<value>Type your message...</value>
+	</data>
+	<data name="Chat.UnableToStartSpeechSynthesis">
+		<value>Unable to start speech synthesis.</value>
+	</data>
+	<data name="Chat.UnableToTranscribeAudio">
+		<value>Unable to transcribe audio.</value>
+	</data>
+	<data name="Chat.UnsupportedFileType">
+		<value>'{0}' isn't a supported file type yet.</value>
+	</data>
+	<data name="Chat.UsingProviderPrefix">
+		<value>Using</value>
+	</data>
+	<data name="Chat.VoiceModeListeningPlaceholder">
+		<value>Listening...</value>
+	</data>
+	<data name="Chat.VoiceModeMissingServices">
+		<value>Voice mode requires both speech recognition and synthesis services.</value>
+	</data>
+	<data name="Chat.VoiceModeStartFailed">
+		<value>Failed to start voice mode.</value>
+	</data>
+	<data name="Chat.VoiceModeWaitingPlaceholder">
+		<value>Waiting for speech...</value>
+	</data>
+	<data name="Chat.Yesterday">
+		<value>Yesterday</value>
+	</data>
+	<data name="Chat.ThreadGroupToday"><value>Today</value></data>
+	<data name="Chat.ThreadGroupPreviousSevenDays"><value>Previous 7 days</value></data>
+	<data name="Chat.ThreadGroupOlder"><value>Older</value></data>
+	<data name="Chat.NoConversationsMatchSearch"><value>No conversations match your search.</value></data>
+	<data name="Chat.ThreadSearchFailed"><value>Conversation search is unavailable.</value></data>
+	<data name="Chat.ToolCallLabel"><value>Tool Call</value></data>
+	<data name="Chat.ToolCard.ArgumentsSummaryFormat"><value>{0} argument(s) supplied.</value></data>
+	<data name="Chat.ToolCard.Applying"><value>Applying change...</value></data>
+	<data name="Chat.ToolCard.AvatarTitle"><value>Avatar action</value></data>
+	<data name="Chat.ToolCard.CommunicationTitle"><value>Communication tool</value></data>
+	<data name="Chat.ToolCard.DiagnosticsTitle"><value>Diagnostics</value></data>
+	<data name="Chat.ToolCard.DirectoryTitle"><value>Listing directory</value></data>
+	<data name="Chat.ToolCard.DocumentTitle"><value>Reading document</value></data>
+	<data name="Chat.ToolCard.ExternalTitle"><value>Online lookup</value></data>
+	<data name="Chat.ToolCard.FileChangeTitle"><value>Changing file</value></data>
+	<data name="Chat.ToolCard.FileLabel"><value>File</value></data>
+	<data name="Chat.ToolCard.FileReadTitle"><value>Reading file</value></data>
+	<data name="Chat.ToolCard.Installing"><value>Installing...</value></data>
+	<data name="Chat.ToolCard.MemoryTitle"><value>Using memory</value></data>
+	<data name="Chat.ToolCard.NoArgumentsSummary"><value>No arguments supplied.</value></data>
+	<data name="Chat.ToolCard.NotificationTitle"><value>Notification</value></data>
+	<data name="Chat.ToolCard.Reading"><value>Reading content...</value></data>
+	<data name="Chat.ToolCard.ResultLabel"><value>Result</value></data>
+	<data name="Chat.ToolCard.Running"><value>Working...</value></data>
+	<data name="Chat.ToolCard.Saving"><value>Saving...</value></data>
+	<data name="Chat.ToolCard.ScheduleTitle"><value>Calendar tool</value></data>
+	<data name="Chat.ToolCard.SearchTitle"><value>Searching workspace</value></data>
+	<data name="Chat.ToolCard.Searching"><value>Searching...</value></data>
+	<data name="Chat.ToolCard.ShellRunning"><value>Running command...</value></data>
+	<data name="Chat.ToolCard.ShellTitle"><value>Shell command</value></data>
+	<data name="Chat.ToolCard.SkillAuthoringTitle"><value>Saving skill</value></data>
+	<data name="Chat.ToolCard.SkillInspectTitle"><value>Inspecting skill</value></data>
+	<data name="Chat.ToolCard.SkillInstallTitle"><value>Installing skill</value></data>
+	<data name="Chat.ToolCard.SkillSearchTitle"><value>Searching skills</value></data>
+	<data name="Chat.ToolCard.Status.Completed"><value>Completed</value></data>
+	<data name="Chat.ToolCard.Status.Failed"><value>Failed</value></data>
+	<data name="Chat.ToolCard.Status.Queued"><value>Queued</value></data>
+	<data name="Chat.ToolCard.Status.Running"><value>Running</value></data>
+	<data name="Chat.NoParameters"><value>No parameters</value></data>
+	<data name="Chat.SpeechModelsUnavailableTooltip"><value>Speech models are unavailable. Set up speech in Settings → Speech.</value></data>
+	<data name="Chat.ToolApprovalTitle"><value>Tool approval required</value></data>
+	<data name="Chat.ToolApprovalArgumentsLabel"><value>Arguments</value></data>
+	<data name="Chat.ToolApprovalApproveButton"><value>Approve</value></data>
+	<data name="Chat.ToolApprovalRejectButton"><value>Reject</value></data>
+	<data name="Chat.ToolApprovalSubmitFailed"><value>Unable to submit that approval.</value></data>
+	<data name="Chat.ToolApprovalSkillCreateMessage"><value>Approve creating this skill?</value></data>
+	<data name="Chat.ToolApprovalSkillUpdateMessage"><value>Approve updating this skill?</value></data>
+	<data name="Chat.ToolApprovalSkillNameLabel"><value>Skill</value></data>
+	<data name="Chat.ToolApprovalSkillDescriptionLabel"><value>Description</value></data>
+	<data name="Chat.ToolApprovalRegistrySkillMessage"><value>Approve installing this skill?</value></data>
+	<data name="Chat.ToolApprovalRegistryServerMessage"><value>Approve installing this MCP server?</value></data>
+	<data name="Chat.ToolApprovalServerLabel"><value>MCP server</value></data>
+	<data name="Chat.ToolApprovalPublisherLabel"><value>Publisher</value></data>
+	<data name="Chat.ToolApprovalVersionLabel"><value>Version</value></data>
+	<data name="Chat.ToolApprovalSourceLabel"><value>Source</value></data>
+	<data name="Chat.ToolApprovalCommandLabel"><value>Command</value></data>
+	<data name="Chat.ToolApprovalConnectsToLabel"><value>Connects to</value></data>
+	<data name="Chat.ToolApprovalNetworkLabel"><value>Network</value></data>
+	<data name="Chat.ToolApprovalNetworkNone"><value>No network access</value></data>
+	<data name="Chat.ToolApprovalNetworkIncidental"><value>Occasional network use</value></data>
+	<data name="Chat.ToolApprovalNetworkEgress"><value>Sends data to outside services</value></data>
+	<data name="Chat.ToolApprovalTaskCreateMessage"><value>Approve creating this scheduled task?</value></data>
+	<data name="Chat.ToolApprovalTaskUpdateMessage"><value>Approve updating this scheduled task?</value></data>
+	<data name="Chat.ToolApprovalTaskDeleteMessage"><value>Approve deleting this scheduled task?</value></data>
+	<data name="Chat.ToolApprovalTaskRunMessage"><value>Approve running this scheduled task now?</value></data>
+	<data name="Chat.ToolApprovalTaskNameLabel"><value>Task</value></data>
+	<data name="Chat.ToolApprovalTaskNewNameLabel"><value>New name</value></data>
+	<data name="Chat.ToolApprovalTaskAgentLabel"><value>Agent</value></data>
+	<data name="Chat.ToolApprovalTaskScheduleLabel"><value>Schedule</value></data>
+	<data name="Chat.ToolApprovalTaskRunModeLabel"><value>Restricted tools</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveValue"><value>Auto-approved during runs</value></data>
+	<data name="Chat.ToolApprovalTaskAutoRejectValue"><value>Auto-rejected during runs</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveWarning"><value>Approving this task change allows approval-required tools to run unattended. Host shell commands can change the machine running Oscova.</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetLabel"><value>Execution target</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetHost"><value>Host</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetContainer"><value>Docker</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetDisabled"><value>Shell execution disabled</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetUnavailable"><value>Execution target unavailable</value></data>
+	<data name="Chat.ToolApprovalHostWarning"><value>Runs on the machine running Oscova with its operating-system account's permissions.</value></data>
+	<data name="Chat.ToolApprovalContainerWarning"><value>Runs inside Docker with granted folders mounted.</value></data>
+	<data name="Chat.ToolApprovalScriptWarning"><value>Approval runs the whole script. Commands inside it are not approved separately.</value></data>
+	<data name="Chat.ApprovalModeSelectorPrefix"><value>Approvals:</value></data>
+	<data name="Chat.ApprovalModeUsePolicy"><value>Use agent policy</value></data>
+	<data name="Chat.ApprovalModeAutoApprove"><value>Auto-approve</value></data>
+	<data name="Chat.ApprovalModeAutoReject"><value>Auto-reject</value></data>
+	<data name="Chat.ThinkingLabel"><value>Thinking</value></data>
+	<data name="Chat.ThoughtDurationManyFormat"><value>Thought for {0:F3} seconds</value></data>
+	<data name="Chat.ThoughtDurationOneFormat"><value>Thought for {0:F3} second</value></data>
+	<data name="Chat.ResponseCopyLabel"><value>Copy</value></data>
+	<data name="Chat.ResponseCopiedLabel"><value>Copied</value></data>
+	<data name="Chat.ResponseCopyFailed"><value>Unable to copy.</value></data>
+	<data name="Chat.RegenerateLabel"><value>Regenerate</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Attachments"><value>Attachments</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.ContextProviders"><value>Context providers</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.CurrentDraft"><value>Current draft</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Instructions"><value>Instructions</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.OutputReserve"><value>Output reserve</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.PriorHistory"><value>Prior history</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Title"><value>Estimate breakdown</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Tools"><value>Tools</value></data>
+	<data name="Chat.ContextWindowWarning.ContextWindowLabel"><value>Context window</value></data>
+	<data name="Chat.ContextWindowWarning.ContinueButton"><value>Continue anyway</value></data>
+	<data name="Chat.ContextWindowWarning.DialogBody"><value>You can still send it, but the model may fail, truncate context, or miss earlier details.</value></data>
+	<data name="Chat.ContextWindowWarning.DialogLead"><value>This draft may be too large for the selected model.</value></data>
+	<data name="Chat.ContextWindowWarning.DialogTitle"><value>Context window warning</value></data>
+	<data name="Chat.ContextWindowWarning.EstimatedInputLabel"><value>Estimated input</value></data>
+	<data name="Chat.ContextWindowWarning.OutputReserveLabel"><value>Reserved output</value></data>
+	<data name="Chat.ContextWindowWarning.OverageLabel"><value>Estimated overage</value></data>
+	<data name="Chat.ContextWindowWarning.ProviderLabel"><value>Provider</value></data>
+	<data name="Chat.ContextWindowWarning.SummaryFormat"><value>{0} estimates {1:N0} input tokens plus {2:N0} reserved output tokens for a {3:N0}-token window, about {4:N0} tokens over.</value></data>
+	<data name="Chat.Activity.CommandRanTitle"><value>Ran command</value></data>
+	<data name="Chat.Activity.Collapse"><value>Close workspace</value></data>
+	<data name="Chat.Activity.DetailsTitle"><value>Workspace</value></data>
+	<data name="Chat.Activity.FileReadTitle"><value>Read file</value></data>
+	<data name="Chat.Activity.FileUpdatedTitle"><value>Updated file</value></data>
+	<data name="Chat.Activity.InProgress"><value>In progress</value></data>
+	<data name="Chat.Activity.JumpToLatest"><value>Jump to latest</value></data>
+	<data name="Chat.Activity.ManyActivitiesFormat"><value>{0} activities</value></data>
+	<data name="Chat.Activity.MemoryReadTitle"><value>Read memory</value></data>
+	<data name="Chat.Activity.OneActivity"><value>1 activity</value></data>
+	<data name="Chat.Activity.Open"><value>Open workspace</value></data>
+	<data name="Chat.Activity.SkillUsedTitle"><value>Used skill</value></data>
+	<data name="Chat.Activity.StatusSuccess"><value>Success</value></data>
+	<data name="Chat.Activity.UseStandardView"><value>Return to chat</value></data>
+	<data name="Chat.Activity.UseWideView"><value>Enter full view</value></data>
+	<data name="Chat.Activity.WebSearchedTitle"><value>Searched the web</value></data>
+	<data name="Chat.Activity.WorkspaceSearchedTitle"><value>Searched workspace</value></data>
+	<data name="Chat.ResizeThreadListLabel"><value>Resize conversation list</value></data>
+	<data name="Chat.ResizeDetailsPanelLabel"><value>Resize workspace panel</value></data>
+	<data name="Chat.Artifacts.Tab"><value>Artifacts</value></data>
+	<data name="Chat.Artifacts.EmptyTitle"><value>No artifacts yet</value></data>
+	<data name="Chat.Artifacts.EmptyDescription"><value>Files created or updated by this thread will appear here.</value></data>
+	<data name="Chat.Artifacts.Download"><value>Download artifact</value></data>
+	<data name="Chat.Artifacts.Loading"><value>Loading artifact preview</value></data>
+	<data name="Chat.Artifacts.UpdatedFormat"><value>Updated {0}</value></data>
+	<data name="Chat.Artifacts.PreviewTooLarge"><value>This file is too large to preview here.</value></data>
+	<data name="Chat.Artifacts.PreviewUnavailable"><value>This preview is no longer available.</value></data>
+	<data name="Chat.Artifacts.DownloadOnly"><value>Preview is not available for this file type.</value></data>
+	<data name="Chat.Artifacts.FileType"><value>File</value></data>
+	<data name="Chat.IncognitoChatDisclosure"><value>This chat is not saved or added to memory. It is deleted when you sign out, after about 30 minutes of inactivity, or when Oscova restarts. Attachments are deleted with it. External models and tools may still receive what you send.</value></data>
+	<data name="Chat.IncognitoChatDisclosureSummary"><value>Not saved · Clears after ~30 min</value></data>
+	<data name="Chat.IncognitoChatExpiredToast"><value>Incognito chat expired and was deleted.</value></data>
+	<data name="Chat.IncognitoChatLabel"><value>Incognito</value></data>
+	<data name="Chat.IncognitoChatUnavailableTooltip"><value>Incognito mode is fixed after a chat starts. Start a new chat to change it.</value></data>
+	<data name="Chat.ContextUsage.AriaLabelFormat"><value>Estimated context usage: {0:N0}% used, {1:N0}% free</value></data>
+	<data name="Chat.ContextUsage.DialogTitle"><value>Context usage</value></data>
+	<data name="Chat.ContextUsage.UsedLabel"><value>Used</value></data>
+	<data name="Chat.ContextUsage.FreeInputLabel"><value>Free space</value></data>
+	<data name="Chat.ContextUsage.TotalLabel"><value>Context window</value></data>
+	<data name="Chat.ContextUsage.ReservedOutputLabel"><value>Reserved output</value></data>
+	<data name="Chat.ContextUsage.SummaryFormat"><value>Estimated: {0:N0} of {1:N0} tokens used ({2:N0}%).</value></data>
+	<data name="Chat.ContextUsage.UnavailableLabel"><value>Context usage unavailable</value></data>
+	<data name="Chat.ContextUsage.UnavailableBody"><value>Set a context-window size for this model provider to see usage.</value></data>
+  <data name="Chat.EasterEgg.CozyMessage"><value>Safe, sound, and yours.</value></data>
+  <data name="Chat.Slash.CompactComplete"><value>Context compacted.</value></data>
+  <data name="Chat.Slash.CompactDescription"><value>Summarize older context now</value></data>
+  <data name="Chat.Slash.CompactFailed"><value>The context could not be compacted.</value></data>
+  <data name="Chat.Slash.CompactNoChange"><value>There is no older context to compact.</value></data>
+  <data name="Chat.HistorySummarizedNotice"><value>Earlier messages were summarized.</value></data>
+  <data name="Chat.Slash.ContextDescription"><value>Show estimated context usage</value></data>
+  <data name="Chat.Slash.ContextFailed"><value>Context usage could not be loaded.</value></data>
+  <data name="Chat.Slash.MenuLabel"><value>Conversation commands</value></data>
+  <data name="Chat.Slash.NewDescription"><value>Start a new chat</value></data>
+  <data name="Chat.Slash.RenameDescription"><value>Rename this chat</value></data>
+  <data name="Chat.Slash.ResearchDescription"><value>Research a topic and save a sourced report</value></data>
+  <data name="Chat.Slash.UnknownCommandFormat"><value>Unknown or unavailable command: {0}</value></data>
+  <data name="Chat.ToolActivity.GenericLabel" xml:space="preserve">
+    <value>Tool activity</value>
+  </data>
+  <data name="Chat.ToolActivity.ListSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="Chat.ToolActivity.CategoriesAndMoreFormat" xml:space="preserve">
+    <value>{0} and more</value>
+  </data>
+  <data name="Chat.ToolActivity.RunningCountFormat" xml:space="preserve">
+    <value>{0} running</value>
+  </data>
+  <data name="Chat.ToolActivity.FailedCountFormat" xml:space="preserve">
+    <value>{0} failed. Expand for details</value>
+  </data>
+  <data name="Chat.ToolActivity.TechnicalDetails" xml:space="preserve">
+    <value>Technical details</value>
+  </data>
+  <data name="Chat.ToolActivity.ResultTruncated" xml:space="preserve">
+    <value>Showing the first 1,600 characters</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowFullResult" xml:space="preserve">
+    <value>Show full result</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowLess" xml:space="preserve">
+    <value>Show less</value>
+  </data>
+  <data name="Chat.UserQuestion.CustomAnswer"><value>Your own answer</value></data>
+  <data name="Chat.UserQuestion.Recommended"><value>Recommended</value></data>
+  <data name="Chat.UserQuestion.SubmitAnswers"><value>Submit answers</value></data>
+  <data name="Chat.UserQuestion.Position"><value>{0} of {1}</value></data>
+  <data name="Chat.UserQuestion.Answered"><value>Answered</value></data>
+  <data name="Chat.UserQuestion.Dismissed"><value>Cancelled</value></data>
+  <data name="Chat.UserQuestion.Obsolete"><value>This question is no longer active.</value></data>
+  <data name="Chat.UserQuestion.Unfinished"><value>This question could not be completed. Send a new message to continue.</value></data>
+  <data name="Chat.UserQuestion.AnswerRequired"><value>Choose an answer or write your own for each question.</value></data>
+  <data name="Chat.UserQuestion.SubmitFailed"><value>Couldn't submit your answers. Try again.</value></data>
+  <data name="Chat.UserQuestion.DismissFailed"><value>Couldn't cancel these questions. Try again.</value></data>
+  <data name="Chat.Project.Add" xml:space="preserve"><value>Add Project</value></data>
+  <data name="Chat.Project.Name" xml:space="preserve"><value>Project name</value></data>
+  <data name="Chat.Project.HostFolder" xml:space="preserve"><value>Project folder on the selected device</value></data>
+  <data name="Chat.Project.AccessHelp" xml:space="preserve"><value>Choose an existing folder on the selected device. Native shell commands have the device account's OS permissions.</value></data>
+  <data name="Chat.Project.General" xml:space="preserve"><value>General</value></data>
+  <data name="Chat.Project.Unavailable" xml:space="preserve"><value>Project unavailable</value></data>
+  <data name="Chat.Project.Remove" xml:space="preserve"><value>Remove project</value></data>
+  <data name="Chat.Project.RemoveConfirm" xml:space="preserve"><value>Remove this project reference and stop its active runs? Chats and files are kept.</value></data>
+  <data name="Chat.Project.Files" xml:space="preserve"><value>Files</value></data>
+  <data name="Chat.Project.Changes" xml:space="preserve"><value>Changes</value></data>
+  <data name="Chat.Project.PrivateData" xml:space="preserve"><value>Private data</value></data>
+  <data name="Chat.Project.EmptyFolder" xml:space="preserve"><value>This folder is empty.</value></data>
+  <data name="Chat.Project.ListLimit" xml:space="preserve"><value>Showing up to 500 entries. Open a narrower folder.</value></data>
+  <data name="Chat.Project.ChangesLimit" xml:space="preserve"><value>Showing up to 2,000 changes. Narrow the changes in your Git client.</value></data>
+  <data name="Chat.Project.RepositoryScope" xml:space="preserve"><value>Repository-wide changes include edits from all chats and other tools.</value></data>
+  <data name="Chat.Project.Choose" xml:space="preserve"><value>Choose a project to review Git changes.</value></data>
+  <data name="Chat.Project.SendFirst" xml:space="preserve"><value>Send a message to browse this agent's folders.</value></data>
+  <data name="Chat.Project.NoChanges" xml:space="preserve"><value>No changes.</value></data>
+  <data name="Chat.Project.staged" xml:space="preserve"><value>Staged</value></data>
+  <data name="Chat.Project.unstaged" xml:space="preserve"><value>Unstaged</value></data>
+  <data name="Chat.Project.untracked" xml:space="preserve"><value>Untracked</value></data>
+  <data name="Chat.Project.Read.Ready" xml:space="preserve"><value>Ready</value></data>
+  <data name="Chat.Project.Read.Binary" xml:space="preserve"><value>Binary files cannot be previewed.</value></data>
+  <data name="Chat.Project.Read.TooLarge" xml:space="preserve"><value>Preview limited to 256 KiB and 5,000 lines per side.</value></data>
+  <data name="Chat.Project.Read.Unavailable" xml:space="preserve"><value>The file or repository is unavailable. Refresh and check access.</value></data>
+  <data name="Chat.Project.Read.NotRepository" xml:space="preserve"><value>This folder is not a Git repository.</value></data>
+  <data name="Chat.Project.Read.GitMissing" xml:space="preserve"><value>Install Git on the Oscova host to review changes.</value></data>
+  <data name="Chat.Project.Read.Unsupported" xml:space="preserve"><value>This Git layout, configuration, or file type is not supported.</value></data>
+  <data name="Chat.Project.Read.RefreshRequired" xml:space="preserve"><value>The selected change moved. Refresh the list.</value></data>
+  <data name="Chat.ToolCard.Status.Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="Chat.FollowUps.Label" xml:space="preserve"><value>Follow-up messages</value></data>
+  <data name="Chat.FollowUps.SteeringBadge" xml:space="preserve"><value>Steering</value></data>
+  <data name="Chat.FollowUps.Steer" xml:space="preserve"><value>Steer</value></data>
+  <data name="Chat.FollowUps.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Chat.FollowUps.More" xml:space="preserve"><value>More actions</value></data>
+  <data name="Chat.FollowUps.Edit" xml:space="preserve"><value>Edit message</value></data>
+<data name="Chat.Branch.Label" xml:space="preserve"><value>Branch in new chat</value></data>
+<data name="Chat.Branch.Failed" xml:space="preserve"><value>The chat could not be branched. Try again.</value></data>
+<data name="Chat.Branch.ContinuedFrom" xml:space="preserve"><value>Continued from chat</value></data>
+<data name="Chat.Branch.SourceUnavailable" xml:space="preserve"><value>Source chat unavailable</value></data>
+<data name="Chat.Project.Device" xml:space="preserve"><value>Device</value></data><data name="Chat.Project.ServerDevice" xml:space="preserve"><value>This server</value></data><data name="Chat.Project.SelectDevice" xml:space="preserve"><value>Select a device</value></data><data name="Chat.Project.DeviceUnavailable" xml:space="preserve"><value>Unavailable</value></data><data name="Chat.Project.PermissionDisabled" xml:space="preserve"><value>Ask the operator to enable Projects for your account.</value></data><data name="Chat.Project.NodeRequired" xml:space="preserve"><value>Start Oscova node on your computer to add a project.</value></data><data name="Chat.Artifacts.NodeUnavailable" xml:space="preserve"><value>File unavailable. Start the project&apos;s device, check project access and that the file still exists, then reopen this preview.</value></data>
+  <data name="Chat.ToolApprovalProjectWarning" xml:space="preserve"><value>Runs on the selected project&apos;s device with that device account&apos;s operating-system permissions.</value></data>
+  <data name="Chat.Project.NodeOffline" xml:space="preserve"><value>The selected node is offline. Start Oscova node on that device and try again.</value></data>
+  <data name="Chat.Project.FolderMissing" xml:space="preserve"><value>The project folder is missing. Restore it, then try again.</value></data>
+  <data name="Chat.Mcp.ConnectionFailed" xml:space="preserve"><value>MCP connection '{0}' could not start. Open MCP server settings, check its configuration on the execution device, and reconnect.</value></data>
+  <data name="Chat.Mcp.DockerMissing" xml:space="preserve"><value>MCP connection '{0}' could not start. Install Docker or select native MCP execution on the execution device.</value></data>
+  <data name="Chat.Workspace.Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedTitle" xml:space="preserve">
+    <value>Unsaved file changes</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedMessage" xml:space="preserve">
+    <value>Save your changes before continuing, or discard them. Cancel keeps the current files open.</value>
+  </data>
+  <data name="Chat.Workspace.Discard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="Chat.Workspace.ConflictTitle" xml:space="preserve">
+    <value>File changed</value>
+  </data>
+  <data name="Chat.Workspace.ConflictMessage" xml:space="preserve">
+    <value>File changed since you opened it. Your changes have not been saved.</value>
+  </data>
+  <data name="Chat.Workspace.ConflictActions" xml:space="preserve">
+    <value>Overwrite replaces the newer file with your edits. Reload latest discards your edits after confirmation.</value>
+  </data>
+  <data name="Chat.Workspace.Overwrite" xml:space="preserve">
+    <value>Overwrite with my edits</value>
+  </data>
+  <data name="Chat.Workspace.ReloadLatest" xml:space="preserve">
+    <value>Reload latest</value>
+  </data>
+  <data name="Chat.Workspace.LoadFailed" xml:space="preserve">
+    <value>The file could not be loaded. Check file access and the device connection, then try again.</value>
+  </data>
+  <data name="Chat.Workspace.SaveFailed" xml:space="preserve">
+    <value>Save could not be confirmed. Check file access, the 512 KiB and 5,000-line limits, and the device connection. Your draft remains. Retry Save or reload.</value>
+  </data>
+<data name="Chat.Workspace.ReloadConfirm" xml:space="preserve"><value>Reload the latest file and discard your unsaved edits?</value></data>
+  <data name="Chat.Workspace.TooLarge" xml:space="preserve"><value>Preview and editing are limited to 512 KiB and 5,000 lines.</value></data>
+  <data name="Chat.Browser.NewTab" xml:space="preserve"><value>New browser tab</value></data>
+  <data name="Chat.Browser.Address" xml:space="preserve"><value>Search or enter a URL</value></data>
+  <data name="Chat.Browser.Viewport" xml:space="preserve"><value>Live browser page</value></data>
+  <data name="Chat.Browser.PhoneView" xml:space="preserve"><value>Viewing only on touch devices. Use a desktop to interact.</value></data>
+  <data name="Chat.Browser.Failed" xml:space="preserve"><value>Browser action failed.</value></data>
+  <data name="Chat.Browser.Disconnected" xml:space="preserve"><value>Browser disconnected. Reopen the tab.</value></data>
+  <data name="Chat.Browser.Clipboard" xml:space="preserve"><value>Clipboard access failed. Allow clipboard permission or paste with the keyboard.</value></data>
+  <data name="Chat.Browser.InvalidAddress" xml:space="preserve"><value>Enter an HTTP or HTTPS address, a hostname, or a search phrase (up to 4096 characters).</value></data>
+  <data name="Chat.Browser.UploadLimit" xml:space="preserve"><value>Choose up to 8 files totaling at most 32 MiB.</value></data>
+  <data name="Chat.Browser.Cut" xml:space="preserve"><value>Cut</value></data>
+  <data name="Chat.Browser.Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Chat.Browser.Paste" xml:space="preserve"><value>Paste</value></data>
+  <data name="Chat.Browser.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Chat.Browser.ChooseFile" xml:space="preserve"><value>Choose a file from your device for this website</value></data>
+  <data name="Chat.Browser.FileReady" xml:space="preserve"><value>File ready</value></data>
+  <data name="Chat.Browser.SaveToDevice" xml:space="preserve"><value>Save to device</value></data>
+  <data name="Chat.Permissions.AllowOnce" xml:space="preserve">
+    <value>Allow once</value>
+  </data>
+  <data name="Chat.Permissions.AllowForSession" xml:space="preserve">
+    <value>Allow for this session</value>
+  </data>
+  <data name="Chat.Permissions.SessionLifetime" xml:space="preserve">
+    <value>Applies to this tool, agent and conversation until revoked or the server session ends. Refreshing or switching chats keeps the grant. Restarting Oscova clears it.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnavailable" xml:space="preserve">
+    <value>Session approval is unavailable because this request has no trustworthy tool, agent or execution target.</value>
+  </data>
+  <data name="Chat.Permissions.AllowedOnce" xml:space="preserve">
+    <value>Allowed once</value>
+  </data>
+  <data name="Chat.Permissions.AllowedForSession" xml:space="preserve">
+    <value>Allowed for this session</value>
+  </data>
+  <data name="Chat.Permissions.Denied" xml:space="preserve">
+    <value>Denied</value>
+  </data>
+  <data name="Chat.Permissions.SessionAutoApproved" xml:space="preserve">
+    <value>Auto-approved by session permission</value>
+  </data>
+  <data name="Chat.Permissions.AutoApproved" xml:space="preserve">
+    <value>Auto-approved</value>
+  </data>
+  <data name="Chat.Permissions.AutoRejected" xml:space="preserve">
+    <value>Auto-rejected</value>
+  </data>
+  <data name="Chat.Permissions.FullAccess" xml:space="preserve">
+    <value>Full access</value>
+  </data>
+  <data name="Chat.Permissions.ApprovalExpired" xml:space="preserve">
+    <value>This approval request has expired. Request the tool again.</value>
+  </data>
+  <data name="Chat.Permissions.SessionPermissions" xml:space="preserve">
+    <value>Session permissions</value>
+  </data>
+  <data name="Chat.Permissions.Revoke" xml:space="preserve">
+    <value>Revoke</value>
+  </data>
+  <data name="Chat.Permissions.RevokeAll" xml:space="preserve">
+    <value>Revoke all</value>
+  </data>
+  <data name="Chat.Permissions.NoSessionPermissions" xml:space="preserve">
+    <value>No active session permissions.</value>
+  </data>
+  <data name="Chat.Permissions.RunningPermission" xml:space="preserve">
+    <value>Running turn: {0}. The selected preset applies to the next run.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningUsePolicy" xml:space="preserve">
+    <value>Follow the agent's tool policies.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoApprove" xml:space="preserve">
+    <value>Skip approval prompts. Execution restrictions remain.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoReject" xml:space="preserve">
+    <value>Reject calls that require approval.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningFullAccess" xml:space="preserve">
+    <value>Skip approval prompts. Run unfiltered shell commands on {0} outside Docker.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedFullAccess" xml:space="preserve">
+    <value>Unused in Full access. Revoke does not turn it off.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoApprove" xml:space="preserve">
+    <value>Unused while approval prompts are skipped.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoReject" xml:space="preserve">
+    <value>Unused while required calls are rejected.</value>
+  </data>
+  <data name="Chat.ToolApproval.ExecutionEnvironmentWarning" xml:space="preserve">
+    <value>Runs in the selected execution environment.</value>
+  </data>
+  <data name="Chat.ToolCard.ToolSearchTitle" xml:space="preserve">
+    <value>Loading tools</value>
+  </data>
+  <data name="VisualizationTitle" xml:space="preserve"><value>Interactive visualization</value></data>
+  <data name="VisualizationGenerating" xml:space="preserve"><value>Generating visualization</value></data>
+  <data name="VisualizationUnavailable" xml:space="preserve"><value>Visualization unavailable</value></data>
+  <data name="VisualizationLocalOnly" xml:space="preserve"><value>Visualizations are disabled in local-only mode.</value></data>
+  <data name="Chat.ComposerOptions" xml:space="preserve"><value>Chat options</value></data>
+  <data name="Chat.History.LoadingConversation" xml:space="preserve"><value>Loading conversation…</value></data>
+  <data name="Chat.History.LoadOlderMessages" xml:space="preserve"><value>Load older messages</value></data>
+  <data name="Chat.History.LoadingOlderMessages" xml:space="preserve"><value>Loading older messages…</value></data>
+  <data name="Chat.History.StartOfConversation" xml:space="preserve"><value>Start of conversation</value></data>
+  <data name="Chat.History.LoadOlderMessagesFailed" xml:space="preserve"><value>Older messages could not be loaded. Try again.</value></data>
+  <data name="RemoveRecipient" xml:space="preserve"><value>Remove recipient</value></data>
+  <data name="ConsultAgent" xml:space="preserve"><value>Consult an agent</value></data>
+  <data name="NoMatchingAgents" xml:space="preserve"><value>No matching agents</value></data>
+  <data name="Chat.ExpandTable" xml:space="preserve"><value>Expand table</value></data>
+  <data name="Chat.ExpandedTable" xml:space="preserve"><value>Table</value></data>
+  <data name="Chat.Goal.Edit" xml:space="preserve"><value>Edit goal</value></data>
+  <data name="Chat.Goal.Title" xml:space="preserve">
+    <value>Goal</value>
+  </data>
+  <data name="Chat.Goal.Start" xml:space="preserve">
+    <value>Start goal</value>
+  </data>
+  <data name="Chat.Goal.Save" xml:space="preserve">
+    <value>Save goal</value>
+  </data>
+  <data name="Chat.Goal.Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Chat.Goal.Running" xml:space="preserve">
+    <value>Goal running</value>
+  </data>
+  <data name="Chat.Goal.Paused" xml:space="preserve">
+    <value>Goal paused</value>
+  </data>
+  <data name="Chat.Goal.Blocked" xml:space="preserve">
+    <value>Goal blocked</value>
+  </data>
+  <data name="Chat.Goal.Achieved" xml:space="preserve">
+    <value>Goal achieved</value>
+  </data>
+  <data name="Chat.Goal.SaveFailed" xml:space="preserve">
+    <value>Couldn&apos;t save goal</value>
+  </data>
+  <data name="Chat.Goal.ActionFailed" xml:space="preserve">
+    <value>Couldn&apos;t update goal</value>
+  </data>
+  <data name="Chat.Slash.GoalDescription" xml:space="preserve">
+    <value>Keep working toward a goal</value>
+  </data>
+  <data name="Chat.Goal.ClearFirst" xml:space="preserve">
+    <value>Clear the existing goal before starting another.</value>
+  </data>
+  <data name="Chat.Goal.AnswerOrDismiss" xml:space="preserve">
+    <value>Answer or dismiss the question first</value>
+  </data>
+  <data name="Chat.Goal.ReasonStopped" xml:space="preserve">
+    <value>Stopped</value>
+  </data>
+  <data name="Chat.Goal.ReasonRestarted" xml:space="preserve">
+    <value>App restarted</value>
+  </data>
+  <data name="Chat.Goal.ReasonBudget" xml:space="preserve">
+    <value>Budget reached</value>
+  </data>
+  <data name="Chat.Goal.ReasonIterations" xml:space="preserve">
+    <value>Iteration limit</value>
+  </data>
+  <data name="Chat.Goal.ReasonProvider" xml:space="preserve">
+    <value>Provider unavailable</value>
+  </data>
+  <data name="Chat.Goal.ReasonJudge" xml:space="preserve">
+    <value>Couldn&apos;t check completion</value>
+  </data>
+  <data name="Chat.Goal.ReasonWorker" xml:space="preserve">
+    <value>Couldn&apos;t continue</value>
+  </data>
+  <data name="Chat.Goal.ReasonQuestion" xml:space="preserve">
+    <value>Waiting for your answer</value>
+  </data>
+  <data name="Chat.Goal.ReasonDismissed" xml:space="preserve">
+    <value>Question dismissed</value>
+  </data>
+  <data name="Chat.AttachmentReadFailed" xml:space="preserve">
+    <value>Couldn't attach '{0}'. Select it again.</value>
+  </data>
+  <data name="Chat.RecipientOwnModelProvider" xml:space="preserve">
+    <value>{0} uses its own model provider.</value>
+  </data>
+  <data name="Chat.RecipientModelProviderUnavailable" xml:space="preserve">
+    <value>Agent model provider unavailable</value>
+  </data>
+  <data name="Chat.Workspace.NewTab" xml:space="preserve"><value>New tab</value></data>
+  <data name="Chat.Workspace.ResizeFiles" xml:space="preserve"><value>Resize files panel</value></data>
+  <data name="Chat.Workspace.SelectFile" xml:space="preserve"><value>Select a file from the workspace tree.</value></data>
+  <data name="Chat.Workspace.FileActions" xml:space="preserve"><value>File actions</value></data>
+  <data name="Chat.Workspace.AddToChat" xml:space="preserve"><value>Add to chat</value></data>
+  <data name="Chat.Workspace.RelativePath" xml:space="preserve"><value>Relative path</value></data>
+  <data name="Chat.Workspace.AbsolutePath" xml:space="preserve"><value>Absolute path</value></data>
+  <data name="Chat.Workspace.Filename" xml:space="preserve"><value>Filename</value></data>
+  <data name="Chat.WaitingForSubagentsStatus" xml:space="preserve"><value>Waiting for subagents</value></data>
+  <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>Waiting for your answer and subagents</value></data>
+  <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>Awaiting approval</value></data>
+  <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>Interrupted</value></data>
+</root>

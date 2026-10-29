@@ -1,0 +1,189 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+@* Hosts the lightweight Prism textarea-overlay editor. Text is read from JS only when callers save. *@
+<div dir="auto" class="oscova-code-editor @CssClass"
+     @ref="_container">
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public EventCallback<bool> DirtyChanged { get; set; }
+    [Parameter] public string? Baseline { get; set; }
+    [Parameter] public string FileName { get; set; } = string.Empty;
+    [Parameter] public string? Language { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool HighlightVariables { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private ElementReference _container;
+    private IJSObjectReference? _module;
+    private int _handle;
+    private string _syncedValue = string.Empty;
+    private string _syncedLanguage = string.Empty;
+    private bool _syncedDisabled;
+    private bool _syncedHighlightVariables;
+    private bool _disposed;
+    private DotNetObjectReference<CodeEditor>? _self;
+    private string? _syncedBaseline;
+
+    private string CssClass => string.Join(
+        " ",
+        new[]
+        {
+            Disabled ? "is-disabled" : null,
+            Class
+        }.Where(value => !string.IsNullOrWhiteSpace(value)));
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/codeEditor.js");
+            _syncedValue = Value ?? string.Empty;
+            _syncedLanguage = ResolveLanguage();
+            _syncedDisabled = Disabled;
+            _syncedHighlightVariables = HighlightVariables;
+            _syncedBaseline = Baseline;
+            if (DirtyChanged.HasDelegate) { _self = DotNetObjectReference.Create(this); }
+
+            _handle = await _module.InvokeAsync<int>(
+                "create",
+                _container,
+                new
+                {
+                    language = _syncedLanguage,
+                    label = FileName,
+                    value = _syncedValue,
+                    readOnly = _syncedDisabled,
+                    highlightVariables = _syncedHighlightVariables,
+                    baseline = Baseline,
+                    observer = _self
+                });
+
+            return;
+        }
+
+        await SyncEditorAsync();
+    }
+
+    /// <summary>Signals draft dirtiness without transferring the complete source on every keypress.</summary>
+    [JSInvokable]
+    public Task NotifyDirtyAsync(bool dirty) => DirtyChanged.InvokeAsync(dirty);
+
+    /// <summary>Inserts text at the editor caret and updates the parent draft.</summary>
+    public async Task InsertTextAsync(string text)
+    {
+        if (_disposed || _module is null || _handle == 0)
+        {
+            return;
+        }
+
+        string updatedValue = await _module.InvokeAsync<string>("insertText", _handle, text);
+        _syncedValue = updatedValue;
+        await ValueChanged.InvokeAsync(updatedValue);
+    }
+
+    /// <summary>Reads the current editor text and updates the parent draft.</summary>
+    public async Task<string> GetValueAsync()
+    {
+        if (_disposed || _module is null || _handle == 0)
+        {
+            // Before initialization completes, the supplied draft is the available text.
+            return _handle == 0 ? Value ?? string.Empty : _syncedValue;
+        }
+
+        _syncedValue = await _module.InvokeAsync<string>("getValue", _handle);
+        await ValueChanged.InvokeAsync(_syncedValue);
+        return _syncedValue;
+    }
+
+    private async Task SyncEditorAsync()
+    {
+        if (_module is null || _handle == 0)
+        {
+            return;
+        }
+
+        string currentValue = Value ?? string.Empty;
+        await _module.InvokeVoidAsync("setLabel", _handle, FileName);
+
+        if (Baseline != _syncedBaseline)
+        {
+            await _module.InvokeVoidAsync("setBaseline", _handle, Baseline);
+            _syncedBaseline = Baseline;
+        }
+        if (!string.Equals(currentValue, _syncedValue, StringComparison.Ordinal))
+        {
+            await _module.InvokeVoidAsync("setValue", _handle, currentValue);
+            _syncedValue = currentValue;
+        }
+
+        string currentLanguage = ResolveLanguage();
+        if (!string.Equals(currentLanguage, _syncedLanguage, StringComparison.Ordinal))
+        {
+            await _module.InvokeVoidAsync("setLanguage", _handle, currentLanguage);
+            _syncedLanguage = currentLanguage;
+        }
+
+        if (Disabled != _syncedDisabled)
+        {
+            await _module.InvokeVoidAsync("setReadOnly", _handle, Disabled);
+            _syncedDisabled = Disabled;
+        }
+
+        if (HighlightVariables != _syncedHighlightVariables)
+        {
+            await _module.InvokeVoidAsync("setHighlightVariables", _handle, HighlightVariables);
+            _syncedHighlightVariables = HighlightVariables;
+        }
+    }
+
+    private string ResolveLanguage()
+    {
+        if (!string.IsNullOrWhiteSpace(Language))
+        {
+            return Language;
+        }
+
+        string fileName = FileName ?? string.Empty;
+
+        return Path.GetExtension(fileName).ToLowerInvariant() switch
+        {
+            ".json" => "json",
+            ".yaml" or ".yml" => "yaml",
+            ".xml" => "xml",
+            ".md" or ".markdown" => "markdown",
+            _ => "text"
+        };
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+
+        try
+        {
+            if (_module is not null && _handle != 0)
+            {
+                await _module.InvokeVoidAsync("dispose", _handle);
+            }
+
+            if (_module is not null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The editor can outlive the Blazor circuit when a dialog is torn down.
+        }
+        _self?.Dispose();
+    }
+}

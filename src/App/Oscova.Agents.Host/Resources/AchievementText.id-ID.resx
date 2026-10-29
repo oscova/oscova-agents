@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!--
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format
+		that is mostly human readable. The generation and parsing of the
+		various data types are done through the TypeConverter classes
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a
+		type or mimetype. Type corresponds to a .NET class that support
+		text/value conversion through the TypeConverter architecture.
+		Classes that don't support this are serialized and stored with the
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the
+		ResXResourceReader how to depersist the object. This is currently not
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format
+		that the ResXResourceWriter will generate, however the reader can
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Achievement.FirstThread.Name"><value>Kata Pertama</value></data>
+	<data name="Achievement.FirstThread.Description"><value>Mulai utas obrolan pertama Anda. Utas rahasia tidak dihitung.</value></data>
+	<data name="Achievement.TenThreads.Name"><value>Pakar Percakapan</value></data>
+	<data name="Achievement.TenThreads.Description"><value>Miliki 10 utas obrolan. Utas rahasia tidak dihitung.</value></data>
+	<data name="Achievement.FiftyThreads.Name"><value>Penenun Percakapan</value></data>
+	<data name="Achievement.FiftyThreads.Description"><value>Miliki 50 utas obrolan. Utas rahasia tidak dihitung.</value></data>
+	<data name="Achievement.FirstAgent.Name"><value>Pembuat Agen</value></data>
+	<data name="Achievement.FirstAgent.Description"><value>Buat agen kustom pertama Anda.</value></data>
+	<data name="Achievement.ThreeAgents.Name"><value>Tim Kecil</value></data>
+	<data name="Achievement.ThreeAgents.Description"><value>Buat 3 agen kustom.</value></data>
+	<data name="Achievement.FiveAgents.Name"><value>Skuad Lengkap</value></data>
+	<data name="Achievement.FiveAgents.Description"><value>Buat 5 agen kustom.</value></data>
+	<data name="Achievement.TenAgents.Name"><value>Agensi</value></data>
+	<data name="Achievement.TenAgents.Description"><value>Buat 10 agen kustom.</value></data>
+	<data name="Achievement.FirstProvider.Name"><value>Terhubung</value></data>
+	<data name="Achievement.FirstProvider.Description"><value>Konfigurasikan penyedia model pertama Anda.</value></data>
+	<data name="Achievement.ThreeProviders.Name"><value>Multi-Model</value></data>
+	<data name="Achievement.ThreeProviders.Description"><value>Konfigurasikan 3 penyedia model.</value></data>
+	<data name="Achievement.FiveProviders.Name"><value>Kolektor Penyedia</value></data>
+	<data name="Achievement.FiveProviders.Description"><value>Konfigurasikan 5 penyedia model.</value></data>
+	<data name="Achievement.FirstTask.Name"><value>Pemberi Tugas</value></data>
+	<data name="Achievement.FirstTask.Description"><value>Buat tugas agen pertama Anda.</value></data>
+	<data name="Achievement.FiveTasks.Name"><value>Otomator</value></data>
+	<data name="Achievement.FiveTasks.Description"><value>Buat 5 tugas agen.</value></data>
+	<data name="Achievement.FifteenTasks.Name"><value>Arsitek Tugas</value></data>
+	<data name="Achievement.FifteenTasks.Description"><value>Buat 15 tugas agen.</value></data>
+	<data name="Achievement.FirstTaskRun.Name"><value>Berhasil Berjalan</value></data>
+	<data name="Achievement.FirstTaskRun.Description"><value>Selesaikan eksekusi tugas pertama Anda.</value></data>
+	<data name="Achievement.TwentyFiveTaskRuns.Name"><value>Tangan Andal</value></data>
+	<data name="Achievement.TwentyFiveTaskRuns.Description"><value>Selesaikan 25 eksekusi tugas.</value></data>
+	<data name="Achievement.HundredTaskRuns.Name"><value>Seratus Eksekusi</value></data>
+	<data name="Achievement.HundredTaskRuns.Description"><value>Selesaikan 100 eksekusi tugas.</value></data>
+	<data name="Achievement.FirstScheduledRun.Name"><value>Pasang dan Lupakan</value></data>
+	<data name="Achievement.FirstScheduledRun.Description"><value>Biarkan tugas terjadwal berjalan sekali.</value></data>
+	<data name="Achievement.TenScheduledRuns.Name"><value>Tepat Seperti Jam</value></data>
+	<data name="Achievement.TenScheduledRuns.Description"><value>Biarkan tugas terjadwal berjalan 10 kali.</value></data>
+	<data name="Achievement.FirstMcpServer.Name"><value>Pembangun Jembatan</value></data>
+	<data name="Achievement.FirstMcpServer.Description"><value>Hubungkan server MCP pertama Anda.</value></data>
+	<data name="Achievement.ThreeMcpServers.Name"><value>Terhubung Luas</value></data>
+	<data name="Achievement.ThreeMcpServers.Description"><value>Hubungkan 3 server MCP.</value></data>
+	<data name="Achievement.FiveMcpServers.Name"><value>Pusat Integrasi</value></data>
+	<data name="Achievement.FiveMcpServers.Description"><value>Hubungkan 5 server MCP.</value></data>
+	<data name="Achievement.FirstSkill.Name"><value>Pembelajar Cepat</value></data>
+	<data name="Achievement.FirstSkill.Description"><value>Pasang atau buat keterampilan pertama Anda.</value></data>
+	<data name="Achievement.FiveSkills.Name"><value>Mahir</value></data>
+	<data name="Achievement.FiveSkills.Description"><value>Miliki 5 keterampilan yang tersedia.</value></data>
+	<data name="Achievement.TenSkills.Name"><value>Polimatik</value></data>
+	<data name="Achievement.TenSkills.Description"><value>Miliki 10 keterampilan yang tersedia.</value></data>
+	<data name="Achievement.FiveTools.Name"><value>Kotak Alat Terbuka</value></data>
+	<data name="Achievement.FiveTools.Description"><value>Gunakan 5 alat berbeda.</value></data>
+	<data name="Achievement.FifteenTools.Name"><value>Serba Bisa</value></data>
+	<data name="Achievement.FifteenTools.Description"><value>Gunakan 15 alat berbeda.</value></data>
+	<data name="Achievement.ThirtyTools.Name"><value>Master Alat</value></data>
+	<data name="Achievement.ThirtyTools.Description"><value>Gunakan 30 alat berbeda.</value></data>
+	<data name="Achievement.FallbackSaved.Name"><value>Jaring Pengaman</value></data>
+	<data name="Achievement.FallbackSaved.Description"><value>Biarkan penyedia cadangan menyelamatkan sebuah eksekusi.</value></data>
+	<data name="Achievement.FirstLocalDay.Name"><value>Luring Penuh</value></data>
+	<data name="Achievement.FirstLocalDay.Description"><value>Bekerja seharian penuh tanpa ada data yang keluar dari perangkat Anda.</value></data>
+	<data name="Achievement.SevenLocalDays.Name"><value>Pekan Privat</value></data>
+	<data name="Achievement.SevenLocalDays.Description"><value>Bekerja 7 hari tanpa ada data yang keluar dari perangkat Anda.</value></data>
+	<data name="Achievement.ThirtyLocalDays.Name"><value>Sepenuhnya Lokal</value></data>
+	<data name="Achievement.ThirtyLocalDays.Description"><value>Bekerja 30 hari tanpa ada data yang keluar dari perangkat Anda.</value></data>
+	<data name="Achievement.Page.Title"><value>Pencapaian</value></data>
+	<data name="Achievement.Page.Subtitle"><value>Apa yang telah Anda temukan sejauh ini</value></data>
+	<data name="Achievement.Page.Discovered"><value>{0} dari {1} ditemukan</value></data>
+	<data name="Achievement.Page.Empty"><value>Belum ada yang terbuka</value></data>
+	<data name="Achievement.Page.EmptyHint"><value>Mulai obrolan, tambahkan penyedia model, atau buat tugas agen.</value></data>
+	<data name="Achievement.Page.Error"><value>Tidak dapat memuat pencapaian.</value></data>
+	<data name="Achievement.Level"><value>Level {0}</value></data>
+	<data name="Achievement.Points"><value>{0} XP</value></data>
+	<data name="Achievement.Unlocked.Body"><value>Pencapaian terbuka.</value></data>
+</root>

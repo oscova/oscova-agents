@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Common.Cancel">
+		<value>Batal</value>
+
+	</data>
+	<data name="Common.Actions">
+		<value>Tindakan</value>
+
+	</data>
+	<data name="Common.Close">
+		<value>Tutup</value>
+
+	</data>
+	<data name="Common.Connected">
+		<value>Terhubung</value>
+
+	</data>
+	<data name="Common.CopyName">
+		<value>Salinan</value>
+
+	</data>
+	<data name="Common.Create">
+		<value>Buat</value>
+
+	</data>
+	<data name="Common.Delete">
+		<value>Hapus</value>
+
+	</data>
+	<data name="Common.Description">
+		<value>Deskripsi</value>
+
+	</data>
+	<data name="Common.Disconnected">
+		<value>Terputus</value>
+
+	</data>
+	<data name="Common.Download">
+		<value>Unduh</value>
+
+	</data>
+	<data name="Common.Duplicate">
+		<value>Duplikatkan</value>
+
+	</data>
+	<data name="Common.Edit">
+		<value>Edit</value>
+
+	</data>
+	<data name="Common.FileTooLarge">
+		<value>Berkas terlalu besar. Ukuran maksimum adalah {0}.</value>
+
+	</data>
+	<data name="Common.Import">
+		<value>Impor</value>
+
+	</data>
+	<data name="Common.ImportFailed">
+		<value>Impor gagal: {0}</value>
+
+	</data>
+	<data name="Common.Key"><value>Kunci</value></data>
+	<data name="Common.Loading">
+		<value>Memuat...</value>
+
+	</data>
+	<data name="Common.Name">
+		<value>Nama</value>
+
+	</data>
+	<data name="Common.NoFileSelected">
+		<value>Tidak ada berkas yang dipilih</value>
+
+	</data>
+	<data name="Common.NoneOption">
+		<value>Tidak ada</value>
+
+	</data>
+	<data name="Common.Password">
+		<value>Kata sandi</value>
+
+	</data>
+	<data name="Common.Refresh">
+		<value>Segarkan</value>
+
+	</data>
+	<data name="Common.Remove">
+		<value>Hapus</value>
+
+	</data>
+	<data name="Common.Retry">
+		<value>Coba lagi</value>
+
+	</data>
+	<data name="Common.NoResults"><value>Tidak ada hasil</value></data>
+	<data name="Common.Save">
+		<value>Simpan</value>
+
+	</data>
+	<data name="Common.Search"><value>Cari...</value></data>
+	<data name="Common.Settings">
+		<value>Pengaturan</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Title">
+		<value>Buang perubahan yang belum disimpan?</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Message">
+		<value>Anda memiliki perubahan yang belum disimpan di halaman ini. Meninggalkannya sekarang akan membuangnya.</value>
+
+	</data>
+	<data name="Common.SignOutConfirmTitle">
+		<value>Konfirmasi Keluar</value>
+
+	</data>
+	<data name="Common.SignOutConfirmMessage">
+		<value>Apakah Anda yakin ingin keluar?</value>
+
+	</data>
+	<data name="Common.Upload">
+		<value>Unggah</value>
+
+	</data>
+	<data name="Common.Username">
+		<value>Nama pengguna</value>
+
+	</data>
+	<data name="Common.Assistant"><value>Asisten</value></data>
+	<data name="Common.Clear"><value>Bersihkan</value></data>
+	<data name="Common.ConfirmPassword"><value>Konfirmasi kata sandi</value></data>
+	<data name="Common.Content"><value>Konten</value></data>
+	<data name="Common.CurrentPassword"><value>Kata sandi saat ini</value></data>
+	<data name="Common.Email"><value>Email</value></data>
+	<data name="Common.FullName"><value>Nama lengkap</value></data>
+	<data name="Common.PreferredName"><value>Nama panggilan</value></data>
+	<data name="Common.PreferredNameHelp"><value>Bagaimana agen Anda harus memanggil Anda?</value></data>
+	<data name="Common.NewPassword"><value>Kata sandi baru</value></data>
+	<data name="Common.NotConfigured"><value>Belum dikonfigurasi</value></data>
+	<data name="Common.NotSet"><value>Belum diatur</value></data>
+	<data name="Common.Page"><value>Halaman {0}</value></data>
+	<data name="Common.Roles"><value>Peran</value></data>
+	<data name="Common.System"><value>Sistem</value></data>
+	<data name="Common.Time"><value>Waktu</value></data>
+	<data name="Common.Tool"><value>Alat</value></data>
+	<data name="Common.Unknown"><value>Tidak diketahui</value></data>
+	<data name="Common.User"><value>Pengguna</value></data>
+	<data name="Dialog.AccountDetailsTitle"><value>Detail Akun</value></data>
+	<data name="Dialog.AllAgentsOption"><value>Semua agen</value></data>
+	<data name="Dialog.AllThreadsOption"><value>Semua utas</value></data>
+	<data name="Dialog.ApplicationLogsTitle"><value>Log Aplikasi</value></data>
+	<data name="Dialog.ExportFilteredCsv"><value>CSV yang difilter</value></data>
+	<data name="Dialog.ExportFilteredText"><value>Teks yang difilter</value></data>
+	<data name="Dialog.ExportLogsButton"><value>Ekspor</value></data>
+	<data name="Dialog.ExportOriginalJsonLines"><value>Baris JSON Asli</value></data>
+	<data name="Dialog.ChangePasswordTitle"><value>Ubah Kata Sandi</value></data>
+	<data name="Dialog.ChatMemory.HeaderAgent"><value>Agen</value></data>
+	<data name="Dialog.ChatMemory.HeaderChunk"><value>Fragmen</value></data>
+	<data name="Dialog.ChatMemory.HeaderContent"><value>Konten</value></data>
+	<data name="Dialog.ChatMemory.HeaderThread"><value>Utas</value></data>
+	<data name="Dialog.ChatMemoryStoreTitle"><value>Penyimpanan Memori Obrolan</value></data>
+	<data name="Dialog.ClearLogButton"><value>Bersihkan</value></data>
+	<data name="Dialog.ClearLogConfirmMessage"><value>Apakah Anda yakin ingin menghapus berkas log saat ini? Tindakan ini tidak dapat dibatalkan.</value></data>
+	<data name="Dialog.ClearLogConfirmTitle"><value>Konfirmasi Pembersihan Log</value></data>
+	<data name="Dialog.ClearLogTitleAttribute"><value>Hapus berkas log saat ini</value></data>
+	<data name="Dialog.CloseChatMemoryLabel"><value>Tutup dialog memori obrolan</value></data>
+	<data name="Dialog.CloseLogsLabel"><value>Tutup dialog log</value></data>
+	<data name="Dialog.CloseProfileLabel"><value>Tutup dialog profil</value></data>
+	<data name="Dialog.ContentTypeCall"><value>panggilan</value></data>
+	<data name="Dialog.ContentTypeReasoning"><value>Penalaran</value></data>
+	<data name="Dialog.ContentTypeResult"><value>hasil</value></data>
+	<data name="Dialog.DataContentBytes"><value>{0} - {1} byte</value></data>
+	<data name="Dialog.EmailAddressLabel"><value>Alamat email</value></data>
+	<data name="Dialog.FailedLoadChatMemoryError"><value>Gagal memuat memori obrolan:</value></data>
+	<data name="Dialog.FailedLoadLogsError"><value>Gagal memuat log:</value></data>
+	<data name="Dialog.InspectorJsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorVisualTab"><value>Visual</value></data>
+	<data name="Dialog.LogDetailException"><value>Pengecualian</value></data>
+	<data name="Dialog.LogDetailMetadata"><value>Metadata</value></data>
+	<data name="Dialog.LogEntriesCount"><value>{0} entri</value></data>
+	<data name="Dialog.LogEntriesPage"><value>{0} entri - Halaman {1} dari {2}</value></data>
+	<data name="Dialog.LogLevelAll"><value>Semua tingkat</value></data>
+	<data name="Dialog.LogLevelDebug"><value>Debug</value></data>
+	<data name="Dialog.LogLevelError"><value>Error</value></data>
+	<data name="Dialog.LogLevelFatal"><value>Fatal</value></data>
+	<data name="Dialog.LogLevelInfo"><value>Info</value></data>
+	<data name="Dialog.LogLevelTrace"><value>Trace</value></data>
+	<data name="Dialog.LogLevelWarn"><value>Warn</value></data>
+	<data name="Dialog.LogsHeaderLevel"><value>Tingkat</value></data>
+	<data name="Dialog.LogsHeaderLogger"><value>Pencatat</value></data>
+	<data name="Dialog.LogsHeaderMessage"><value>Pesan</value></data>
+	<data name="Dialog.LogsInvalidUserGuid"><value>Masukkan GUID pengguna yang valid.</value></data>
+	<data name="Dialog.LogsScope.Mine"><value>Milik saya</value></data>
+	<data name="Dialog.LogsScope.User"><value>Pengguna...</value></data>
+	<data name="Dialog.Logs.UserIdPlaceholder"><value>ID Pengguna (GUID)</value></data>
+	<data name="Dialog.NoChatMemoryEntries"><value>Tidak ada entri memori obrolan yang cocok dengan filter saat ini.</value></data>
+	<data name="Dialog.NoLogEntriesMatch"><value>Tidak ada entri log yang cocok dengan filter saat ini.</value></data>
+	<data name="Dialog.NoLogFilesOption"><value>Tidak ada berkas log</value></data>
+	<data name="Dialog.NoMessagesInSession"><value>Tidak ada pesan dalam sesi.</value></data>
+	<data name="Dialog.NoStructuredLogsFound"><value>Tidak ada berkas log terstruktur yang ditemukan. Log akan muncul di sini setelah aplikasi menulis entri baru.</value></data>
+	<data name="Notifications.AllTab"><value>Semua</value></data>
+	<data name="Notifications.Clear"><value>Hapus notifikasi</value></data>
+	<data name="Notifications.DetailKindLabel"><value>Jenis</value></data>
+	<data name="Notifications.DialogTitle"><value>Notifikasi</value></data>
+	<data name="Notifications.EmptyState"><value>Semua sudah selesai dibaca.</value></data>
+	<data name="Notifications.MarkAllRead"><value>Tandai semua sudah dibaca</value></data>
+	<data name="Notifications.Muted"><value>Notifikasi dibisukan</value></data>
+	<data name="Notifications.JustNow"><value>Baru saja</value></data>
+	<data name="Notifications.MinutesAgo"><value>{0} mnt lalu</value></data>
+	<data name="Notifications.HoursAgo"><value>{0} jam lalu</value></data>
+	<data name="Notifications.Task.CompletedTitle"><value>Tugas selesai</value></data>
+	<data name="Notifications.Task.NeedsAttentionTitle"><value>Tugas memerlukan perhatian</value></data>
+	<data name="Notifications.Task.CompletedInSeconds"><value>Selesai dalam {0} detik.</value></data>
+	<data name="Notifications.Task.Skipped"><value>Tugas dilewati.</value></data>
+	<data name="Notifications.Task.MissingChatProvider"><value>Belum ada penyedia model chat yang dikonfigurasi. Siapkan satu di Pengaturan &gt; Agen &amp; AI &gt; Penyedia Model untuk menjalankan tugas ini.</value></data>
+	<data name="Notifications.Task.MissingEmbeddingProvider"><value>Belum ada penyedia model embedding yang dikonfigurasi. Siapkan satu di Pengaturan &gt; Agen &amp; AI &gt; Penyedia Model &gt; Penyedia Embedding untuk menjalankan tugas ini.</value></data>
+	<data name="Notifications.Task.HandlerUnavailable"><value>Penangan eksekusi tugas ini tidak tersedia. Aktifkan atau instal ulang pluginnya, lalu mulai ulang aplikasi untuk menjalankannya.</value></data>
+	<data name="Notifications.Task.StepLimitReached"><value>Tugas berhenti pada batas {0} langkah sebelum selesai.</value></data>
+	<data name="Notifications.Task.Finished"><value>Eksekusi tugas selesai.</value></data>
+	<data name="Notifications.Task.OutcomeHidden"><value>Buka tugas untuk melihat hasilnya.</value></data>
+	<data name="Notifications.Task.SkippedLocked"><value>Tugas ini tidak berjalan karena Sandi Brankas Anda terkunci. Buka kunci untuk melanjutkan.</value></data>
+	<data name="Notifications.Settings"><value>Pengaturan notifikasi</value></data>
+	<data name="Notifications.SystemTab"><value>Sistem</value></data>
+	<data name="Notifications.TasksTab"><value>Tugas</value></data>
+	<data name="Notifications.Title"><value>Notifikasi</value></data>
+	<data name="Notifications.ViewAll"><value>Lihat semua</value></data>
+	<data name="Dialog.PasswordBlankHint"><value>Biarkan kosong untuk mempertahankan kata sandi saat ini.</value></data>
+	<data name="Dialog.ProfileDescription"><value>Perbarui alamat email, nama lengkap, nama panggilan, dan kata sandi Anda.</value></data>
+	<data name="Dialog.ProfilePictureUpdated"><value>Foto profil diperbarui.</value></data>
+	<data name="Dialog.ProfilePictureUpdateFailed"><value>Tidak dapat memperbarui foto profil: {0}</value></data>
+	<data name="Dialog.WallpaperUpdated"><value>Kertas dinding diperbarui.</value></data>
+	<data name="Dialog.WallpaperUpdateFailed"><value>Tidak dapat memperbarui kertas dinding: {0}</value></data>
+	<data name="Dialog.SaveChangesButton"><value>Simpan perubahan</value></data>
+	<data name="Dialog.SearchLogsPlaceholder"><value>Cari log...</value></data>
+	<data name="Dialog.SessionInspectorTitle"><value>Pemeriksa Sesi</value></data>
+	<data name="Dialog.SessionJsonCopied"><value>JSON sesi disalin ke papan klip.</value></data>
+	<data name="Dialog.SessionJsonDownloaded"><value>Bukti sesi diunduh.</value></data>
+	<data name="Dialog.InspectorConversationTab"><value>Percakapan</value></data>
+	<data name="Dialog.InspectorMessageSummary"><value>{0} pesan</value></data>
+	<data name="Dialog.MessageCountBadge"><value>{0} pesan</value></data>
+	<data name="Dialog.NoSystemInstruction"><value>Tidak ada instruksi sistem yang ditangkap.</value></data>
+	<data name="Dialog.Egress.CloudLabel"><value>Cloud</value></data>
+	<data name="Dialog.Egress.LocalLabel"><value>Lokal</value></data>
+	<data name="Dialog.Egress.IndeterminateDescription"><value>Beberapa panggilan alat tidak dapat dicocokkan dengan metadata alat.</value></data>
+	<data name="Dialog.Egress.IndeterminateTitle"><value>Data keluar tidak dapat diverifikasi sepenuhnya</value></data>
+	<data name="Dialog.Egress.NoDataDescription"><value>Sesi yang lebih lama mungkin tidak menyertakan rekaman data keluar penyedia.</value></data>
+	<data name="Dialog.Egress.NoDataTitle"><value>Tidak ada catatan data keluar</value></data>
+	<data name="Dialog.Egress.ReachedInternetDescription"><value>Penyedia cloud atau alat internet digunakan selama sesi ini.</value></data>
+	<data name="Dialog.Egress.ReachedInternetTitle"><value>Sesi ini mengakses internet</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceDescription"><value>Penyedia yang direkam bersifat lokal dan tidak ada alat internet yang terdeteksi.</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceTitle"><value>Sesi ini tetap berada di perangkat</value></data>
+	<data name="Dialog.Egress.ToolCallCount"><value>{0} panggilan alat internet</value></data>
+	<data name="Dialog.Egress.UnknownToolCallCount"><value>{0} panggilan alat tidak dikenal</value></data>
+	<data name="Dialog.Egress.EntryCount"><value>{0} entri data keluar yang diaudit</value></data>
+	<data name="Dialog.Egress.ProviderKind"><value>Penyedia</value></data>
+	<data name="Dialog.Egress.ToolKind"><value>Alat</value></data>
+	<data name="Dialog.Egress.EmbeddingKind"><value>Embedding</value></data>
+	<data name="Dialog.Egress.ChatSource"><value>Obrolan</value></data>
+	<data name="Dialog.Egress.TaskSource"><value>Tugas</value></data>
+	<data name="Dialog.Egress.EmbeddingIndexingSource"><value>Pengindeksan memori</value></data>
+	<data name="Dialog.Egress.EmbeddingSearchSource"><value>Pencarian memori</value></data>
+	<data name="Dialog.Egress.UnknownDestination"><value>Tujuan tidak dikenal</value></data>
+	<data name="Dialog.EgressAudit.AgentColumn"><value>Agen</value></data>
+	<data name="Dialog.EgressAudit.AllKinds"><value>Semua jenis</value></data>
+	<data name="Dialog.EgressAudit.AllSources"><value>Semua sumber</value></data>
+	<data name="Dialog.EgressAudit.ContextColumn"><value>Konteks</value></data>
+	<data name="Dialog.EgressAudit.CountSummary"><value>{0} peristiwa</value></data>
+	<data name="Dialog.EgressAudit.DestinationColumn"><value>Tujuan</value></data>
+	<data name="Dialog.EgressAudit.Title"><value>Audit data keluar</value></data>
+	<data name="Dialog.EgressAudit.EmbeddingEvents"><value>Peristiwa embedding</value></data>
+	<data name="Dialog.EgressAudit.InspectAction"><value>Periksa sesi</value></data>
+	<data name="Dialog.EgressAudit.LoadFailed"><value>Tidak dapat memuat detail audit data keluar.</value></data>
+	<data name="Dialog.EgressAudit.ModelMetadata"><value>Model</value></data>
+	<data name="Dialog.EgressAudit.NoEntries"><value>Tidak ada entri audit yang cocok dengan filter saat ini.</value></data>
+	<data name="Dialog.EgressAudit.PageSummary"><value>{0} peristiwa - Halaman {1} dari {2}</value></data>
+	<data name="Dialog.EgressAudit.ProviderEvents"><value>Peristiwa penyedia</value></data>
+	<data name="Dialog.EgressAudit.ProviderIdMetadata"><value>ID penyedia</value></data>
+	<data name="Dialog.EgressAudit.RangeAllTime"><value>Sepanjang waktu</value></data>
+	<data name="Dialog.EgressAudit.RangeLastThirtyDays"><value>30 hari terakhir</value></data>
+	<data name="Dialog.EgressAudit.RunMetadata"><value>Eksekusi</value></data>
+	<data name="Dialog.EgressAudit.SearchButton"><value>Cari</value></data>
+	<data name="Dialog.EgressAudit.SearchPlaceholder"><value>Cari data keluar</value></data>
+	<data name="Dialog.EgressAudit.SessionUnavailable"><value>Sesi untuk entri ini tidak lagi tersedia.</value></data>
+	<data name="Dialog.EgressAudit.SourceColumn"><value>Sumber</value></data>
+	<data name="Dialog.EgressAudit.TaskMetadata"><value>Tugas</value></data>
+	<data name="Dialog.EgressAudit.ThreadMetadata"><value>Utas</value></data>
+	<data name="Dialog.EgressAudit.ToolEvents"><value>Peristiwa alat</value></data>
+	<data name="Dialog.EgressAudit.ToolMetadata"><value>Alat</value></data>
+	<data name="Dialog.EgressAudit.TotalEvents"><value>Total peristiwa</value></data>
+	<data name="Dialog.EgressAudit.TypeColumn"><value>Jenis</value></data>
+	<data name="Dialog.EgressAudit.UserColumn"><value>Pengguna</value></data>
+	<data name="Dialog.SystemInstructionTitle"><value>Instruksi sistem</value></data>
+	<data name="Dialog.TokenCountBadge"><value>{0} token</value></data>
+	<data name="Dialog.UsageInputTokens"><value>Masukan: {0}</value></data>
+	<data name="Dialog.UsageOutputTokens"><value>Keluaran: {0}</value></data>
+	<data name="Dialog.UsageTotalTokens"><value>Total: {0}</value></data>
+	<data name="Dialog.StoredContent"><value>Konten tersimpan</value></data>
+	<data name="Dialog.ToggleDetailsTitle"><value>Alihkan detail</value></data>
+	<data name="Dialog.UnableToSubmitChoice"><value>Tidak dapat mengirimkan pilihan tersebut.</value></data>
+	<data name="Dialog.YourProfileTitle"><value>Profil Anda</value></data>
+	<data name="Common.Validation.NameRequired"><value>Nama wajib diisi.</value></data>
+	<data name="Common.Validation.InstructionRequired"><value>Instruksi wajib diisi.</value></data>
+	<data name="Common.Task.AgentUnavailable"><value>Tugas hanya dapat dibuat jika setidaknya satu agen tersedia.</value></data>
+	<data name="Common.Task.AgentCreatedBadge"><value>Dibuat oleh agen</value></data>
+	<data name="Common.Task.CreatedSuccessfully"><value>Tugas berhasil dibuat.</value></data>
+	<data name="Common.Task.CronExpression"><value>Cron: {0}</value></data>
+	<data name="Common.Task.CronExpressionLabel"><value>Ekspresi cron</value></data>
+	<data name="Common.Task.CronExpressionRequired"><value>Ekspresi cron wajib diisi.</value></data>
+	<data name="Common.Task.CustomProvider"><value>Penyedia kustom</value></data>
+	<data name="Common.Task.DefaultModelProvider"><value>Gunakan default agen</value></data>
+	<data name="Common.Task.DefaultModelProviderShort"><value>Gunakan default agen</value></data>
+	<data name="Common.Task.DeleteAfterRun"><value>Hapus tugas setelah dijalankan</value></data>
+	<data name="Common.Task.DeleteConfirmMessage"><value>Apakah Anda yakin ingin menghapus "{0}"?</value></data>
+	<data name="Common.Task.DeleteConfirmTitle"><value>Hapus Tugas</value></data>
+	<data name="Common.Task.DeletedSuccessfully"><value>Tugas dihapus.</value></data>
+	<data name="Common.Task.RunsLoadFailed"><value>Tidak dapat memuat eksekusi untuk tugas ini. Silakan coba lagi.</value></data>
+	<data name="Common.Task.DeletesAfterSuccessfulRun"><value>Menghapus dirinya sendiri setelah eksekusi berhasil</value></data>
+	<data name="Common.Task.DialogCreateTitle"><value>Buat Tugas</value></data>
+	<data name="Common.Task.DialogEditTitle"><value>Edit Tugas</value></data>
+	<data name="Common.Task.DisablesAfterSuccessfulRun"><value>Menonaktifkan dirinya sendiri setelah eksekusi berhasil</value></data>
+	<data name="Common.Task.Enabled"><value>Diaktifkan</value></data>
+	<data name="Common.Task.ExternalTrigger.AddParameterButton"><value>Tambah parameter</value></data>
+	<data name="Common.Task.ExternalTrigger.CopyEndpointButton"><value>Salin endpoint</value></data>
+	<data name="Common.Task.ExternalTrigger.EnableLabel"><value>Izinkan pemicu webhook eksternal</value></data>
+	<data name="Common.Task.ExternalTrigger.Hint"><value>Pemanggil eksternal dapat memicu tugas ini melalui endpoint hook yang diautentikasi.</value></data>
+	<data name="Common.Task.ExternalTrigger.KindBoolean"><value>Boolean</value></data>
+	<data name="Common.Task.ExternalTrigger.KindJson"><value>JSON</value></data>
+	<data name="Common.Task.ExternalTrigger.KindNumber"><value>Angka</value></data>
+	<data name="Common.Task.ExternalTrigger.KindString"><value>String</value></data>
+	<data name="Common.Task.ExternalTrigger.NoParameters"><value>Tidak ada parameter yang diperlukan untuk webhook ini.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameDuplicate"><value>Nama parameter harus unik.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameInvalid"><value>Nama parameter harus diawali dengan huruf dan hanya boleh berisi huruf, angka, garis bawah, atau tanda hubung.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNamePlaceholder"><value>namaParameter</value></data>
+	<data name="Common.Task.ExternalTrigger.ParametersLabel"><value>Parameter webhook</value></data>
+	<data name="Common.Task.ExternalTrigger.SlugLabel"><value>Slug webhook</value></data>
+	<data name="Common.Task.AfterTaskSummary"><value>Setelah: {0}</value></data>
+	<data name="Common.Task.AfterTaskSupport"><value>Berjalan setelah tugas yang dipilih berhasil</value></data>
+	<data name="Common.Task.RunScope.Label"><value>Cakupan Eksekusi</value></data>
+	<data name="Common.Task.RunScope.CustomTitle"><value>Pengaturan tugas kustom</value></data>
+	<data name="Common.Task.RunScope.InheritSummary"><value>Tugas ini menggunakan alat, memori, keterampilan, dan ruang kerja agen yang dipilih.</value></data>
+	<data name="Common.Task.RunScope.CustomSummary"><value>{0} alat, {1} ruang kerja</value></data>
+	<data name="Common.Task.RunScope.UseAgentSettingsButton"><value>Gunakan pengaturan agen</value></data>
+	<data name="Common.Task.RunScope.DialogTitle"><value>Cakupan Eksekusi Tugas</value></data>
+	<data name="Common.Task.RunScope.DialogDescription"><value>Pengaturan runtime kustom menggantikan pengaturan agen yang dipilih hanya untuk tugas ini.</value></data>
+	<data name="Common.Task.EvaluatedInTimeZone"><value>Dievaluasi dalam {0}</value></data>
+	<data name="Common.Task.NextRun"><value>Proses berikutnya {0}</value></data>
+	<data name="Common.Task.ShowInstructions"><value>Tampilkan instruksi</value></data>
+	<data name="Common.Task.EveryHoursMinutes"><value>Setiap {0}j {1}m</value></data>
+	<data name="Common.Task.EveryMinutes"><value>Setiap {0}m</value></data>
+	<data name="Common.Task.FinishedAt"><value>Selesai pada {0}</value></data>
+	<data name="Common.Task.InstructionLabel"><value>Instruksi</value></data>
+	<data name="Common.Task.InstructionPlaceholder"><value>Apa yang harus dilakukan agen?</value></data>
+	<data name="Common.Task.IntervalInvalid"><value>Interval minimal harus 1 menit.</value></data>
+	<data name="Common.Task.IntervalLabel"><value>Interval (menit)</value></data>
+	<data name="Common.Task.KeepLastRunsLabel"><value>Simpan eksekusi terakhir</value></data>
+	<data name="Common.Task.KeepLastRunsPlaceholder"><value>Simpan semua</value></data>
+	<data name="Common.Task.KeepLastRunsHint"><value>Eksekusi lama dihapus setelah eksekusi berikutnya selesai. Kosongkan untuk menyimpan semua eksekusi.</value></data>
+	<data name="Common.Task.KeepLastRunsInvalid"><value>Nilai minimal 1, atau kosongkan untuk menyimpan semua eksekusi.</value></data>
+	<data name="Common.Task.RunDeleteConfirmTitle"><value>Hapus Eksekusi</value></data>
+	<data name="Common.Task.RunDeleteConfirmMessage"><value>Hapus eksekusi yang dimulai {0}? Transkripnya juga dihapus.</value></data>
+	<data name="Common.Task.RunDeletedSuccessfully"><value>Eksekusi dihapus.</value></data>
+	<data name="Common.Task.MessagesCount"><value>{0} pesan</value></data>
+	<data name="Common.Task.ModelProviderLabel"><value>Penyedia Model</value></data>
+	<data name="Common.Task.NamePlaceholder"><value>mis. Ringkasan Harian</value></data>
+	<data name="Common.Task.NoOtherTasks"><value>Tidak ada tugas lain yang tersedia untuk dirangkaikan.</value></data>
+	<data name="Common.Task.OnceAt"><value>Sekali pada {0}</value></data>
+	<data name="Common.Task.OrphanRowHint"><value>Agen pendukung sudah tidak ada</value></data>
+	<data name="Common.Task.PausedUntilEnabled"><value>Tugas dijeda hingga diaktifkan kembali</value></data>
+	<data name="Common.Task.PredecessorLabel"><value>Jalankan setelah tugas</value></data>
+	<data name="Common.Task.PredecessorMissing"><value>Tugas yang dihapus</value></data>
+	<data name="Common.Task.PredecessorRequired"><value>Pilih tugas yang harus dijalankan sebelum tugas ini.</value></data>
+	<data name="Common.Task.PredecessorSelf"><value>Tugas tidak dapat berjalan setelah dirinya sendiri.</value></data>
+	<data name="Common.Task.RunAtLabel"><value>Jalankan Pada</value></data>
+	<data name="Common.Task.RunAtTimeZoneHint"><value>Menggunakan zona waktu pengguna Anda saat ini ketika tugas ini disimpan dan dijadwalkan.</value></data>
+	<data name="Common.Task.RunningNow"><value>Berjalan sekarang</value></data>
+	<data name="Common.Task.ScheduleAfterTask"><value>Setelah tugas lain</value></data>
+	<data name="Common.Task.ScheduleCron"><value>Cron</value></data>
+	<data name="Common.Task.ScheduleExamples"><value>Contoh: 30 9 * * 1-5 untuk hari kerja pukul 09:30, 0 */6 * * * untuk setiap 6 jam.</value></data>
+	<data name="Common.Task.ScheduleInterval"><value>Interval</value></data>
+	<data name="Common.Task.ScheduleOneShot"><value>Sekali jalan</value></data>
+	<data name="Common.Task.ScheduleTimeZoneHint"><value>Dievaluasi menggunakan zona waktu pengguna Anda saat ini ketika tugas ini disimpan.</value></data>
+	<data name="Common.Task.ServerLocalTime"><value>waktu lokal server</value></data>
+	<data name="Common.Task.StartedAt"><value>Dimulai pada {0}</value></data>
+	<data name="Common.Task.StatusHealthy"><value>Sehat</value></data>
+	<data name="Common.Task.StatusIdle"><value>Menganggur</value></data>
+	<data name="Common.Task.StatusNeedsAttention"><value>Perlu perhatian</value></data>
+	<data name="Common.Task.StatusOrphan"><value>Tanpa induk</value></data>
+	<data name="Common.Task.StatusPaused"><value>Dijeda</value></data>
+	<data name="Common.Task.StatusPending"><value>Tertunda</value></data>
+	<data name="Common.Task.StatusSkipped"><value>Dilewati</value></data>
+	<data name="Common.Task.StatusReady"><value>Siap</value></data>
+	<data name="Common.Task.StatusRunning"><value>Berjalan</value></data>
+	<data name="Common.Task.TokensUsed"><value>{0} token</value></data>
+	<data name="Common.Task.UpdatedSuccessfully"><value>Tugas berhasil diperbarui.</value></data>
+	<data name="Common.Task.WatchingForNextWindow"><value>Menunggu jendela terjadwal berikutnya</value></data>
+	<data name="Common.Task.Page.AllStatusesOption"><value>Semua status</value></data>
+	<data name="Common.Task.Page.CategoryLabel"><value>Orkestrasi</value></data>
+	<data name="Common.Task.Page.CompletedMetric"><value>Selesai</value></data>
+	<data name="Common.Task.Page.ConfiguredBadge"><value>Dikonfigurasi</value></data>
+	<data name="Common.Task.Page.CreateTaskButton"><value>Buat Tugas</value></data>
+	<data name="Common.Task.Page.Description"><value>Jadwalkan, pantau, dan kelola pekerjaan agen otonom dari satu layar. Pilih tugas untuk memeriksa status eksekusi terbaru dan eksekusi terkini.</value></data>
+	<data name="Common.Task.Page.DetailsDialogTitle"><value>Detail tugas</value></data>
+	<data name="Common.Task.Page.DirectoryDescription"><value>Pilih tugas untuk melihat detail dan eksekusi terkini.</value></data>
+	<data name="Common.Task.Page.DirectoryTitle"><value>Direktori Tugas</value></data>
+	<data name="Common.Task.Page.DisabledOption"><value>Dinonaktifkan</value></data>
+	<data name="Common.Task.Page.EmptyDescription"><value>Buat alur kerja otonom pertama Anda untuk melihat jadwal, eksekusi, dan riwayat eksekusi langsung di sini.</value></data>
+	<data name="Common.Task.Page.EmptyTitle"><value>Belum ada tugas agen</value></data>
+	<data name="Common.Task.Page.FailedBadge"><value>Gagal</value></data>
+	<data name="Common.Task.Page.InspectButton"><value>Periksa</value></data>
+	<data name="Common.Task.Page.LatestRunHeader"><value>Eksekusi Terbaru</value></data>
+	<data name="Common.Task.Page.LiveBadge"><value>Langsung</value></data>
+	<data name="Common.Task.Page.NeverBadge"><value>Tidak pernah</value></data>
+	<data name="Common.Task.Page.NeverRunOption"><value>Belum pernah dijalankan</value></data>
+	<data name="Common.Task.Page.NewTaskButton"><value>Tugas Baru</value></data>
+	<data name="Common.Task.Page.NoExecutionYet"><value>Belum ada eksekusi</value></data>
+	<data name="Common.Task.Page.NoRunsYet"><value>Belum ada eksekusi yang dicatat untuk tugas ini.</value></data>
+	<data name="Common.Task.Page.OpenBadge"><value>Terbuka</value></data>
+	<data name="Common.Task.Page.RecentExecutionsDescription"><value>Eksekusi terbaru untuk tugas ini, termasuk eksekusi langsung saat ini jika ada.</value></data>
+	<data name="Common.Task.Page.RecentExecutionsTitle"><value>Eksekusi Terkini</value></data>
+	<data name="Common.Task.Page.RunNowButton"><value>Jalankan sekarang</value></data>
+	<data name="Common.Task.Page.RunsButton"><value>Eksekusi</value></data>
+	<data name="Common.Task.Page.ScheduleHeader"><value>Jadwal</value></data>
+	<data name="Common.Task.Page.SearchPlaceholder"><value>Cari tugas atau agen</value></data>
+	<data name="Common.Task.Page.SelectTaskDescription"><value>Pilih tugas dari daftar agar ringkasan eksekusi, status terbaru, dan eksekusi terkini tetap terlihat.</value></data>
+	<data name="Common.Task.Page.SelectTaskTitle"><value>Pilih tugas</value></data>
+	<data name="Common.Task.Page.StateHeader"><value>Status</value></data>
+	<data name="Common.Task.Page.TaskHeader"><value>Tugas</value></data>
+	<data name="Common.Task.Page.Title"><value>Operasi Agen</value></data>
+	<data name="Common.Task.Page.TotalTasksMetric"><value>Total Tugas</value></data>
+	<data name="Common.Task.Page.ViewAllButton"><value>Lihat semua</value></data>
+	<data name="Common.Task.Page.ViewRunsButton"><value>Lihat eksekusi</value></data>
+	<data name="Admin.Title"><value>Administrasi</value></data>
+	<data name="Admin.Description"><value>Buat pengguna dan jaga akses tetap aman.</value></data>
+	<data name="Admin.AuthMode.Label"><value>Mode Autentikasi</value></data>
+	<data name="Admin.AuthMode.Description"><value>Beralih antara login kata sandi standar dan alur pemilihan profil Home yang disederhanakan.</value></data>
+	<data name="Admin.AuthMode.StandardLabel"><value>Standar</value></data>
+	<data name="Admin.AuthMode.StandardDescription"><value>Gunakan layar login nama pengguna dan kata sandi yang ada.</value></data>
+	<data name="Admin.AuthMode.HomeLabel"><value>Home</value></data>
+	<data name="Admin.AuthMode.HomeDescription"><value>Tampilkan pemilih profil, lalu masuk dengan PIN.</value></data>
+	<data name="Admin.AuthMode.PinRequirementTitle"><value>Persyaratan PIN</value></data>
+	<data name="Admin.AuthMode.PinRequirementDescription"><value>Profil memerlukan PIN sebelum dapat masuk melalui mode Home.</value></data>
+	<data name="Admin.AuthMode.HomeRequiresPin"><value>Setidaknya satu PIN operator diperlukan sebelum mode Home dapat diaktifkan.</value></data>
+	<data name="Admin.AuthMode.PasswordFallbackHint"><value>Masuk dengan kata sandi tetap tersedia dari layar login.</value></data>
+	<data name="Admin.AuthMode.SaveButton"><value>Simpan pengaturan autentikasi</value></data>
+	<data name="Admin.AuthSettings.Saved"><value>Pengaturan autentikasi disimpan.</value></data>
+	<data name="Admin.User.CreateTitle"><value>Buat Pengguna</value></data>
+	<data name="Admin.User.CreateDescription"><value>Atur nama pengguna, email, dan kata sandi untuk pengguna baru.</value></data>
+	<data name="Admin.User.CreateButton"><value>Buat pengguna</value></data>
+	<data name="Admin.User.DirectoryTitle"><value>Direktori Pengguna</value></data>
+	<data name="Admin.User.FullNamePlaceholder"><value>Budi Santoso</value></data>
+	<data name="Admin.User.UsernamePlaceholder"><value>budisantoso</value></data>
+	<data name="Admin.User.EmailPlaceholder"><value>budi@example.com</value></data>
+	<data name="Admin.User.YouBadge"><value>Anda</value></data>
+	<data name="Admin.User.EditTitleAttribute"><value>Edit pengguna</value></data>
+	<data name="Admin.User.DeleteTitleAttribute"><value>Hapus pengguna</value></data>
+	<data name="Admin.User.ProfileTitle"><value>Profil</value></data>
+	<data name="Admin.User.SaveProfileButton"><value>Simpan profil</value></data>
+	<data name="Admin.User.SaveRolesButton"><value>Simpan peran</value></data>
+	<data name="Admin.User.PasswordResetTitle"><value>Reset Kata Sandi</value></data>
+	<data name="Admin.User.ResetPasswordButton"><value>Reset kata sandi</value></data>
+	<data name="Admin.User.ResetPasswordCurrentUserHint"><value>Gunakan dialog profil untuk mengubah kata sandi Anda sendiri.</value></data>
+	<data name="Admin.User.PinLoginTitle"><value>Login PIN</value></data>
+	<data name="Admin.User.PinHeader"><value>PIN</value></data>
+	<data name="Admin.User.PinNewLabel"><value>PIN Baru</value></data>
+	<data name="Admin.User.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Admin.User.PinConfirmLabel"><value>Konfirmasi PIN</value></data>
+	<data name="Admin.User.PinRepeatPlaceholder"><value>Ulangi PIN</value></data>
+	<data name="Admin.User.PinChangeButton"><value>Ubah PIN</value></data>
+	<data name="Admin.User.PinSetButton"><value>Atur PIN</value></data>
+	<data name="Admin.User.PinClearButton"><value>Hapus PIN</value></data>
+	<data name="Admin.User.PinHashesHint"><value>PIN masuk biasa disimpan sebagai hash.</value></data>
+	<data name="Admin.User.CannotDeleteOwnAccount"><value>Anda tidak dapat menghapus akun Anda sendiri.</value></data>
+	<data name="Admin.User.DeleteConfirmTitle"><value>Konfirmasi Penghapusan</value></data>
+	<data name="Admin.User.DeleteConfirmMessage"><value>Apakah Anda yakin ingin menghapus pengguna '{0}'? Tindakan ini tidak dapat dibatalkan.</value></data>
+	<data name="Admin.GitHubSkills.ManageButton"><value>Kelola token GitHub</value></data>
+	<data name="Admin.OAuth.ManageButton"><value>Kelola penyedia</value></data>
+	<data name="Admin.OAuth.Title"><value>Penyedia OAuth</value></data>
+	<data name="Admin.OAuth.Description"><value>Konfigurasikan aplikasi OAuth Google dan Microsoft bersama yang digunakan untuk akun terhubung dan integrasi mendatang.</value></data>
+	<data name="Admin.OAuth.SecretHint"><value>Biarkan secret kosong untuk mempertahankan secret yang tersimpan saat ini. Hapus ID klien untuk menonaktifkan penyedia.</value></data>
+	<data name="Admin.OAuth.LoadingProviders"><value>Memuat pengaturan penyedia...</value></data>
+	<data name="Admin.OAuth.GoogleDescription"><value>Gmail, Calendar, YouTube</value></data>
+	<data name="Admin.OAuth.MicrosoftDescription"><value>Integrasi Outlook, To-Do, Graph</value></data>
+	<data name="Admin.OAuth.ConfiguredStatus"><value>Terkonfigurasi</value></data>
+	<data name="Admin.OAuth.ClientIdLabel"><value>ID Klien</value></data>
+	<data name="Admin.OAuth.ClientIdPlaceholder"><value>ID klien {0}</value></data>
+	<data name="Admin.OAuth.ClientSecretLabel"><value>Secret Klien</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderExists"><value>Biarkan kosong untuk mempertahankan secret saat ini</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderNew"><value>Tempel secret klien</value></data>
+	<data name="Admin.OAuth.SecretExists"><value>Secret sudah tersimpan.</value></data>
+	<data name="Admin.OAuth.SecretNotStored"><value>Belum ada secret yang tersimpan.</value></data>
+	<data name="Admin.OAuth.SaveButton"><value>Simpan {0}</value></data>
+	<data name="Admin.OAuth.ConfigurationSaved"><value>Konfigurasi {0} disimpan.</value></data>
+	<data name="Common.Back"><value>Kembali</value></data>
+	<data name="Common.Forward"><value>Maju</value></data>
+	<data name="Common.Completed"><value>Selesai</value></data>
+	<data name="Common.No"><value>Tidak</value></data>
+	<data name="Common.Ok"><value>OK</value></data>
+	<data name="Common.Parameter"><value>Parameter</value></data>
+	<data name="Common.ProfilePicture"><value>Foto profil</value></data>
+	<data name="Common.ProfilePicture.AgentMissing"><value>Simpan agen sebelum mengubah fotonya.</value></data>
+	<data name="Common.ProfilePictureChange"><value>Ubah foto profil</value></data>
+	<data name="Common.ProfilePicture.ChooseFromGallery"><value>Gambar bawaan</value></data>
+	<data name="Common.ProfilePicture.Current"><value>Saat ini</value></data>
+	<data name="Common.ProfilePicture.GalleryDescription"><value>Pilih foto profil bawaan atau unggah foto Anda sendiri.</value></data>
+	<data name="Common.ProfilePicture.GalleryEmpty"><value>Tidak ada gambar bawaan yang tersedia saat ini.</value></data>
+	<data name="Common.ProfilePicture.GalleryLoadFailed"><value>Gagal memuat galeri gambar.</value></data>
+	<data name="Common.ProfilePicture.GalleryTitle"><value>Pilih gambar</value></data>
+	<data name="Common.ProfilePictureRequirements"><value>PNG, JPEG, atau WebP. Maks 2 MB.</value></data>
+	<data name="Common.ProfilePicture.SeedOptionLabel"><value>Gambar bawaan {0}</value></data>
+	<data name="Common.ProfilePicture.Selected"><value>Dipilih</value></data>
+	<data name="Common.ProfilePicture.UnsupportedType"><value>Berkas harus berupa gambar PNG, JPEG, atau WebP.</value></data>
+	<data name="Common.ProfilePicture.UploadOwn"><value>Unggah milik Anda</value></data>
+	<data name="Common.ProfilePicture.UseSelected"><value>Gunakan gambar ini</value></data>
+	<data name="Common.Wallpaper"><value>Kertas dinding</value></data>
+	<data name="Common.Wallpaper.Change"><value>Ubah kertas dinding</value></data>
+	<data name="Common.Wallpaper.ChooseFromGallery"><value>Kertas dinding bawaan</value></data>
+	<data name="Common.Wallpaper.Current"><value>Saat ini</value></data>
+	<data name="Common.Wallpaper.Effects"><value>Efek kertas dinding dan kaca</value></data>
+	<data name="Common.Wallpaper.EffectsDescription"><value>Nonaktifkan untuk menghapus kertas dinding dan menggunakan permukaan padat yang tidak transparan.</value></data>
+	<data name="Common.Wallpaper.GalleryDescription"><value>Pilih kertas dinding bawaan atau unggah milik Anda sendiri.</value></data>
+	<data name="Common.Wallpaper.GalleryEmpty"><value>Tidak ada kertas dinding bawaan yang tersedia saat ini.</value></data>
+	<data name="Common.Wallpaper.GalleryLoadFailed"><value>Gagal memuat galeri kertas dinding.</value></data>
+	<data name="Common.Wallpaper.GalleryTitle"><value>Pilih kertas dinding</value></data>
+	<data name="Common.Wallpaper.Requirements"><value>PNG, JPEG, atau WebP. Maks 10 MB. Disarankan 1920 × 1080.</value></data>
+	<data name="Common.Wallpaper.SeedOptionLabel"><value>Kertas dinding bawaan {0}</value></data>
+	<data name="Common.Wallpaper.Selected"><value>Dipilih</value></data>
+	<data name="Common.Wallpaper.UnsupportedType"><value>Berkas harus berupa gambar PNG, JPEG, atau WebP.</value></data>
+	<data name="Common.Wallpaper.UploadOwn"><value>Unggah milik Anda</value></data>
+	<data name="Common.Wallpaper.UseSelected"><value>Gunakan kertas dinding ini</value></data>
+	<data name="Common.Required"><value>Wajib</value></data>
+	<data name="Common.Started"><value>Dimulai</value></data>
+	<data name="Common.Status"><value>Status</value></data>
+	<data name="Common.Summary"><value>Ringkasan</value></data>
+	<data name="Common.Value"><value>Nilai</value></data>
+	<data name="Common.Yes"><value>Ya</value></data>
+	<data name="Common.Download.Complete"><value>Unduhan selesai!</value></data>
+	<data name="Common.Download.Failed"><value>Pengunduhan gagal.</value></data>
+	<data name="Common.Download.DownloadingModel"><value>Mengunduh Model</value></data>
+	<data name="Common.Download.UrlInvalid"><value>URL pengunduhan harus berupa alamat http atau https yang valid.</value></data>
+	<data name="Common.ErrorPage.Title"><value>Kesalahan</value></data>
+	<data name="Common.ErrorPage.Heading"><value>Kesalahan.</value></data>
+	<data name="Common.ErrorPage.Message"><value>Terjadi kesalahan saat memproses permintaan Anda.</value></data>
+	<data name="Common.ErrorPage.RequestId"><value>ID Permintaan:</value></data>
+	<data name="Common.ErrorPage.DevelopmentMode"><value>Mode Pengembangan</value></data>
+	<data name="Common.ErrorPage.DevelopmentModeDetails"><value>Beralih ke lingkungan Development akan menampilkan informasi yang lebih terperinci tentang kesalahan yang terjadi.</value></data>
+	<data name="Common.ErrorPage.DevelopmentWarning"><value>Lingkungan Development tidak boleh diaktifkan untuk aplikasi yang diterapkan. Hal ini dapat mengakibatkan ditampilkannya informasi sensitif dari pengecualian kepada pengguna akhir. Untuk penelusuran kesalahan lokal, aktifkan lingkungan Development dengan menyetel variabel lingkungan ASPNETCORE_ENVIRONMENT ke Development dan memulai ulang aplikasi.</value></data>
+	<data name="Common.Route.NotAuthorized"><value>Anda tidak berwenang untuk melihat halaman ini.</value></data>
+	<data name="Common.Route.NotFound"><value>Maaf, halaman yang Anda minta tidak dapat ditemukan.</value></data>
+	<data name="Common.Validation.AllowedRange"><value>Rentang yang diizinkan: {0} - {1}</value></data>
+	<data name="Common.Validation.EnterValidNumber"><value>Masukkan angka yang valid.</value></data>
+	<data name="Common.Validation.EnterWholeNumber"><value>Masukkan bilangan bulat.</value></data>
+	<data name="Common.Validation.MaximumLength"><value>Panjang maksimum adalah {0}.</value></data>
+	<data name="Common.Validation.MaximumValue"><value>Nilai maksimum: {0}</value></data>
+	<data name="Common.Validation.MinimumLength"><value>Panjang minimum adalah {0}.</value></data>
+	<data name="Common.Validation.MinimumValue"><value>Nilai minimum: {0}</value></data>
+	<data name="Common.Validation.SelectOption"><value>Pilih salah satu opsi</value></data>
+	<data name="Common.Validation.SelectValidOption"><value>Pilih opsi yang valid.</value></data>
+	<data name="Common.Validation.Submit"><value>Kirim</value></data>
+	<data name="Common.Validation.ThisFieldRequired"><value>Bidang ini wajib diisi.</value></data>
+	<data name="Common.Task.RunsTitle"><value>Eksekusi - {0}</value></data>
+	<data name="Admin.User.DeleteTitle"><value>Hapus pengguna</value></data>
+	<data name="Dialog.ConfirmNewPasswordLabel"><value>Konfirmasi kata sandi baru</value></data>
+	<data name="Dialog.ContentTypeException"><value>Pengecualian</value></data>
+	<data name="Dialog.CurrentPasswordLabel"><value>Kata sandi saat ini</value></data>
+	<data name="Dialog.JsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorEgressTab"><value>Data keluar</value></data>
+	<data name="Dialog.NewPasswordLabel"><value>Kata sandi baru</value></data>
+	<data name="Dialog.PasswordLeaveBlankHelper"><value>Biarkan kosong untuk mempertahankan kata sandi Anda saat ini.</value></data>
+	<data name="Dialog.ReasoningTitle"><value>Penalaran</value></data>
+	<data name="Dialog.VisualTab"><value>Visual</value></data>
+	<data name="Common.Task.ScheduleKindLabel"><value>Jenis jadwal</value></data>
+  <data name="Common.SignOut"><value>Keluar</value></data>
+  <data name="Common.Unlock"><value>Buka kunci</value></data>
+  <data name="Dialog.VaultPassword.Title"><value>Kata Sandi Brankas</value></data>
+  <data name="Dialog.VaultPassword.Description"><value>Ubah kata sandi yang membuka kunci kredensial tersimpan dan data terlindungi Anda.</value></data>
+  <data name="Dialog.VaultPassword.Current"><value>Kata Sandi Brankas Saat Ini</value></data>
+  <data name="Dialog.VaultPassword.New"><value>Kata Sandi Brankas Baru</value></data>
+  <data name="Dialog.VaultPassword.Confirm"><value>Konfirmasi Kata Sandi Brankas</value></data>
+  <data name="Dialog.VaultPassword.RecoveryWarning"><value>Simpan kata sandi ini dengan aman. Oscova tidak dapat memulihkannya, dan data yang dilindungi tidak dapat dibuka tanpanya.</value></data>
+  <data name="Dialog.VaultPassword.ChangeButton"><value>Ubah kata sandi</value></data>
+  <data name="Dialog.VaultPassword.ChangeSuccess"><value>Kata Sandi Brankas Anda telah diubah.</value></data>
+  <data name="Dialog.VaultPassword.LengthError"><value>Kata Sandi Brankas harus terdiri dari 12 hingga 256 karakter.</value></data>
+  <data name="Dialog.VaultPassword.ManageButton"><value>Ubah Kata Sandi Brankas</value></data>
+  <data name="Dialog.VaultPassword.ConfirmationError"><value>Konfirmasi Kata Sandi Brankas tidak cocok.</value></data>
+  <data name="Dialog.VaultPassword.SetupTitle"><value>Buat Kata Sandi Brankas Anda</value></data>
+  <data name="Dialog.VaultPassword.SetupDescription"><value>Hanya Anda yang memegang kata sandi ini.</value></data>
+  <data name="Dialog.VaultPassword.SetupEncrypts"><value>Kata sandi ini mengenkripsi obrolan, memori, pengaturan, dan kunci tersimpan Anda di perangkat ini.</value></data>
+  <data name="Dialog.VaultPassword.SetupSeparate"><value>Kata sandi ini terpisah dari kata sandi masuk Anda.</value></data>
+  <data name="Dialog.VaultPassword.CreateButton"><value>Buat brankas</value></data>
+  <data name="Dialog.VaultPassword.UnlockTitle"><value>Buka kunci brankas Anda</value></data>
+  <data name="Dialog.VaultPassword.UnlockDescription"><value>Masukkan Kata Sandi Brankas Anda untuk membuka kunci kredensial tersimpan dan data terlindungi.</value></data>
+  <data name="Dialog.VaultPassword.Incorrect"><value>Kata Sandi Brankas salah.</value></data>
+  <data name="Dialog.VaultPassword.StateLoadFailed"><value>Gagal memuat status brankas.</value></data>
+  <data name="Dialog.DuressCredentials.AccountPassword"><value>Kata sandi akun</value></data>
+  <data name="Dialog.DuressCredentials.AccountPasswordError"><value>Kata sandi akun Anda salah.</value></data>
+  <data name="Dialog.DuressCredentials.Agents"><value>Agen yang akan dihapus</value></data>
+  <data name="Dialog.DuressCredentials.Confirmation"><value>Konfirmasi kata sandi paksaan</value></data>
+  <data name="Dialog.DuressCredentials.ConfirmationError"><value>Konfirmasi kata sandi paksaan tidak cocok.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspace"><value>Ruang kerja default selalu disimpan.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspaceError"><value>Ruang kerja default tidak dapat dipilih.</value></data>
+  <data name="Dialog.DuressCredentials.DeleteThreads"><value>Hapus semua percakapan</value></data>
+  <data name="Dialog.DuressCredentials.ClearSharedFolder"><value>Kosongkan folder bersama untuk semua pengguna</value></data>
+  <data name="Dialog.DuressCredentials.Description"><value>Gunakan kata sandi kedua untuk masuk secara normal sembari menghapus data pribadi yang Anda pilih secara permanen.</value></data>
+  <data name="Dialog.DuressCredentials.DifferentError"><value>Kata sandi paksaan harus berbeda dari kata sandi akun Anda.</value></data>
+  <data name="Dialog.DuressCredentials.LengthError"><value>Kata sandi paksaan harus terdiri dari 12 hingga 256 karakter.</value></data>
+  <data name="Dialog.DuressCredentials.LoadFailed"><value>Pilihan kredensial paksaan tidak dapat dimuat.</value></data>
+  <data name="Dialog.DuressCredentials.NoTargets"><value>Tidak ada agen, tugas, atau ruang kerja yang dapat dipilih.</value></data>
+  <data name="Dialog.DuressCredentials.OpenButton"><value>Atur kredensial paksaan</value></data>
+  <data name="Dialog.DuressCredentials.Password"><value>Kata sandi paksaan</value></data>
+  <data name="Dialog.DuressCredentials.PriorSelections"><value>Pilihan yang disimpan tidak dapat ditampilkan. Formulir ini dimulai dalam keadaan kosong, dan menyimpan akan menggantikan seluruh kebijakan.</value></data>
+  <data name="Dialog.DuressCredentials.Save"><value>Simpan kredensial paksaan</value></data>
+  <data name="Dialog.DuressCredentials.SaveSuccess"><value>Kredensial paksaan telah disimpan.</value></data>
+  <data name="Dialog.DuressCredentials.SelectionTooLarge"><value>Pilihan Anda terlalu banyak. Hapus beberapa item dan coba lagi.</value></data>
+  <data name="Dialog.DuressCredentials.SharedAgentError"><value>Agen bersama tidak dapat dipilih.</value></data>
+  <data name="Dialog.DuressCredentials.TargetNameTooLong"><value>Nama yang dipilih terlalu panjang.</value></data>
+  <data name="Dialog.DuressCredentials.Tasks"><value>Tugas yang akan dihapus</value></data>
+  <data name="Dialog.DuressCredentials.Title"><value>Kredensial paksaan</value></data>
+  <data name="Dialog.DuressCredentials.TwoFactorError"><value>Kredensial paksaan tidak dapat diatur saat autentikasi dua faktor aktif.</value></data>
+  <data name="Dialog.DuressCredentials.Unavailable"><value>Salah satu item yang dipilih tidak lagi tersedia. Buka kembali formulir dan pilih lagi.</value></data>
+  <data name="Dialog.DuressCredentials.Workspaces"><value>Ruang kerja yang akan dibersihkan</value></data>
+  <data name="Dialog.DuressCredentials.WorkspaceClearing"><value>Isi ruang kerja akan dihapus, tetapi ruang kerja itu sendiri tetap ada.</value></data>
+  <data name="Dialog.Security.Title"><value>Keamanan</value></data>
+  <data name="Dialog.DuressCredentials.Pin"><value>PIN paksaan (opsional)</value></data>
+  <data name="Dialog.DuressCredentials.PinConfirmation"><value>Konfirmasi PIN paksaan</value></data>
+  <data name="Dialog.DuressCredentials.PinHelp"><value>Kedua kredensial paksaan menghapus data terpilih yang sama secara permanen. Menyimpan mengganti semua pilihan. Kosongkan kedua kolom PIN untuk menghapus PIN paksaan. PIN masuk harus sudah ditetapkan.</value></data>
+  <data name="Dialog.DuressCredentials.PinError"><value>Masukkan PIN yang sama dengan 6–64 digit (0–9), atau kosongkan keduanya.</value></data>
+  <data name="Dialog.DuressCredentials.PinRequired"><value>Tetapkan PIN masuk sebelum mengatur PIN paksaan.</value></data>
+  <data name="Dialog.DuressCredentials.PinDifferent"><value>Pilih PIN yang berbeda dari PIN masuk.</value></data>
+  <data name="Admin.User.PinNotAllowedError"><value>PIN ini tidak dapat digunakan. Pilih PIN lain.</value></data>
+  <data name="Admin.User.PinLengthError"><value>PIN harus terdiri dari 6–64 digit (0–9).</value></data>
+  <data name="Common.Reconnect.Title" xml:space="preserve"><value>Koneksi ke Oscova</value></data>
+  <data name="Common.Reconnect.Connecting" xml:space="preserve"><value>Menghubungkan kembali…</value></data>
+  <data name="Common.Reconnect.Countdown" xml:space="preserve"><value>Mencoba lagi dalam {0} detik.</value></data>
+  <data name="Common.Reconnect.Failed" xml:space="preserve"><value>Tidak dapat menghubungkan kembali. Periksa koneksi Anda dan coba lagi.</value></data>
+  <data name="Common.Reconnect.Expired" xml:space="preserve"><value>Sesi Anda telah berakhir. Muat ulang untuk melanjutkan. Perubahan yang belum disimpan mungkin hilang.</value></data>
+  <data name="Common.Reconnect.Paused" xml:space="preserve"><value>Sesi Anda dijeda. Lanjutkan untuk meneruskan.</value></data>
+  <data name="Common.Reconnect.Resuming" xml:space="preserve"><value>Melanjutkan sesi Anda…</value></data>
+  <data name="Common.Reconnect.ResumeFailed" xml:space="preserve"><value>Tidak dapat melanjutkan sesi Anda. Coba lagi.</value></data>
+  <data name="Common.Reconnect.Updating" xml:space="preserve"><value>Halaman ini akan dimuat ulang saat Oscova dimulai ulang. Anda mungkin perlu masuk lagi.</value></data>
+  <data name="Common.Reload" xml:space="preserve"><value>Muat ulang</value></data>
+  <data name="Common.Resume" xml:space="preserve"><value>Lanjutkan</value></data>
+	<data name="Common.Task.NotifyOnCompletion"><value>Beri tahu saat selesai</value></data>
+	<data name="Common.Task.NotifyOnCompletionHint"><value>Kirim pemberitahuan tambahan ke kotak masuk aplikasi setelah proses berhasil. Kegagalan selalu muncul di kotak masuk aplikasi.</value></data>
+<data name="Notifications.Task.SkippedLowBattery" xml:space="preserve"><value>Tugas ini dilewati karena komputer menggunakan baterai dengan daya di bawah ambang yang Anda tentukan. Jalankan secara manual saat siap.</value></data>
+<data name="Notifications.Task.BatteryInformationUnavailable" xml:space="preserve"><value>Informasi baterai atau sambungan daya tidak tersedia pada komputer yang menjalankan Oscova.</value></data>
+<data name="Admin.ExecutionPermissionsTitle" xml:space="preserve"><value>Izin eksekusi</value></data><data name="Admin.PermissionProjects" xml:space="preserve"><value>Proyek</value></data><data name="Admin.PermissionWorkspaceShell" xml:space="preserve"><value>Shell ruang kerja</value></data><data name="Admin.PermissionProjectShell" xml:space="preserve"><value>Shell proyek</value></data><data name="Admin.ExecutionPermissionsHint" xml:space="preserve"><value>Menonaktifkan izin memblokir pekerjaan baru dan meminta pembatalan pekerjaan berjalan yang terpengaruh.</value></data><data name="Admin.ExecutionPermissionsSaved" xml:space="preserve"><value>Izin eksekusi disimpan.</value></data>  <data name="Common.DialogOperatorVaultTitle" xml:space="preserve">
+    <value>Menunggu operator</value>
+  </data>
+  <data name="Common.DialogOperatorVaultDescription" xml:space="preserve">
+    <value>Operator harus membuka brankasnya. Lalu pilih Coba lagi untuk melanjutkan.</value>
+  </data>
+  <data name="Common.AdminPermissionApprovedSkills" xml:space="preserve">
+    <value>Instal keterampilan dari repositori yang disetujui</value>
+  </data>
+  <data name="Common.AdminPermissionCustomSkills" xml:space="preserve">
+    <value>Unggah, buat, dan edit keterampilan khusus</value>
+  </data>
+  <data name="Common.AdminPermissionPersonalMcp" xml:space="preserve">
+    <value>Kelola koneksi MCP pribadi</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedTitle" xml:space="preserve">
+    <value>Pekerjaan terhenti</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedBody" xml:space="preserve">
+    <value>Pekerjaan yang terdampak sedang dihentikan karena pengaturannya berubah. Tinjau pengaturan sebelum memulai proses baru.</value>
+  </data>
+  <data name="Governance.Applying" xml:space="preserve"><value>Menghentikan pekerjaan terdampak dan menerapkan perubahan…</value></data>
+  <data name="Governance.SharedProviders" xml:space="preserve"><value>Operator Anda menyediakan penyedia. Gunakan pilihan bawaan operator atau pilih penyedia lain yang tersedia.</value></data>
+  <data name="Governance.OperatorDefault" xml:space="preserve"><value>Bawaan operator: {0}</value></data>
+  <data name="Governance.ProviderUnavailable" xml:space="preserve"><value>Penyedia yang dipilih tidak tersedia. Pilih penyedia lain.</value></data>
+  <data name="Governance.ConfirmInterruption" xml:space="preserve"><value>Perubahan ini akan menghentikan pekerjaan yang menggunakan sumber daya ini. Terapkan sekarang?</value></data>
+  <data name="Governance.ChangesSaved" xml:space="preserve"><value>Perubahan disimpan.</value></data>
+  <data name="Notifications.Providers.AttentionTitle" xml:space="preserve"><value>Pilih penyedia model yang tersedia</value></data>
+  <data name="Notifications.Providers.AttentionBody" xml:space="preserve"><value>Penyedia model yang tersimpan tidak tersedia. Pilih penyedia yang tersedia di Pengaturan dan tinjau pilihan penyedia untuk agen dan tugas Anda.</value></data>
+  <data name="Notifications.Plugins.SetupTitle" xml:space="preserve"><value>Penyiapan plugin perlu ditangani</value></data>
+  <data name="Notifications.Plugins.SetupBody" xml:space="preserve"><value>{0} tidak dapat disiapkan di {1}. {2} Gunakan Coba lagi setelah memperbaiki penyiapan.</value></data>
+  <data name="Notifications.Plugins.DeviceUnavailable" xml:space="preserve"><value>Sementara tidak tersedia di {0}. Operator telah diberi tahu.</value></data>
+  <data name="Common.AdminPermissionPersonalModels" xml:space="preserve"><value>Kelola penyedia model pribadi</value></data>
+  <data name="Common.AdminPermissionSharedFolder" xml:space="preserve"><value>Folder bersama</value></data>
+  <data name="ModelBudgetTitle" xml:space="preserve"><value>Anggaran model</value></data>
+  <data name="ModelBudgetDaily" xml:space="preserve"><value>Batas harian (USD)</value></data>
+  <data name="ModelBudgetMonthly" xml:space="preserve"><value>Batas bulanan (USD)</value></data>
+  <data name="ModelBudgetAlerts" xml:space="preserve"><value>Beri tahu saya saat mencapai 80% batas</value></data>
+  <data name="ModelBudgetBlank" xml:space="preserve"><value>Perkiraan dalam USD. Kosongkan batas jika tidak ingin membatasi. Penyedia bersama memiliki satu anggaran untuk semua penggunanya.</value></data>
+  <data name="ModelBudgetIncomplete" xml:space="preserve"><value>Perkiraan belum lengkap. Sebagian penggunaan tidak dapat dihitung biayanya atau dibaca.</value></data>
+  <data name="ModelBudgetLocal" xml:space="preserve"><value>Inferensi lokal: tanpa perkiraan biaya.</value></data>
+  <data name="ModelBudgetOwnerExceeded" xml:space="preserve"><value>Anggaran {0} telah tercapai. Anda dapat tetap melanjutkan operasi ini.</value></data>
+  <data name="ModelBudgetSharedExceeded" xml:space="preserve"><value>Anggaran {0} telah tercapai. Hubungi operator Anda atau pilih penyedia model lain.</value></data>
+  <data name="ModelBudgetContinue" xml:space="preserve"><value>Tetap lanjutkan</value></data>
+  <data name="ModelBudgetTaskSkipped" xml:space="preserve"><value>Anggaran model telah tercapai. Percobaan ini dilewati. Tugas tetap terjadwal.</value></data>
+  <data name="ModelBudgetSearchPaused" xml:space="preserve"><value>Pencarian semantik dan pengindeksan dijeda karena anggaran embedding telah tercapai. Coba lagi setelah anggaran direset atau pemilik mengubah batasnya.</value></data>
+  <data name="ModelBudgetThreshold" xml:space="preserve"><value>{0} telah mencapai setidaknya 80% dari batas pengeluaran. Buka Model &amp; Penyedia untuk meninjau anggarannya.</value></data>
+  <data name="ModelBudgetSet" xml:space="preserve"><value>Atur anggaran</value></data>
+  <data name="ModelBudgetEdit" xml:space="preserve"><value>Edit anggaran</value></data>
+  <data name="ModelBudgetDailyUsage" xml:space="preserve"><value>Hari ini ${0:0.##} dari ${1:0.##}</value></data>
+  <data name="ModelBudgetMonthlyUsage" xml:space="preserve"><value>Bulan ini ${0:0.##} dari ${1:0.##}</value></data>
+  <data name="ModelBudgetReset" xml:space="preserve"><value>Anggaran tercapai. Diatur ulang {0:g}.</value></data>
+  <data name="ModelBudgetSharedReset" xml:space="preserve"><value>Anggaran tercapai. Diatur ulang {0:g}. Pilih penyedia lain atau hubungi operator Anda.</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdle" xml:space="preserve"><value>Tunggu saat saya menggunakan penyedia</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdleHint" xml:space="preserve"><value>Mulai terjadwal menunggu permintaan aktif Anda pada penyedia tugas selesai. Jalankan sekarang, webhook, dan tugas berantai langsung dimulai.</value></data>
+  <data name="Common.Task.InstructionDefaultUnavailable" xml:space="preserve"><value>Instruksi bawaan tugas tidak tersedia. Aktifkan pluginnya dan mulai ulang.</value></data>
+  <data name="Notifications.Channels.SavedNotApplied" xml:space="preserve"><value>Pengaturan disimpan, tetapi tidak dapat diterapkan. Koneksi yang ada masih berjalan. Periksa pengaturan dan coba lagi.</value></data>
+  <data name="Common.ReleaseNotes" xml:space="preserve"><value>Catatan rilis</value></data>
+  <data name="Common.RecordLabel.DeletedAgent" xml:space="preserve"><value>Agen dihapus</value></data>
+  <data name="Common.RecordLabel.DeletedProvider" xml:space="preserve"><value>Penyedia dihapus</value></data>
+  <data name="Common.RecordLabel.DeletedMcpServer" xml:space="preserve"><value>Server MCP dihapus</value></data>
+  <data name="Common.RecordLabel.OwnDestination" xml:space="preserve"><value>Tujuan sendiri</value></data>
+  <data name="Common.RecordLabel.OtherUsersAgents" xml:space="preserve"><value>Agen pengguna lain</value></data>
+  <data name="Common.RecordLabel.UsersOwnProviders" xml:space="preserve"><value>Penyedia milik pengguna</value></data>
+  <data name="Common.RecordLabel.UsersOwnModels" xml:space="preserve"><value>Model milik pengguna</value></data>
+  <data name="Common.RecordLabel.UsersOwnTools" xml:space="preserve"><value>Alat milik pengguna</value></data>
+  <data name="Dialog.LogsScope.Label" xml:space="preserve"><value>Cakupan log</value></data>
+  <data name="Dialog.LogsFile.Label" xml:space="preserve"><value>File log</value></data>
+  <data name="Common.PreviousPage" xml:space="preserve"><value>Halaman sebelumnya</value></data>
+  <data name="Common.NextPage" xml:space="preserve"><value>Halaman berikutnya</value></data>
+  <data name="Common.TimeRange" xml:space="preserve"><value>Rentang waktu</value></data>
+  <data name="Common.Validation.EnterValidEmail" xml:space="preserve"><value>Masukkan alamat email yang valid.</value></data>
+	<data name="Common.Task.ApprovalModeLabel"><value>Mode persetujuan</value></data>
+	<data name="Common.Task.ApprovalModeAutoReject"><value>Tolak otomatis alat yang perlu persetujuan</value></data>
+	<data name="Common.Task.ApprovalModeAutoApprove"><value>Setujui otomatis alat yang perlu persetujuan</value></data>
+	<data name="Common.Task.ApprovalModeHint"><value>Tugas latar belakang tidak memiliki pengguna interaktif. Persetujuan alat harus diputuskan secara otomatis.</value></data>
+  <data name="Common.Task.ExternalTrigger.EndpointLabel" xml:space="preserve"><value>Endpoint webhook</value></data>
+  <data name="Common.Task.ExternalTrigger.ParameterKindLabel" xml:space="preserve"><value>Jenis parameter</value></data>
+</root>

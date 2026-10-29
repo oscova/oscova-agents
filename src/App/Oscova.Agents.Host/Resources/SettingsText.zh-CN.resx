@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Settings.Label"><value>设置</value></data>
+	<data name="Settings.Category.Workspace.Label"><value>偏好设置</value></data>
+	<data name="Settings.Category.Workspace.Description"><value>外观、语言、通知、性格与语音。</value></data>
+	<data name="Settings.Category.Intelligence.Label"><value>智能体与 AI</value></data>
+	<data name="Settings.Category.Intelligence.Description"><value>智能体、模型提供商、指令、技能与工具。</value></data>
+	<data name="Settings.Category.Connections.Label"><value>账户与访问</value></data>
+	<data name="Settings.Category.Connections.Description"><value>已连接账户、凭据、网络访问与 Webhook。</value></data>
+	<data name="Settings.Category.Data.Label"><value>文件与备份</value></data>
+	<data name="Settings.Category.Data.Description"><value>文件、导入、导出与备份。</value></data>
+	<data name="Settings.Section.General.Label"><value>常规</value></data>
+	<data name="Settings.Section.General.Description"><value>配置常规应用程序偏好设置与外观。</value></data>
+	<data name="Settings.Section.Notifications.Description"><value>控制通知发送与微妙的界面音效提示。</value></data>
+	<data name="Settings.Section.Avatar.Label"><value>虚拟形象</value></data>
+	<data name="Settings.Section.Avatar.Description"><value>自定义助手的虚拟形象外观。</value></data>
+	<data name="Settings.Section.Speech.Label"><value>语音</value></data>
+	<data name="Settings.Section.Speech.Description"><value>配置文本转语音与语音识别选项。</value></data>
+	<data name="Settings.Section.Providers.Label"><value>模型提供商</value></data>
+	<data name="Settings.Section.Providers.Description"><value>管理模型提供商连接与 API 密钥。</value></data>
+	<data name="Settings.Section.Agent.Label"><value>主智能体</value></data>
+	<data name="Settings.Section.Agent.Description"><value>配置主 AI 助手的行为与指令。</value></data>
+	<data name="Settings.Section.Agents.Label"><value>智能体</value></data>
+	<data name="Settings.Section.Agents.Description"><value>管理其他 AI 智能体及其配置。</value></data>
+	<data name="Settings.Section.Compaction.Label"><value>指令</value></data>
+	<data name="Settings.Section.Compaction.Description"><value>编辑用于压缩与记忆的已保存指令。</value></data>
+	<data name="Settings.Section.Skills.Label"><value>技能</value></data>
+	<data name="Settings.Section.Skills.Description"><value>查找、安装、共享和删除智能体技能。</value></data>
+	<data name="Settings.Section.Tools.Label"><value>工具</value></data>
+	<data name="Settings.Section.Tools.Description"><value>启用或禁用 AI 助手可用的工具。</value></data>
+	<data name="Settings.Section.Plugins.Label"><value>插件</value></data>
+	<data name="Settings.Section.Plugins.Description"><value>管理允许在重启后运行的已安装扩展。</value></data>
+	<data name="Settings.Section.Mcp.Label"><value>MCP 服务器</value></data>
+	<data name="Settings.Section.Mcp.Description"><value>连接使用模型上下文协议 (Model Context Protocol) 的外部工具服务器。</value></data>
+	<data name="Settings.Section.Network.Label"><value>网络</value></data>
+	<data name="Settings.Section.Network.Description"><value>调整网络、代理与连接设置。</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Label"><value>已连接账户</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Description"><value>连接 Google 与 Microsoft 账户以进行基于 OAuth 的集成。</value></data>
+	<data name="Settings.Section.Credentials.Label"><value>凭据</value></data>
+	<data name="Settings.Section.Credentials.Description"><value>管理保存的 API 密钥与令牌。</value></data>
+	<data name="Settings.Channels.CredentialsTitle"><value>机器人凭据</value></data>
+	<data name="Settings.Channels.AgentHint"><value>选择在此频道中回复的智能体。</value></data>
+	<data name="Settings.Channels.EnableAtStartupHint"><value>启用后，机器人将在应用程序启动时自动连接</value></data>
+	<data name="Settings.Channels.NewCredentialButton"><value>管理凭据</value></data>
+	<data name="Settings.Channels.SavedTokenHeading"><value>已保存的机器人令牌</value></data>
+	<data name="Settings.Channels.SaveSettingsButton"><value>保存设置</value></data>
+	<data name="Settings.Channels.StartBotButton"><value>启动机器人</value></data>
+	<data name="Settings.Channels.StopBotButton"><value>停止机器人</value></data>
+	<data name="Settings.Channels.StatusTitle"><value>机器人状态</value></data>
+	<data name="Settings.Channels.TokensManagedDescription"><value>机器人令牌在“凭据”选项卡中统一集中管理。</value></data>
+	<data name="Settings.Discord.ConfigurationTitle"><value>Discord 机器人配置</value></data>
+	<data name="Settings.Discord.ConfigurationDescription"><value>配置你的 Discord 机器人以发送和接收消息。</value></data>
+	<data name="Settings.Discord.EnableAtStartupLabel"><value>启动时启用 Discord 机器人</value></data>
+	<data name="Settings.Discord.CredentialsDescription"><value>设置授权的 Discord 用户 ID。机器人令牌在“凭据”选项卡中管理。</value></data>
+	<data name="Settings.Discord.CredentialSelectLabel"><value>Discord 机器人凭据</value></data>
+	<data name="Settings.Discord.CredentialTypeHint"><value>为 Discord 使用 `BotToken` 凭据。</value></data>
+	<data name="Settings.Discord.StatusDescription"><value>Discord 机器人连接的当前状态。</value></data>
+	<data name="Settings.Discord.CredentialValidStatus"><value>所选凭据具有已存储的令牌。</value></data>
+	<data name="Settings.Discord.CredentialInvalidStatus"><value>未选择有效的 Discord 机器人凭据。</value></data>
+	<data name="Settings.Discord.UserIdRequiredError"><value>用户 ID 为必填项。</value></data>
+	<data name="Settings.Discord.UserIdInvalidFormatError"><value>无效的用户 ID 格式。必须是纯数字的 Discord 用户 ID。</value></data>
+	<data name="Settings.Discord.CredentialRequiredWarning"><value>在启动机器人之前，请选择并保存 Discord 机器人凭据。</value></data>
+	<data name="Settings.Discord.UserIdSaveWarning"><value>在启动机器人之前，请保存你的用户 ID。</value></data>
+	<data name="Settings.Discord.UserIdRequiredForStartup"><value>在启动时启用机器人之前，必须提供 Discord 用户 ID。</value></data>
+	<data name="Settings.Discord.CredentialRequiredForStartup"><value>在启动时启用机器人之前，请选择机器人令牌凭据。</value></data>
+	<data name="Settings.Section.ImportExport.Label"><value>备份</value></data>
+	<data name="Settings.Section.ImportExport.Description"><value>导出加密备份或重置可恢复的应用数据。</value></data>
+	<data name="Settings.ImportExport.ExportTitle"><value>导出环境</value></data>
+	<data name="Settings.ImportExport.ExportDescription"><value>将可恢复环境下载为加密的 .oscb 备份。模型、语音、日志和待处理操作不包含在内。</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseLabel"><value>密码短语</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseHint"><value>请使用你可以妥善保管的密码短语。恢复此备份需要相同的密码短语。</value></data>
+	<data name="Settings.ImportExport.ExportButton"><value>导出</value></data>
+	<data name="Settings.ImportExport.ExportDialogTitle"><value>导出环境</value></data>
+	<data name="Settings.ImportExport.ExportDialogDescription"><value>创建可恢复应用数据的加密 .oscb 备份。模型与语音不包含在内。</value></data>
+	<data name="Settings.ImportExport.PassphraseLabel"><value>密码短语</value></data>
+	<data name="Settings.ImportExport.PassphrasePlaceholder"><value>输入导出密码短语</value></data>
+	<data name="Settings.ImportExport.PassphraseRequiredError"><value>输入密码短语以继续。</value></data>
+	<data name="Settings.ImportExport.ExportFinishButton"><value>开始导出</value></data>
+	<data name="Settings.ImportExport.ExportStartedToast"><value>环境导出已开始。</value></data>
+	<data name="Settings.EnvironmentReset.Title"><value>重置环境</value></data>
+	<data name="Settings.EnvironmentReset.Description"><value>保留当前环境，然后使用全新的应用数据重新启动 Oscova。</value></data>
+	<data name="Settings.EnvironmentReset.Scope"><value>用户、对话、设置、文件、凭据、插件和密钥会移到保留的同级目录。模型、语音、日志、CLI 文件、已安装工具和 Avatar 文件会保留在原处。</value></data>
+	<data name="Settings.EnvironmentReset.StopWriters"><value>请先完成重要工作，运行 'oscova avatar mcp stop'，并停止外部写入程序。所有人都将退出登录。</value></data>
+	<data name="Settings.EnvironmentReset.TemporaryAddress"><value>当前地址仍可用于设置。重置后的网络设置会在后续重启时生效，因此需要重新配置局域网访问或自定义端口。</value></data>
+	<data name="Settings.EnvironmentReset.ConfirmationLabel"><value>输入 RESET 以确认</value></data>
+	<data name="Settings.EnvironmentReset.BackupLocation"><value>之前的环境保留在</value></data>
+	<data name="Settings.EnvironmentReset.Restarting"><value>Oscova 正在重新启动并重新安装默认插件...</value></data>
+	<data name="Settings.EnvironmentReset.Rejected"><value>Oscova 拒绝了环境重置。</value></data>
+	<data name="Settings.EnvironmentReset.Uncertain"><value>Oscova 确认接受前连接已关闭。请勿重试。重新打开 Oscova，如果启动停止，请使用离线恢复指南。</value></data>
+	<data name="Settings.EnvironmentReset.Timeout"><value>重置已接受，但无法验证是否完成。请重新打开 Oscova。如果启动停止，请使用相同的 OSCOVA_APP_DATA_DIR 运行 'oscova environment recover --yes'。</value></data>
+	<data name="Settings.EnvironmentReset.Reopen"><value>重新打开 Oscova</value></data>
+	<data name="Settings.Section.Files.Label"><value>文件</value></data>
+	<data name="Settings.Section.Files.Description"><value>管理文件存储位置与上传偏好设置。</value></data>
+	<data name="Settings.Files.HomeBreadcrumb"><value>主页</value></data>
+	<data name="Settings.Files.SharedBreadcrumb"><value>共享</value></data>
+	<data name="Settings.Files.NewFolder"><value>新建文件夹</value></data>
+	<data name="Settings.Files.NewFile"><value>新建文件</value></data>
+	<data name="Settings.Files.EmptyDirectoryMessage"><value>此目录为空。</value></data>
+	<data name="Settings.Files.ColumnSize"><value>大小</value></data>
+	<data name="Settings.Files.ColumnModified"><value>修改时间</value></data>
+	<data name="Settings.Files.FolderNamePlaceholder"><value>文件夹名称</value></data>
+	<data name="Settings.Files.FileNamePlaceholder"><value>filename.md</value></data>
+	<data name="Settings.Files.AllowedExtensionsHint"><value>允许：{0}</value></data>
+	<data name="Settings.Files.BackupHistoryButton"><value>历史记录</value></data>
+	<data name="Settings.Files.BackupHistoryTitle"><value>历史记录：{0}</value></data>
+	<data name="Settings.Files.BackupCurrentVersionLabel"><value>当前版本</value></data>
+	<data name="Settings.Files.BackupNoVersions"><value>此文件尚无可用的还原点。</value></data>
+	<data name="Settings.Files.BackupRestoreButton"><value>恢复</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmTitle"><value>恢复版本</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmMessage"><value>是否恢复此版本？当前文件将先被备份。</value></data>
+	<data name="Settings.Files.BackupRestoreSuccessToast"><value>版本已恢复。</value></data>
+	<data name="Settings.Files.BackupVersionSize"><value>{0}</value></data>
+	<data name="Settings.Files.BackupLoadError"><value>无法加载备份历史记录。</value></data>
+	<data name="Settings.Files.BackupRestoreError"><value>无法恢复该版本。</value></data>
+	<data name="Settings.Files.FolderCreatedToast"><value>文件夹“{0}”已创建。</value></data>
+	<data name="Settings.Files.FileCreatedToast"><value>文件“{0}”已创建。</value></data>
+	<data name="Settings.Files.DeleteConfirmTitle"><value>确认删除</value></data>
+	<data name="Settings.Files.DeleteConfirmMessage"><value>确定要删除“{0}”吗？{1}</value></data>
+	<data name="Settings.Files.DeleteDirectoryWarning"><value> 这将删除所有内容。</value></data>
+	<data name="Settings.Files.DeletedToast"><value>“{0}”已删除。</value></data>
+	<data name="Settings.Files.FileTooLargeToast"><value>“{0}”超过了 {1} 的限制。</value></data>
+	<data name="Settings.Files.UploadFailedToast"><value>上传“{0}”失败：{1}</value></data>
+	<data name="Settings.Files.UploadCompleteToast"><value>上传完成。</value></data>
+	<data name="Settings.Files.AgentsFolderTitle"><value>托管智能体文件夹</value></data>
+	<data name="Settings.Files.AgentsFolderDescription"><value>包含主智能体、自定义智能体定义、共享智能体上下文及各智能体的持久化数据。</value></data>
+	<data name="Settings.Files.MainAgentFolderTitle"><value>主智能体文件夹</value></data>
+	<data name="Settings.Files.MainAgentFolderDescription"><value>存储内置主智能体定义及其专有持久化数据。</value></data>
+	<data name="Settings.Files.CustomAgentFolderTitle"><value>自定义智能体文件夹</value></data>
+	<data name="Settings.Files.CustomAgentFolderDescription"><value>存储此自定义智能体的定义、工具策略与专有持久化数据。</value></data>
+	<data name="Settings.Files.SharedAgentsFolderTitle"><value>共享智能体上下文</value></data>
+	<data name="Settings.Files.SharedAgentsFolderDescription"><value>包含用于共享智能体的个人上下文文件。</value></data>
+	<data name="Settings.Files.SharedAgentFolderTitle"><value>共享智能体个人上下文</value></data>
+	<data name="Settings.Files.SharedAgentFolderDescription"><value>存储你针对此共享智能体的专有上下文。</value></data>
+	<data name="Settings.Files.AgentPrivateFolderTitle"><value>智能体私有文件夹</value></data>
+	<data name="Settings.Files.AgentPrivateFolderDescription"><value>提供此智能体用于笔记、进度记录和其他文件的持久私有文件夹。</value></data>
+	<data name="Settings.Files.AgentNotesFolderTitle"><value>专有智能体笔记</value></data>
+	<data name="Settings.Files.AgentNotesFolderDescription"><value>存储此智能体的专有改进笔记，可在未来的运行中加载。</value></data>
+	<data name="Settings.Files.WorkspaceRootTitle"><value>托管工作区</value></data>
+	<data name="Settings.Files.WorkspaceRootDescription"><value>包含可分配给智能体的工作区文件夹。</value></data>
+	<data name="Settings.Files.DefaultWorkspaceTitle"><value>默认工作区</value></data>
+	<data name="Settings.Files.DefaultWorkspaceDescription"><value>提供最初分配给主智能体的自动创建的常规工作区。</value></data>
+	<data name="Settings.Files.LibraryWorkspaceTitle"><value>资料库工作区</value></data>
+	<data name="Settings.Files.LibraryWorkspaceDescription"><value>存储为资料库搜索建立索引并作为只读文件提供给已分配智能体的参考文档。</value></data>
+	<data name="Settings.Files.SharedFolderTitle"><value>共享文件夹</value></data>
+	<data name="Settings.Files.SharedFolderDescription"><value>拥有“共享文件夹”权限的每位用户都可以打开、更改和删除这些文件，包括加密文件。</value></data>
+	<data name="Settings.Files.WorkspaceFolderTitle"><value>工作区文件夹</value></data>
+	<data name="Settings.Files.WorkspaceFolderDescription"><value>提供可分配给智能体的用户托管工作区。</value></data>
+	<data name="Settings.Files.SettingsFolderTitle"><value>托管设置</value></data>
+	<data name="Settings.Files.SettingsFolderDescription"><value>以 YAML 文件形式存储你的设置域。</value></data>
+	<data name="Settings.Files.PromptsFolderTitle"><value>运行时指令</value></data>
+	<data name="Settings.Files.PromptsFolderDescription"><value>存储未来智能体运行所使用的可编辑指令。</value></data>
+	<data name="Settings.Files.SkillsFolderTitle"><value>托管技能</value></data>
+	<data name="Settings.Files.SkillsFolderDescription"><value>包含可供分配的导入技能和智能体编写的技能。</value></data>
+	<data name="Settings.Files.SkillFolderTitle"><value>技能文件夹</value></data>
+	<data name="Settings.Files.SkillFolderDescription"><value>包含一个以 SKILL.md 为根的技能包，以及其使用的任何资源、脚本或资产。</value></data>
+	<data name="Settings.Files.TasksFolderTitle"><value>托管任务</value></data>
+	<data name="Settings.Files.TasksFolderDescription"><value>包含计划任务和外部触发的任务定义。</value></data>
+	<data name="Settings.Files.TaskFolderTitle"><value>任务文件夹</value></data>
+	<data name="Settings.Files.TaskFolderDescription"><value>存储单个任务定义及其运行历史记录。</value></data>
+	<data name="Settings.Files.TaskRunsFolderTitle"><value>任务运行历史记录</value></data>
+	<data name="Settings.Files.TaskRunsFolderDescription"><value>存储此任务的托管运行索引、转录记录和会话工件。</value></data>
+	<data name="Settings.Files.MemoryFolderTitle"><value>用户记忆</value></data>
+	<data name="Settings.Files.MemoryFolderDescription"><value>存储长期、主题、每日与会话记忆数据。</value></data>
+	<data name="Settings.Files.DailyMemoryFolderTitle"><value>每日记忆</value></data>
+	<data name="Settings.Files.DailyMemoryFolderDescription"><value>存储记忆例程使用的带日期的 Markdown 记忆日志。</value></data>
+	<data name="Settings.Files.ChatFolderTitle"><value>已保存的对话</value></data>
+	<data name="Settings.Files.ChatFolderDescription"><value>存储已保存对话的索引、转录记录、会话元数据以及附件状态。</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderTitle"><value>对话附件</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderDescription"><value>将上传的附件存储在按对话分组的文件夹中。</value></data>
+	<data name="Settings.Files.LogsFolderTitle"><value>应用程序日志</value></data>
+	<data name="Settings.Files.LogsFolderDescription"><value>存储此用户的应用程序日志文件。</value></data>
+	<data name="Settings.Files.MetricsFolderTitle"><value>使用指标</value></data>
+	<data name="Settings.Files.MetricsFolderDescription"><value>存储此用户的运行时指标事件流。</value></data>
+	<data name="Settings.Files.AuditFolderTitle"><value>出站审计</value></data>
+	<data name="Settings.Files.AuditFolderDescription"><value>存储提供商出站活动的审计记录。</value></data>
+	<data name="Settings.Files.NotificationsFolderTitle"><value>通知收件箱</value></data>
+	<data name="Settings.Files.NotificationsFolderDescription"><value>存储此用户的持久化通知收件箱。</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderTitle"><value>工具使用状态</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderDescription"><value>存储受管控工具调用限制所使用的配额计数器。</value></data>
+	<data name="Settings.Files.LibraryIndexingColumn"><value>索引</value></data>
+	<data name="Settings.Files.LibraryLocalOnlyBlockedMessage"><value>在选择本地嵌入提供商之前，资料库索引将处于阻止状态。</value></data>
+	<data name="Settings.Files.LibraryCloudProviderWarning"><value>当前正在使用云端嵌入提供商。从资料库文件中提取的文本将被发送到 {0} 进行索引与搜索。对于私密文档，建议使用本地嵌入提供商。</value></data>
+	<data name="Settings.Files.LibraryNoProviderMessage"><value>在配置嵌入提供商之前，资料库索引和搜索不会启动。选择提供商后，将自动发现资料库中已有的文件。</value></data>
+	<data name="Settings.Files.LibraryLocalProviderMessage"><value>资料库搜索使用本地嵌入提供商 {0}。</value></data>
+	<data name="Settings.Files.LibraryReadyStatus"><value>就绪</value></data>
+	<data name="Settings.Files.LibraryQueuedStatus"><value>排队中</value></data>
+	<data name="Settings.Files.LibraryIndexingStatus"><value>正在编制索引</value></data>
+	<data name="Settings.Files.LibrarySkippedStatus"><value>已跳过</value></data>
+	<data name="Settings.Files.LibraryFailedStatus"><value>失败</value></data>
+	<data name="Settings.Notifications.Title"><value>通知</value></data>
+	<data name="Settings.Notifications.LoadingMessage"><value>正在加载通知设置...</value></data>
+	<data name="Settings.Notifications.DeliveryTitle"><value>通知发送</value></data>
+	<data name="Settings.Notifications.DeliveryDescription"><value>选择实时提醒，并在收件箱中查看已保存的通知。</value></data>
+	<data name="Settings.Notifications.MutedDescription"><value>暂停铃铛实时提醒。新通知仍会保存在收件箱中。</value></data>
+	<data name="Settings.Notifications.ShowLogWarnings"><value>显示日志警告</value></data>
+	<data name="Settings.Notifications.ShowSystemErrors"><value>显示系统错误</value></data>
+	<data name="Settings.SoundEffects.Title"><value>声音效果</value></data>
+	<data name="Settings.SoundEffects.Description"><value>控制确认重要界面操作时的简短提示音。</value></data>
+	<data name="Settings.SoundEffects.MasterLabel"><value>播放界面提示音</value></data>
+	<data name="Settings.SoundEffects.VolumeLabel"><value>音量</value></data>
+	<data name="Settings.SoundEffects.VolumeDescription"><value>一个音量设置适用于所有提示音。</value></data>
+	<data name="Settings.SoundEffects.CueGroupLabel"><value>提示音</value></data>
+	<data name="Settings.SoundEffects.Cue.Send"><value>发送消息</value></data>
+	<data name="Settings.SoundEffects.Cue.Enter"><value>进入对话</value></data>
+	<data name="Settings.SoundEffects.Cue.Receive"><value>回复完成</value></data>
+	<data name="Settings.SoundEffects.Cue.Error"><value>回复出错</value></data>
+	<data name="Settings.SoundEffects.Cue.Notify"><value>通知到达</value></data>
+	<data name="Settings.SoundEffects.Cue.Tap"><value>点击起始提示词</value></data>
+	<data name="Settings.SoundEffects.Cue.Complete"><value>引导流程完成</value></data>
+	<data name="Settings.Network.LoadingMessage"><value>正在加载网络设置...</value></data>
+	<data name="Settings.Network.AccessTitle"><value>网络访问</value></data>
+	<data name="Settings.Network.EnableAccessLabel"><value>允许来自其他设备的访问</value></data>
+	<data name="Settings.Network.PortLabel"><value>端口</value></data>
+	<data name="Settings.Network.RestartRequiredHint"><value>网络访问和端口更改将在重启后生效。</value></data>
+	<data name="Settings.Network.PrivateFetchTitle"><value>网页抓取访问</value></data>
+	<data name="Settings.Network.AllowPrivateFetchLabel"><value>允许抓取本地和专用网络 URL</value></data>
+	<data name="Settings.Network.AllowPrivateFetchDescription"><value>仅在智能体需要读取受信任的内部页面时启用此项。未指定、链路本地、多播和其他不可路由地址仍将被阻止。</value></data>
+	<data name="Settings.Network.SandboxAccessTitle"><value>沙箱网络访问</value></data>
+	<data name="Settings.Network.AllowSandboxAccessLabel"><value>允许沙箱化脚本访问网络</value></data>
+	<data name="Settings.Network.AllowSandboxAccessDescription"><value>此全安装级管理员授权适用于每位用户的常规在线沙箱运行。离线和仅本地运行将保持无网络状态。</value></data>
+	<data name="Settings.Network.PublicUrlTitle"><value>应用公共访问 URL</value></data>
+	<data name="Settings.Network.PublicUrlModeLabel"><value>模式</value></data>
+	<data name="Settings.Network.PublicUrlModeAuto"><value>自动检测到的网络 URL</value></data>
+	<data name="Settings.Network.PublicUrlModeCustom"><value>自定义 URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlLabel"><value>自定义应用公共访问 URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlPlaceholder"><value>https://oscova.company.local</value></data>
+	<data name="Settings.Network.RestartRequiredAlert"><value>重启 Oscova Agents 以使网络访问和端口更改生效。</value></data>
+	<data name="Settings.Network.DetectedUrlsTitle"><value>检测到的 URL</value></data>
+	<data name="Settings.Network.LocalUrlLabel"><value>本地 URL</value></data>
+	<data name="Settings.Network.CopyToClipboardTitle"><value>复制到剪贴板</value></data>
+	<data name="Settings.Network.AutoNetworkUrlLabel"><value>自动网络 URL</value></data>
+	<data name="Settings.Network.AutoNetworkUrlUnavailable"><value>自动网络 URL 不可用。</value></data>
+	<data name="Settings.Network.EffectivePublicUrlLabel"><value>生效的应用公共访问 URL</value></data>
+	<data name="Settings.Network.EffectivePublicUrlUnavailable"><value>生效的公共访问 URL 不可用。</value></data>
+	<data name="Settings.Network.ActiveUrlsLabel"><value>活动服务器 URL</value></data>
+	<data name="Settings.Network.NoActiveUrls"><value>启动期间未报告活动的侦听器 URL。</value></data>
+	<data name="Settings.Network.QrCodeTitle"><value>二维码</value></data>
+	<data name="Settings.Network.QrCodeAlt"><value>生效的应用公共访问 URL 二维码</value></data>
+	<data name="Settings.Network.DownloadQrCodeButton"><value>下载二维码</value></data>
+	<data name="Settings.Network.ResetButton"><value>重置</value></data>
+	<data name="Settings.Network.SaveButton"><value>保存网络设置</value></data>
+	<data name="Settings.Network.LoadErrorToast"><value>网络设置加载错误：{0}</value></data>
+	<data name="Settings.Network.SaveFailedToast"><value>无法保存网络设置。</value></data>
+	<data name="Settings.Network.SaveSuccessToast"><value>网络设置已保存</value></data>
+	<data name="Settings.Network.SaveFailedWithMessageToast"><value>未能保存网络设置：{0}</value></data>
+	<data name="Settings.Network.CopySuccessToast"><value>已复制到剪贴板</value></data>
+	<data name="Settings.Network.CopyFailedToast"><value>复制到剪贴板失败</value></data>
+	<data name="Settings.Network.QrCodeDownloadedToast"><value>二维码已下载</value></data>
+	<data name="Settings.Network.QrCodeDownloadFailedToast"><value>下载二维码失败</value></data>
+	<data name="Settings.ConnectedAccounts.AvailableBadge"><value>可用</value></data>
+	<data name="Settings.ConnectedAccounts.NoProvidersMessage"><value>已启用的插件未提供任何账户连接。</value></data>
+	<data name="Settings.ConnectedAccounts.UnavailableBadge"><value>不可用</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredMessage"><value>不可用。请联系管理员以配置此提供商。</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredAdminMessage"><value>尚未设置。请使用“管理提供商”添加其 OAuth 应用。</value></data>
+	<data name="Settings.ConnectedAccounts.AuthenticatedAccountFallback"><value>已认证账户</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectedAsMessage"><value>已作为 {0} 连接。</value></data>
+	<data name="Settings.ConnectedAccounts.NotConnectedMessage"><value>未连接。</value></data>
+	<data name="Settings.ConnectedAccounts.DisconnectButton"><value>断开连接</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectButton"><value>连接</value></data>
+	<data name="Settings.Credentials.SavedCredentialsTitle"><value>已保存的凭据</value></data>
+	<data name="Settings.Credentials.SavedCredentialsDescription"><value>集中管理 API 密钥和机器人令牌，然后从提供商和 Discord 设置中链接它们。</value></data>
+	<data name="Settings.Credentials.AddCredentialButton"><value>添加凭据</value></data>
+	<data name="Settings.Credentials.LangsearchInfo"><value>创建键为 `langsearch` 的 `ApiKey` 凭据以启用 `web_search` 工具。</value></data>
+	<data name="Settings.Credentials.IntegrationCredentialsHeading"><value>集成凭据</value></data>
+	<data name="Settings.Credentials.NoIntegrationCredentialsMessage"><value>不需要集成凭据。</value></data>
+	<data name="Settings.Credentials.UserCredentialsHeading"><value>您的凭据</value></data>
+	<data name="Settings.Credentials.NoCredentialsEmpty"><value>尚无已保存的凭据。</value></data>
+	<data name="Settings.Credentials.ColumnAlias"><value>别名</value></data>
+	<data name="Settings.Credentials.ColumnKind"><value>种类</value></data>
+	<data name="Settings.Credentials.ColumnKey"><value>键</value></data>
+	<data name="Settings.Credentials.ColumnValue"><value>值</value></data>
+	<data name="Settings.Credentials.ValueSetBadge"><value>已设置</value></data>
+	<data name="Settings.Credentials.ValueNotSetBadge"><value>未设置</value></data>
+	<data name="Settings.Credentials.AddCredentialTitle"><value>添加凭据</value></data>
+	<data name="Settings.Credentials.EditCredentialTitle"><value>编辑凭据</value></data>
+	<data name="Settings.Credentials.NewCredentialLabel"><value>新建凭据</value></data>
+	<data name="Settings.Credentials.EncryptionDescription"><value>机密值以加密形式存储，保存后绝不显示。</value></data>
+	<data name="Settings.Credentials.AliasLabel"><value>名称</value></data>
+	<data name="Settings.Credentials.AliasPlaceholder"><value>LangSearch API</value></data>
+	<data name="Settings.Credentials.KeyLabel"><value>凭据键</value></data>
+	<data name="Settings.Credentials.KeyPlaceholder"><value>langsearch</value></data>
+	<data name="Settings.Credentials.KeyHint"><value>仅限小写字母、数字和连字符。创建后该键将变为只读。</value></data>
+	<data name="Settings.Credentials.KindLabel"><value>种类</value></data>
+	<data name="Settings.Credentials.DescriptionPlaceholder"><value>此凭据的用途</value></data>
+	<data name="Settings.Credentials.SecretValueLabel"><value>机密值</value></data>
+	<data name="Settings.Credentials.SecretValueNewPlaceholder"><value>粘贴机密值</value></data>
+	<data name="Settings.Credentials.SecretValueEditPlaceholder"><value>留空以保留当前值</value></data>
+	<data name="Settings.Credentials.SecretValueNewHint"><value>新凭据必填。</value></data>
+	<data name="Settings.Credentials.SecretValueEditHint"><value>若仅更新元数据，请留空。</value></data>
+	<data name="Settings.Credentials.ValueFieldLabel"><value>值</value></data>
+	<data name="Settings.Credentials.StoredValueOption"><value>输入值</value></data>
+	<data name="Settings.Credentials.EnvironmentValueOption"><value>使用环境变量</value></data>
+	<data name="Settings.Credentials.EnvironmentVariablePlaceholder"><value>ENVIRONMENT_VARIABLE</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableHint"><value>该值将在运行时从此环境变量读取。</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableRequiredError"><value>请输入 {0} 的环境变量名称。</value></data>
+	<data name="Settings.Credentials.ValueRequiredError"><value>请输入 {0} 的值。</value></data>
+	<data name="Settings.Credentials.SaveButton"><value>保存凭据</value></data>
+	<data name="Settings.Credentials.NotFoundToast"><value>未找到凭据。</value></data>
+	<data name="Settings.Credentials.AliasRequiredError"><value>凭据名称为必填项。</value></data>
+	<data name="Settings.Credentials.KeyRequiredError"><value>凭据键为必填项。</value></data>
+	<data name="Settings.Credentials.KeyInvalidFormatError"><value>凭据键必须仅使用小写字母、数字和连字符。</value></data>
+	<data name="Settings.Credentials.KeyAlreadyExistsError"><value>凭据键已存在。</value></data>
+	<data name="Settings.Credentials.SecretRequiredError"><value>新凭据必须提供机密值。</value></data>
+	<data name="Settings.Credentials.CreatedToast"><value>凭据已创建。</value></data>
+	<data name="Settings.Credentials.UpdatedToast"><value>凭据已更新。</value></data>
+	<data name="Settings.Credentials.DeleteConfirmTitle"><value>删除凭据</value></data>
+	<data name="Settings.Credentials.DeleteConfirmMessage"><value>确定要删除“{0}”吗？</value></data>
+	<data name="Settings.Credentials.StillLinkedWarning"><value>此凭据仍链接到 {0}。删除前请先移除这些引用。</value></data>
+	<data name="Settings.Credentials.DeletedToast"><value>凭据已删除。</value></data>
+	<data name="Settings.Avatar.ConnectionHeading"><value>连接</value></data>
+	<data name="Settings.Avatar.BridgeUrlLabel"><value>桥接 URL</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsTitle"><value>应用到实时虚拟形象</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsButton"><value>应用到实时虚拟形象</value></data>
+	<data name="Settings.Avatar.StartEngineButton"><value>启动 Avatar Engine</value></data>
+	<data name="Settings.Avatar.EngineCheckingStatus"><value>正在检查</value></data>
+	<data name="Settings.Avatar.EngineConnectedStatus"><value>已连接</value></data>
+	<data name="Settings.Avatar.EngineOfflineStatus"><value>离线</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorStatus"><value>目录问题</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedStatus"><value>未检查</value></data>
+	<data name="Settings.Avatar.EngineCheckingDescription"><value>正在连接到 Avatar Engine 并加载实时选项。</value></data>
+	<data name="Settings.Avatar.EngineConnectedDescription"><value>Avatar Engine 可在 {0} 访问。</value></data>
+	<data name="Settings.Avatar.EngineOfflineDescription"><value>无法在 {0} 连接到 Avatar Engine。已保存的设置仍可编辑。</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorDescription"><value>引擎可连接，但无法加载一个或多个实时选项列表。</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedDescription"><value>选择“连接”以加载实时虚拟形象和表情。</value></data>
+	<data name="Settings.Avatar.BridgeUrlDescription"><value>共享虚拟形象运行时使用的已保存桥接端点。</value></data>
+	<data name="Settings.Avatar.SaveChangesWarning"><value>在将更改应用到虚拟形象引擎之前，请先保存更改。</value></data>
+	<data name="Settings.Avatar.AvatarHeading"><value>虚拟形象</value></data>
+	<data name="Settings.Avatar.SelectedAvatarLabel"><value>选定的虚拟形象</value></data>
+	<data name="Settings.Avatar.LoadingAvatarsOption"><value>正在加载虚拟形象...</value></data>
+	<data name="Settings.Avatar.LoadingEmotionsOption"><value>正在加载表情...</value></data>
+	<data name="Settings.Avatar.SavedUnverifiedOption"><value>已保存：{0}（未验证）</value></data>
+	<data name="Settings.Avatar.SavedUnavailableOption"><value>已保存：{0}（不可用）</value></data>
+	<data name="Settings.Avatar.CatalogCheckingHint"><value>正在从 Avatar Engine 加载实时选项。</value></data>
+	<data name="Settings.Avatar.CatalogOfflineHint"><value>Avatar Engine 连接后即可使用实时选项。</value></data>
+	<data name="Settings.Avatar.SavedValueUnverifiedHint"><value>已保存的值“{0}”已显示，但尚未在运行中的引擎中验证。</value></data>
+	<data name="Settings.Avatar.SavedValueUnavailableHint"><value>已保存的值“{0}”在运行中的引擎中不可用。</value></data>
+	<data name="Settings.Avatar.RefreshAvatarsTitle"><value>刷新虚拟形象</value></data>
+<data name="Settings.Avatar.ApplyAvatarButton"><value>应用外观</value></data>
+	<data name="Settings.Avatar.ChooseAvatarDescription"><value>选择要显示的虚拟形象</value></data>
+	<data name="Settings.Avatar.ExpressionHeading"><value>表情</value></data>
+	<data name="Settings.Avatar.SelectedEmotionLabel"><value>所选情绪</value></data>
+	<data name="Settings.Avatar.ChooseEmotionDescription"><value>从正在运行的引擎中选择一个表情。</value></data>
+	<data name="Settings.Avatar.RefreshEmotionsTitle"><value>刷新情绪</value></data>
+	<data name="Settings.Avatar.BlendSpeedLabel"><value>过渡速度</value></data>
+	<data name="Settings.Avatar.CueBlendInLabel"><value>情绪渐入秒数</value></data>
+	<data name="Settings.Avatar.CueRestoreAfterLabel"><value>情绪恢复等待秒数</value></data>
+	<data name="Settings.Avatar.CueTimingDescription"><value>语音回复中的情绪会渐入、保持，然后按上方的过渡速度恢复为所选情绪。</value></data>
+	<data name="Settings.Avatar.ApplyExpressionButton"><value>应用表情</value></data>
+	<data name="Settings.Avatar.WindowHeading"><value>窗口</value></data>
+	<data name="Settings.Avatar.ResolutionLabel"><value>分辨率</value></data>
+	<data name="Settings.Avatar.Resolution1920x1080"><value>1920x1080 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1440"><value>2560x1440 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution3840x2160"><value>3840x2160 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1080"><value>2560x1080 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution3440x1440"><value>3440x1440 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution5120x2160"><value>5120x2160 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution1280x720"><value>1280x720 (16:9)</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLabel"><value>画质预设</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLow"><value>低</value></data>
+	<data name="Settings.Avatar.GraphicsPresetMedium"><value>中</value></data>
+	<data name="Settings.Avatar.GraphicsPresetHigh"><value>高</value></data>
+	<data name="Settings.Avatar.GraphicsPresetEpic"><value>极致</value></data>
+	<data name="Settings.Avatar.GraphicsPresetCinematic"><value>电影级</value></data>
+	<data name="Settings.Avatar.RayTracingLabel"><value>光线追踪</value></data>
+	<data name="Settings.Avatar.RayTracingDescription"><value>独立于画质预设启用受支持的光线追踪效果。默认关闭，并且可能降低性能。</value></data>
+	<data name="Settings.Avatar.FullscreenLabel"><value>全屏</value></data>
+	<data name="Settings.Avatar.BackgroundColorLabel"><value>背景颜色</value></data>
+	<data name="Settings.Avatar.ApplyWindowButton"><value>应用窗口设置</value></data>
+	<data name="Settings.Avatar.MessageAppearanceHeading"><value>消息外观</value></data>
+	<data name="Settings.Avatar.MessageFontSizeLabel"><value>消息字体大小</value></data>
+	<data name="Settings.Avatar.MessageColorLabel"><value>颜色</value></data>
+	<data name="Settings.Avatar.MessageColorOpacityLabel"><value>不透明度</value></data>
+	<data name="Settings.Avatar.ApplyMessageAppearanceButton"><value>应用外观</value></data>
+	<data name="Settings.Avatar.MessageBoxHeading"><value>消息框</value></data>
+	<data name="Settings.Avatar.EditMessageLayoutButton"><value>编辑布局</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogTitle"><value>消息布局</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogSubtitle"><value>在 {0} x {1} 的虚拟形象屏幕上放置消息框。</value></data>
+	<data name="Settings.Avatar.MessageLayoutInstructions"><value>拖动消息框以移动，从角落调整大小，或在下方输入精确百分比。</value></data>
+	<data name="Settings.Avatar.MessageLayoutScreenLabel"><value>虚拟形象屏幕</value></data>
+	<data name="Settings.Avatar.MessageLayoutBoxLabel"><value>消息框</value></data>
+	<data name="Settings.Avatar.MessageLayoutLeftLabel"><value>左侧</value></data>
+	<data name="Settings.Avatar.MessageLayoutTopLabel"><value>顶部</value></data>
+	<data name="Settings.Avatar.MessageLayoutInvalid"><value>请将消息框保持在屏幕内，并确保宽度和高度至少为 1%。</value></data>
+	<data name="Settings.Avatar.TransformWidthLabel"><value>宽度 (%)</value></data>
+	<data name="Settings.Avatar.TransformHeightLabel"><value>高度 (%)</value></data>
+	<data name="Settings.Avatar.MessageDisplayDurationLabel"><value>显示时长</value></data>
+	<data name="Settings.Avatar.SecondsUnit"><value>秒</value></data>
+	<data name="Settings.Avatar.ApplyMessageBoxButton"><value>应用消息框</value></data>
+	<data name="Settings.Avatar.MessagePreviewHeading"><value>消息预览</value></data>
+	<data name="Settings.Avatar.PreviewTextLabel"><value>预览文本</value></data>
+	<data name="Settings.Avatar.PreviewTextPlaceholder"><value>输入消息以在虚拟形象消息框中预览</value></data>
+	<data name="Settings.Avatar.SendPreviewButton"><value>发送预览</value></data>
+	<data name="Settings.Avatar.ClearPreviewButton"><value>清除</value></data>
+	<data name="Settings.Avatar.CameraHeading"><value>摄像机</value></data>
+	<data name="Settings.Avatar.CameraYawLabel"><value>摄像机偏航角</value></data>
+	<data name="Settings.Avatar.ApplyCameraButton"><value>应用摄像机设置</value></data>
+	<data name="Settings.Avatar.AudioHeading"><value>音频</value></data>
+	<data name="Settings.Avatar.SpeechVolumeLabel"><value>语音音量</value></data>
+	<data name="Settings.Avatar.ApplyAudioButton"><value>应用音频设置</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarTitle"><value>关闭虚拟形象</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarButton"><value>关闭虚拟形象</value></data>
+	<data name="Settings.Avatar.ResetToDefaultsButton"><value>恢复默认设置</value></data>
+	<data name="Settings.Avatar.SaveSettingsButton"><value>保存设置</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmTitle"><value>确认关闭虚拟形象</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmMessage"><value>是否关闭连接到此网桥 URL 的虚拟形象？这可能会影响局域网中另一台计算机上运行的虚拟形象。</value></data>
+	<data name="Settings.Avatar.DefaultPreviewMessage"><value>这是一条测试消息。</value></data>
+	<data name="Settings.Avatar.SettingsLoadErrorToast"><value>加载虚拟形象设置出错：{0}</value></data>
+	<data name="Settings.Avatar.SavedSettingsAppliedToast"><value>已应用保存的虚拟形象设置</value></data>
+	<data name="Settings.Avatar.ApplySavedSettingsFailedToast"><value>无法应用虚拟形象设置。</value></data>
+	<data name="Settings.Avatar.SyncErrorToast"><value>虚拟形象同步错误：{0}</value></data>
+	<data name="Settings.Avatar.LoadedAvatarsToast"><value>已加载 {0} 个虚拟形象</value></data>
+	<data name="Settings.Avatar.LoadAvatarsFailedToast"><value>未能加载虚拟形象：{0}</value></data>
+	<data name="Settings.Avatar.LoadAvatarsErrorToast"><value>加载虚拟形象时出错：{0}</value></data>
+	<data name="Settings.Avatar.LoadedEmotionsToast"><value>已加载 {0} 种情绪</value></data>
+	<data name="Settings.Avatar.LoadEmotionsFailedToast"><value>未能加载情绪：{0}</value></data>
+	<data name="Settings.Avatar.LoadEmotionsErrorToast"><value>加载情绪时出错：{0}</value></data>
+	<data name="Settings.Avatar.EngineOfflineToast"><value>无法连接到 Avatar Engine。</value></data>
+	<data name="Settings.Avatar.EngineRefreshFailedToast"><value>刷新 Avatar Engine 失败：{0}</value></data>
+	<data name="Settings.Avatar.StartEngineStartedToast"><value>Avatar Engine 已启动。等待其窗口出现，然后选择“连接”。</value></data>
+	<data name="Settings.Avatar.StartEngineLocalUrlToast"><value>使用 http://localhost 或 http://127.0.0.1 Bridge URL 启动本地 Avatar Engine。</value></data>
+	<data name="Settings.Avatar.StartEngineFailedToast"><value>无法启动 Avatar Engine。</value></data>
+	<data name="Settings.Avatar.EngineConnectedToast"><value>Avatar Engine 已连接并加载实时选项。</value></data>
+	<data name="Settings.Avatar.AppliedToast"><value>已将外观应用到“{0}”</value></data>
+	<data name="Settings.Avatar.ApplyFailedToast"><value>未能应用虚拟形象：{0}</value></data>
+	<data name="Settings.Avatar.ApplyErrorToast"><value>应用虚拟形象时出错：{0}</value></data>
+	<data name="Settings.Avatar.ExpressionAppliedToast"><value>已应用表情“{0}”</value></data>
+	<data name="Settings.Avatar.ExpressionFailedToast"><value>未能应用表情：{0}</value></data>
+	<data name="Settings.Avatar.ExpressionErrorToast"><value>应用表情时出错：{0}</value></data>
+	<data name="Settings.Avatar.WindowApplyFailedToast"><value>未能应用窗口设置：{0}</value></data>
+	<data name="Settings.Avatar.WindowSettingsAppliedToast"><value>已应用窗口设置</value></data>
+	<data name="Settings.Avatar.WindowApplyErrorToast"><value>应用窗口设置时出错：{0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyFailedToast"><value>未能应用消息外观：{0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceAppliedToast"><value>已应用消息外观</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyErrorToast"><value>应用消息外观时出错：{0}</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyFailedToast"><value>未能应用消息框设置：{0}</value></data>
+	<data name="Settings.Avatar.MessageBoxAppliedToast"><value>已应用消息框设置</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyErrorToast"><value>应用消息框设置时出错：{0}</value></data>
+	<data name="Settings.Avatar.CameraYawAppliedToast"><value>摄像机偏航角已设置为 {0} 度</value></data>
+	<data name="Settings.Avatar.CameraYawApplyFailedToast"><value>未能应用摄像机偏航角：{0}</value></data>
+	<data name="Settings.Avatar.CameraYawApplyErrorToast"><value>应用摄像机偏航角时出错：{0}</value></data>
+	<data name="Settings.Avatar.AudioSettingsAppliedToast"><value>已应用音频设置 ({0}%)</value></data>
+	<data name="Settings.Avatar.AudioApplyFailedToast"><value>未能应用音频设置：{0}</value></data>
+	<data name="Settings.Avatar.AudioApplyErrorToast"><value>应用音频设置时出错：{0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageSentToast"><value>预览消息已发送</value></data>
+	<data name="Settings.Avatar.PreviewMessageFailedToast"><value>未能发送预览消息：{0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageErrorToast"><value>消息预览出错：{0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearedToast"><value>预览消息已清除</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearFailedToast"><value>未能清除预览消息：{0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearErrorToast"><value>清除消息时出错：{0}</value></data>
+	<data name="Settings.Avatar.ShutdownInitiatedToast"><value>虚拟形象关闭程序已启动</value></data>
+	<data name="Settings.Avatar.ShutdownFailedToast"><value>未能启动关闭程序：{0}</value></data>
+	<data name="Settings.Avatar.ShutdownErrorToast"><value>关闭出错：{0}</value></data>
+	<data name="Settings.Avatar.SettingsSavedToast"><value>虚拟形象设置已保存</value></data>
+	<data name="Settings.Avatar.SaveSettingsFailedToast"><value>未能保存虚拟形象设置：{0}</value></data>
+	<data name="Settings.Speech.VoiceLabel"><value>语音</value></data>
+	<data name="Settings.Speech.NoVoicesOption"><value>（未找到语音）</value></data>
+	<data name="Settings.Speech.TestVoiceButton"><value>测试语音</value></data>
+	<data name="Settings.Speech.TestingButton"><value>正在测试</value></data>
+	<data name="Settings.Speech.VoiceHelperText"><value>点击“保存语音设置”以应用此语音。</value></data>
+	<data name="Settings.Speech.SampleTextLabel"><value>示例文本</value></data>
+	<data name="Settings.Speech.SampleTextPlaceholder"><value>输入内容以预览所选语音...</value></data>
+	<data name="Settings.Speech.DefaultSampleText"><value>这是快速语音预览。</value></data>
+	<data name="Settings.Speech.OutputModeLabel"><value>助手语音输出</value></data>
+	<data name="Settings.Speech.OutputModeBrowserOnly"><value>仅浏览器</value></data>
+	<data name="Settings.Speech.OutputModeBrowserAndAvatar"><value>浏览器和虚拟形象</value></data>
+	<data name="Settings.Speech.OutputModeAvatarOnly"><value>仅虚拟形象</value></data>
+	<data name="Settings.Speech.RecognitionSectionTitle"><value>语音识别</value></data>
+	<data name="Settings.Speech.SynthesisSectionTitle"><value>语音合成</value></data>
+	<data name="Settings.Speech.DownloadModelButton"><value>下载模型</value></data>
+	<data name="Settings.Speech.DownloadingLabel"><value>正在下载 {0:0}%</value></data>
+	<data name="Settings.Speech.ModelReadyLabel"><value>就绪</value></data>
+	<data name="Settings.Speech.ModelMissingLabel"><value>未下载</value></data>
+	<data name="Settings.Speech.CancelDownloadButton"><value>取消</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderTitle"><value>默认提供商</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderDescription"><value>添加你的提供商并选择默认使用哪一个。</value></data>
+	<data name="Settings.ModelProviders.SelectPlaceholder"><value>添加提供商以开始</value></data>
+	<data name="Settings.ModelProviders.SelectDefaultPlaceholder"><value>选择提供商</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderTitle"><value>后备提供商</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderDescription"><value>如果默认提供商失败，将自动使用此提供商。</value></data>
+	<data name="Settings.ModelProviders.FallbackNoneOption"><value>无</value></data>
+	<data name="Settings.ModelProviders.AddButton"><value>添加自定义提供商</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderTitle"><value>嵌入提供商</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderDescription"><value>为智能体记忆搜索配置嵌入模型。</value></data>
+	<data name="Settings.ModelProviders.NoEmbeddingConfiguredMessage"><value>未配置嵌入提供商。智能体记忆功能需要嵌入模型。</value></data>
+	<data name="Settings.ModelProviders.AddEmbeddingButton"><value>添加嵌入提供商</value></data>
+	<data name="Settings.ModelProviders.ConfiguredProvidersTitle"><value>已配置的提供商</value></data>
+	<data name="Settings.ModelProviders.SelectedProviderLabel"><value>所选提供商：{0}</value></data>
+	<data name="Settings.ModelProviders.NoProvidersMessage"><value>添加模型提供商以开始聊天。</value></data>
+	<data name="Settings.ModelProviders.TableHeaderProvider"><value>提供商</value></data>
+	<data name="Settings.ModelProviders.TableHeaderModel"><value>模型</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCredential"><value>凭据</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCapabilities"><value>功能特性</value></data>
+	<data name="Settings.ModelProviders.TableHeaderLastTest"><value>上次测试</value></data>
+	<data name="Settings.ModelProviders.OpenDetailsTitle"><value>打开提供商详情</value></data>
+	<data name="Settings.ModelProviders.DefaultBadge"><value>默认</value></data>
+	<data name="Settings.ModelProviders.FallbackBadge"><value>后备</value></data>
+	<data name="Settings.ModelProviders.CapabilityText"><value>{0:N0} 上下文</value></data>
+	<data name="Settings.ModelProviders.NoCapabilities"><value>无额外特性</value></data>
+	<data name="Settings.ModelProviders.NoTestRun"><value>未测试</value></data>
+	<data name="Settings.ModelProviders.DetailsDialogTitle"><value>提供商详情</value></data>
+	<data name="Settings.ModelProviders.EndpointDefault"><value>默认端点</value></data>
+	<data name="Settings.ModelProviders.TestButton"><value>测试</value></data>
+	<data name="Settings.ModelProviders.ModelNotSet"><value>未设置模型</value></data>
+	<data name="Settings.ModelProviders.NoCredentialLinked"><value>未关联保存的凭据</value></data>
+	<data name="Settings.ModelProviders.CredentialSummary"><value>凭据：{0} [{1}]</value></data>
+	<data name="Settings.ModelProviders.CredentialMissing"><value>已关联凭据但缺少值：[{0}]</value></data>
+	<data name="Settings.ModelProviders.CredentialNotFound"><value>未找到凭据：[{0}]</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmTitle"><value>移除提供商</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmMessage"><value>确定要移除 {0} 吗？</value></data>
+	<data name="Settings.ModelProviders.CopyNameSuffix"><value>{0} (副本)</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmTitle"><value>移除嵌入提供商</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmMessage"><value>确定要移除 {0} 吗？</value></data>
+	<data name="Settings.ModelProviders.EditProviderDialogTitle"><value>编辑提供商</value></data>
+	<data name="Settings.ModelProviders.AddProviderDialogTitle"><value>添加提供商</value></data>
+	<data name="Settings.ModelProviders.DialogTabProvider"><value>提供商</value></data>
+	<data name="Settings.ModelProviders.DialogTabChatOptions"><value>聊天选项</value></data>
+	<data name="Settings.ModelProviders.ProviderTypeLabel"><value>提供商类型</value></data>
+	<data name="Settings.ModelProviders.ProviderNameLabel"><value>提供商名称</value></data>
+	<data name="Settings.ModelProviders.ProviderNamePlaceholder"><value>例如：工作 OpenAI</value></data>
+	<data name="Settings.ModelProviders.ProviderNameRequired"><value>提供商名称为必填项</value></data>
+	<data name="Settings.ModelProviders.ModelFileLabel"><value>模型文件</value></data>
+	<data name="Settings.ModelProviders.NoGgufFilesOption"><value>未找到 GGUF 文件</value></data>
+	<data name="Settings.ModelProviders.SelectModelPlaceholder"><value>选择一个模型...</value></data>
+	<data name="Settings.ModelProviders.GgufFilesLocation"><value>{0} 中的 GGUF 文件</value></data>
+	<data name="Settings.ModelProviders.DownloadSectionTitle"><value>下载 GGUF 模型</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlLabel"><value>下载 URL</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlPlaceholder"><value>https://huggingface.co/.../model.gguf</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlHelp"><value>粘贴 GGUF 文件的直接链接（例如来自 HuggingFace）</value></data>
+	<data name="Settings.ModelProviders.BaseUrlLabel"><value>基础 URL</value></data>
+	<data name="Settings.ModelProviders.BaseUrlInvalid"><value>请输入有效的 URL</value></data>
+	<data name="Settings.ModelProviders.ModelIdLabel"><value>模型 ID</value></data>
+	<data name="Settings.ModelProviders.ModelIdRequired"><value>模型 ID 为必填项</value></data>
+	<data name="Settings.ModelProviders.ModelIdHelp"><value>手动输入任意模型 ID，或在下方获取提供商模型。</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsTitle"><value>提供商模型</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsDescription"><value>获取可用或推荐的模型，然后复制一个到“模型 ID”字段中。</value></data>
+	<data name="Settings.ModelProviders.FetchModelsButton"><value>获取模型</value></data>
+	<data name="Settings.ModelProviders.DownloadFetchedModelButton"><value>下载模型</value></data>
+	<data name="Settings.ModelProviders.DownloadUnsupportedMessage"><value>所选提供商不支持模型下载。</value></data>
+	<data name="Settings.ModelProviders.InstalledModelBadge"><value>已安装</value></data>
+	<data name="Settings.ModelProviders.ModelLicenseLabel"><value>许可证</value></data>
+	<data name="Settings.ModelProviders.ChooseFetchedModelLabel"><value>选择获取到的模型</value></data>
+	<data name="Settings.ModelProviders.AvailableModelsLoadedLabel"><value>已加载 {0} 个</value></data>
+	<data name="Settings.ModelProviders.SelectFetchedModelPlaceholder"><value>选择获取到的模型...</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLabel"><value>端点作用域</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeAuto"><value>自动检测</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLocal"><value>视为本地</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeCloud"><value>视为云端</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeDescription"><value>当自定义端点被离线模式误分类时（例如 LAN 网关或云代理），请使用此项。</value></data>
+	<data name="Settings.ModelProviders.CredentialSectionTitle"><value>凭据</value></data>
+	<data name="Settings.ModelProviders.CredentialDescription"><value>将此提供商链接到已保存的 API 密钥，而不是直接在提供商上存储机密。</value></data>
+	<data name="Settings.ModelProviders.NewCredentialButton"><value>管理凭据</value></data>
+	<data name="Settings.ModelProviders.SavedApiKeyLabel"><value>已保存的 API 密钥</value></data>
+	<data name="Settings.ModelProviders.ModelConfigurationTitle"><value>模型配置</value></data>
+	<data name="Settings.ModelProviders.SupportsImagesLabel"><value>支持图像</value></data>
+	<data name="Settings.ModelProviders.SupportsThinkingLabel"><value>支持思考输出</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeLabel"><value>上下文窗口大小</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeInvalid"><value>上下文窗口大小必须为正数</value></data>
+	<data name="Settings.ModelProviders.MemoryFitFits"><value>运行 Oscova 的计算机的估算内存适配情况：可容纳。</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTight"><value>运行 Oscova 的计算机的估算内存适配情况：较紧张。减小上下文窗口可降低估算值。</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTooLarge"><value>运行 Oscova 的计算机的估算内存适配情况：过大。请尝试更小的模型或更小的上下文窗口。</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveLabel"><value>保持活跃</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveHelp"><value>可选的 Ollama 保活时长。例如：5m 保持模型加载五分钟，-1 保持无限期加载，0 在响应后立即卸载。留空则使用 Ollama 服务器默认值。</value></data>
+	<data name="Settings.ModelProviders.InputCostLabel"><value>输入价格，每百万 token 美元</value></data>
+	<data name="Settings.ModelProviders.OutputCostLabel"><value>输出价格，每百万 token 美元</value></data>
+	<data name="Settings.ModelProviders.CostEstimateHelp"><value>用于仪表板估算的可选标准费率。缓存输入按输入费率计算。不含其他费用。</value></data>
+	<data name="Settings.ModelProviders.CostPerMillionTokensInvalid"><value>请输入非负金额或留空。</value></data>
+	<data name="Settings.ModelProviders.CostNotSet"><value>未设置费用</value></data>
+	<data name="Settings.ModelProviders.TemperatureLabel"><value>温度</value></data>
+	<data name="Settings.ModelProviders.ClearButton"><value>清除</value></data>
+	<data name="Settings.ModelProviders.TemperatureDescription"><value>较高的值会增加随机性；较低的值使回复更聚焦。</value></data>
+	<data name="Settings.ModelProviders.TopPLabel"><value>Top P</value></data>
+	<data name="Settings.ModelProviders.TopPDescription"><value>控制核采样。较低的值会限制候选 Token 选择。</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyLabel"><value>频率惩罚</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyDescription"><value>正值抑制重复；负值增加重复。</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyLabel"><value>存在惩罚</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyDescription"><value>正值鼓励模型引入新话题。</value></data>
+	<data name="Settings.ModelProviders.TopKLabel"><value>Top K</value></data>
+	<data name="Settings.ModelProviders.TopKDescription"><value>限制候选 Token。设为 0 则使用提供商默认值。</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensLabel"><value>最大输出 Token 数</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensInvalid"><value>请输入正数或留空。</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensDescription"><value>留空以允许提供商决定回复长度。</value></data>
+	<data name="Settings.ModelProviders.SeedLabel"><value>随机种子</value></data>
+	<data name="Settings.ModelProviders.SeedInvalid"><value>请输入非负数或留空。</value></data>
+	<data name="Settings.ModelProviders.SeedDescription"><value>在模型支持时用于获得可复现的回复。</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorLabel"><value>工具调用行为</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAuto"><value>自动</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAllowMultiple"><value>允许多次工具调用</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorSingle"><value>仅限单次工具调用</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorDescription"><value>选择模型每次请求可发起的工具调用次数。</value></data>
+	<data name="Settings.ModelProviders.ResetToDefaultsButton"><value>恢复默认值</value></data>
+	<data name="Settings.ModelProviders.ConnectedNoModelsMessage"><value>连接成功，但该提供商未返回任何模型。您仍可以手动输入模型 ID。</value></data>
+	<data name="Settings.ModelProviders.ModelsLoadedMessage"><value>已加载 {0} 个模型。</value></data>
+	<data name="Settings.ModelProviders.ModelDetailsPrefilledMessage"><value>已根据所选模型自动填充字段。请根据需要检查并调整。</value></data>
+	<data name="Settings.ModelProviders.InvalidDownloadUrl"><value>请输入有效的 http 或 https URL。</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOllama"><value>如果本地 Ollama 未在默认地址上运行，请覆盖此端点</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpGroq"><value>仅在通过代理或网关进行路由时才覆盖 Groq 端点</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenAICompatible"><value>设置兼容 API、代理或网关的端点</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenRouter"><value>仅在通过代理或网关进行路由时才覆盖 OpenRouter 端点</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpDefault"><value>覆盖默认 API 端点</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpNoCredentials"><value>在“设置 > 凭据”中创建凭据以使用需要身份验证的提供商。</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpGoogle"><value>Google Gemini 需要 API 密钥凭据。</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpDefault"><value>仅当该提供商无需 API 密钥即可使用时才留空。</value></data>
+	<data name="Settings.ModelProviders.AutoValue"><value>自动</value></data>
+	<data name="Settings.ModelProviders.AllowValue"><value>允许</value></data>
+	<data name="Settings.ModelProviders.SingleValue"><value>单一</value></data>
+	<data name="Settings.ModelProviders.EmbeddingEditDialogTitle"><value>编辑嵌入提供商</value></data>
+	<data name="Settings.ModelProviders.EmbeddingAddDialogTitle"><value>添加嵌入提供商</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderNamePlaceholder"><value>例如：Ollama Embeddings</value></data>
+	<data name="Settings.ModelProviders.EmbeddingModelIdPlaceholder"><value>例如：nomic-embed-text</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsLabel"><value>向量维度</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsRequired"><value>向量维度为必填项</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsHelp"><value>必须与模型的输出匹配（例如 nomic-embed-text 为 768，text-embedding-3-small 为 1536）。保存修改后的嵌入模型或维度会清除现有记忆索引，以便 Oscova 重新构建。</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialDescription"><value>将此嵌入提供商链接到已保存的 API 密钥凭据。</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialHelp"><value>选择已保存的凭据，对于不需要凭据的提供商请留空。</value></data>
+	<data name="Settings.Agents.SectionDescription"><value>创建和管理在聊天中使用的自定义智能体。</value></data>
+	<data name="Settings.Agents.NewAgentButton"><value>新建智能体</value></data>
+	<data name="Settings.Agents.EmptyStateMessage"><value>暂无自定义智能体。创建一个以开始使用。</value></data>
+	<data name="Settings.Agents.SharedBadge"><value>共享</value></data>
+	<data name="Settings.Agents.DeleteButtonTitle"><value>删除智能体</value></data>
+	<data name="Settings.Agents.ExportButtonTitle"><value>导出智能体</value></data>
+	<data name="Settings.Agents.ExportFailedToast"><value>无法导出该智能体。</value></data>
+	<data name="Settings.Agents.ImportDialogTitle"><value>导入智能体</value></data>
+	<data name="Settings.Agents.ImportDialogDescription"><value>从 .oscagent 文件导入智能体。智能体始终作为新智能体添加，绝不替换现有智能体。</value></data>
+	<data name="Settings.Agents.ChooseFileButton"><value>选择智能体文件</value></data>
+	<data name="Settings.Agents.ImporterLimitInfo"><value>导入器支持不超过 5 MB 的单个 .oscagent 文件包。不包括聊天、记忆和私有智能体笔记。</value></data>
+	<data name="Settings.Agents.ImportNameLabel"><value>名称（可选）</value></data>
+	<data name="Settings.Agents.ImportNameHint"><value>留空以保留文件中存储的名称。如果该名称已被使用，将追加数字。</value></data>
+	<data name="Settings.Agents.UnsupportedImportFileError"><value>仅支持 .oscagent 文件。</value></data>
+	<data name="Settings.Agents.InvalidImportFileError"><value>无法导入该智能体文件。</value></data>
+	<data name="Settings.Agents.ImportedToast"><value>智能体“{0}”已导入。</value></data>
+	<data name="Settings.Agents.ImportedWithRemovedToast"><value>智能体“{0}”已导入。已移除此计算机上不可用的 {1} 个引用。</value></data>
+	<data name="Settings.Agents.BackButton"><value>返回</value></data>
+	<data name="Settings.Agents.EditingLabel"><value>正在编辑：{0}</value></data>
+	<data name="Settings.Agents.DeleteConfirmTitle"><value>删除智能体</value></data>
+	<data name="Settings.Agents.DeleteConfirmMessage"><value>确定要删除“{0}”吗？</value></data>
+	<data name="Settings.Agents.CustomizeButton"><value>自定义</value></data>
+	<data name="Settings.Agents.SharedAgentWarning"><value>共享智能体定义只能由管理员或协管员用户编辑。</value></data>
+	<data name="Settings.Agents.SaveFirstTitle"><value>请先保存智能体</value></data>
+	<data name="Settings.Agents.NamePlaceholder"><value>助手</value></data>
+	<data name="Settings.Agents.CallableNameCollisionMessage"><value>智能体名称“{0}”解析出的可调用名称“{1}”已被其他智能体使用。请选择其他智能体名称。</value></data>
+	<data name="Settings.Agents.DescriptionPlaceholder"><value>对此智能体的简短描述...</value></data>
+	<data name="Settings.Agents.SystemInstructionLabel"><value>系统指令</value></data>
+	<data name="Settings.Agents.SystemInstructionPlaceholder"><value>输入系统指令以引导助手...</value></data>
+	<data name="Settings.Agents.PreviewInstructionButton"><value>预览</value></data>
+	<data name="Settings.Agents.PreviewInstructionTitle"><value>已解析的系统指令</value></data>
+	<data name="Settings.Agents.PreviewInstructionGeneratedAt"><value>生成于 {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionFailed"><value>无法估算上下文用量：{0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionTokenCount"><value>{0} 个 Token</value></data>
+	<data name="Settings.PromptVariables.AgentName"><value>当前智能体名称。</value></data>
+	<data name="Settings.PromptVariables.CurrentDate"><value>当前本地日期。</value></data>
+	<data name="Settings.PromptVariables.UserName"><value>当前用户的显示名称。</value></data>
+	<data name="Settings.PromptVariables.UserNickname"><value>当前用户的首选称呼。</value></data>
+	<data name="Settings.PromptVariables.UserUsername"><value>当前用户的登录用户名。</value></data>
+	<data name="Settings.PromptVariables.UserEmail"><value>当前用户的账户电子邮件。</value></data>
+	<data name="Settings.PromptVariables.UserTimezone"><value>当前用户的时区。</value></data>
+	<data name="Settings.PromptVariables.UserContext"><value>当前用户为此共享智能体保存的个人上下文。</value></data>
+	<data name="Settings.Agents.ModelProviderLabel"><value>默认模型提供商</value></data>
+	<data name="Settings.Agents.ModelProviderDefaultOption"><value>使用应用默认提供商</value></data>
+	<data name="Settings.Agents.ModelProviderDescription"><value>用于任务、消息渠道和委派工作的默认提供商。你与此智能体的聊天或任务中明确选择的提供商可覆盖此设置。留空以使用应用默认值。</value></data>
+	<data name="Settings.Agents.EnableCompactionLabel"><value>启用压缩</value></data>
+	<data name="Settings.Agents.EnableCompactionDescription"><value>达到上下文窗口限制时自动总结对话历史。</value></data>
+	<data name="Settings.Agents.EnableMemoryLabel"><value>启用记忆</value></data>
+	<data name="Settings.Agents.EnableMemoryDescription"><value>将保存的记忆加载到上下文中，并允许智能体跨会话保存和检索记忆。</value></data>
+	<data name="Settings.Agents.EnableTodoLabel"><value>启用任务列表</value></data>
+	<data name="Settings.Agents.EnableTodoDescription"><value>让此智能体在会话任务列表中跟踪多步工作。最适合复杂、长时间运行的任务。</value></data>
+	<data name="Settings.Agents.SubagentDelegationLabel"><value>使用子智能体</value></data>
+	<data name="Settings.Agents.SubagentDelegationDescription"><value>允许此智能体将任务委派给自身的独立实例。</value></data>
+	<data name="Settings.Agents.LocalOnlyLabel"><value>仅本地</value></data>
+	<data name="Settings.Agents.LocalOnlyDescription"><value>阻止此智能体使用云端模型提供商和互联网工具，即使全局离线模式已关闭。</value></data>
+	<data name="Settings.Agents.ToolSearchToggleLabel"><value>工具发现</value></data>
+	<data name="Settings.Agents.ToolSearchToggleHelp"><value>初始仅公开固定工具；智能体可在需要时搜索其余工具。</value></data>
+	<data name="Settings.Agents.PinnedColumnLabel"><value>已固定</value></data>
+	<data name="Settings.Agents.PinToolLabel"><value>固定工具 {0}</value></data>
+	<data name="Settings.Agents.ToolSearchSummary"><value>{0} 个已固定 - {1} 个可搜索</value></data>
+	<data name="Settings.Agents.ExposeAsToolLabel"><value>作为工具公开</value></data>
+	<data name="Settings.Agents.ExposeAsToolDescription"><value>允许其他智能体将此智能体作为工具调用。</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersLabel"><value>与所有用户共享</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersDescription"><value>使此智能体对其他用户可见。系统指令可以包含每个用户自定义的 {{ user_context }}。</value></data>
+	<data name="Settings.Agents.RestrictUsersTitle"><value>限制为特定用户</value></data>
+	<data name="Settings.Agents.RestrictUsersDescription"><value>全部不勾选即与所有人共享。</value></data>
+	<data name="Settings.Agents.NoUsersMessage"><value>未找到任何用户。</value></data>
+	<data name="Settings.Agents.AllowedToolsTitle"><value>允许的工具</value></data>
+	<data name="Settings.Agents.NoToolsAvailableMessage"><value>没有可用工具。在“设置 -> MCP 服务器”中配置 MCP 服务器以添加外部工具。</value></data>
+	<data name="Settings.Agents.AgentToolsTitle"><value>智能体工具</value></data>
+	<data name="Settings.Agents.NoAgentToolsAvailableMessage"><value>没有可用作工具的智能体。在自定义智能体上启用“作为工具公开”以在此处使用。</value></data>
+	<data name="Settings.Agents.SkillsTitle"><value>技能</value></data>
+	<data name="Settings.Agents.NoSkillsFoundMessage"><value>未找到任何技能。在“设置 -> 文件 -> skills 文件夹”中添加技能。</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersTitle"><value>工作区文件夹</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersDescription"><value>受管工作区是 workspace/ 下的文件夹。在“设置 -> 文件”中创建它们，然后在此处选择。</value></data>
+	<data name="Settings.Agents.NoWorkspacesMessage"><value>尚未找到工作区文件夹。在“设置 -> 文件”中创建工作区，然后在此处选择。</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceLabel"><value>资料库</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceDescription"><value>选择资料库将授予只读文件访问权限并添加资料库搜索工具。</value></data>
+	<data name="Settings.Agents.SharedFolderLabel"><value>共享文件夹</value></data>
+	<data name="Settings.Agents.SharedFolderDescription"><value>授予对此服务器上所有获准用户共享的文件夹（位于 /shared）的读写权限。</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessTitle"><value>额外文件夹访问权限</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessDescription"><value>添加外部主机文件夹或受管用户文件夹，以进行显式的 /mnt 访问。</value></data>
+	<data name="Settings.Agents.AutomaticDataRootLabel"><value>自动数据根目录</value></data>
+	<data name="Settings.Agents.AutomaticDataRootDescription"><value>始终对该智能体可用；私有笔记位于 /data/notes 下。</value></data>
+	<data name="Settings.Agents.AddDirectoryButton"><value>添加目录</value></data>
+	<data name="Settings.Agents.NoDirectoriesMessage"><value>未配置其他文件夹。</value></data>
+	<data name="Settings.Agents.DirectorySourceLabel"><value>来源</value></data>
+	<data name="Settings.Agents.DirectorySourceExternal"><value>外部</value></data>
+	<data name="Settings.Agents.DirectorySourceManaged"><value>托管</value></data>
+	<data name="Settings.Agents.DirectoryPathLabel"><value>现有文件夹路径</value></data>
+	<data name="Settings.Agents.DirectoryPathPlaceholder"><value>项目文件夹路径</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathLabel"><value>用户文件夹路径</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathPlaceholder"><value>agents/main/data/notes</value></data>
+	<data name="Settings.Agents.DirectoryLabelLabel"><value>标签</value></data>
+	<data name="Settings.Agents.DirectoryLabelPlaceholder"><value>Obsidian 仓库</value></data>
+	<data name="Settings.Agents.DirectoryAccessLabel"><value>访问权限</value></data>
+	<data name="Settings.Agents.AccessModeReadOnly"><value>只读</value></data>
+	<data name="Settings.Agents.AccessModeReadWrite"><value>读写</value></data>
+	<data name="Settings.Agents.RemoveDirectoryTitle"><value>移除目录</value></data>
+	<data name="Settings.Agents.MountNameCollisionMessage"><value>工作区名称和文件夹标签必须解析为唯一的挂载名称。冲突：{0}。</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdatedToast"><value>头像已更新。</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdateFailedToast"><value>无法更新头像：{0}</value></data>
+	<data name="Settings.Prompts.CatalogTitle"><value>自定义提示词</value></data>
+	<data name="Settings.Prompts.CatalogDescription"><value>查看和编辑记忆、资料库搜索、压缩、技能以及运行时上下文功能所使用的提示词模板。</value></data>
+	<data name="Settings.Prompts.CatalogCountBadge"><value>{0} 个提示词</value></data>
+	<data name="Settings.Prompts.CompactionInstructionLabel"><value>压缩指令</value></data>
+	<data name="Settings.Prompts.CompactionDescription"><value>控制当上下文窗口需要空间时如何总结长会话。</value></data>
+	<data name="Settings.Prompts.StoredAsLabel"><value>存储为</value></data>
+	<data name="Settings.Prompts.OpenInFileEditorLink"><value>在文件编辑器中打开</value></data>
+	<data name="Settings.Prompts.CompactionPlaceholder"><value>输入用于总结会话历史记录的指令...</value></data>
+	<data name="Settings.Prompts.MemorySystemPromptLabel"><value>记忆系统提示词</value></data>
+	<data name="Settings.Prompts.MemorySystemDescription"><value>决定如何将保存的记忆作为上下文呈现给智能体。</value></data>
+	<data name="Settings.Prompts.MemorySystemPlaceholder"><value>输入记忆上下文提供者的系统提示词...</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptLabel"><value>环境提示词</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptDescription"><value>构建添加到智能体指令中的运行时环境上下文。</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptPlaceholder"><value>输入运行时环境上下文的提示词模板...</value></data>
+	<data name="Settings.Prompts.LibraryPromptLabel"><value>资料库指令</value></data>
+	<data name="Settings.Prompts.LibraryPromptDescription"><value>指导智能体如何搜索持久化的资料库文件，并将其与对话记忆区分开来。</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptLabel"><value>工具发现指令</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptDescription"><value>当大型工具集被延迟加载时，指导智能体如何搜索工具。</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptLabel"><value>任务列表指令</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptDescription"><value>指导已启用的智能体在执行复杂工作期间如何创建和维护其任务列表。</value></data>
+	<data name="Settings.Prompts.SubagentsPromptLabel"><value>子智能体指令</value></data>
+	<data name="Settings.Prompts.SubagentsPromptDescription"><value>指导已开启子智能体的智能体如何将工作委派给自身的独立实例。</value></data>
+	<data name="Settings.Prompts.SkillsPromptLabel"><value>技能指令</value></data>
+	<data name="Settings.Prompts.SkillsPromptDescription"><value>指导智能体如何发现、加载和使用分配的技能。</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptLabel"><value>虚拟形象情绪指令</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptDescription"><value>指导智能体在虚拟形象朗读回复时使用情绪标签标记感受。</value></data>
+	<data name="Settings.Prompts.VariablesBadge"><value>{0} 个变量</value></data>
+	<data name="Settings.Prompts.NoVariablesBadge"><value>无变量</value></data>
+	<data name="Settings.Prompts.VariablePickerHelperText"><value>单击变量以在光标处插入。</value></data>
+	<data name="Settings.Skills.ScriptExecutionTitle"><value>Shell 和技能脚本执行</value></data>
+	<data name="Settings.Skills.ScriptExecutionDescription"><value>操作员为所有账户选择 shell 命令和技能脚本的运行环境。默认为主机。更改环境后，请开始新的运行。</value></data>
+	<data name="Settings.Skills.ExecutionModeLabel"><value>执行模式</value></data>
+	<data name="Settings.Skills.SaveExecutionModeButton"><value>保存执行环境</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesTitle"><value>支持的随附脚本类型</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesDescription"><value>容器沙盒直接运行 .py、.js 和 .sh 文件；每个文件都需要有效的 #! 第一行来指定镜像中安装的运行时。</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesHostDescription"><value>主机模式通过主机 Shell 运行文件，并且需要 PATH 中存在匹配的运行时。</value></data>
+	<data name="Settings.Skills.InstalledSkillsTitle"><value>已安装的技能</value></data>
+	<data name="Settings.Skills.InstalledSkillsDescription"><value>管理可分配给智能体的技能包。</value></data>
+	<data name="Settings.Skills.ImportSkillButton"><value>导入技能</value></data>
+	<data name="Settings.Skills.NoSkillsInstalledMessage"><value>尚未安装任何技能。导入 SKILL.md 文件或打包的 .zip 文件以使其可用于你的智能体。</value></data>
+	<data name="Settings.Skills.InstalledBadge"><value>已安装</value></data>
+	<data name="Settings.Skills.DeleteButton"><value>卸载技能</value></data>
+	<data name="Settings.Skills.DeleteConfirmTitle"><value>卸载技能</value></data>
+	<data name="Settings.Skills.DeleteConfirmMessage"><value>确定要卸载“{0}”吗？这将从你的所有智能体中将其移除。</value></data>
+	<data name="Settings.Skills.DeletedToast"><value>技能已卸载。</value></data>
+	<data name="Settings.Skills.ImportedSkillsInfoNote"><value>导入的技能位于你的 skills/ 目录中，目前可以从“文件”页面手动将其移除。</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabled"><value>已禁用</value></data>
+	<data name="Settings.Skills.ExecutionModeHost"><value>主机</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxed"><value>容器沙盒</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabledDescription"><value>Shell 命令和随附的技能脚本无法运行。</value></data>
+	<data name="Settings.Skills.ExecutionModeHostDescription"><value>命令直接在运行 Oscova 的计算机上执行，并使用其操作系统账户的权限。审批遵循智能体和运行设置。</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxedDescription"><value>命令在 Docker 内运行，并挂载您授权的文件夹。仅安装在容器内的工具会在容器删除时丢失。主机上安装的工具不会自动可用。</value></data>
+	<data name="Settings.Skills.ExecutionModeSavedToast"><value>执行环境已保存。开始新运行以使用它。</value></data>
+	<data name="Settings.Tools.AutoApproveHostWarning"><value>启用主机执行时，自动批准的 Shell 命令可以更改运行 Oscova 的计算机。</value></data>
+	<data name="Settings.Skills.ImportDialogTitle"><value>导入技能</value></data>
+	<data name="Settings.Skills.ImportDialogDescription"><value>导入单个技能，可作为原始 SKILL.md 文件或打包的 .zip 归档文件。</value></data>
+	<data name="Settings.Skills.ChooseFileButton"><value>选择技能文件</value></data>
+	<data name="Settings.Skills.ImporterLimitInfo"><value>导入器接受最多 10 MB 的单个 SKILL.md 文档或单个 .zip 压缩包。</value></data>
+	<data name="Settings.Skills.ImporterZipInfo"><value>Zip 导入可包含 scripts/、references/ 和 assets/。</value></data>
+	<data name="Settings.Skills.ImportWarningsTitle"><value>导入警告</value></data>
+	<data name="Settings.Skills.UnsupportedFileTypeError"><value>仅支持 .md 和 .zip 文件。</value></data>
+	<data name="Settings.Skills.InvalidImportFileError"><value>该文件似乎不是有效的技能文件。请导入 SKILL.md 文件或包含单个技能的 .zip 压缩包。</value></data>
+	<data name="Settings.Skills.ImportedToast"><value>技能“{0}”已导入。</value></data>
+	<data name="Settings.Tools.AvailableToolsTitle"><value>可用工具</value></data>
+	<data name="Settings.Tools.AvailableToolsDescription"><value>这些是可供你的智能体使用的工具，包括内置工具集和 MCP 服务器工具。</value></data>
+	<data name="Settings.Tools.NoToolsAvailableMessage"><value>没有可用的工具。在“设置 -> MCP 服务器”中配置 MCP 服务器以添加外部工具。</value></data>
+	<data name="Settings.Tools.SearchPlaceholder"><value>搜索工具</value></data>
+	<data name="Settings.Tools.SearchLabel"><value>搜索工具</value></data>
+	<data name="Settings.Tools.SelectedCountLabel"><value>已选择 {0} / {1} 个</value></data>
+
+  <data name="Settings.Tools.ShowEnabledOnlyLabel" xml:space="preserve"><value>仅显示已启用的工具</value></data>
+	<data name="Settings.Tools.ServerNameLabel"><value>服务器名称</value></data>
+	<data name="Settings.Tools.AllServersOption"><value>全部</value></data>
+	<data name="Settings.Tools.SelectVisibleToolsLabel"><value>选择可见工具</value></data>
+	<data name="Settings.Tools.SelectToolLabel"><value>选择工具 {0}</value></data>
+	<data name="Settings.Tools.TableHeaderTool"><value>工具</value></data>
+	<data name="Settings.Tools.TableHeaderQualifiedName"><value>限定名称</value></data>
+	<data name="Settings.Tools.TableHeaderServer"><value>服务器</value></data>
+	<data name="Settings.Tools.TableHeaderNetwork"><value>互联网</value></data>
+	<data name="Settings.Tools.TableHeaderApproval"><value>审批</value></data>
+	<data name="Settings.Tools.ApprovalDefault"><value>默认</value></data>
+	<data name="Settings.Tools.ApprovalDefaultRequire"><value>默认（需要审批）</value></data>
+	<data name="Settings.Tools.ApprovalDefaultAutoApprove"><value>默认（自动批准）</value></data>
+	<data name="Settings.Tools.ApprovalRequire"><value>需要审批</value></data>
+	<data name="Settings.Tools.ApprovalAutoApprove"><value>自动批准</value></data>
+	<data name="Settings.Tools.ApprovalDeny"><value>拒绝</value></data>
+	<data name="Settings.Tools.ApprovalUnavailable"><value>未选择</value></data>
+	<data name="Settings.Tools.NetworkYes"><value>互联网</value></data>
+	<data name="Settings.Tools.NetworkNo"><value>仅限本地</value></data>
+	<data name="Settings.Tools.NoMatchesMessage"><value>没有工具符合当前筛选条件。</value></data>
+	<data name="Settings.Plugins.LoadingMessage"><value>正在加载插件设置...</value></data>
+	<data name="Settings.Plugins.SecurityTitle"><value>仅限受信任代码</value></data>
+	<data name="Settings.Plugins.SecurityDescription"><value>插件在 Oscova Agents 内部运行，并可为所有用户增加功能。请仅启用你信任的插件。</value></data>
+	<data name="Settings.Plugins.RestartRequiredAlert"><value>重启 Oscova Agents 以使插件启用更改生效。</value></data>
+	<data name="Settings.Plugins.InstalledTitle"><value>已安装的插件</value></data>
+	<data name="Settings.Plugins.InstalledDescription"><value>选择在 Oscova Agents 下次启动时为每位用户加载哪些已安装的插件。</value></data>
+	<data name="Settings.Plugins.RestartHint"><value>已安装的插件将保持非活动状态，直到启用插件并重启应用程序。</value></data>
+	<data name="Settings.Plugins.SearchPlaceholder"><value>搜索插件</value></data>
+	<data name="Settings.Plugins.SearchLabel"><value>搜索插件</value></data>
+	<data name="Settings.Plugins.TableHeaderPlugin"><value>插件</value></data>
+	<data name="Settings.Plugins.TableHeaderStatus"><value>当前状态</value></data>
+	<data name="Settings.Plugins.TableHeaderNextStart"><value>下次重启时加载</value></data>
+	<data name="Settings.Plugins.TableHeaderActions"><value>操作</value></data>
+	<data name="Settings.Plugins.NoPluginsMessage"><value>未找到已安装的插件。</value></data>
+	<data name="Settings.Plugins.NoMatchesMessage"><value>没有插件匹配当前搜索。</value></data>
+	<data name="Settings.Plugins.EnableLabel"><value>下次重启时加载 {0}</value></data>
+	<data name="Settings.Plugins.DetailsButton"><value>查看插件详情</value></data>
+	<data name="Settings.Plugins.DetailsLabel"><value>查看 {0} 的详情</value></data>
+	<data name="Settings.Plugins.ResetButton"><value>重置</value></data>
+	<data name="Settings.Plugins.SaveButton"><value>保存插件设置</value></data>
+	<data name="Settings.Plugins.LoadErrorToast"><value>插件设置响应为空。</value></data>
+	<data name="Settings.Plugins.SavedToast"><value>插件设置已保存。</value></data>
+	<data name="Settings.Plugins.UninstallLabel"><value>卸载 {0}</value></data>
+	<data name="Settings.Plugins.UninstallDisableRequiredTooltip"><value>请先禁用并保存。</value></data>
+	<data name="Settings.Plugins.UninstallRestartRequiredTooltip"><value>请先禁用、保存并重启。</value></data>
+	<data name="Settings.Plugins.UninstallConfirmTitle"><value>卸载插件</value></data>
+	<data name="Settings.Plugins.UninstallConfirmMessage"><value>卸载“{0}”？这会删除所有用户的已安装文件、已存凭据和关联账户令牌。插件创建的其他数据和设置会保留。</value></data>
+	<data name="Settings.Plugins.UninstalledToast"><value>插件已卸载。</value></data>
+	<data name="Settings.Plugins.EnabledLabel"><value>已启用</value></data>
+	<data name="Settings.Plugins.DisabledLabel"><value>已禁用</value></data>
+	<data name="Settings.Plugins.InvalidManifestName"><value>无效的插件清单</value></data>
+	<data name="Settings.Plugins.StatusActive"><value>活跃</value></data>
+	<data name="Settings.Plugins.StatusInactive"><value>未激活</value></data>
+	<data name="Settings.Plugins.StatusLoadFailed"><value>加载失败</value></data>
+	<data name="Settings.Plugins.StatusInvalidManifest"><value>清单无效</value></data>
+	<data name="Settings.Plugins.DetailsTitle"><value>插件详情</value></data>
+	<data name="Settings.Plugins.DetailsTrustNotice"><value>已启用的插件在 Oscova Agents 内部运行受信任代码。请仅启用你信任的插件。</value></data>
+	<data name="Settings.Plugins.NameLabel"><value>名称</value></data>
+	<data name="Settings.Plugins.IdLabel"><value>插件 ID</value></data>
+	<data name="Settings.Plugins.VersionLabel"><value>版本</value></data>
+	<data name="Settings.Plugins.AssemblyLabel"><value>程序集</value></data>
+	<data name="Settings.Plugins.EntryTypeLabel"><value>入口类型</value></data>
+	<data name="Settings.Plugins.CurrentStatusLabel"><value>当前状态</value></data>
+	<data name="Settings.Plugins.NextStartLabel"><value>下次重启时加载</value></data>
+	<data name="Settings.Plugins.DiagnosticLabel"><value>诊断</value></data>
+	<data name="Settings.McpServers.SectionTitle"><value>MCP 服务器</value></data>
+	<data name="Settings.McpServers.FindOnlineButton"><value>在线查找</value></data>
+	<data name="Settings.McpServers.FindOnlineDialogTitle"><value>在线查找 MCP 服务器</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPlaceholder"><value>搜索官方 MCP 注册表...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchButton"><value>搜索</value></data>
+	<data name="Settings.McpServers.FindOnlineSearching"><value>正在搜索 MCP 注册表...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPrompt"><value>搜索服务器，然后选择一种设置方式以在 MCP 服务器编辑器中查看。</value></data>
+	<data name="Settings.McpServers.FindOnlineEmptyResults"><value>没有匹配搜索条件的 MCP 服务器。</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchFailed"><value>MCP 注册表搜索失败。</value></data>
+	<data name="Settings.McpServers.FindOnlineNoDescription"><value>该服务器无可用的描述。</value></data>
+	<data name="Settings.McpServers.FindOnlineVersionLabel"><value>v{0}</value></data>
+	<data name="Settings.McpServers.FindOnlineWebsiteButton"><value>网站</value></data>
+	<data name="Settings.McpServers.FindOnlineRepositoryButton"><value>存储库</value></data>
+	<data name="Settings.McpServers.FindOnlineAddButton"><value>添加</value></data>
+	<data name="Settings.McpServers.FindOnlineRequiredFieldsPrefix"><value>你需要提供：{0}</value></data>
+	<data name="Settings.McpServers.FindOnlineManualSetupHint"><value>该服务器需要手动设置。请让你的智能体进行设置。</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderServer"><value>服务器</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderSetup"><value>设置</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteHttpOption"><value>远程 (HTTP)</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteSseOption"><value>远程 (SSE)</value></data>
+	<data name="Settings.McpServers.FindOnlineNpxOption"><value>本地 (npx)</value></data>
+	<data name="Settings.McpServers.FindOnlineUvxOption"><value>本地 (uvx)</value></data>
+	<data name="Settings.McpServers.FindOnlineDockerOption"><value>本地 (docker)</value></data>
+	<data name="Settings.McpServers.FindOnlineDnxOption"><value>本地 (dnx)</value></data>
+	<data name="Settings.McpServers.FindOnlineManualOption"><value>手动设置</value></data>
+	<data name="Settings.McpServers.ImportJsonButton"><value>导入 JSON</value></data>
+	<data name="Settings.McpServers.AddServerButton"><value>添加服务器</value></data>
+	<data name="Settings.McpServers.NoServersMessage"><value>未配置 MCP 服务器。</value></data>
+	<data name="Settings.McpServers.UnnamedServerLabel"><value>(未命名的服务器)</value></data>
+	<data name="Settings.McpServers.NamePlaceholder"><value>例如：我的 MCP 服务器</value></data>
+	<data name="Settings.McpServers.NameRequired"><value>名称为必填项。</value></data>
+	<data name="Settings.McpServers.TransportLabel"><value>传输协议</value></data>
+	<data name="Settings.McpServers.TransportHttp"><value>HTTP</value></data>
+	<data name="Settings.McpServers.TransportStdio"><value>STDIO</value></data>
+	<data name="Settings.McpServers.NetworkScopeLabel"><value>网络使用</value></data>
+	<data name="Settings.McpServers.NetworkScopeHelp"><value>隔离运行仅排除归类为互联网的服务器。请选择服务器的实际网络分类。</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentLabel"><value>运行环境</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHost"><value>主机进程</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainer"><value>Docker 沙盒</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHostHint"><value>使用应用权限在配置的设备上运行。</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainerHint"><value>在配置设备的 Docker 中运行。项目运行挂载 /project，中央运行挂载 /workspace/&lt;name>。</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentBadge"><value>已沙盒化</value></data>
+	<data name="Settings.McpServers.EndpointLabel"><value>端点</value></data>
+	<data name="Settings.McpServers.EndpointPlaceholder"><value>http://127.0.0.1:8811/mcp</value></data>
+	<data name="Settings.McpServers.EndpointRequired"><value>重新连接前必须提供端点。</value></data>
+	<data name="Settings.McpServers.HeadersLabel"><value>请求头 (每行键=值)</value></data>
+	<data name="Settings.McpServers.HeadersPlaceholder"><value>Authorization=Bearer sk-xxx</value></data>
+	<data name="Settings.McpServers.CommandLabel"><value>命令</value></data>
+	<data name="Settings.McpServers.CommandPlaceholder"><value>npx</value></data>
+	<data name="Settings.McpServers.CommandRequired"><value>重新连接前必须提供命令。</value></data>
+	<data name="Settings.McpServers.WorkingDirectoryLabel"><value>工作目录 (可选)</value></data>
+	<data name="Settings.McpServers.ArgumentsLabel"><value>参数（每行一个）</value></data>
+	<data name="Settings.McpServers.ArgumentsPlaceholder"><value>-y
+@modelcontextprotocol/server-everything</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesLabel"><value>环境变量（每行 KEY=VALUE 或 KEY）</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesPlaceholder"><value>API_KEY
+NODE_ENV=production</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesHelp"><value>使用 KEY=VALUE 保存字面值。对于主机进程，使用 KEY 在启动时从 Oscova 读取同名环境变量；缺失的变量将被忽略，解析后的值绝不会被保存或显示。</value></data>
+	<data name="Settings.McpServers.SaveAndReconnectButton"><value>保存并全部重新连接</value></data>
+	<data name="Settings.McpServers.CompleteRequiredFieldsToast"><value>保存前请填写每个 MCP 服务器的必填字段。</value></data>
+	<data name="Settings.McpServers.SavedReconnectStartedToast"><value>MCP 服务器已保存，并已开始重新连接。</value></data>
+	<data name="Settings.McpServers.SaveFailedToast"><value>保存 MCP 服务器失败：{0}</value></data>
+	<data name="Settings.McpServers.ImportedToast"><value>已导入 {0} 个 MCP 服务器。</value></data>
+	<data name="Settings.McpServers.ImportFailedToast"><value>导入 MCP 服务器失败：{0}</value></data>
+	<data name="Settings.McpServers.ReconnectAllButton"><value>全部重新连接</value></data>
+	<data name="Settings.McpServers.ServerAddedToast"><value>MCP 服务器“{0}”已添加并连接。要使用其工具，请在代理设置的“允许的工具”中选择它们。</value></data>
+	<data name="Settings.McpServers.ServerUpdatedToast"><value>MCP 服务器“{0}”已更新并重新连接。</value></data>
+	<data name="Settings.McpServers.ServerRemovedToast"><value>MCP 服务器“{0}”已移除。</value></data>
+	<data name="Settings.McpServers.ReconnectedAllToast"><value>所有 MCP 服务器均已重新连接。</value></data>
+	<data name="Settings.McpServers.ServerAddedConnectionFailedToast"><value>MCP 服务器“{0}”已保存，但连接失败：{1}</value></data>
+	<data name="Settings.McpServers.ServerUpdatedConnectionFailedToast"><value>MCP 服务器“{0}”已保存，但重新连接失败：{1}</value></data>
+	<data name="Settings.McpServers.ReconnectAllFailedToast"><value>{0} 个 MCP 服务器已保存，但无法重新连接。</value></data>
+	<data name="Settings.McpServers.OperationFailedToast"><value>MCP 服务器操作失败：{0}</value></data>
+	<data name="Settings.McpServers.CopyNameSuffix"><value>{0} (副本)</value></data>
+	<data name="Settings.McpServers.ImportDialogTitle"><value>导入 MCP 服务器配置</value></data>
+	<data name="Settings.McpServers.ImportDialogDescription"><value>粘贴来自 VS Code、Cursor 或 Claude Desktop 格式的 JSON。</value></data>
+	<data name="Settings.McpServers.NoServersFoundError"><value>提供的 JSON 中未找到服务器。</value></data>
+	<data name="Settings.McpServers.InvalidJsonError"><value>无效的 JSON：{0}</value></data>
+	<data name="Settings.McpServers.TableHeaderServer"><value>服务器</value></data>
+	<data name="Settings.McpServers.TableHeaderConnection"><value>连接</value></data>
+	<data name="Settings.McpServers.TableHeaderOptions"><value>选项</value></data>
+	<data name="Settings.McpServers.OpenDetailsTitle"><value>打开服务器详情</value></data>
+	<data name="Settings.McpServers.DetailsDialogTitle"><value>服务器配置</value></data>
+	<data name="Settings.McpServers.AddDialogTitle"><value>添加 MCP 服务器</value></data>
+	<data name="Settings.McpServers.EditDialogTitle"><value>编辑 MCP 服务器</value></data>
+	<data name="Settings.McpServers.SaveServerButton"><value>保存服务器</value></data>
+	<data name="Settings.McpServers.ConfiguredBadge"><value>已配置</value></data>
+	<data name="Settings.McpServers.IncompleteBadge"><value>未完成</value></data>
+	<data name="Settings.McpServers.HeadersCountLabel"><value>{0} 个请求头</value></data>
+	<data name="Settings.McpServers.ArgumentsCountLabel"><value>{0} 个参数</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesCountLabel"><value>{0} 个变量</value></data>
+	<data name="Settings.McpServers.NoHeaders"><value>无请求头</value></data>
+	<data name="Settings.McpServers.NoArguments"><value>无参数</value></data>
+	<data name="Settings.McpServers.NoEnvironmentVariables"><value>无环境变量</value></data>
+	<data name="Settings.Section.Hooks.Label"><value>Hook</value></data>
+	<data name="Settings.Section.Hooks.Description"><value>配置出站生命周期 Hook 和入站任务 Webhook。</value></data>
+	<data name="Settings.Hooks.LoadingMessage"><value>正在加载 Hook 设置...</value></data>
+	<data name="Settings.Hooks.SectionTitle"><value>Hook 处理程序</value></data>
+	<data name="Settings.Hooks.SectionDescription"><value>在智能体和任务事件发生时运行命令或 HTTP 端点。</value></data>
+	<data name="Settings.Hooks.AddHookButton"><value>添加 Hook</value></data>
+	<data name="Settings.Hooks.VisualTab"><value>可视化</value></data>
+	<data name="Settings.Hooks.JsonTab"><value>JSON</value></data>
+	<data name="Settings.Hooks.NoHooksMessage"><value>未配置出站 Hook。</value></data>
+	<data name="Settings.Hooks.UnnamedHookLabel"><value>未命名的 Hook</value></data>
+	<data name="Settings.Hooks.NewHookDefaultName"><value>新 Hook</value></data>
+	<data name="Settings.Hooks.AddHookDialogTitle"><value>添加 Hook</value></data>
+	<data name="Settings.Hooks.EditHookDialogTitle"><value>编辑 Hook</value></data>
+	<data name="Settings.Hooks.SaveHookButton"><value>保存 Hook</value></data>
+	<data name="Settings.Hooks.CopyNameSuffix"><value>{0} (副本)</value></data>
+	<data name="Settings.Hooks.NamePlaceholder"><value>例如：拦截高危工具</value></data>
+	<data name="Settings.Hooks.EnabledLabel"><value>启用此 Hook</value></data>
+	<data name="Settings.Hooks.EnabledStatus"><value>已启用</value></data>
+	<data name="Settings.Hooks.DisabledStatus"><value>已禁用</value></data>
+	<data name="Settings.Hooks.EventsLabel"><value>事件</value></data>
+	<data name="Settings.Hooks.HandlerTypeLabel"><value>处理程序类型</value></data>
+	<data name="Settings.Hooks.HandlerCommand"><value>命令</value></data>
+	<data name="Settings.Hooks.HandlerHttp"><value>HTTP</value></data>
+	<data name="Settings.Hooks.FailureModeLabel"><value>故障模式</value></data>
+	<data name="Settings.Hooks.FailureFailClosed"><value>失败时阻止</value></data>
+	<data name="Settings.Hooks.FailureFailOpen"><value>失败时允许</value></data>
+	<data name="Settings.Hooks.TimeoutLabel"><value>超时时间 (秒)</value></data>
+	<data name="Settings.Hooks.TargetLabel"><value>目标</value></data>
+	<data name="Settings.Hooks.CommandFileNameLabel"><value>命令</value></data>
+	<data name="Settings.Hooks.CommandArgumentsLabel"><value>参数，每行一个</value></data>
+	<data name="Settings.Hooks.CommandWorkingDirectoryLabel"><value>工作目录</value></data>
+	<data name="Settings.Hooks.HttpUrlLabel"><value>URL</value></data>
+	<data name="Settings.Hooks.StaticHeadersLabel"><value>静态请求头</value></data>
+	<data name="Settings.Hooks.SecretHeadersLabel"><value>机密请求头</value></data>
+	<data name="Settings.Hooks.HeaderNamePlaceholder"><value>请求头名称</value></data>
+	<data name="Settings.Hooks.HeaderValuePlaceholder"><value>请求头值</value></data>
+	<data name="Settings.Hooks.CredentialSelectPlaceholder"><value>选择出站 HTTP 机密</value></data>
+	<data name="Settings.Hooks.AddHeaderButton"><value>添加请求头</value></data>
+	<data name="Settings.Hooks.AddSecretHeaderButton"><value>添加机密请求头</value></data>
+	<data name="Settings.Hooks.ResetButton"><value>重置</value></data>
+	<data name="Settings.Hooks.SaveButton"><value>保存 Hook</value></data>
+	<data name="Settings.Hooks.JsonLabel"><value>Hook 设置 JSON</value></data>
+	<data name="Settings.Hooks.CopyJsonButton"><value>复制 JSON</value></data>
+	<data name="Settings.Hooks.ApplyJsonButton"><value>应用 JSON</value></data>
+	<data name="Settings.Hooks.SavedToast"><value>Hook 设置已保存。</value></data>
+	<data name="Settings.Hooks.LoadFailedToast"><value>加载 Hook 设置失败：{0}</value></data>
+	<data name="Settings.Hooks.SaveFailedToast"><value>保存 Hook 设置失败：{0}</value></data>
+	<data name="Settings.Hooks.JsonAppliedToast"><value>已应用 Hook JSON。</value></data>
+	<data name="Settings.Hooks.InvalidJsonToast"><value>无效的 Hook JSON：{0}</value></data>
+	<data name="Settings.Hooks.Event.TaskStart"><value>任务开始</value></data>
+	<data name="Settings.Hooks.Event.TaskComplete"><value>任务完成</value></data>
+	<data name="Settings.Hooks.Event.TaskFailed"><value>任务失败</value></data>
+	<data name="Settings.Hooks.Event.SessionStart"><value>会话开始</value></data>
+	<data name="Settings.Hooks.Event.UserPromptSubmit"><value>用户提示词提交</value></data>
+	<data name="Settings.Hooks.Event.PreToolUse"><value>工具使用前</value></data>
+	<data name="Settings.Hooks.Event.PostToolUse"><value>工具使用后</value></data>
+	<data name="Settings.Hooks.ApiKeysTitle"><value>任务 Webhook API 密钥</value></data>
+	<data name="Settings.Hooks.ApiKeysDescription"><value>为触发允许任务的外部系统创建 Bearer 令牌。</value></data>
+	<data name="Settings.Hooks.NewApiKeyNameLabel"><value>API 密钥名称</value></data>
+	<data name="Settings.Hooks.AllowedTaskSlugsLabel"><value>允许的任务 Slug，以逗号分隔</value></data>
+	<data name="Settings.Hooks.CreateApiKeyButton"><value>创建 API 密钥</value></data>
+	<data name="Settings.Hooks.CreateApiKeyDialogTitle"><value>创建任务 Webhook API 密钥</value></data>
+	<data name="Settings.Hooks.NoApiKeysMessage"><value>尚无任务 Webhook API 密钥。</value></data>
+	<data name="Settings.Hooks.CreatedTokenTitle"><value>请立即复制此令牌</value></data>
+	<data name="Settings.Hooks.CopyTokenButton"><value>复制</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedLabel"><value>创建于 {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyLastUsedLabel"><value>上次使用于 {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyNeverUsed"><value>从未使用</value></data>
+	<data name="Settings.Hooks.ApiKeyScopesLabel"><value>作用域</value></data>
+	<data name="Settings.Hooks.ApiKeyAllowedSlugsLabel"><value>允许的 Slug</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmTitle"><value>删除任务 Webhook API 密钥</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmMessage"><value>是否删除任务 Webhook API 密钥“{0}”？</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedToast"><value>任务 Webhook API 密钥已创建。</value></data>
+	<data name="Settings.Hooks.ApiKeyUpdatedToast"><value>任务 Webhook API 密钥已更新。</value></data>
+	<data name="Settings.Hooks.ApiKeyDeletedToast"><value>任务 Webhook API 密钥已删除。</value></data>
+	<data name="Settings.Hooks.SecretsTitle"><value>出站 HTTP Hook 机密</value></data>
+	<data name="Settings.Hooks.SecretsDescription"><value>存储 Oscova 发送到外部 HTTP Hook 端点的请求头值。</value></data>
+	<data name="Settings.Hooks.NewSecretButton"><value>新建</value></data>
+	<data name="Settings.Hooks.NewSecretDialogTitle"><value>新建出站 HTTP Hook 机密</value></data>
+	<data name="Settings.Hooks.EditSecretDialogTitle"><value>编辑出站 HTTP Hook 机密</value></data>
+	<data name="Settings.Hooks.SecretNameLabel"><value>机密名称</value></data>
+	<data name="Settings.Hooks.SecretKeyLabel"><value>机密引用键</value></data>
+	<data name="Settings.Hooks.SecretValueLabel"><value>机密值</value></data>
+	<data name="Settings.Hooks.SecretDescriptionLabel"><value>描述</value></data>
+	<data name="Settings.Hooks.SecretValueEditHint"><value>留空以保留当前值。</value></data>
+	<data name="Settings.Hooks.SaveSecretButton"><value>保存机密</value></data>
+	<data name="Settings.Hooks.NoSecretsMessage"><value>尚未保存出站 HTTP Hook 机密。</value></data>
+	<data name="Settings.Hooks.SecretSetStatus"><value>已设置</value></data>
+	<data name="Settings.Hooks.SecretUpdatedLabel"><value>更新于 {0}</value></data>
+	<data name="Settings.Hooks.SecretSavedToast"><value>出站 HTTP Hook 机密已保存。</value></data>
+	<data name="Settings.Hooks.SecretDeletedToast"><value>出站 HTTP Hook 机密已删除。</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmTitle"><value>删除出站 HTTP Hook 机密</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmMessage"><value>确定删除出站 HTTP Hook 机密“{0}”吗？</value></data>
+	<data name="Settings.Hooks.DeleteSecretReferencedConfirmMessage"><value>确定删除出站 HTTP Hook 机密“{0}”吗？一个或多个 HTTP Hook 仍引用此凭据。</value></data>
+	<data name="Settings.General.AssistantNameLabel"><value>助手名称</value></data>
+	<data name="Settings.General.AssistantNamePlaceholder"><value>输入助手名称...</value></data>
+	<data name="Settings.General.SaveNameTitle"><value>保存名称</value></data>
+	<data name="Settings.General.UnsavedChangesHint"><value>更改不会自动保存。</value></data>
+	<data name="Settings.General.ShowTopBarProfileLabel"><value>在顶部栏中显示个人资料</value></data>
+	<data name="Settings.General.ShowTopBarProfileDescription"><value>在顶部栏中显示您的头像、姓名和用户名</value></data>
+	<data name="Settings.General.GamificationLabel"><value>成就与经验值 (XP)</value></data>
+	<data name="Settings.General.GamificationDescription"><value>显示成就与经验值 (XP)，并在解锁时发送通知</value></data>
+	<data name="Settings.General.TimeZoneLabel"><value>时区</value></data>
+	<data name="Settings.General.SearchTimeZonesPlaceholder"><value>搜索时区...</value></data>
+	<data name="Settings.General.ServerDefault"><value>服务器默认</value></data>
+	<data name="Settings.General.TimeZoneDescription"><value>用户界面中的时间戳将以此时区显示。</value></data>
+	<data name="Settings.General.LanguageLabel"><value>语言</value></data>
+	<data name="Settings.General.LanguageReloadHint"><value>页面重新加载后更改生效。</value></data>
+	<data name="Settings.General.DeleteConversationsLabel"><value>删除对话</value></data>
+	<data name="Settings.General.DeleteConversationsDescription"><value>永久删除应用中的所有聊天对话。此操作无法撤消。</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmTitle"><value>确认删除</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmMessage"><value>永久删除全部 {0} 个对话吗？此操作无法撤消。</value></data>
+	<data name="Settings.Shared.SaveSettingsToast"><value>设置已成功保存。</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Back"><value>返回</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Customize"><value>自定义：{0}</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Description"><value>添加个人背景信息，该信息将在您的会话中注入到此共享智能体的指令中，例如首选称呼或称谓偏好。</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Label"><value>个人背景信息</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Placeholder"><value>为此共享智能体添加备注、偏好、背景或其他个人上下文...</value></data>
+	<data name="Settings.Category.Channels.Label"><value>频道</value></data>
+	<data name="Settings.Category.Channels.Description"><value>聊天频道与机器人集成。</value></data>
+	<data name="Settings.General.ChatTitleGenerationLabel"><value>生成聊天标题</value></data>
+	<data name="Settings.General.ChatTitleGenerationDescription"><value>在发送几条消息后使用选定的聊天模型重命名对话</value></data>
+	<data name="Settings.General.ChatResumeWindowLabel"><value>恢复最近的聊天</value></data>
+	<data name="Settings.General.ChatResumeWindowDescription"><value>当您的最后一条消息在指定的分钟数以内时返回最新当前聊天。使用 0 始终显示起始屏幕。</value></data>
+	<data name="Settings.General.ChatResumeWindowInvalid"><value>输入大于或等于 0 的整数分钟数。</value></data>
+	<data name="Settings.General.AboutTitle"><value>关于</value></data>
+	<data name="Settings.General.AboutDescription"><value>此应用及其智能体框架的版本详细信息。</value></data>
+	<data name="Settings.General.HostVersionLabel"><value>Oscova Agents</value></data>
+	<data name="Settings.General.FrameworkVersionLabel"><value>框架</value></data>
+	<data name="Settings.Skills.FindOnlineButton"><value>联机查找技能</value></data>
+	<data name="Settings.Skills.ManageSourcesButton"><value>管理源</value></data>
+	<data name="Settings.Skills.FindOnlineDialogTitle"><value>联机查找技能</value></data>
+	<data name="Settings.Skills.FindOnlineSearchPlaceholder"><value>按名称搜索...</value></data>
+	<data name="Settings.Skills.FindOnlineInstallButton"><value>安装</value></data>
+	<data name="Settings.Skills.FindOnlineDescriptionLoading"><value>正在加载描述...</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsUnavailable"><value>无法加载详细信息。</value></data>
+	<data name="Settings.Skills.FindOnlineNoDescription"><value>此技能没有可用描述。</value></data>
+	<data name="Settings.Skills.FindOnlineInstalledToast"><value>技能已安装。</value></data>
+	<data name="Settings.Skills.FindOnlineNoSourcesMessage"><value>未配置技能源。请要求管理员添加。</value></data>
+	<data name="Settings.Skills.FindOnlineEmptyResults"><value>没有与您的搜索匹配的技能。</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsButton"><value>详情</value></data>
+	<data name="Settings.Skills.FindOnlineHideButton"><value>隐藏</value></data>
+	<data name="Settings.Skills.FindOnlineRetryButton"><value>重试</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSkill"><value>技能</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSource"><value>来源</value></data>
+	<data name="Settings.Skills.RegistrySourcesDialogTitle"><value>技能源</value></data>
+	<data name="Settings.Skills.RegistrySourcesDescription"><value>配置“联机查找技能”所使用的 GitHub 仓库。</value></data>
+	<data name="Settings.Skills.RegistrySourcesAddRow"><value>添加源</value></data>
+	<data name="Settings.Skills.RegistrySourcesOwnerLabel"><value>所有者</value></data>
+	<data name="Settings.Skills.RegistrySourcesRepoLabel"><value>仓库</value></data>
+	<data name="Settings.Skills.RegistrySourcesBranchLabel"><value>分支</value></data>
+	<data name="Settings.Skills.RegistryPatHint"><value>管理员可在管理页面的 GitHub Skill Search 下添加个人访问令牌，以通过身份验证访问仓库。</value></data>
+	<data name="Settings.Skills.RegistrySavedToast"><value>技能源已保存。</value></data>
+	<data name="Settings.Skills.InstallStageResolving"><value>正在解析文件</value></data>
+	<data name="Settings.Skills.InstallStageDownloading"><value>正在下载</value></data>
+	<data name="Settings.Skills.InstallStageImporting"><value>正在导入</value></data>
+	<data name="Settings.Skills.InstallStageInstalled"><value>已安装</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialTitle"><value>GitHub Skill Search</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialDescription"><value>“联机查找技能”使用的可选个人访问令牌。将整个主机的 GitHub API 速率限制从每小时 60 次提高到 5,000 次请求。</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialHint"><value>留空以保留现有令牌。使用“清除”将其删除。</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialFieldLabel"><value>个人访问令牌</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialLoading"><value>正在加载当前状态...</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderExists"><value>留空以保留当前令牌</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderNew"><value>粘贴 GitHub 个人访问令牌</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialSavedToast"><value>GitHub 技能搜索令牌已保存。</value></data>
+	<data name="Settings.Plugins.FindOnlineButton"><value>联机查找插件</value></data>
+	<data name="Settings.Plugins.FindOnlineDialogTitle"><value>联机查找插件</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPlaceholder"><value>搜索 NuGet 包...</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchButton"><value>搜索</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPrompt"><value>输入包名称以在 NuGet.org 上搜索 OscovaPlugin 包。</value></data>
+	<data name="Settings.Plugins.FindOnlineSearching"><value>正在搜索 NuGet.org...</value></data>
+	<data name="Settings.Plugins.FindOnlineEmptyResults"><value>没有与您的搜索匹配的插件。</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsButton"><value>详情</value></data>
+	<data name="Settings.Plugins.FindOnlineHideButton"><value>隐藏</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallButton"><value>安装或更新</value></data>
+	<data name="Settings.Plugins.FindOnlineRetryButton"><value>重试</value></data>
+	<data name="Settings.Plugins.FindOnlineRequiresNewerOscova"><value>需要更新版本的 Oscova</value></data>
+	<data name="Settings.Plugins.FindOnlineIncompatible"><value>与此 Oscova 不兼容</value></data>
+	<data name="Settings.Plugins.FindOnlinePrereleaseOnly"><value>仅预发布版本</value></data>
+	<data name="Settings.Plugins.FindOnlineDescriptionLoading"><value>正在加载详情...</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsUnavailable"><value>无法加载详细信息。</value></data>
+	<data name="Settings.Plugins.FindOnlineNoDescription"><value>此插件没有可用描述。</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledToast"><value>插件包已就绪。请确认“下次重启时加载”，然后重启。</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallNotice"><value>插件包已就绪。请确认“下次重启时加载”，然后重启。</value></data>
+	<data name="Settings.Plugins.FindOnlineDownloadsLabel"><value>{0:N0} 次下载</value></data>
+	<data name="Settings.Plugins.FindOnlineVersionLabel"><value>版本 {0}</value></data>
+	<data name="Settings.Plugins.FindOnlineUnknownAuthor"><value>未知作者</value></data>
+	<data name="Settings.Plugins.FindOnlineLicenseLabel"><value>许可证</value></data>
+	<data name="Settings.Plugins.FindOnlineProjectButton"><value>项目</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderPackage"><value>包</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderMetadata"><value>元数据</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallingButton"><value>正在安装...</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledButton"><value>已安装</value></data>
+	<data name="Settings.Speech.RecognitionProviderDescription"><value>选择在免提捕获后如何转录麦克风音频。语言：自动检测。</value></data>
+	<data name="Settings.Speech.SynthesisProviderDescription"><value>选择如何将助手文本转换为音频。</value></data>
+	<data name="Settings.Speech.ProviderLabel"><value>提供商</value></data>
+	<data name="Settings.Speech.ProviderLocal"><value>本地</value></data>
+	<data name="Settings.Speech.ProviderOpenAI"><value>OpenAI</value></data>
+	<data name="Settings.Speech.CredentialLabel"><value>凭据</value></data>
+	<data name="Settings.Speech.CredentialPlaceholder"><value>选择已保存的凭据</value></data>
+	<data name="Settings.Speech.CredentialHelp"><value>凭据在“设置”>“凭据”中进行管理。</value></data>
+	<data name="Settings.Speech.ModelLabel"><value>模型</value></data>
+	<data name="Settings.Speech.SaveProviderButton"><value>保存语音设置</value></data>
+	<data name="Settings.Speech.SettingsSavedToast"><value>语音设置已保存。</value></data>
+	<data name="Settings.Credentials.ConfiguredStatus"><value>已配置</value></data>
+	<data name="Settings.Credentials.MissingStatus"><value>缺少值</value></data>
+	<data name="Settings.Section.Privacy.Label"><value>隐私</value></data>
+	<data name="Settings.Section.Privacy.Description"><value>控制离线模式、自动退出登录以及智能体可以向外发送的内容。</value></data>
+	<data name="Settings.Privacy.LoadingMessage"><value>正在加载隐私设置...</value></data>
+	<data name="Settings.Privacy.OfflineModeTitle"><value>离线模式</value></data>
+	<data name="Settings.Privacy.OfflineModeLabel"><value>保持智能体离线运行</value></data>
+	<data name="Settings.Privacy.OfflineModeDescription"><value>启用后，您的智能体可以使用本地模型、本地工具和局域网端点，但公共互联网提供商和数据出站工具将被阻止。</value></data>
+	<data name="Settings.Privacy.OfflineModeOffBadge"><value>关</value></data>
+	<data name="Settings.Privacy.OfflineModeOnBadge"><value>开</value></data>
+	<data name="Settings.Privacy.EffectsTitle"><value>实时效果</value></data>
+	<data name="Settings.Privacy.EffectsOff"><value>离线限制处于非活动状态。您配置的提供商和工具可以使用其正常的网络访问。</value></data>
+	<data name="Settings.Privacy.DisabledToolsCount"><value>已禁用 {0} 个工具</value></data>
+	<data name="Settings.Privacy.CloudProvidersTitle"><value>已阻止的云提供商</value></data>
+	<data name="Settings.Privacy.NoCloudProviders"><value>当前未阻止任何已配置的云提供商。</value></data>
+	<data name="Settings.Privacy.LocalNetworkTitle"><value>本地网络</value></data>
+	<data name="Settings.Privacy.LocalNetworkDescription"><value>环回和局域网地址保持可用，包括本地 Ollama 或另一台机器上的虚拟形象引擎。</value></data>
+	<data name="Settings.Privacy.RedactionTitle"><value>数据脱敏</value></data>
+	<data name="Settings.Privacy.RedactionBadge"><value>始终开启</value></data>
+	<data name="Settings.Privacy.RedactionDescription"><value>保存的机密在智能体日志、审批和捕获的请求详细信息中会被遮蔽。此保护功能无法关闭。</value></data>
+	<data name="Settings.Privacy.ChannelsTitle"><value>已连接的频道</value></data>
+	<data name="Settings.Privacy.ChannelsDescription"><value>启用这些频道后，Discord、Telegram 和 Slack 仍会通过其各自的服务器中继您的消息。</value></data>
+	<data name="Settings.Privacy.AutoLogout.Title"><value>自动退出登录</value></data>
+	<data name="Settings.Privacy.AutoLogout.Description"><value>若所有打开的 Oscova 标签页均未进行鼠标、触摸、键盘、滚动或提交消息操作，达到所选时长后，此浏览器将退出登录。</value></data>
+	<data name="Settings.Privacy.AutoLogout.Label"><value>自动退出登录时限</value></data>
+	<data name="Settings.Privacy.AutoLogout.OffOption"><value>关闭</value></data>
+	<data name="Settings.Privacy.AutoLogout.MinutesOption"><value>{0} 分钟</value></data>
+	<data name="Settings.Privacy.ResetButton"><value>重置</value></data>
+	<data name="Settings.Privacy.SaveButton"><value>保存隐私设置</value></data>
+	<data name="Settings.Privacy.LoadErrorToast"><value>隐私设置加载错误：{0}</value></data>
+	<data name="Settings.Privacy.SaveSuccessToast"><value>隐私设置已保存</value></data>
+	<data name="Settings.Privacy.SaveFailedToast"><value>无法保存隐私设置。</value></data>
+	<data name="Settings.Privacy.SaveFailedWithMessageToast"><value>保存隐私设置失败：{0}</value></data>
+	<data name="Settings.Tools.NetworkEgress"><value>互联网</value></data>
+	<data name="Settings.Tools.NetworkIncidental"><value>可访问网络</value></data>
+	<data name="Settings.Tools.EgressDisabledNotice"><value>互联网工具已被当前仅本地设置阻止。</value></data>
+	<data name="Settings.Tools.EgressDisabledBadge"><value>已阻止</value></data>
+	<data name="Settings.Tools.EgressDisabledTooltip"><value>关闭处于活动状态的仅本地设置以选择此互联网工具。</value></data>
+	<data name="Settings.Tools.TableHeaderPolicy"><value>策略</value></data>
+	<data name="Settings.Tools.ConfigurePolicyTooltip"><value>配置工具策略</value></data>
+	<data name="Settings.Tools.ConfigurePolicyLabel"><value>为 {0} 配置策略</value></data>
+	<data name="Settings.Tools.Governance.OverrideBadge"><value>已替代</value></data>
+	<data name="Settings.Tools.Governance.DefaultBadge"><value>默认</value></data>
+	<data name="Settings.Tools.Governance.CustomBadge"><value>自定义</value></data>
+	<data name="Settings.Tools.Governance.QuotaBadge"><value>{0} / {1}</value></data>
+	<data name="Settings.Tools.Governance.DialogTitle"><value>工具策略</value></data>
+	<data name="Settings.Tools.Governance.NetworkLabel"><value>网络访问</value></data>
+	<data name="Settings.Tools.Governance.UseDeclaredOption"><value>使用声明的作用域</value></data>
+	<data name="Settings.Tools.Governance.NetworkHint"><value>此分类控制仅本地模式是否隐藏该工具。</value></data>
+	<data name="Settings.Tools.Governance.LocalOnlyWarning"><value>当仅本地模式处于活动状态时，此工具将不可用。</value></data>
+	<data name="Settings.Tools.Governance.LimitEnabledLabel"><value>限制调用次数</value></data>
+	<data name="Settings.Tools.Governance.MaxCallsLabel"><value>最大调用次数</value></data>
+	<data name="Settings.Tools.Governance.WindowHint"><value>限制适用于固定的 24 小时时间窗口。</value></data>
+	<data name="Settings.Tools.Governance.InvalidLimitMessage"><value>输入介于 1 到 1000000 之间的调用限制。</value></data>
+	<data name="Settings.Tools.Governance.SavedToast"><value>工具策略已保存。</value></data>
+	<data name="Settings.Tools.Governance.SaveFailedToast"><value>无法保存工具策略：{0}</value></data>
+	<data name="Settings.Avatar.ConnectEngineTitle"><value>连接到虚拟形象引擎</value></data>
+	<data name="Settings.Avatar.ConnectEngineButton"><value>连接</value></data>
+	<data name="Settings.Avatar.AccessModeLabel"><value>访问模式</value></data>
+	<data name="Settings.Avatar.AccessModeShared"><value>共享</value></data>
+	<data name="Settings.Avatar.AccessModeExclusive"><value>独占</value></data>
+	<data name="Settings.Avatar.AccessModeHelp"><value>共享模式允许其他已配对客户端。独占模式会阻止它们，直到引擎重新启动。</value></data>
+	<data name="Settings.Avatar.PairingDialogTitle"><value>配对虚拟形象引擎</value></data>
+	<data name="Settings.Avatar.PairingCodeLabel"><value>配对码</value></data>
+	<data name="Settings.Avatar.PairingCodeHelp"><value>输入虚拟形象引擎显示的六位代码。</value></data>
+	<data name="Settings.Avatar.PairingLifetime"><value>代码将在大约 {0} 秒后过期。</value></data>
+	<data name="Settings.Avatar.PairingButton"><value>配对</value></data>
+	<data name="Settings.Avatar.PairingBusy"><value>正在配对...</value></data>
+	<data name="Settings.Avatar.PairingFailed"><value>配对失败。请申请新代码后重试。</value></data>
+	<data name="Settings.Avatar.PairingExpired"><value>代码已过期。请关闭此对话框，然后选择“连接”以获取新代码。</value></data>
+	<data name="Settings.Avatar.PairingInvalidResponse"><value>虚拟形象引擎返回了无效响应。请关闭此对话框，然后选择“连接”重试。</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredStatus"><value>需要配对</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictStatus"><value>访问冲突</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedStatus"><value>请求受限</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorStatus"><value>配置问题</value></data>
+	<data name="Settings.Avatar.EngineErrorStatus"><value>引擎错误</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredDescription"><value>选择“连接”以配对此 Oscova 安装。</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictDescription"><value>另一个客户端当前占用了不兼容的运行时访问权限。</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedDescription"><value>请稍候再选择“连接”。</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedRetryDescription"><value>请等待 {0} 秒后再选择“连接”。</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorDescription"><value>修复本地设置存储，然后再次选择“连接”。</value></data>
+	<data name="Settings.Avatar.EngineErrorDescription"><value>虚拟形象引擎返回了意外响应。请选择“连接”重试。</value></data>
+  <data name="Settings.Agents.Prebuilt.Browse" xml:space="preserve">
+    <value>浏览预置智能体</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Summary" xml:space="preserve">
+    <value>选择专业智能体，按需开始对话。安装后将创建可编辑的智能体。</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Selection" xml:space="preserve">
+    <value>选择智能体</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.OptionalTools" xml:space="preserve">
+    <value>所选读取工具取决于安装情况和账户设置。请在编辑器中查看工具和访问权限。</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Install" xml:space="preserve">
+    <value>安装智能体</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Empty" xml:space="preserve">
+    <value>暂无可用的预置智能体。</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.LoadFailed" xml:space="preserve">
+    <value>无法加载目录，请重试。</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Installed" xml:space="preserve">
+    <value>智能体已安装，现在可以编辑副本。</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.RefreshFailed" xml:space="preserve">
+    <value>智能体已安装，但无法加载编辑器。请刷新智能体页面以打开副本。</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.InstallFailed" xml:space="preserve">
+    <value>无法确认安装是否完成。请刷新智能体页面，检查是否已有新副本，然后再决定是否重新安装。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Available" xml:space="preserve">
+    <value>有可用更新</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Title" xml:space="preserve">
+    <value>应用程序更新</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Versions" xml:space="preserve">
+    <value>已安装 {0}，可用 {1}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.PluginsOnly" xml:space="preserve">
+    <value>已安装 {0}。只有插件有更新。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Interruption" xml:space="preserve">
+    <value>请先完成重要工作。Oscova 在更新和重启期间将不可用。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Start" xml:space="preserve">
+    <value>更新并重启</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.BackupLocation" xml:space="preserve">
+    <value>恢复文件：{0}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Preparing" xml:space="preserve">
+    <value>正在准备更新</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Restarting" xml:space="preserve">
+    <value>正在更新。等待 Oscova 重新启动...</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Failed" xml:space="preserve">
+    <value>应用程序更新失败。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Unsupported" xml:space="preserve">
+    <value>此安装必须从终端更新。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailable" xml:space="preserve">
+    <value>无法检查版本。请刷新或从终端更新。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RecoveryHint" xml:space="preserve">
+    <value>在 Host 计算机上运行 'oscova update status'，查看进度或恢复指引。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.FailedOnVersion" xml:space="preserve">
+    <value>更新失败。Oscova 仍为 {0} 版本。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RetryGuidance" xml:space="preserve">
+    <value>你的数据没有变化。选择“重试”再试一次。如果仍然失败，请在 Host 计算机上运行 'oscova update status'。</value>
+  </data>
+  <data name="PluginsPendingReplacement" xml:space="preserve">
+    <value>重启后：{0} {1}</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesAction" xml:space="preserve">
+    <value>鸣谢与许可证</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesTitle" xml:space="preserve">
+    <value>鸣谢与许可证</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesDescription" xml:space="preserve">
+    <value>Oscova 所含第三方软件的许可证声明存储在本地，可离线查看。</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesLoading" xml:space="preserve">
+    <value>正在加载许可证声明...</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesUnavailable" xml:space="preserve">
+    <value>无法加载随附的许可证声明。</value>
+  </data>
+  <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>发型</value></data>
+  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>上装</value></data>
+  <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>为所选虚拟形象选择发型。</value></data>
+  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>为所选虚拟形象选择上装。</value></data>
+  <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>部分外观选项未能加载。请检查引擎连接并刷新。</value></data>
+  <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>无法应用{0}：{1}。请选择可用选项后重试。</value></data>
+  <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Current" xml:space="preserve">
+    <value>Oscova 已是最新版本。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailableLabel" xml:space="preserve">
+    <value>无法检查更新</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.TakingLonger" xml:space="preserve">
+    <value>此次更新耗时较长。Oscova 可能仍在备份你的数据或下载组件。你可以继续等待，或运行 'oscova update status' 查看状态。</value>
+  </data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>启动时连接</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>启动频道前请保存更改。</value></data>
+	<data name="Settings.Plugins.VerifiedBadge"><value>已验证</value></data>
+	<data name="Settings.Plugins.ReplaceButton"><value>替换插件</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmTitle"><value>用 {1} 替换 {0}？</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmMessage"><value>此替换会保留插件的身份、设置和凭据。</value></data>
+  <data name="Settings.General.FollowUpModeLabel" xml:space="preserve"><value>后续消息行为</value></data>
+  <data name="Settings.General.FollowUpModeSteer" xml:space="preserve"><value>引导</value></data>
+  <data name="Settings.General.FollowUpModeQueue" xml:space="preserve"><value>排队</value></data>
+  <data name="Settings.General.FollowUpModeDescription" xml:space="preserve"><value>智能体工作时，Enter 使用此选项。引导会指导当前回复。排队会在回复结束后发送您的消息。Ctrl+Enter 会使用另一选项一次。</value></data>
+  <data name="Settings.Agents.ContextUsage.Initial" xml:space="preserve">
+    <value>预计初始输入令牌数</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Deferred" xml:space="preserve">
+    <value>延后加载的工具</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Assembly" xml:space="preserve">
+    <value>工具组合调整</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Runtime" xml:space="preserve">
+    <value>运行环境和工作区</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Memory" xml:space="preserve">
+    <value>记忆</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Todo" xml:space="preserve">
+    <value>任务列表</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Vision" xml:space="preserve">
+    <value>图像分析</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Scope" xml:space="preserve">
+    <value>这是这些设置的本地估算。不包含对话输入、后续加载的技能正文和工具结果。模型封装和分词方式可能不同。</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.DeferredHelp" xml:space="preserve">
+    <value>可搜索工具的声明在需要时加载，不计入初始总量。</value>
+  </data>
+<data name="Settings.LowBatteryProtection.Label" xml:space="preserve"><value>电池电量低时跳过计划任务</value></data>
+<data name="Settings.LowBatteryProtection.Description" xml:space="preserve"><value>当此服务器电脑未连接外部电源且电量低于设定阈值时，跳过自动任务。你会收到通知，并可手动运行已跳过的任务。</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdLabel" xml:space="preserve"><value>电量阈值 (%)</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdInvalid" xml:space="preserve"><value>请输入 1 到 100 之间的整数。</value></data>
+<data name="Settings.LowBatteryProtection.Checking" xml:space="preserve"><value>正在检查运行 Oscova 的电脑的电池信息。</value></data>
+<data name="Settings.LowBatteryProtection.NotDetected" xml:space="preserve"><value>运行 Oscova 的电脑未检测到系统电池。</value></data>
+<data name="Settings.LowBatteryProtection.Unavailable" xml:space="preserve"><value>无法获取运行 Oscova 的电脑的电池或电源连接信息。</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderLabel"><value>技能文件夹（可选）</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderHint"><value>例如：skills。留空可搜索整个仓库。</value></data>
+  <data name="Settings.Prompts.ChatContinuationInstructionLabel"><value>聊天恢复指令</value></data>
+  <data name="Settings.Prompts.ChatContinuationDescription"><value>指导中断的聊天如何继续处理最后一个请求。</value></data>
+  <data name="Settings.Prompts.ChatTitleInstructionLabel"><value>聊天标题指令</value></data>
+  <data name="Settings.Prompts.ChatTitleDescription"><value>指导自动生成聊天标题。</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryInstructionLabel"><value>工具故障恢复指令</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryDescription"><value>指导代理在工具反复失败后如何恢复。</value></data>
+  <data name="Settings.Prompts.WorkspaceHasAliasesVariableDescription"><value>工作区具有文件工具别名时为真。</value></data>
+  <data name="Settings.Prompts.UsesHostPathsVariableDescription"><value>Shell 命令使用主机路径时为真。</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationSummary"><value>技能来源：已完成 {0}/{1}。</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCheckingCache"><value>正在检查缓存</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationWaiting"><value>等待准备</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationConnecting"><value>正在连接</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationIndexing"><value>正在为下载建立索引</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPreparingFiles"><value>正在准备文件</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationScanning"><value>正在扫描技能</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCached"><value>已缓存</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReady"><value>已就绪：{0} 个技能</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReadyCached"><value>已就绪：{0} 个技能（缓存）</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationFailed"><value>失败</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReceivedBytes"><value>已接收 {0}</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPartialResults"><value>来自已就绪来源的结果。其他来源仍在准备中。</value></data>
+  <data name="Settings.Avatar.Presentation.Heading" xml:space="preserve"><value>展示</value></data>
+  <data name="Settings.Avatar.Presentation.ModeLabel" xml:space="preserve"><value>布局模式</value></data>
+  <data name="Settings.Avatar.Presentation.AutoLabel" xml:space="preserve"><value>自动</value></data>
+  <data name="Settings.Avatar.Presentation.SubtitleLabel" xml:space="preserve"><value>字幕</value></data>
+  <data name="Settings.Avatar.Presentation.SideLabel" xml:space="preserve"><value>侧边</value></data>
+  <data name="Settings.Avatar.Presentation.ApplyPresentationButton" xml:space="preserve"><value>应用展示设置</value></data>
+  <data name="Settings.Avatar.Presentation.TestButton" xml:space="preserve"><value>测试布局</value></data>
+  <data name="Settings.Avatar.Presentation.EndTestButton" xml:space="preserve"><value>结束测试</value></data>
+  <data name="Settings.Avatar.Presentation.TestDescription" xml:space="preserve"><value>测试使用上方设置的显示时长，随后恢复所选布局模式。请设置大于零的时长以进行测试。</value></data>
+  <data name="Settings.Avatar.Presentation.FailedToast" xml:space="preserve"><value>无法应用展示设置。</value></data>
+  <data name="Settings.Mcp.Governance.McpEnabled" xml:space="preserve"><value>已启用</value></data>
+  <data name="Settings.Mcp.Governance.McpShared" xml:space="preserve"><value>与用户共享</value></data>
+  <data name="Skills.UpdateForUsers" xml:space="preserve"><value>为用户更新</value></data>
+  <data name="Skills.ShareWithUsers" xml:space="preserve"><value>与用户共享</value></data>
+  <data name="Skills.ManagedByOperator" xml:space="preserve"><value>由操作员管理</value></data>
+  <data name="Settings.Mcp.Device" xml:space="preserve"><value>设备</value></data>
+  <data name="Settings.Mcp.SelectDevice" xml:space="preserve"><value>选择设备</value></data>
+  <data name="Settings.Mcp.CentralServer" xml:space="preserve"><value>服务器</value></data>
+  <data name="Settings.Mcp.DeviceOnline" xml:space="preserve"><value>在线</value></data>
+  <data name="Settings.Mcp.DeviceOffline" xml:space="preserve"><value>离线</value></data>
+  <data name="Settings.Mcp.SavedDeviceOffline" xml:space="preserve"><value>已保存。设备离线。请连接设备以检查此 MCP 服务器。</value></data>
+  <data name="Skills.IncludedForAll" xml:space="preserve"><value>已为所有用户提供</value></data>
+  <data name="Skills.PublicationResult" xml:space="preserve"><value>已启用共享。新增或更新的副本：{0}。保留的个人副本：{1}。</value></data>
+  <data name="Plugins.DeviceReady" xml:space="preserve"><value>已在 {0} 上就绪</value></data>
+  <data name="Plugins.DevicePreparing" xml:space="preserve"><value>正在 {0} 上准备</value></data>
+  <data name="Plugins.DeviceUnavailable" xml:space="preserve"><value>在 {0} 上暂时不可用</value></data>
+  <data name="Settings.PromptsBrowserUseLabel" xml:space="preserve"><value>浏览器使用</value></data>
+  <data name="Settings.PromptsBrowserUseDescription" xml:space="preserve"><value>指导网站交互、用户登录协助及敏感操作前的确认。这些指令用于引导模型，不保证能够识别所有敏感操作。</value></data>
+  <data name="Settings.ModelProviders.DownloadFailedMessage" xml:space="preserve"><value>无法下载模型 '{0}'：{1}</value></data>
+  <data name="Settings.Prompts.RestoreDefaultButton" xml:space="preserve">
+    <value>恢复默认</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmTitle" xml:space="preserve">
+    <value>恢复默认指令？</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmMessage" xml:space="preserve">
+    <value>清除 {0} 的自定义指令并切换为使用默认值？随后点击保存以应用更改。</value>
+  </data>
+  <data name="Settings.Execution.UnavailableDescription" xml:space="preserve">
+    <value>此环境不可用。启用其插件并重启，或选择并保存其他环境。</value>
+  </data>
+  <data name="Settings.Execution.Description" xml:space="preserve">
+    <value>选择运行命令和技能脚本的位置。</value>
+  </data>
+  <data name="Settings.Execution.EnvironmentLabel" xml:space="preserve">
+    <value>执行环境</value>
+  </data>
+  <data name="Settings.Execution.Label" xml:space="preserve">
+    <value>执行</value>
+  </data>
+  <data name="Settings.Execution.ScriptsDescription" xml:space="preserve">
+    <value>脚本需要在所选环境中安装运行时，并使用适用于其 Shell 的调用方式。</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Completed" xml:space="preserve"><value>已更新至 {0}</value></data>
+  <data name="Settings.ApplicationUpdate.PluginsCompleted" xml:space="preserve"><value>插件已更新。Oscova 仍为 {0}。</value></data>
+  <data name="Settings.ApplicationUpdate.NotStarted" xml:space="preserve"><value>更新未启动，因此 Oscova 未发生更改。请检查 Host 计算机上的更新窗口，然后重试。</value></data>
+  <data name="Settings.ApplicationUpdate.FilesKept" xml:space="preserve"><value>其文件和设置已保留。</value></data>
+  <data name="Settings.ApplicationUpdate.OpenPlugins" xml:space="preserve"><value>打开插件</value></data>
+  <data name="Settings.ApplicationUpdate.Compatibility" xml:space="preserve"><value>不支持新版本的插件将被禁用。其文件和设置将被保留。</value></data>
+  <data name="Settings.ApplicationUpdate.PluginUpdated" xml:space="preserve"><value>已更新</value></data>
+  <data name="Settings.ApplicationUpdate.PluginDisabled" xml:space="preserve"><value>已禁用</value></data>
+  <data name="Settings.ApplicationUpdate.PluginRetained" xml:space="preserve"><value>已保留</value></data>
+  <data name="Settings.Execution.Checking" xml:space="preserve"><value>正在检查…</value></data>
+  <data name="Settings.Execution.Available" xml:space="preserve"><value>此计算机上可用</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLabel" xml:space="preserve"><value>搜索方式</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodApi" xml:space="preserve"><value>GitHub API</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocal" xml:space="preserve"><value>下载仓库到本地</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodHint" xml:space="preserve"><value>适用于此主机上的所有用户。</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocalNotice" xml:space="preserve"><value>将整个仓库（包括脚本）下载到运行 Oscova 的计算机。</value></data>
+  <data name="Settings.Skills.FindOnlinePreparationReadingMetadata" xml:space="preserve"><value>正在读取仓库元数据</value></data>
+  <data name="Settings.Goal.MaxIterations" xml:space="preserve">
+    <value>目标最大迭代次数</value>
+  </data>
+  <data name="Settings.Goal.Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsInvalid" xml:space="preserve">
+    <value>请输入 1 到 2147483647 之间的整数。</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsHelp" xml:space="preserve">
+    <value>限制工作循环次数。留空使用默认值。</value>
+  </data>
+  <data name="Settings.Goal.JudgeInstruction" xml:space="preserve">
+    <value>目标评估指令</value>
+  </data>
+  <data name="Settings.Goal.JudgeDescription" xml:space="preserve">
+    <value>每次工作循环后检查目标是否完成。</value>
+  </data>
+  <data name="Settings.Goal.ContinuationInstruction" xml:space="preserve">
+    <value>目标继续模板</value>
+  </data>
+  <data name="Settings.Goal.ContinuationDescription" xml:space="preserve">
+    <value>将评估器的未完成项分析转换为工作代理的下一条指令。</value>
+  </data>
+  <data name="Settings.Goal.GapAnalysis" xml:space="preserve">
+    <value>评估器认为仍需完成的工作。</value>
+  </data>
+  <data name="Settings.Prompts.PrivateDirectoriesVariableDescription" xml:space="preserve">
+    <value>代理的私有文件夹列表。</value>
+  </data>
+  <data name="Settings.Prompts.HasPrivateDirectoryVariableDescription" xml:space="preserve">
+    <value>代理拥有私有文件夹时为真。</value>
+  </data>
+  <data name="Settings.Prompts.ShellRootVariablesVariableDescription" xml:space="preserve">
+    <value>Shell 环境变量名称及其文件夹别名。</value>
+  </data>
+  <data name="Settings.Prompts.HasShellRootsVariableDescription" xml:space="preserve">
+    <value>存在 Shell 根目录变量时为真。</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsLabel" xml:space="preserve">
+    <value>加入其他智能体的聊天时使用聊天模型</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsDescription" xml:space="preserve">
+    <value>仅适用于网页聊天中的提及和咨询。关闭时使用上方的提供商。</value>
+  </data>
+  <data name="Settings.Prompts.InstructionModeLabel" xml:space="preserve"><value>指令模式</value></data>
+  <data name="Settings.Prompts.InstructionUseDefault" xml:space="preserve"><value>使用默认值</value></data>
+  <data name="Settings.Prompts.InstructionAppend" xml:space="preserve"><value>追加到默认值</value></data>
+  <data name="Settings.Prompts.InstructionReplace" xml:space="preserve"><value>替换默认值</value></data>
+  <data name="Settings.Prompts.InstructionDefaultReference" xml:space="preserve"><value>默认指令</value></data>
+  <data name="Speech.InstallPluginHelp" xml:space="preserve"><value>在设置 &gt; 插件中安装语音插件，然后重启。</value></data>
+  <data name="Speech.ProviderUnavailableHelp" xml:space="preserve"><value>此提供商不可用。启用其插件并重启，或选择已安装的提供商。</value></data>
+  <data name="Settings.Speech.VoiceCatalogFailed" xml:space="preserve"><value>无法加载声音。请检查所选凭据和声音权限，然后重新选择凭据。</value></data>
+  <data name="Settings.Prompts.MetadataError" xml:space="preserve">
+    <value>指令元数据缺失或无效。无法编辑此指令。</value>
+  </data>
+  <data name="Settings.Prompts.LoadFailed" xml:space="preserve">
+    <value>无法加载指令。</value>
+  </data>
+  <data name="Updates.HarnessUpdateNoticeTitle" xml:space="preserve"><value>运行环境有可用更新</value></data>
+  <data name="Updates.HarnessUpdateNoticeBody" xml:space="preserve"><value>Oscova {0} 已可用。请打开仪表板更新进行查看。</value></data>
+  <data name="Updates.AvatarUpdateNoticeTitle" xml:space="preserve"><value>Avatar Engine 已可用</value></data>
+  <data name="Updates.AvatarUpdateNoticeBody" xml:space="preserve"><value>Avatar Engine {0} 已可用。请打开仪表板更新，查看在此计算机上的安装信息。</value></data>
+  <data name="Updates.AvatarUpdateTitle" xml:space="preserve"><value>Avatar Engine</value></data>
+  <data name="Updates.AvatarInstall" xml:space="preserve"><value>安装 Avatar</value></data>
+  <data name="Updates.AvatarUpdateAction" xml:space="preserve"><value>更新 Avatar</value></data>
+  <data name="Updates.AvatarUpdateVersions" xml:space="preserve"><value>本机：{0}。可用：{1}。下载大小：{2}。</value></data>
+  <data name="Updates.AvatarNotInstalled" xml:space="preserve"><value>未安装</value></data>
+  <data name="Updates.AvatarUpdateUnknown" xml:space="preserve"><value>未知版本</value></data>
+  <data name="Updates.AvatarUpdateConfirm" xml:space="preserve"><value>我确认在此计算机上安装此版本。</value></data>
+  <data name="Updates.AvatarUpdateStopImpact" xml:space="preserve"><value>本地 Avatar Engine 将停止，并在安装后重新启动。</value></data>
+  <data name="Updates.AvatarUpdateUnsupported" xml:space="preserve"><value>安装和更新 Avatar 需要 Windows。</value></data>
+  <data name="Updates.AvatarUpdateUnmanaged" xml:space="preserve"><value>请使用 'oscova start' 启动，以管理此计算机上的 Avatar Engine。</value></data>
+  <data name="Updates.AvatarUpdateCurrent" xml:space="preserve"><value>Avatar Engine 已是最新版本。</value></data>
+  <data name="Updates.AvatarUpdateRunning" xml:space="preserve"><value>正在运行</value></data>
+  <data name="Updates.AvatarUpdateStopped" xml:space="preserve"><value>已停止</value></data>
+  <data name="Updates.AvatarUpdateComputer" xml:space="preserve"><value>计算机：{0}</value></data>
+  <data name="Updates.AvatarUpdateDownloading" xml:space="preserve"><value>正在下载 {0}，共 {1}</value></data>
+  <data name="Updates.AvatarUpdateInstalling" xml:space="preserve"><value>正在安装...</value></data>
+  <data name="Updates.AvatarUpdateRestarting" xml:space="preserve"><value>正在重启 Avatar Engine...</value></data>
+  <data name="Updates.AvatarUpdateStopping" xml:space="preserve"><value>正在停止 Avatar Engine...</value></data>
+  <data name="Updates.AvatarUpdateCompleted" xml:space="preserve"><value>Avatar Engine 已安装。</value></data>
+  <data name="Updates.AvatarUpdateVerifying" xml:space="preserve"><value>正在验证下载...</value></data>
+  <data name="Updates.AvatarUpdateNotRunning" xml:space="preserve"><value>Avatar Engine 已安装，但未运行。请从 Avatar 设置中启动，或运行 'oscova avatar start'。</value></data>
+  <data name="Updates.ApplicationUpdateReadNotes" xml:space="preserve"><value>阅读发行说明</value></data>
+  <data name="Updates.ApplicationUpdateWhatsNew" xml:space="preserve"><value>查看新功能</value></data>
+  <data name="Updates.ApplicationUpdateAllNotes" xml:space="preserve"><value>所有发行说明</value></data>
+  <data name="Updates.ApplicationUpdateChecking" xml:space="preserve"><value>正在检查更新...</value></data>
+  <data name="Updates.ApplicationUpdatePluginsIncluded" xml:space="preserve"><value>这些插件更新会随本次更新一起安装。</value></data>
+  <data name="Updates.ApplicationUpdateInstalledColumn" xml:space="preserve"><value>已安装</value></data>
+  <data name="Updates.ApplicationUpdateAvailableColumn" xml:space="preserve"><value>可用</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLabel" xml:space="preserve"><value>推理强度</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLow" xml:space="preserve"><value>低</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortMedium" xml:space="preserve"><value>中</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHigh" xml:space="preserve"><value>高</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortExtraHigh" xml:space="preserve"><value>极高</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHelp" xml:space="preserve"><value>默认选项在 OpenAI 启用思考输出时使用中等强度，其他情况下使用模型默认值。所选模型必须支持所选强度。</value></data>
+  <data name="ModelProvidersAnthropicMaxOutputTokensDescription" xml:space="preserve"><value>留空以使用 {0} 个输出令牌。</value></data>
+  <data name="Plugins.NotAvailableOnPlatform" xml:space="preserve"><value>此插件不适用于此平台。</value></data>
+	<data name="Settings.Files.Encrypted"><value>已加密</value></data>
+  <data name="Settings.OAuthConnected" xml:space="preserve"><value>已连接 {0}。</value></data>
+  <data name="Settings.OAuthCanceled" xml:space="preserve"><value>已取消连接 {0}。</value></data>
+  <data name="Settings.OAuthUnverified" xml:space="preserve"><value>无法验证与 {0} 的连接。请重新开始连接流程。</value></data>
+  <data name="Settings.OAuthMissingCode" xml:space="preserve"><value>{0} 未返回授权码。</value></data>
+  <data name="Settings.OAuthNotConfigured" xml:space="preserve"><value>尚未配置 {0}。</value></data>
+  <data name="Settings.OAuthTokenExchangeFailed" xml:space="preserve"><value>{0} 令牌交换失败。</value></data>
+  <data name="Settings.OAuthVaultLocked" xml:space="preserve"><value>连接 {0} 前，请创建或解锁您的保险库密码。</value></data>
+  <data name="Settings.OAuthFailed" xml:space="preserve"><value>连接 {0} 失败：{1}。</value></data>
+  <data name="Settings.AdminOnlySettings" xml:space="preserve"><value>只有管理员可以访问 {0} 设置。</value></data>
+  <data name="Settings.ModelProviders.FetchRecovery" xml:space="preserve"><value>无法加载模型。请检查基础 URL、提供商连接和已保存的 API 密钥，然后再次获取模型。</value></data>
+  <data name="Settings.ModelProviders.MemoryFitUnknown" xml:space="preserve"><value>无法估算内存适配情况。仍可保存。</value></data>
+  <data name="Settings.ModelProviders.MemoryFitEstimateHelp" xml:space="preserve"><value>这只是容量估算。保存后再测试。其他模型仍保持加载，单独检查需要额外内存。</value></data>
+  <data name="Settings.ModelProviders.ManagedHardware" xml:space="preserve"><value>提供商管理硬件分配。主机内存无法预测其运行时。</value></data>
+  <data name="Settings.ModelProviders.AdvancedOptions" xml:space="preserve"><value>高级选项</value></data>
+  <data name="Settings.ModelProviders.TestSkipped" xml:space="preserve"><value>已跳过测试。其他诊断可能正在运行，或前提条件不可用。</value></data>
+  <data name="Settings.ModelProviders.TestTimedOut" xml:space="preserve"><value>测试超时。</value></data>
+  <data name="Settings.ModelProviders.TestCancelled" xml:space="preserve"><value>测试已取消或连接中断。尚未确认执行。</value></data>
+  <data name="Settings.ModelProviders.TestCleanupUnconfirmed" xml:space="preserve"><value>无法确认工作进程已清理。进程退出前将阻止其他测试。</value></data>
+  <data name="Settings.Plugins.HardwareSummary" xml:space="preserve"><value>硬件观测</value></data>
+  <data name="Settings.Plugins.HardwareUnknown" xml:space="preserve"><value>硬件检查不可用或要求未知。</value></data>
+  <data name="Settings.Plugins.HardwareNotDetected" xml:space="preserve"><value>此检查未检测到匹配硬件。这不能证明硬件或驱动程序不存在。</value></data>
+  <data name="Settings.Plugins.RuntimeUnverified" xml:space="preserve"><value>尚未验证运行时执行。请使用模型提供商的测试操作。</value></data>
+  <data name="Settings.Plugins.RuntimeRequirements" xml:space="preserve"><value>声明的要求</value></data>
+  <data name="Settings.ModelProviders.MemoryFootprint" xml:space="preserve"><value>估算的权重与 F16 缓存：{0}。</value></data>
+  <data name="Settings.ModelProviders.TestInferencePassed" xml:space="preserve"><value>推理成功。加载：{0} 毫秒。推理：{1} 毫秒。</value></data>
+  <data name="Settings.ModelProviders.TestInferenceFailed" xml:space="preserve"><value>本地推理失败。请查看服务器日志了解原生错误原因。减少上下文或 GPU 层数、释放 GPU 内存，或安装 CPU 版本并重启。</value></data>
+  <data name="Settings.ModelProviders.TestRuntime" xml:space="preserve"><value>已观察到的后端：{0}。设备：{1}。卸载层数：{2}。</value></data>
+  <data name="Settings.ModelProviders.TestPlacementUnknown" xml:space="preserve"><value>无法验证硬件分配。</value></data>
+  <data name="Settings.ModelProviders.TestModelUnavailable" xml:space="preserve"><value>选择可用的 GGUF 模型文件，保存提供程序，然后重新测试。</value></data>
+</root>

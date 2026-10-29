@@ -1,0 +1,100 @@
+@inject ManagementApiClient ManagementApiClient
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@if (_isLoading)
+{
+    <div class="overflow-x-auto pb-2">
+        <div class="flex gap-3">
+            @for (var index = 0; index < 12; index++)
+            {
+                <div class="skeleton aspect-square w-36 flex-none rounded-box"></div>
+            }
+        </div>
+    </div>
+}
+else if (_loadFailed)
+{
+    <div role="alert" class="alert alert-error alert-soft">
+        <span class="iconify lucide--circle-alert size-5" aria-hidden="true"></span>
+        <span>@CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureGalleryLoadFailed, "Could not load the picture gallery.")</span>
+        <button type="button" class="btn btn-sm" @onclick="LoadSeedsAsync">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+        </button>
+    </div>
+}
+else if (_seedNames.Count == 0)
+{
+    <div role="alert" class="alert alert-info alert-soft">
+        <span class="iconify lucide--info size-5" aria-hidden="true"></span>
+        <span>@CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureGalleryEmpty, "No built-in pictures are available right now.")</span>
+    </div>
+}
+else
+{
+    <div aria-describedby="@AriaDescribedBy" class="overflow-x-auto pb-2">
+        <div class="flex gap-3">
+            @for (var index = 0; index < _seedNames.Count; index++)
+            {
+                var seedName = _seedNames[index];
+                <button type="button"
+                        class="@GetTileClass(seedName)"
+                        aria-pressed="@(SelectedSeedName == seedName ? "true" : "false")"
+                        aria-label="@string.Format(CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureSeedOptionLabel, "Built-in picture {0}"), index + 1)"
+                        @onclick="() => SelectedSeedNameChanged.InvokeAsync(seedName)">
+                    <div class="avatar h-full w-full">
+                        <div class="mask mask-squircle h-full w-full bg-base-200">
+                            <img src="@($"/{ApiRoutes.ProfilePictures.SeedByName(seedName)}")" alt="" class="h-full w-full object-cover" />
+                        </div>
+                    </div>
+                    @if (SelectedSeedName == seedName)
+                    {
+                        <span class="absolute right-2 top-2 rounded-full bg-primary p-1 text-primary-content">
+                            <span class="iconify lucide--check size-3" aria-hidden="true"></span>
+                        </span>
+                    }
+                </button>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<string> _seedNames = [];
+    private bool _isLoading = true;
+    private bool _loadFailed;
+
+    [Parameter] public string? SelectedSeedName { get; set; }
+    [Parameter] public EventCallback<string?> SelectedSeedNameChanged { get; set; }
+    [Parameter] public string? AriaDescribedBy { get; set; }
+
+    protected override Task OnInitializedAsync() => LoadSeedsAsync();
+
+    private async Task LoadSeedsAsync()
+    {
+        _isLoading = true;
+        _loadFailed = false;
+
+        try
+        {
+            var seedNames = await ManagementApiClient.GetProfilePictureSeedsAsync();
+            _seedNames = [.. seedNames.Order(StringComparer.Ordinal)];
+        }
+        catch
+        {
+            _loadFailed = true;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetTileClass(string seedName)
+    {
+        var borderClass = SelectedSeedName == seedName
+            ? "border-primary ring-2 ring-primary"
+            : "border-base-300 hover:border-primary/60";
+
+        return $"relative aspect-square w-36 flex-none cursor-pointer rounded-box border bg-base-100 p-2 transition {borderClass}";
+    }
+}

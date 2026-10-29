@@ -1,0 +1,17 @@
+@using System.Diagnostics.CodeAnalysis
+@inherits InputBase<string?>
+
+@* Normalizes the visible sign-in name while preserving form validation. *@
+<input @attributes="AdditionalAttributes" class="@CssClass" name="@NameAttributeValue"
+       @bind:get="CurrentValueAsString"
+       @bind:set="value => CurrentValueAsString = value?.ToLowerInvariant()"
+       @bind:event="oninput" />
+
+@code {
+    protected override bool TryParseValueFromString(string? value, out string? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

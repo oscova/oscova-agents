@@ -1,0 +1,32 @@
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Keeps connection recovery available while the server circuit is disconnected. *@
+<dialog id="components-reconnect-modal" class="modal custom-reconnect-modal"
+        aria-labelledby="custom-reconnect-title" aria-describedby="custom-reconnect-status"
+        data-nosnippet
+        data-connecting="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectConnecting, "Reconnecting…")"
+        data-countdown="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectCountdown, "Trying again in {0} seconds.")"
+        data-failed="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectFailed, "Couldn't reconnect. Check your connection and try again.")"
+        data-expired="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectExpired, "Your session ended. Reload to continue. Unsaved changes may be lost.")"
+        data-paused="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectPaused, "Your session is paused. Resume to continue.")"
+        data-resuming="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectResuming, "Resuming your session…")"
+        data-resume-failed="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectResumeFailed, "Couldn't resume your session. Try again.")"
+        data-updating="@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectUpdating, "This page reloads when Oscova restarts. You may need to sign in again.")">
+    <div class="modal-box custom-reconnect-box">
+        <h2 id="custom-reconnect-title" aria-live="polite" aria-atomic="true">@CommonLoc.GetOrDefault(CommonTextKeys.ReconnectTitle, "Connection to Oscova")</h2>
+        <span id="custom-reconnect-spinner" class="custom-reconnect-spinner" aria-hidden="true"></span>
+        <p id="custom-reconnect-status" role="status" aria-atomic="true"></p>
+        <p id="custom-reconnect-countdown" aria-live="off" hidden></p>
+        <div class="custom-reconnect-actions">
+            <button id="custom-reconnect-retry" type="button" class="btn" hidden>
+                @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+            </button>
+            <button id="custom-reconnect-resume" type="button" class="btn" hidden>
+                @CommonLoc.GetOrDefault(CommonTextKeys.Resume, "Resume")
+            </button>
+            <button id="custom-reconnect-reload" type="button" class="btn" hidden>
+                @CommonLoc.GetOrDefault(CommonTextKeys.Reload, "Reload")
+            </button>
+        </div>
+    </div>
+</dialog>

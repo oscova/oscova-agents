@@ -1,0 +1,227 @@
+@using Oscova.Agents.Core.ApiContracts.Skills
+@using Oscova.Agents.Core.ApiContracts.Skills.Registry
+@using Oscova.Agents.Core.Skills.Registry
+@inject SettingsApiClient SettingsApiClient
+@inject ILogger<SkillRegistryBrowserDialog> Logger
+@inject IToastService ToastService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@using Oscova.Agents.Core.Interfaces
+@using Oscova.Agents.Core.Settings
+@inject IGitHubSkillRegistryService Registry
+@inject SkillRegistrySettings RegistrySettings
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Navigation
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineDialogTitle, "Find skills online"))"
+                Icon="lucide:search"
+                MaxWidthClass="max-w-3xl"
+                HelpTopic="@HelpTopics.SkillRegistryBrowser"
+                TitleClass="truncate text-lg font-bold"
+                CanClose="@CanClose"
+                OnClose="@Close"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <label class="input input-bordered mt-2 flex w-full items-center gap-2">
+            <iconify-icon icon="lucide:search"></iconify-icon>
+            <input type="text"
+                   id="skill-search-input"
+                   disabled="@(_all.Count == 0)"
+                   class="grow"
+                   aria-label="@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineSearchPlaceholder, "Search by name...")"
+                   placeholder="@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineSearchPlaceholder, "Search by name...")"
+                   @bind="_query"
+                   @bind:event="oninput" />
+        </label>
+
+        @if (_loading && _preparations.Count > 0)
+        {
+            <div class="rounded-box border border-base-300 bg-base-200/40 p-3 mt-3">
+                <p class="text-sm" role="status" aria-live="polite">@PreparationSummary</p>
+                <ProgressBar Label="@PreparationSummary" Percent="@OverallPercent" CssClass="mt-2" />
+                <div class="mt-3 space-y-3">
+                    @foreach (var source in _preparations)
+                    {
+                        var status = PreparationStatus(source);
+                        <div class="min-w-0" @key="source.Identity">
+                            <p class="break-words text-sm font-medium [overflow-wrap:anywhere]">@source.Identity</p>
+                            <div class="flex flex-wrap items-center justify-between gap-2 text-xs opacity-70">
+                                <span>@status</span>
+                                @if (source.Progress.ReceivedBytes > 0)
+                                {
+                                    <span>@ReceivedBytesLabel(source)</span>
+                                }
+                            </div>
+                            @if (!source.Finished && source.Progress.TotalItems > 0)
+                            {
+                                <ProgressBar Label="@($"{source.Identity}: {status}")"
+                                             Percent="@source.Progress.Percent" CssClass="mt-1" />
+                                <p class="mt-1 text-xs opacity-70">@($"{source.Progress.CompletedItems:N0}/{source.Progress.TotalItems:N0} ({source.Progress.Percent:0}%)")</p>
+                            }
+                        </div>
+                    }
+                </div>
+                @if (_loading && _all.Count > 0)
+                {
+                    <p class="mt-3 text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlinePreparationPartialResults, "Results from ready sources. More sources are still being prepared.")</p>
+                }
+            </div>
+        }
+        else if (_loading)
+        {
+            <p role="status" aria-live="polite" class="mt-3 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</p>
+        }
+        @foreach (var error in _errors)
+        {
+            <div role="alert" class="alert alert-warning alert-soft mt-3">
+                <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+                <span class="text-sm">@error</span>
+            </div>
+        }
+
+        @if (!_loading && _all.Count == 0 && _errors.Count == 0)
+        {
+            <div role="alert" class="alert alert-info alert-soft mt-3">
+                <iconify-icon icon="lucide:info"></iconify-icon>
+                <span class="text-sm">@(_preparations.Count == 0
+                    ? Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineNoSourcesMessage, "No skill sources configured. Ask an administrator to add one.")
+                    : Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineEmptyResults, "No skills match your search."))</span>
+            </div>
+        }
+
+        @if (_all.Count > 0)
+        {
+            <div class="custom-settings-table-container mt-4 max-h-[60vh] overflow-auto rounded-box border border-base-300 bg-base-100">
+                <table class="table table-pin-rows custom-settings-adaptive-table custom-dialog-data-table">
+                    <thead>
+                        <tr>
+                            <th>@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineTableHeaderSkill, "Skill")</th>
+                            <th>@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineTableHeaderSource, "Source")</th>
+                            <th class="w-36 text-right">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Filtered)
+                        {
+                            var key = EntryKey(entry);
+                            <tr class="align-top hover:bg-base-200/40" @key="key">
+                                <td data-label="@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineTableHeaderSkill, "Skill")">
+                                    <div dir="auto" class="min-w-0 break-words font-medium [overflow-wrap:anywhere]">@entry.SkillName</div>
+                                </td>
+                                <td data-label="@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineTableHeaderSource, "Source")">
+                                    <div class="min-w-0 space-y-1 text-xs opacity-70">
+                                        <div dir="ltr" class="break-words [overflow-wrap:anywhere]">@($"{entry.Source.DisplayName}@{entry.Source.Branch}")</div>
+                                        <div dir="ltr" class="break-words [overflow-wrap:anywhere]">@entry.SkillPath</div>
+                                    </div>
+                                </td>
+                                <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")" class="text-right">
+                                    <div class="inline-flex flex-col gap-1">
+                                        <button type="button" class="btn btn-ghost btn-xs" @onclick="() => ToggleAsync(entry)">
+                                            @(_expanded.Contains(key)
+                                                ? Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineHideButton, "Hide")
+                                                : Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineDetailsButton, "Details"))
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                disabled="@IsInstallDisabled(entry, key)"
+                                                @onclick="() => InstallAsync(entry)">
+                                            @if (IsInstalling(key))
+                                            {
+                                                <span class="loading loading-spinner loading-xs"></span>
+                                            }
+                                            else if (IsInstallComplete(entry, key))
+                                            {
+                                                <span class="iconify lucide--check-circle-2 size-3" aria-hidden="true"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="iconify lucide--download size-3" aria-hidden="true"></span>
+                                            }
+                                            @InstallButtonLabel(entry, key)
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            @if (_expanded.Contains(key) || _installs.ContainsKey(key))
+                            {
+                                <tr>
+                                    <td colspan="3" class="bg-base-200/40">
+                                        @if (_expanded.Contains(key))
+                                        {
+                                            <div class="rounded-box bg-base-100 p-3 text-sm">
+                                                @if (_loadingDescriptions.Contains(key))
+                                                {
+                                                    <span class="flex items-center gap-2 opacity-70">
+                                                        <span class="loading loading-spinner loading-xs"></span>
+                                                        @Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineDescriptionLoading, "Loading description...")
+                                                    </span>
+                                                }
+                                                else if (_descriptionErrors.Contains(key))
+                                                {
+                                                    <span class="text-error">@Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineDetailsUnavailable, "Details could not be loaded.")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span dir="auto" class="break-words [overflow-wrap:anywhere]">
+                                                        @(string.IsNullOrWhiteSpace(entry.Description)
+                                                            ? Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineNoDescription, "No description is available for this skill.")
+                                                            : entry.Description)
+                                                    </span>
+                                                }
+                                            </div>
+                                        }
+
+                                        @if (_installs.TryGetValue(key, out var state))
+                                        {
+                                            <div class="border-base-300 rounded-box mt-3 overflow-x-auto border bg-base-100 p-3">
+                                                <ul class="timeline timeline-horizontal min-w-[28rem] w-full">
+                                                    @for (var stepIndex = 0; stepIndex < state.Steps.Count; stepIndex++)
+                                                    {
+                                                        var step = state.Steps[stepIndex];
+                                                        <li class="flex-1">
+                                                            @if (stepIndex > 0)
+                                                            {
+                                                                <hr />
+                                                            }
+                                                            <div class="timeline-middle">
+                                                                <iconify-icon icon="@StepIcon(step)"></iconify-icon>
+                                                            </div>
+                                                            <div class="timeline-end mt-2 whitespace-nowrap text-xs">@step.Label</div>
+                                                            @if (stepIndex < state.Steps.Count - 1)
+                                                            {
+                                                                <hr />
+                                                            }
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(state.Error))
+                                            {
+                                                <div role="alert" class="alert alert-error alert-soft mt-2">
+                                                    <iconify-icon icon="lucide:circle-alert"></iconify-icon>
+                                                    <span class="text-sm">@state.Error</span>
+                                                </div>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        @if (_all.Count > 0 && Filtered.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="3" class="text-sm opacity-60">
+                                    @Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineEmptyResults, "No skills match your search.")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-sm" @onclick="Close" disabled="@(!CanClose)">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>

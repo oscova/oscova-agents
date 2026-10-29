@@ -1,0 +1,140 @@
+.chat-dashboard-root {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    transition: grid-template-columns 180ms ease;
+}
+
+.chat-thread-column {
+    display: none;
+}
+
+.chat-column,
+.activity-column {
+    min-height: 0;
+}
+
+/* Paint dividers inside the blurred surfaces so raw wallpaper cannot show through the seam. */
+.chat-column ::deep .custom-chat-workspace,
+.activity-column ::deep .activity-side-panel {
+    border-inline-start: 1px solid var(--app-glass-border);
+}
+
+.activity-column {
+    height: 100%;
+}
+
+.activity-layout-standard .activity-column,
+.activity-layout-wide .activity-column {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    width: min(92vw, 520px);
+}
+
+.activity-layout-wide .activity-column {
+    width: min(96vw, 760px);
+}
+
+@media (min-width: 1024px) {
+    .chat-dashboard-root {
+        grid-template-columns: clamp(240px, var(--dashboard-thread-width, 22vw), 30%) minmax(0, 1fr);
+    }
+
+    .chat-thread-column {
+        display: block;
+        position: relative;
+    }
+
+    .dashboard-thread-resizer { display: block; }
+
+    .dashboard-column-resizer {
+        --resizer-color: transparent;
+        background: linear-gradient(to right, transparent 5px, var(--resizer-color) 5px 7px, transparent 7px);
+        cursor: col-resize;
+        touch-action: none;
+    }
+
+    .dashboard-thread-resizer { inset-inline-end: -6px; }
+
+    .dashboard-details-resizer { inset-inline-start: -6px; }
+
+    .dashboard-column-resizer:hover,
+    .dashboard-column-resizer:focus-visible {
+        --resizer-color: color-mix(in oklab, var(--color-base-content) 35%, transparent);
+    }
+
+    .chat-dashboard-root.dashboard-resizing { transition: none; }
+
+    .chat-list-collapsed .chat-thread-column {
+        display: none;
+    }
+
+    .chat-dashboard-root.chat-list-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .chat-dashboard-root.activity-layout-collapsed {
+        grid-template-columns: clamp(240px, var(--dashboard-thread-width, 18%), 30%) minmax(0, 1fr);
+    }
+
+    .chat-dashboard-root.activity-layout-standard {
+        grid-template-columns: clamp(240px, var(--dashboard-thread-width, 18%), 30%) minmax(0, 1fr) clamp(380px, var(--dashboard-details-width, clamp(380px, 32vw, 520px)), 40%);
+    }
+
+    .chat-dashboard-root.activity-layout-wide {
+        grid-template-columns: clamp(240px, var(--dashboard-thread-width, 18%), 30%) minmax(0, 1fr);
+    }
+
+    .chat-dashboard-root.chat-list-collapsed.activity-layout-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .chat-dashboard-root.chat-list-collapsed.activity-layout-standard {
+        grid-template-columns: minmax(0, 1fr) clamp(380px, var(--dashboard-details-width, 32%), 50%);
+    }
+
+    .activity-layout-standard .activity-column,
+    .activity-layout-wide .activity-column {
+        position: static;
+        width: auto;
+    }
+
+    .chat-thread-column,
+    .activity-layout-standard .activity-column {
+        position: relative;
+    }
+
+    .activity-layout-collapsed .dashboard-thread-resizer,
+    .activity-layout-standard .dashboard-thread-resizer,
+    .activity-layout-standard .dashboard-details-resizer {
+        display: block;
+    }
+
+}
+
+@media (max-width: 640px) {
+    .activity-layout-standard .activity-column,
+    .activity-layout-wide .activity-column {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-dashboard-root {
+        transition: none;
+    }
+}
+
+.activity-layout-collapsed .activity-column,
+.activity-layout-wide .chat-column { display: none; }
+
+.activity-layout-wide .activity-column { width: 100%; }
+
+@media (min-width: 1280px) {
+    .activity-layout-wide .dashboard-thread-resizer { display: block; }
+    .chat-dashboard-root.chat-list-collapsed.activity-layout-wide { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,43 @@
+@* Renders a settings toggle with a shrink-safe label and description column. *@
+<label class="@RowClass">
+    <input id="@Id"
+           type="checkbox"
+           class="@ToggleClass"
+           checked="@Checked"
+           disabled="@Disabled"
+           @onchange="OnChangedAsync" />
+    <span class="flex min-w-0 flex-col gap-0.5 whitespace-normal">
+        <span class="label-text font-medium">@Label</span>
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <span class="min-w-0 break-words text-xs leading-snug opacity-60 [overflow-wrap:anywhere]">@Description</span>
+        }
+    </span>
+</label>
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public bool Checked { get; set; }
+    [Parameter] public EventCallback<bool> CheckedChanged { get; set; }
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string Class { get; set; } = string.Empty;
+    [Parameter] public string ToggleClass { get; set; } = "toggle toggle-primary";
+
+    private string RowClass => string.Join(
+        " ",
+        new[]
+        {
+            "label min-w-0 justify-start gap-4 pl-0",
+            Disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+            Class
+        }.Where(value => !string.IsNullOrWhiteSpace(value)));
+
+    private async Task OnChangedAsync(ChangeEventArgs args)
+    {
+        var isChecked = args.Value is bool value && value;
+        Checked = isChecked;
+        await CheckedChanged.InvokeAsync(isChecked);
+    }
+}

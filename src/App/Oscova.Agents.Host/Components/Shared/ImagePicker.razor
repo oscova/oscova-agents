@@ -1,0 +1,85 @@
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IDialogService DialogService
+
+<div class="@ContainerClass">
+    <p class="text-sm font-medium flex items-center gap-1.5">
+        <span class="iconify lucide--image size-3.5 text-base-content/60" aria-hidden="true"></span>
+        @PickerLabel
+    </p>
+    <div class="@PickerLayoutClass">
+        <div class="@PreviewOuterClass">
+            <div class="@PreviewInnerClass">
+                @if (!string.IsNullOrWhiteSpace(PictureUrl))
+                {
+                    <img src="@PictureUrl" alt="" class="h-full w-full object-cover" />
+                }
+                else
+                {
+                    <div class="flex h-full w-full items-center justify-center text-base-content/40">
+                        <span class="iconify lucide--image size-6" aria-hidden="true"></span>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="shrink-0">
+            <button type="button"
+                    class="btn btn-sm btn-primary"
+                    title="@DisabledTitle"
+                    disabled="@Disabled"
+                    @onclick="OpenGalleryAsync">
+                <span class="iconify lucide--image-plus size-4" aria-hidden="true"></span>
+                @ChangeLabel
+            </button>
+            <p class="text-xs opacity-60 mt-1">@RequirementsLabel</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string PictureUrl { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public ImageGalleryTarget Target { get; set; }
+    [Parameter] public string? AgentId { get; set; }
+    [Parameter] public EventCallback OnChanged { get; set; }
+    [Parameter] public string ImageSizeClass { get; set; } = "h-20 w-20";
+    [Parameter] public string ContainerClass { get; set; } = "form-control";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? DisabledTitle { get; set; }
+
+    private bool IsWallpaper => Target == ImageGalleryTarget.Wallpaper;
+    private string PickerLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.Wallpaper, "Wallpaper")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePicture, "Profile picture");
+    private string ChangeLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperChange, "Change wallpaper")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureChange, "Change profile picture");
+    private string RequirementsLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperRequirements, "PNG, JPEG, or WebP. 10 MB max. 1920 × 1080 recommended.")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureRequirements, "PNG, JPEG, or WebP. 2 MB max.");
+    private string PickerLayoutClass => IsWallpaper
+        ? "mt-2 flex flex-col gap-3"
+        : "flex flex-wrap items-center gap-4";
+    private string PreviewOuterClass => IsWallpaper ? "w-full" : "avatar";
+    private string PreviewInnerClass => IsWallpaper
+        ? "bg-base-200 aspect-video w-full overflow-hidden rounded-box border border-base-300"
+        : $"bg-base-200 mask mask-squircle {ImageSizeClass}";
+
+    private async Task OpenGalleryAsync()
+    {
+        if (Disabled)
+        {
+            return;
+        }
+
+        var result = await DialogService.ShowAsync<ImageGalleryDialog>(new Dictionary<string, object?>
+        {
+            ["Target"] = Target,
+            ["AgentId"] = AgentId,
+            ["CurrentPictureUrl"] = PictureUrl
+        });
+
+        if (result == DialogResult.Ok)
+        {
+            await OnChanged.InvokeAsync();
+        }
+    }
+}

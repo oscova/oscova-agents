@@ -1,0 +1,175 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@using Oscova.Agents.Core.ApiContracts.Agents
+@using Oscova.Agents.Core.ApiContracts.Tools
+
+@* Edits the user-owned policy for one discovered tool without expanding the tools table. *@
+<AppDialogShell Title="@Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceDialogTitle, "Tool policy")"
+                Subtitle="@_tool.OriginalName"
+                Icon="lucide:settings-2"
+                MaxWidthClass="max-w-2xl"
+                HelpTopic="@HelpTopics.ToolGovernance"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <div class="space-y-5">
+            <div class="rounded-box border border-base-200 bg-base-100 p-3">
+                <p class="font-medium">@_tool.OriginalName</p>
+                @if (!string.IsNullOrWhiteSpace(_tool.Description))
+                {
+                    <p class="mt-1 text-sm text-base-content/65" dir="auto">@_tool.Description</p>
+                }
+                <dl class="mt-3 grid gap-2 text-xs text-base-content/70 sm:grid-cols-2">
+                    <div>
+                        <dt class="font-medium text-base-content">@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderQualifiedName, "Qualified Name")</dt>
+                        <dd><code class="break-all">@_tool.QualifiedName</code></dd>
+                    </div>
+                    <div>
+                        <dt class="font-medium text-base-content">@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderServer, "Server")</dt>
+                        <dd>@_serverName</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="form-control">
+                <label class="label py-1" for="@_networkSelectId">
+                    <span class="label-text text-sm">@Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceNetworkLabel, "Network access")</span>
+                </label>
+                <select id="@_networkSelectId" class="select select-sm w-full" @bind="_networkScopeDraft">
+                    <option value="">@Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceUseDeclaredOption, "Use declared scope")</option>
+                    <option value="@NetworkScope.None">@Loc.GetNetworkScopeLabel(NetworkScope.None)</option>
+                    <option value="@NetworkScope.Incidental">@Loc.GetNetworkScopeLabel(NetworkScope.Incidental)</option>
+                    <option value="@NetworkScope.Egress">@Loc.GetNetworkScopeLabel(NetworkScope.Egress)</option>
+                </select>
+                <p class="mt-1 text-xs text-base-content/60">
+                    @Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceNetworkHint, "This classification controls whether local-only mode hides the tool.")
+                </p>
+            </div>
+
+            @if (WouldBeBlockedByLocalOnly)
+            {
+                <div role="alert" class="alert alert-warning alert-soft">
+                    <span class="iconify lucide--globe size-4"></span>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceLocalOnlyWarning, "This tool will be unavailable while local-only mode is active.")</span>
+                </div>
+            }
+
+            <div class="space-y-3">
+                <label class="label cursor-pointer justify-start gap-3 p-0">
+                    <input type="checkbox" class="toggle toggle-sm" @bind="_limitEnabled" />
+                    <span class="label-text text-sm">@Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceLimitEnabledLabel, "Limit calls")</span>
+                </label>
+
+                @if (_limitEnabled)
+                {
+                    <div class="form-control">
+                        <label class="label py-1" for="@_maxCallsInputId">
+                            <span class="label-text text-sm">@Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceMaxCallsLabel, "Maximum calls")</span>
+                        </label>
+                        <input id="@_maxCallsInputId"
+                               class="input input-sm w-40"
+                               type="number"
+                               min="1"
+                               max="1000000"
+                               @bind="_maxCallsDraft" />
+                        <p class="mt-1 text-xs text-base-content/60">
+                            @Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceWindowHint, "Limit applies over a fixed 24-hour window.")
+                        </p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(_validationMessage))
+                {
+                    <p class="text-sm text-error">@_validationMessage</p>
+                }
+            </div>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="Save">
+            <span class="iconify lucide--save size-4"></span>
+            @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private readonly string _networkSelectId = $"tool-governance-network-{Guid.NewGuid():N}";
+    private readonly string _maxCallsInputId = $"tool-governance-max-{Guid.NewGuid():N}";
+
+    private ToolDefinition _tool = new();
+    private ToolGovernanceEntrySummary? _governance;
+    private string _serverName = string.Empty;
+    private string _networkScopeDraft = string.Empty;
+    private bool _limitEnabled;
+    private int _maxCallsDraft = 30;
+    private bool _isEgressDisabled;
+    private string? _validationMessage;
+
+    private NetworkScope EffectiveDraftScope =>
+        Enum.TryParse(_networkScopeDraft, ignoreCase: true, out NetworkScope scope)
+            ? scope
+            : _governance?.EffectiveNetworkScope ?? _tool.NetworkScope;
+
+    private bool WouldBeBlockedByLocalOnly =>
+        _isEgressDisabled && EffectiveDraftScope == NetworkScope.Egress;
+
+    protected override void OnInitialized()
+    {
+        _tool = DialogInstance.Get<ToolDefinition>("Tool") ?? new ToolDefinition();
+        _serverName = DialogInstance.Get<string>("ServerName", string.Empty) ?? string.Empty;
+        _governance = DialogInstance.Get<ToolGovernanceEntrySummary>("Governance");
+        _isEgressDisabled = DialogInstance.Get("IsEgressDisabled", false);
+
+        if (_governance?.HasNetworkScopeOverride == true)
+        {
+            _networkScopeDraft = _governance.EffectiveNetworkScope.ToString();
+        }
+
+        if (_governance?.CallLimit is { IsEnabled: true } limit)
+        {
+            _limitEnabled = true;
+            _maxCallsDraft = limit.MaxCalls;
+        }
+    }
+
+    private void Save()
+    {
+        _validationMessage = null;
+        if (_limitEnabled && _maxCallsDraft is < 1 or > 1_000_000)
+        {
+            _validationMessage = Loc.GetOrDefault(
+                SettingsTextKeys.ToolsGovernanceInvalidLimitMessage,
+                "Enter a call limit from 1 to 1000000.");
+            return;
+        }
+
+        var request = new UpdateToolGovernanceRequest
+        {
+            QualifiedName = _tool.QualifiedName,
+            NetworkScopeOverride = string.IsNullOrWhiteSpace(_networkScopeDraft)
+                ? null
+                : Enum.Parse<NetworkScope>(_networkScopeDraft, ignoreCase: true),
+            CallLimit = _limitEnabled
+                ? new ToolCallLimit
+                {
+                    IsEnabled = true,
+                    MaxCalls = _maxCallsDraft,
+                    WindowHours = 24
+                }
+                : null
+        };
+
+        DialogInstance.Close(DialogResult.Ok, request);
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+}

@@ -1,0 +1,508 @@
+@inject ManagementApiClient ManagementApiClient
+@inject AuthenticationStateProvider AuthState
+@inject IDialogService DialogService
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogApplicationLogsTitle, "Application Logs")"
+                Icon="lucide:scroll-text"
+                MaxWidthClass="max-w-7xl"
+                HelpTopic="@HelpTopics.LogsDialog"
+                BodyClass="px-5 pb-5 flex min-h-0 flex-col overflow-y-auto">
+    <ChildContent>
+		@if (!string.IsNullOrWhiteSpace(_error))
+		{
+			<div role="alert" class="alert alert-error mb-3">
+				<span class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.DialogFailedLoadLogsError, "Failed to load logs:")</span>
+				<span class="truncate">@_error</span>
+			</div>
+		}
+
+		<div class="flex flex-wrap items-center gap-2 mb-3">
+			@if (_isAdmin)
+			{
+				<select class="select select-sm w-32"
+						aria-label="@CommonLoc[CommonTextKeys.DialogLogsScopeLabel]"
+						value="@_selectedScope"
+						@onchange="OnScopeChangedAsync">
+					<option value="self">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsScopeMine, "Mine")</option>
+					<option value="system">@CommonLoc.GetOrDefault(CommonTextKeys.System, "System")</option>
+					<option value="user">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsScopeUser, "User...")</option>
+				</select>
+				@if (_selectedScope == "user")
+				{
+					<label class="input input-sm w-64">
+						<span class="iconify lucide--id-card text-base-content/60 size-4"></span>
+						<input id="target-user-id" type="text"
+							   placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsUserIdPlaceholder, "User ID (GUID)")"
+							   aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsUserIdPlaceholder, "User ID (GUID)")"
+							   class="grow focus:outline-0 font-mono"
+							   @bind="_targetUserIdInput"
+							   @bind:event="oninput"
+							   @onkeydown="OnTargetUserKeyDownAsync" />
+					</label>
+				}
+			}
+
+			<select class="select select-sm w-36"
+					aria-label="@CommonLoc[CommonTextKeys.DialogLogsHeaderLevel]"
+					value="@_selectedLevel"
+					@onchange="OnLevelChangedAsync">
+				<option value="ALL">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelAll, "All Levels")</option>
+				<option value="TRACE">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelTrace, "Trace")</option>
+				<option value="DEBUG">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelDebug, "Debug")</option>
+				<option value="INFO">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelInfo, "Info")</option>
+				<option value="WARN">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelWarn, "Warn")</option>
+				<option value="ERROR">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelError, "Error")</option>
+				<option value="FATAL">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelFatal, "Fatal")</option>
+			</select>
+
+			<select class="select select-sm w-56"
+					aria-label="@CommonLoc[CommonTextKeys.DialogLogsFileLabel]"
+					value="@_selectedFile"
+					@onchange="OnFileChangedAsync">
+				@if (_availableFiles.Count == 0)
+				{
+					<option value="">@CommonLoc.GetOrDefault(CommonTextKeys.DialogNoLogFilesOption, "No log files")</option>
+				}
+				else
+				{
+					@foreach (var file in _availableFiles)
+					{
+						<option value="@file">@file</option>
+					}
+				}
+			</select>
+
+			<label class="input input-sm w-52">
+				<span class="iconify lucide--search text-base-content/60 size-4"></span>
+				<input id="search-logs" type="text" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.DialogSearchLogsPlaceholder, "Search logs...")"
+					   aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogSearchLogsPlaceholder, "Search logs...")"
+					   class="grow focus:outline-0"
+					   @bind="_searchTerm"
+					   @bind:event="oninput"
+					   @onkeydown="OnSearchKeyDownAsync" />
+			</label>
+
+			<div class="flex items-center gap-1 ml-auto">
+				@if (_isLoading)
+				{
+					<span class="loading loading-dots loading-sm"></span>
+				}
+				<button class="btn btn-ghost btn-sm"
+						disabled="@(_isLoading || !HasTarget)"
+						@onclick="RefreshAsync">
+					<span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
+					@CommonLoc.GetOrDefault(CommonTextKeys.Refresh, "Refresh")
+				</button>
+				<DropdownMenu TriggerClass="btn btn-ghost btn-sm"
+							  ContentClass="bg-base-100 border-base-300 rounded-box z-20 mt-2 w-56 border p-2 shadow-lg"
+							  Placement="dropdown-end"
+							  Disabled="@(_isLoading || _logPage is null || _availableFiles.Count == 0)"
+							  CloseOnContentClick="true"
+							  Title="@ExportLabel"
+							  AriaLabel="@ExportLabel">
+					<TriggerContent>
+						<span class="iconify lucide--download size-4" aria-hidden="true"></span>
+						@ExportLabel
+					</TriggerContent>
+					<ChildContent>
+						<ul class="menu p-0">
+							<li><a href='@GetExportUrl("jsonl")' download>@CommonLoc.GetOrDefault(CommonTextKeys.DialogExportOriginalJsonLines, "Original JSON Lines")</a></li>
+							<li><a href='@GetExportUrl("txt")' download>@CommonLoc.GetOrDefault(CommonTextKeys.DialogExportFilteredText, "Filtered text")</a></li>
+							<li><a href='@GetExportUrl("csv")' download>@CommonLoc.GetOrDefault(CommonTextKeys.DialogExportFilteredCsv, "Filtered CSV")</a></li>
+						</ul>
+					</ChildContent>
+				</DropdownMenu>
+				<button class="btn btn-error btn-soft btn-sm"
+						title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogClearLogTitleAttribute, "Clear current log file")"
+						disabled="@(_isLoading || _logPage is null || _availableFiles.Count == 0)"
+						@onclick="ClearLogAsync">
+					<span class="iconify lucide--trash-2 size-4" aria-hidden="true"></span>
+					@CommonLoc.GetOrDefault(CommonTextKeys.DialogClearLogButton, "Clear")
+				</button>
+			</div>
+		</div>
+
+		<div class="custom-settings-table-container overflow-x-auto overflow-y-auto flex-1 border border-base-300 rounded-lg">
+			<table class="table table-xs table-pin-rows custom-settings-adaptive-table custom-dialog-data-table custom-log-data-table">
+				<thead>
+					<tr>
+						<th class="w-10"></th>
+						<th class="w-44">@CommonLoc.GetOrDefault(CommonTextKeys.Time, "Time")</th>
+						<th class="w-20">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsHeaderLevel, "Level")</th>
+						<th class="w-40">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsHeaderLogger, "Logger")</th>
+						<th>@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsHeaderMessage, "Message")</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (_logPage is null || _logPage.Entries.Count == 0)
+					{
+						<tr>
+							<td colspan="5" class="text-center py-8 opacity-60">
+								@if (_isLoading)
+								{
+									<span>@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</span>
+								}
+								else if (_availableFiles.Count == 0)
+								{
+									<span>@CommonLoc.GetOrDefault(CommonTextKeys.DialogNoStructuredLogsFound, "No structured log files found. Logs will appear here after the application writes new entries.")</span>
+								}
+								else
+								{
+									<span>@CommonLoc.GetOrDefault(CommonTextKeys.DialogNoLogEntriesMatch, "No log entries match the current filters.")</span>
+								}
+							</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var entry in _logPage.Entries)
+						{
+							var canExpand = entry.HasMetadata || entry.HasException;
+							var isExpanded = _expandedEntryTimes.Contains(GetEntryKey(entry));
+
+							<tr class="@GetRowClass(entry)">
+								<td>
+									@if (canExpand)
+									{
+										<button class="btn btn-ghost btn-xs btn-square"
+												title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogToggleDetailsTitle, "Toggle details")"
+												@onclick="() => ToggleExpanded(entry)">
+											<iconify-icon icon="@(isExpanded ? "lucide:chevron-down" : "lucide:chevron-right")"
+														  width="14"
+														  height="14"></iconify-icon>
+										</button>
+									}
+								</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Time, "Time")" class="font-mono text-xs whitespace-nowrap">@entry.Time</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsHeaderLevel, "Level")">
+									<span class="badge badge-xs @GetLevelBadgeClass(entry.Level)">@entry.Level</span>
+								</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsHeaderLogger, "Logger")" class="text-xs" title="@entry.Logger">@entry.ShortLogger</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsHeaderMessage, "Message")" class="text-xs break-all">
+									<div class="flex flex-wrap items-center gap-1">
+										@if (!string.IsNullOrWhiteSpace(entry.EventName))
+										{
+											<span class="badge badge-xs badge-primary badge-outline">@entry.EventName</span>
+										}
+										<span>@entry.Message</span>
+									</div>
+								</td>
+							</tr>
+
+							@if (isExpanded)
+							{
+								<tr>
+									<td colspan="5" class="bg-base-200/70">
+										<div class="p-3 flex flex-col gap-3">
+											@if (entry.HasMetadata)
+											{
+												<div>
+													<div class="text-xs font-semibold uppercase tracking-wide opacity-70 mb-2">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogDetailMetadata, "Metadata")</div>
+													<div class="grid grid-cols-1 gap-2">
+														@foreach (var pair in entry.GetMetadataDisplayPairs())
+														{
+															<div class="flex flex-wrap items-start gap-2 text-xs">
+																<span class="badge badge-ghost badge-sm font-mono">@pair.Key</span>
+																<span class="font-mono break-all">@pair.Value</span>
+															</div>
+														}
+													</div>
+												</div>
+											}
+
+											@if (entry.HasException)
+											{
+												<div>
+													<div class="text-xs font-semibold uppercase tracking-wide opacity-70 mb-2">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogDetailException, "Exception")</div>
+													<div class="flex items-center gap-2 mb-2">
+														<span class="badge badge-error badge-xs">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogDetailException, "Exception")</span>
+														<span class="text-xs">@entry.Exception!.Type: @entry.Exception.Message</span>
+													</div>
+													<pre class="text-xs font-mono whitespace-pre-wrap overflow-x-auto max-h-64 p-2 bg-base-100 rounded-box">@entry.Exception.Stacktrace</pre>
+												</div>
+											}
+										</div>
+									</td>
+								</tr>
+							}
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+
+		@if (_logPage is not null && _logPage.TotalPages > 1)
+		{
+			<div class="flex items-center justify-between mt-3">
+				<span class="text-xs opacity-70">
+					@FormatCommonText(CommonTextKeys.DialogLogEntriesPage, "{0} entries - Page {1} of {2}", _logPage.TotalCount, _logPage.CurrentPage, _logPage.TotalPages)
+				</span>
+				<div class="join">
+					<button class="join-item btn btn-sm"
+							disabled="@(_logPage.CurrentPage <= 1)"
+							@onclick="() => GoToPageAsync(_logPage.CurrentPage - 1)">&lt;</button>
+
+					@foreach (var pageNum in GetVisiblePages())
+					{
+						<button class="join-item btn btn-sm @(pageNum == _logPage.CurrentPage ? "btn-active" : "")"
+								@onclick="() => GoToPageAsync(pageNum)">@pageNum</button>
+					}
+
+					<button class="join-item btn btn-sm"
+							disabled="@(_logPage.CurrentPage >= _logPage.TotalPages)"
+							@onclick="() => GoToPageAsync(_logPage.CurrentPage + 1)">&gt;</button>
+				</div>
+			</div>
+		}
+		else if (_logPage is not null)
+		{
+			<div class="mt-3">
+				<span class="text-xs opacity-70">@FormatCommonText(CommonTextKeys.DialogLogEntriesCount, "{0} entries", _logPage.TotalCount)</span>
+			</div>
+		}
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+	[CascadingParameter]
+	public DialogInstance DialogInstance { get; set; } = default!;
+
+	private readonly HashSet<string> _expandedEntryTimes = [];
+	private List<string> _availableFiles = [];
+	private string _selectedFile = string.Empty;
+	private string _selectedLevel = "ALL";
+	private string _searchTerm = string.Empty;
+	private int _currentPage = 1;
+	private LogPage? _logPage;
+	private string? _error;
+	private bool _isLoading;
+	private bool _isAdmin;
+	private string _selectedScope = "self";
+	private string? _selectedTargetUserId;
+	private string _targetUserIdInput = string.Empty;
+	private int _loadVersion;
+	private bool HasTarget => _selectedScope != "user" || Guid.TryParse(_selectedTargetUserId, out _);
+
+	private const int PageSize = 100;
+	private string ExportLabel => CommonLoc.GetOrDefault(CommonTextKeys.DialogExportLogsButton, "Export");
+
+	private string GetExportUrl(string format) => ApiRoutes.Logs.Export(
+		_selectedFile, format, _selectedLevel, _searchTerm, _selectedScope, _selectedTargetUserId);
+
+	private string FormatCommonText(string key, string fallback, params object?[] args)
+	{
+		return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var state = await AuthState.GetAuthenticationStateAsync();
+		_isAdmin = state.User.IsInRole("Admin");
+		await LoadEntriesAsync();
+		await base.OnInitializedAsync();
+	}
+
+	private async Task LoadEntriesAsync()
+	{
+		// File lists, rows, errors and loading state belong to the latest requested selection.
+		var version = ++_loadVersion;
+		_error = null;
+		_logPage = null;
+		_isLoading = HasTarget;
+		if (!HasTarget) { _availableFiles = []; return; }
+		try
+		{
+			StateHasChanged();
+			// A filter change can supersede an in-flight scope load, so it needs that scope's files too.
+			var files = await ManagementApiClient.GetLogFilesAsync(_selectedScope, _selectedTargetUserId);
+			if (version != _loadVersion) { return; }
+			_availableFiles = [.. files];
+			if (!_availableFiles.Contains(_selectedFile))
+			{
+				_selectedFile = _availableFiles.FirstOrDefault() ?? string.Empty;
+			}
+
+			var page = await ManagementApiClient.GetLogPageAsync(
+				_selectedFile,
+				_selectedLevel,
+				_searchTerm,
+				_currentPage,
+				PageSize,
+				_selectedScope,
+				_selectedTargetUserId);
+			if (version == _loadVersion) { _logPage = page; }
+		}
+		catch (Exception ex)
+		{
+			if (version == _loadVersion) { _error = ex.Message; }
+		}
+		finally
+		{
+			if (version == _loadVersion)
+			{
+				_isLoading = false;
+				StateHasChanged();
+			}
+		}
+	}
+
+	private async Task RefreshAsync()
+	{
+		await LoadEntriesAsync();
+	}
+
+	private async Task OnLevelChangedAsync(ChangeEventArgs args)
+	{
+		_selectedLevel = args.Value?.ToString() ?? "ALL";
+		_currentPage = 1;
+		await LoadEntriesAsync();
+	}
+
+	private async Task OnFileChangedAsync(ChangeEventArgs args)
+	{
+		_selectedFile = args.Value?.ToString() ?? string.Empty;
+		_currentPage = 1;
+		await LoadEntriesAsync();
+	}
+
+	private async Task OnScopeChangedAsync(ChangeEventArgs args)
+	{
+		_selectedScope = args.Value?.ToString() ?? "self";
+		_selectedTargetUserId = null;
+		_targetUserIdInput = string.Empty;
+		_selectedFile = string.Empty;
+		_currentPage = 1;
+		_error = null;
+
+		await LoadEntriesAsync();
+	}
+
+	private async Task OnTargetUserKeyDownAsync(KeyboardEventArgs args)
+	{
+		if (args.Key != "Enter")
+		{
+			return;
+		}
+
+		if (!Guid.TryParse(_targetUserIdInput?.Trim(), out _))
+		{
+			_error = CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsInvalidUserGuid, "Enter a valid user GUID.");
+			StateHasChanged();
+			return;
+		}
+
+		_selectedTargetUserId = _targetUserIdInput!.Trim();
+		_selectedFile = string.Empty;
+		_currentPage = 1;
+		await LoadEntriesAsync();
+	}
+
+	private async Task OnSearchKeyDownAsync(KeyboardEventArgs args)
+	{
+		if (args.Key == "Enter")
+		{
+			_currentPage = 1;
+			await LoadEntriesAsync();
+		}
+	}
+
+	private async Task GoToPageAsync(int page)
+	{
+		_currentPage = page;
+		await LoadEntriesAsync();
+	}
+
+	private async Task ClearLogAsync()
+	{
+		if (string.IsNullOrEmpty(_selectedFile))
+		{
+			return;
+		}
+
+		var confirmDialog = await DialogService.ShowAsync<ConfirmDialog>(
+			CommonLoc.GetOrDefault(CommonTextKeys.DialogClearLogConfirmTitle, "Confirm Log Clear"),
+			CommonLoc.GetOrDefault(CommonTextKeys.DialogClearLogConfirmMessage, "Are you sure you want to clear the current log file? This action cannot be undone."));
+
+		if (confirmDialog != DialogResult.Ok)
+		{
+			return;
+		}
+
+		try
+		{
+			_error = null;
+			_isLoading = true;
+			await ManagementApiClient.ClearLogFileAsync(_selectedFile, _selectedScope, _selectedTargetUserId);
+			_expandedEntryTimes.Clear();
+
+			_currentPage = 1;
+			await LoadEntriesAsync();
+		}
+		catch (Exception ex)
+		{
+			_error = ex.Message;
+		}
+		finally
+		{
+			_isLoading = false;
+			StateHasChanged();
+		}
+	}
+
+	private void ToggleExpanded(LogEntry entry)
+	{
+		var entryKey = GetEntryKey(entry);
+		if (!_expandedEntryTimes.Add(entryKey))
+		{
+			_expandedEntryTimes.Remove(entryKey);
+		}
+	}
+
+	private static string GetEntryKey(LogEntry entry)
+	{
+		return $"{entry.Time}|{entry.Logger}|{entry.Message}|{entry.EventName}|{entry.OperationId}|{entry.Exception?.Type}";
+	}
+
+	private static string GetLevelBadgeClass(string level) => level.ToUpperInvariant() switch
+	{
+		"TRACE" => "badge-ghost",
+		"DEBUG" => "badge-info badge-outline",
+		"INFO" => "badge-success",
+		"WARN" => "badge-warning",
+		"ERROR" => "badge-error",
+		"FATAL" => "badge-error badge-dash",
+		_ => "badge-ghost"
+	};
+
+	private static string GetRowClass(LogEntry entry) => entry.Level.ToUpperInvariant() switch
+	{
+		"ERROR" => "bg-error/5",
+		"FATAL" => "bg-error/10",
+		"WARN" => "bg-warning/5",
+		_ => string.Empty
+	};
+
+	private List<int> GetVisiblePages()
+	{
+		if (_logPage is null)
+		{
+			return [1];
+		}
+
+		var total = _logPage.TotalPages;
+		var current = _logPage.CurrentPage;
+		const int window = 2;
+
+		var start = Math.Max(1, current - window);
+		var end = Math.Min(total, current + window);
+
+		var pages = new List<int>();
+		for (var i = start; i <= end; i++)
+		{
+			pages.Add(i);
+		}
+
+		return pages;
+	}
+}

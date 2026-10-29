@@ -1,0 +1,470 @@
+@using System.Globalization
+@using Oscova.Agents.Core
+@using Oscova.Agents.Definitions
+@using Oscova.Agents.Core.ApiContracts.Agents
+@inject IDialogService DialogService
+@inject ManagementApiClient ManagementApiClient
+@inject SettingsApiClient SettingsApiClient
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject IToastService ToastService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<SettingsAgentsSection> Logger
+
+@if (_editingAgent is null && _customizingAgent is null)
+{
+    <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AgentsSectionDescription, "Create and manage custom agents to use in chat.")</p>
+            <div class="flex flex-wrap items-center gap-2">
+                <button class="btn btn-outline btn-sm" @onclick="OpenPrebuiltAsync" disabled="@(_isInstalling || _isLoadingPrebuilt)">
+                    @Loc.GetOrDefault(SettingsTextKeys.AgentsBrowsePrebuilt, "Browse prebuilt agents")
+                </button>
+                <button class="btn btn-outline btn-sm" @onclick="OpenImportDialogAsync" disabled="@_isInstalling">
+                    <span class="iconify lucide--file-up size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Import, "Import")
+                </button>
+                <button class="btn btn-primary btn-sm" @onclick="CreateAgentAsync" disabled="@_isInstalling">
+                    <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.AgentsNewAgentButton, "New Agent")
+                </button>
+            </div>
+        </div>
+
+        @if (_showPrebuilt)
+        {
+            <div class="custom-settings-group custom-settings-form space-y-4">
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltSummary, "Choose a specialist for an on-demand conversation. Installing creates an independent, editable copy.")</p>
+                @if (_isLoadingPrebuilt)
+                {
+                    <p role="status">@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</p>
+                }
+                else if (_prebuiltAgents.Count == 0)
+                {
+                    @if (_prebuiltError is null)
+                    {
+                        <p>@Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltEmpty, "No prebuilt agents are available.")</p>
+                    }
+                    <button class="btn btn-outline btn-sm" @onclick="OpenPrebuiltAsync">@CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")</button>
+                }
+                else if (SelectedTemplate is { } selected)
+                {
+                    <label for="prebuilt-agent" class="label block mb-1 pl-0">@Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltSelection, "Choose an agent")</label>
+                    <select id="prebuilt-agent" class="select select-bordered w-full" @bind="_selectedTemplateId" disabled="@_isInstalling">
+                        @foreach (var template in _prebuiltAgents)
+                        {
+                            <option value="@template.Id">@template.Name</option>
+                        }
+                    </select>
+                    <p dir="auto">@selected.Description</p>
+                    <p class="text-sm" dir="auto">@selected.SetupInstructions</p>
+                    <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltOptionalTools, "Selected read tools depend on your installation and account setup. Review tools and access in the editor.")</p>
+                    <details>
+                        <summary>@Loc.GetOrDefault(SettingsTextKeys.AgentsSystemInstructionLabel, "System Instruction")</summary>
+                        <pre class="whitespace-pre-wrap break-words text-sm" dir="auto">@selected.SystemInstruction</pre>
+                    </details>
+                    <button class="btn btn-primary btn-sm" @onclick="InstallPrebuiltAsync" disabled="@_isInstalling">
+                        @Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltInstall, "Install agent")
+                    </button>
+                }
+                @if (_prebuiltError is not null)
+                {
+                    <div class="alert alert-error" role="alert">@_prebuiltError</div>
+                }
+                <button class="btn btn-ghost btn-sm" @onclick="ClosePrebuilt" disabled="@(_isInstalling || _isLoadingPrebuilt)">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+                </button>
+            </div>
+        }
+
+        @if (_configuration?.CustomAgents.Count == 0)
+        {
+            <div class="text-center py-10 opacity-60">
+                <iconify-icon icon="lucide:bot" width="48" height="48" class="mb-3"></iconify-icon>
+                <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.AgentsEmptyStateMessage, "No custom agents yet. Create one to get started.")</p>
+            </div>
+        }
+        else
+        {
+            <div class="custom-agent-gallery">
+                @foreach (var agent in _configuration?.CustomAgents ?? [])
+                {
+                    var pictureVersion = ProfilePictureRefreshState.Version;
+                    var avatarUrl = $"/{ApiRoutes.ProfilePictures.AgentById(agent.Id)}?v={pictureVersion}";
+                    <div class="group relative min-w-0" @key="agent.Id">
+                        <a href="#"
+                           class="hover-3d block w-full text-left text-base-content no-underline"
+                           aria-label="@agent.Name"
+                           aria-disabled="@(_isInstalling ? "true" : "false")"
+                           tabindex="@(_isInstalling ? -1 : 0)"
+                           @onclick:preventDefault="true"
+                           @onclick="async () => await OpenAgentAsync(agent)">
+                            <article class="card custom-settings-catalog-card overflow-hidden">
+                                <figure class="custom-agent-portrait bg-base-200 relative overflow-hidden">
+                                    <img class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                         src="@avatarUrl"
+                                         alt="" />
+                                    <div class="from-base-100/90 via-base-100/10 absolute inset-x-0 bottom-0 z-10 h-24 bg-linear-to-t to-transparent"></div>
+                                </figure>
+                                <div class="card-body gap-3 p-3">
+                                    <div class="min-w-0">
+                                        <h3 class="card-title flex-wrap gap-2 text-base">
+                                            <span class="line-clamp-1 min-w-0">@agent.Name</span>
+                                            @if (agent.IsShared)
+                                            {
+                                                <span class="badge badge-primary badge-soft badge-sm shrink-0">@Loc.GetOrDefault(SettingsTextKeys.AgentsSharedBadge, "Shared")</span>
+                                            }
+
+                                        </h3>
+                                        @if (!string.IsNullOrWhiteSpace(agent.Description))
+                                        {
+                                            <p class="mt-1 line-clamp-2 text-sm text-base-content/65">@agent.Description</p>
+                                        }
+                                    </div>
+                                    <div class="card-actions justify-between">
+                                        <span class="text-base-content/60 group-hover:text-base-content inline-flex items-center gap-1.5 text-sm font-medium transition-all">
+                                            <iconify-icon icon="lucide:pencil" class="size-3.5"></iconify-icon>
+                                            @GetPrimaryActionLabel(agent)
+                                        </span>
+                                        <span class="bg-base-200 rounded-box p-1 transition-all group-hover:bg-primary group-hover:text-primary-content">
+                                            <iconify-icon icon="lucide:chevron-right" class="block size-4"></iconify-icon>
+                                        </span>
+                                    </div>
+                                </div>
+                            </article>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </a>
+                        @if (CanDelete(agent))
+                        {
+                            <div class="absolute top-3 right-3 z-10 flex items-center gap-1">
+                                @if (CanExport(agent))
+                                {
+                                    <button class="btn btn-circle btn-sm shadow-sm"
+                                            title="@(Loc.GetOrDefault(SettingsTextKeys.AgentsExportButtonTitle, "Export agent"))"
+                                            aria-label="@(Loc.GetOrDefault(SettingsTextKeys.AgentsExportButtonTitle, "Export agent"))"
+                                            @onclick="() => ExportAgentAsync(agent)">
+                                        <iconify-icon icon="lucide:download" class="size-4"></iconify-icon>
+                                    </button>
+                                }
+                                <button class="btn btn-circle btn-sm text-error shadow-sm"
+                                        title="@(Loc.GetOrDefault(SettingsTextKeys.AgentsDeleteButtonTitle, "Delete agent"))"
+                                        aria-label="@(Loc.GetOrDefault(SettingsTextKeys.AgentsDeleteButtonTitle, "Delete agent"))"
+                                        @onclick="() => ConfirmDeleteAsync(agent)">
+                                    <iconify-icon icon="lucide:trash-2" class="size-4"></iconify-icon>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+else if (ShouldShowSharedCustomizationEditor)
+{
+    <SharedAgentPersonalContextEditor Definition="@CurrentSharedEditorAgent"
+                                      OnBack="HandleCustomizeBackAsync" />
+}
+else if (_editingAgent is not null)
+{
+    <div class="space-y-4">
+        <div class="flex flex-wrap items-center gap-3">
+            <button class="btn btn-ghost btn-sm" @onclick="CloseEditorFromBackAsync">
+                <span class="iconify lucide--arrow-left size-4" aria-hidden="true"></span>
+                @Loc.GetOrDefault(SettingsTextKeys.AgentsBackButton, "Back")
+            </button>
+            <span class="text-sm font-semibold opacity-70">@FormatSettingsText(SettingsTextKeys.AgentsEditingLabel, "Editing: {0}", _editingAgent.Name)</span>
+        </div>
+
+        <AgentEditorForm @ref="_agentEditorForm"
+                         Definition="@_editingAgent"
+                         GoalMaxIterations="@(_configuration?.GoalIterationLimits.TryGetValue(_editingAgent.Id, out var goalLimit) == true ? (int?)goalLimit : null)"
+                         ToolGroups="@(_configuration?.ToolGroups ?? [])"
+                         ExposableAgents="@GetExposableAgents(_editingAgent)"
+                         AvailableSkills="@(_configuration?.AvailableSkills ?? [])"
+                         AvailableModelProviders="@(_configuration?.AvailableModelProviders ?? [])"
+                         AvailableWorkspaces="@(_configuration?.AvailableWorkspaces ?? [])"
+                         AvailableUsers="@GetAvailableUsers(_editingAgent)"
+                         CanManageSharedAgents="@_canManageSharedAgents"
+                         CanUseSharedFolder="@(_configuration?.CanUseSharedFolder == true)"
+                         IsEgressDisabled="@_isEgressDisabled"
+                         OnSaveRequested="SaveAgentAsync" />
+    </div>
+}
+else if (_customizingAgent is not null)
+{
+    <SharedAgentPersonalContextEditor Definition="@_customizingAgent"
+                                      OnBack="HandleCustomizeBackAsync" />
+}
+
+@code {
+    private AgentDefinition? _editingAgent;
+    private AgentDefinition? _customizingAgent;
+    private AgentEditorForm? _agentEditorForm;
+    private bool _canManageSharedAgents;
+    private AgentConfiguration? _configuration;
+    private bool _isEgressDisabled;
+    private bool _showPrebuilt;
+    private bool _isLoadingPrebuilt;
+    private bool _isInstalling;
+    private string? _prebuiltError;
+    private string? _selectedTemplateId;
+    private IReadOnlyList<PrebuiltAgentTemplate> _prebuiltAgents = [];
+    private PrebuiltAgentTemplate? SelectedTemplate => _prebuiltAgents.FirstOrDefault(item => item.Id == _selectedTemplateId);
+
+    private bool ShouldShowSharedCustomizationEditor =>
+        CurrentSharedEditorAgent is not null && !_canManageSharedAgents;
+    private AgentDefinition? CurrentSharedEditorAgent =>
+        _customizingAgent ?? (_editingAgent is { IsShared: true } ? _editingAgent : null);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAsync();
+    }
+
+    private async Task OpenPrebuiltAsync()
+    {
+        if (_isInstalling || _isLoadingPrebuilt) return;
+        _showPrebuilt = true;
+        _isLoadingPrebuilt = true;
+        _prebuiltError = null;
+        _prebuiltAgents = [];
+        try
+        {
+            _prebuiltAgents = await ManagementApiClient.GetPrebuiltAgentsAsync();
+            _selectedTemplateId = _prebuiltAgents.FirstOrDefault()?.Id;
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Failed to load the prebuilt agent catalog.");
+            _prebuiltError = Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltLoadFailed, "The catalog could not be loaded. Retry to load it again.");
+        }
+        finally
+        {
+            _isLoadingPrebuilt = false;
+        }
+    }
+
+    private void ClosePrebuilt() => _showPrebuilt = false;
+
+    private async Task InstallPrebuiltAsync()
+    {
+        if (_isInstalling || SelectedTemplate is not { } template) return;
+        _isInstalling = true;
+        _prebuiltError = null;
+        AgentDefinition? created = null;
+        try
+        {
+            created = await ManagementApiClient.InstallPrebuiltAgentAsync(template.Id);
+            _showPrebuilt = false;
+            _customizingAgent = null;
+            // Open the ordinary editor only after the complete copy has been saved.
+            await ReloadAsync(created.Id);
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltInstalled, "Agent installed. You can edit your copy now."), ToastType.Success);
+        }
+        catch (AgentCallableNameCollisionException exception)
+        {
+            await ShowCallableNameCollisionAsync(exception);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Failed to install or refresh prebuilt agent {TemplateId}.", template.Id);
+            if (created is not null)
+            {
+                ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltRefreshFailed, "The agent was installed, but the editor could not be loaded. Refresh Agents to open your copy."), ToastType.Error);
+            }
+            else
+            {
+                _prebuiltError = Loc.GetOrDefault(SettingsTextKeys.AgentsPrebuiltInstallFailed, "Installation could not be confirmed. Refresh Agents and check for a new copy before installing again.");
+            }
+        }
+        finally
+        {
+            _isInstalling = false;
+        }
+    }
+
+    private async Task CreateAgentAsync()
+    {
+        try
+        {
+            var created = await ManagementApiClient.CreateCustomAgentAsync();
+            _customizingAgent = null;
+            await ReloadAsync(created.Id);
+        }
+        catch (AgentCallableNameCollisionException exception)
+        {
+            await ShowCallableNameCollisionAsync(exception);
+        }
+    }
+
+    private async Task OpenImportDialogAsync()
+    {
+        var dialogResult = await DialogService.ShowAsync<AgentImportDialog, ImportedAgentResult>();
+        if (!dialogResult.IsOk || dialogResult.Data is null)
+        {
+            return;
+        }
+
+        await ReloadAsync(dialogResult.Data.AgentId);
+    }
+
+    private async Task ExportAgentAsync(AgentDefinition agent)
+    {
+        try
+        {
+            using var streamReference = new DotNetStreamReference(
+                await ManagementApiClient.ExportCustomAgentAsync(agent.Id));
+            await using var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            await utilsModule.InvokeVoidAsync(
+                "downloadFileFromStream",
+                AgentPackageService.BuildFileName(agent.Name),
+                streamReference);
+        }
+        catch (Exception)
+        {
+            ToastService.Show(
+                Loc.GetOrDefault(SettingsTextKeys.AgentsExportFailedToast, "The agent could not be exported."),
+                ToastType.Error);
+        }
+    }
+
+    private async Task OpenAgentAsync(AgentDefinition agent)
+    {
+        if (_isInstalling) return;
+        if (agent.IsShared && !_canManageSharedAgents)
+        {
+            _customizingAgent = agent;
+            _editingAgent = null;
+            return;
+        }
+
+        _editingAgent = agent;
+        _customizingAgent = null;
+    }
+
+    private async Task SaveAgentAsync(AgentDefinition agent)
+    {
+        try
+        {
+            await ManagementApiClient.SaveCustomAgentAsync(agent);
+            await ReloadAsync(agent.Id, customizeShared: _customizingAgent is not null);
+        }
+        catch (AgentCallableNameCollisionException exception)
+        {
+            await ShowCallableNameCollisionAsync(exception);
+            throw;
+        }
+    }
+
+    private Task<DialogResult> ShowCallableNameCollisionAsync(AgentCallableNameCollisionException exception)
+    {
+        return DialogService.ShowAsync<InfoDialog>(
+            CommonLoc.GetOrDefault(CommonTextKeys.ErrorPageTitle, "Error"),
+            FormatSettingsText(
+                SettingsTextKeys.AgentsCallableNameCollisionMessage,
+                "The agent name \"{0}\" resolves to callable name \"{1}\", which is already used by another agent. Choose a different agent name.",
+                exception.AgentName,
+                exception.CallableName));
+    }
+
+    private async Task ConfirmDeleteAsync(AgentDefinition agent)
+    {
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.AgentsDeleteConfirmTitle, "Delete agent"),
+            FormatSettingsText(SettingsTextKeys.AgentsDeleteConfirmMessage, "Are you sure you want to delete \"{0}\"?", agent.Name));
+
+        if (result == DialogResult.Ok)
+        {
+            await ManagementApiClient.DeleteCustomAgentAsync(agent.Id);
+            await ReloadAsync();
+            CloseEditors();
+        }
+    }
+
+    private Task HandleCustomizeBackAsync()
+    {
+        CloseEditors();
+        return Task.CompletedTask;
+    }
+
+    private async Task CloseEditorFromBackAsync()
+    {
+        if (_agentEditorForm is null || await _agentEditorForm.ConfirmDiscardChangesAsync())
+        {
+            CloseEditors();
+        }
+    }
+
+    private void CloseEditors()
+    {
+        _editingAgent = null;
+        _customizingAgent = null;
+    }
+
+    private string GetPrimaryActionLabel(AgentDefinition agent)
+    {
+        return agent.IsShared && !_canManageSharedAgents
+            ? Loc.GetOrDefault(SettingsTextKeys.AgentsCustomizeButton, "Customize")
+            : CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit");
+    }
+
+    private bool CanDelete(AgentDefinition agent)
+    {
+        if (!agent.IsShared)
+        {
+            return true;
+        }
+
+        return _canManageSharedAgents;
+    }
+
+    private bool CanExport(AgentDefinition agent) => CanDelete(agent);
+
+    private List<AgentReference> GetExposableAgents(AgentDefinition definition)
+    {
+        return [.. (_configuration?.ExposableAgents ?? [])
+            .Where(agent => !string.Equals(agent.Id, definition.Id, StringComparison.Ordinal))
+            .OrderBy(agent => agent.Name, StringComparer.OrdinalIgnoreCase)];
+    }
+
+    private List<SelectableUser> GetAvailableUsers(AgentDefinition definition)
+    {
+        return [.. (_configuration?.AvailableUsers ?? [])
+            .Where(user => !string.Equals(user.Id, WellKnownUsers.SystemId, StringComparison.OrdinalIgnoreCase))
+            .Where(user => !string.Equals(user.Id, definition.OwnerUserId, StringComparison.OrdinalIgnoreCase))];
+    }
+
+    private async Task ReloadAsync(string? selectedAgentId = null, bool customizeShared = false)
+    {
+        var configurationTask = ManagementApiClient.GetAgentConfigurationAsync();
+        var privacyTask = SettingsApiClient.GetPrivacySettingsAsync();
+        await Task.WhenAll(configurationTask, privacyTask);
+
+        _configuration = await configurationTask;
+        _isEgressDisabled = (await privacyTask).IsLocalOnly;
+        _canManageSharedAgents = _configuration.CanManageSharedAgents;
+
+        if (string.IsNullOrWhiteSpace(selectedAgentId))
+        {
+            return;
+        }
+
+        var updated = _configuration.CustomAgents.FirstOrDefault(agent => string.Equals(agent.Id, selectedAgentId, StringComparison.Ordinal));
+        _editingAgent = customizeShared ? null : updated;
+        _customizingAgent = customizeShared ? updated : null;
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}

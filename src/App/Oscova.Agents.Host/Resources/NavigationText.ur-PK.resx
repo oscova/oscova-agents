@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Navigation.Overview">
+		<value>جائزہ</value>
+	</data>
+	<data name="Navigation.Chat">
+		<value>چیٹ</value>
+	</data>
+	<data name="Navigation.Tasks">
+		<value>ٹاسکس</value>
+	</data>
+	<data name="Navigation.Manage">
+		<value>ترتیبات</value>
+	</data>
+	<data name="Navigation.Orchestration">
+		<value>آرکیسٹریشن</value>
+	</data>
+	<data name="Navigation.AgentTasks">
+		<value>ایجنٹ ٹاسکس</value>
+	</data>
+	<data name="Navigation.Administration">
+		<value>انتظامیہ</value>
+	</data>
+	<data name="Navigation.ToggleSidebarHover">
+		<value>سائیڈ بار ہاور تبدیل کریں</value>
+	</data>
+	<data name="Navigation.CloseSidebar">
+		<value>سائیڈ بار بند کریں</value>
+	</data>
+	<data name="Navigation.ToggleSidebar">
+		<value>سائیڈ بار تبدیل کریں</value>
+	</data>
+	<data name="Navigation.ToggleTheme">
+		<value>تھیم تبدیل کریں</value>
+	</data>
+	<data name="Navigation.OpenCustomization">
+		<value>تخصیص کھولیں</value>
+	</data>
+	<data name="Navigation.SettingsMenuTrigger">
+		<value>{0} مینو ٹریگر</value>
+	</data>
+	<data name="Navigation.ToggleLayoutSidebar"><value>لے آؤٹ سائیڈ بار تبدیل کریں</value></data>
+	<data name="Navigation.Customization"><value>تخصیص</value></data>
+	<data name="Navigation.Reset"><value>دوبارہ ترتیب دیں</value></data>
+	<data name="Navigation.CustomizationResetToast"><value>تخصیص پہلے سے طے شدہ ترتیبات پر بحال کر دی گئی۔</value></data>
+	<data name="Navigation.FullScreen"><value>فل اسکرین</value></data>
+	<data name="Navigation.Theme"><value>تھیم</value></data>
+	<data name="Navigation.Sidebar"><value>سائیڈ بار</value></data>
+	<data name="Navigation.SidebarThemeAvailability"><value>(*صرف لائٹ تھیم میں دستیاب ہے)</value></data>
+	<data name="Navigation.Light"><value>لائٹ</value></data>
+	<data name="Navigation.Dark"><value>ڈارک</value></data>
+	<data name="Navigation.FontFamily"><value>فونٹ فیملی</value></data>
+	<data name="Navigation.Direction"><value>سمت</value></data>
+	<data name="Navigation.LeftToRight"><value>بائیں سے دائیں</value></data>
+	<data name="Navigation.RightToLeft"><value>دائیں سے بائیں</value></data>
+	<data name="Navigation.LeftToRightShort"><value>LTR</value></data>
+	<data name="Navigation.RightToLeftShort"><value>RTL</value></data>
+	<data name="Navigation.Account"><value>اکاؤنٹ</value></data>
+	<data name="Navigation.Logs"><value>لاگز</value></data>
+	<data name="Navigation.ChatMemory"><value>چیٹ میموری</value></data>
+	<data name="Navigation.LogOut"><value>لاگ آؤٹ</value></data>
+	<data name="Navigation.Role.Admin"><value>آپریٹر</value></data>
+	<data name="Navigation.Role.Moderator"><value>ناظم</value></data>
+	<data name="Navigation.Role.User"><value>صارف</value></data>
+	<data name="Navigation.HelpButtonAriaLabel"><value>مدد کھولیں</value></data>
+	<data name="Navigation.Dashboard"><value>ڈیش بورڈ</value></data>
+	<data name="Navigation.Dashboard.Window"><value>پچھلے 30 دن</value></data>
+	<data name="Navigation.Dashboard.Loading"><value>ڈیش بورڈ لوڈ ہو رہا ہے...</value></data>
+	<data name="Navigation.Dashboard.Error"><value>ڈیش بورڈ میٹرکس لوڈ نہیں ہو سکے۔</value></data>
+	<data name="Navigation.Dashboard.Empty"><value>ابھی تک کوئی میٹرکس نہیں ہیں</value></data>
+	<data name="Navigation.Dashboard.EmptyHint"><value>اس ڈیش بورڈ کو بھرنا شروع کرنے کے لیے چیٹ یا ایجنٹ کا کام چلائیں۔</value></data>
+	<data name="Navigation.Dashboard.LastThirtyDays"><value>پچھلے 30 دنوں کی سرگرمی</value></data>
+	<data name="Navigation.Dashboard.TotalTokens"><value>کل ٹوکنز</value></data>
+	<data name="Navigation.Dashboard.EstimatedCost"><value>تخمینی لاگت</value></data>
+	<data name="Navigation.Dashboard.ProviderRatedUsage"><value>معیاری ان پٹ اور آؤٹ پٹ نرخ</value></data>
+	<data name="Navigation.Dashboard.CostUnavailable"><value>دستیاب نہیں</value></data>
+	<data name="Navigation.Dashboard.PartialEstimate"><value>جزوی تخمینہ</value></data>
+	<data name="Navigation.Dashboard.EstimateExplanation"><value>رپورٹ شدہ ان پٹ اور آؤٹ پٹ ٹوکن پر معیاری USD نرخ لاگو ہوتے ہیں۔ کیش شدہ ان پٹ پر ان پٹ کی شرح لاگو ہوتی ہے۔ دیگر چارجز شامل نہیں۔</value></data>
+	<data name="Navigation.Dashboard.Egress"><value>ڈیٹا کا خروج</value></data>
+	<data name="Navigation.Dashboard.ToolCalls"><value>ٹول کالز</value></data>
+	<data name="Navigation.Dashboard.TaskRuns"><value>ٹاسک رنز</value></data>
+	<data name="Navigation.Dashboard.Agents"><value>ایجنٹس</value></data>
+	<data name="Navigation.Dashboard.ModelProviders"><value>ماڈل فراہم کنندگان</value></data>
+	<data name="Navigation.Dashboard.McpServers"><value>MCP سرورز</value></data>
+	<data name="Navigation.Dashboard.Skills"><value>مہارتیں</value></data>
+	<data name="Navigation.Dashboard.InputOutput"><value>ان پٹ / آؤٹ پٹ</value></data>
+	<data name="Navigation.Dashboard.Cloud"><value>کلاؤڈ</value></data>
+	<data name="Navigation.Dashboard.Local"><value>لوکل</value></data>
+	<data name="Navigation.Dashboard.AuditedEvents"><value>آڈٹ شدہ ڈیٹا خروج کے واقعات</value></data>
+	<data name="Navigation.Dashboard.OpenEgressAudit"><value>{0} واقعات کے لیے ڈیٹا خروج کی آڈٹ تفصیلات کھولیں</value></data>
+	<data name="Navigation.Dashboard.EgressAuditAction"><value>آڈٹ</value></data>
+	<data name="Navigation.Dashboard.TokenBreakdown"><value>ٹوکن کی تفصیلات</value></data>
+	<data name="Navigation.Dashboard.ByProvider"><value>بلحاظ فراہم کنندہ</value></data>
+	<data name="Navigation.Dashboard.ByAgent"><value>بلحاظ ایجنٹ</value></data>
+	<data name="Navigation.Dashboard.ByModel"><value>بلحاظ ماڈل</value></data>
+	<data name="Navigation.Dashboard.ToolUsage"><value>ٹول کا استعمال</value></data>
+	<data name="Navigation.Dashboard.Timeline"><value>حالیہ سرگرمی</value></data>
+	<data name="Navigation.Dashboard.AdminUsage"><value>صارف کے لحاظ سے استعمال (انتظامی منظر)</value></data>
+	<data name="Navigation.Dashboard.StorageByUser"><value>بلحاظ صارف اسٹوریج</value></data>
+	<data name="Navigation.Dashboard.Date"><value>تاریخ</value></data>
+	<data name="Navigation.Dashboard.Provider"><value>فراہم کنندہ</value></data>
+	<data name="Navigation.Dashboard.Agent"><value>ایجنٹ</value></data>
+	<data name="Navigation.Dashboard.Model"><value>ماڈل</value></data>
+	<data name="Navigation.Dashboard.Tool"><value>ٹول</value></data>
+	<data name="Navigation.Dashboard.Succeeded"><value>کامیاب</value></data>
+	<data name="Navigation.Dashboard.Failed"><value>ناکام</value></data>
+	<data name="Navigation.Dashboard.User"><value>صارف</value></data>
+	<data name="Navigation.Dashboard.Tokens"><value>ٹوکنز</value></data>
+	<data name="Navigation.Dashboard.File"><value>فائل</value></data>
+	<data name="Navigation.Dashboard.Files"><value>فائلیں</value></data>
+	<data name="Navigation.Dashboard.Other"><value>دیگر</value></data>
+	<data name="Navigation.Dashboard.IncognitoBucket"><value>پوشیدہ</value></data>
+	<data name="Navigation.Dashboard.BackgroundBucket"><value>پس منظر کا کام</value></data>
+	<data name="Navigation.Dashboard.UsageOverview"><value>استعمال کا جائزہ</value></data>
+	<data name="Navigation.Dashboard.UsageOverviewHint"><value>روزانہ کی بنیاد پر ان پٹ، آؤٹ پٹ اور باہر بھیجا جانے والا ڈیٹا</value></data>
+	<data name="Navigation.Dashboard.InputTokens"><value>ان پٹ ٹوکنز</value></data>
+	<data name="Navigation.Dashboard.OutputTokens"><value>آؤٹ پٹ ٹوکنز</value></data>
+	<data name="Navigation.Dashboard.OperationalStatus"><value>آپریشنل صورتحال</value></data>
+	<data name="Navigation.Dashboard.TaskSuccessRate"><value>ٹاسک کی کامیابی کی شرح</value></data>
+	<data name="Navigation.Dashboard.AverageTaskDuration"><value>ٹاسک کا اوسط دورانیہ</value></data>
+	<data name="Navigation.Dashboard.Fallbacks"><value>فال بیکس</value></data>
+	<data name="Navigation.Dashboard.LocalCloudMix"><value>لوکل / کلاؤڈ کا تناسب</value></data>
+	<data name="Navigation.Dashboard.Distribution"><value>استعمال کی تقسیم</value></data>
+	<data name="Navigation.Dashboard.TokenMix"><value>ٹوکن مکس</value></data>
+	<data name="Navigation.Dashboard.SecondsShort"><value>سیکنڈ</value></data>
+	<data name="Navigation.Dashboard.MinutesShort"><value>منٹ</value></data>
+	<data name="Navigation.Achievements"><value>کامیابیاں</value></data>
+  <data name="Navigation.ShowSettingsNavigation" xml:space="preserve"><value>ترتیبات کی نیویگیشن دکھائیں</value></data>
+</root>

@@ -1,0 +1,27 @@
+<div class="@RootClass">
+    <div class="avatar">
+        <div class="bg-base-200 mask mask-squircle w-8">
+            <img src="@ProfilePictureUrl" alt="" />
+        </div>
+    </div>
+    <div class="min-w-0 grow -space-y-0.5">
+        <p class="truncate text-sm font-medium">@CurrentUserName</p>
+        @if (ShowUserName)
+        {
+            <p class="text-base-content/60 truncate text-xs">@@@CurrentUserUserName</p>
+        }
+    </div>
+    @if (ShowChevron)
+    {
+        <iconify-icon icon="lucide:chevrons-up-down" width="16" height="16" class="text-base-content/60 shrink-0"></iconify-icon>
+    }
+</div>
+
+@code {
+    [Parameter] public string CurrentUserName { get; set; } = "";
+    [Parameter] public string CurrentUserUserName { get; set; } = "";
+    [Parameter, EditorRequired] public string ProfilePictureUrl { get; set; } = default!;
+    [Parameter] public bool ShowUserName { get; set; } = true;
+    [Parameter] public bool ShowChevron { get; set; }
+    [Parameter] public string RootClass { get; set; } = "";
+}

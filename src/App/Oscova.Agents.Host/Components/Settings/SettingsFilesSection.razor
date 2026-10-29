@@ -1,0 +1,803 @@
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+@using Oscova.Agents.Core.Library
+@implements IDisposable
+@inherits SettingsComponentBase
+@inject ILogger<SettingsFilesSection> Logger
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject UserServiceScope UserScope
+@inject IUserPermissionService Permissions
+
+@{ var renderedPath = _currentPath; var renderedRoot = _root; }
+
+<div class="space-y-4">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="custom-settings-files-path">
+            @* Root selector: Home is the user's own folder, Shared is the host-wide folder for permitted users. *@
+            @if (_canUseShared)
+            {
+                <div role="tablist" class="tabs tabs-box tabs-sm mb-2 w-fit">
+                    <button type="button" role="tab" class="tab @(_root == FileRoot.Home ? "tab-active" : null)" aria-selected="@(_root == FileRoot.Home)" disabled="@IsInteractionDisabled" @onclick="() => SelectRootAsync(FileRoot.Home)">@Loc.GetOrDefault(SettingsTextKeys.FilesHomeBreadcrumb, "Home")</button>
+                    <button type="button" role="tab" class="tab @(_root == FileRoot.Shared ? "tab-active" : null)" aria-selected="@(_root == FileRoot.Shared)" disabled="@IsInteractionDisabled" @onclick="() => SelectRootAsync(FileRoot.Shared)">@Loc.GetOrDefault(SettingsTextKeys.FilesSharedBreadcrumb, "Shared")</button>
+                </div>
+            }
+            <div class="breadcrumbs text-sm">
+                <ul>
+                    <li><button type="button" class="link link-hover" disabled="@IsInteractionDisabled" @onclick="() => NavigateToAsync(string.Empty)">@RootName</button></li>
+                    @foreach (var segment in PathSegments)
+                    {
+                        <li>
+                            <button type="button" class="link link-hover" disabled="@IsInteractionDisabled" @onclick="() => NavigateToAsync(segment.Path)">
+                                @segment.Name
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </div>
+            @if (GetFolderPurpose() is { } purpose)
+            {
+                <div class="mt-2 flex items-center gap-1.5 text-xs opacity-70">
+                    <iconify-icon icon="lucide:info" aria-hidden="true"></iconify-icon>
+                    <span>
+                        <span class="font-medium">@purpose.Title</span>: @purpose.Description
+                    </span>
+                </div>
+            }
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="btn btn-ghost btn-sm" disabled="@IsInteractionDisabled" @onclick="() => OpenCreateDialogAsync(renderedRoot, renderedPath, true)">
+                <span class="iconify lucide--folder-plus size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.FilesNewFolder, "New Folder")
+            </button>
+            <button class="btn btn-ghost btn-sm" disabled="@IsInteractionDisabled" @onclick="() => OpenCreateDialogAsync(renderedRoot, renderedPath, false)">
+                <span class="iconify lucide--file-plus size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.FilesNewFile, "New File")
+            </button>
+            <label class="btn btn-primary btn-sm" for="file-upload-input">
+                <span class="iconify lucide--upload size-4" aria-hidden="true"></span>@CommonLoc.GetOrDefault(CommonTextKeys.Upload, "Upload")
+                @* A pending selection belongs to this directory, even before navigation reaches the browser. *@
+                <InputFile @key="(renderedRoot, renderedPath)" id="file-upload-input" class="sr-only" OnChange="args => UploadFilesAsync(renderedRoot, renderedPath, args)" disabled="@IsInteractionDisabled" multiple />
+            </label>
+        </div>
+    </div>
+
+    @if (IsInLibrary && _libraryIndex is not null)
+    {
+        @if (_libraryIndex.IsBlockedByLocalOnlyPolicy)
+        {
+            <div role="alert" class="alert alert-error alert-soft text-sm">
+                @Loc.GetOrDefault(
+                    SettingsTextKeys.FilesLibraryLocalOnlyBlockedMessage,
+                    "Library indexing is blocked until you select a local embedding provider.")
+            </div>
+        }
+        else if (_libraryIndex.EgressClass == EgressClass.Cloud)
+        {
+            <div role="alert" class="alert alert-warning alert-soft text-sm">
+                <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+                <span>
+                    @FormatSettingsText(
+                        SettingsTextKeys.FilesLibraryCloudProviderWarning,
+                        "Cloud embedding provider in use. Text extracted from files in Library is sent to {0} for indexing and search. For private documents, a local embedding provider is recommended.",
+                        _libraryIndex.EmbeddingProviderName)
+                </span>
+            </div>
+        }
+        else if (_libraryIndex.UnavailableReason is { } reason)
+        {
+            <div class="alert alert-info" role="status">@reason</div>
+        }
+        else if (!_libraryIndex.IsEmbeddingProviderAvailable)
+        {
+            <div role="alert" class="alert alert-info alert-soft text-sm">
+                @Loc.GetOrDefault(
+                    SettingsTextKeys.FilesLibraryNoProviderMessage,
+                    "Library indexing and search will not start until an embedding provider is configured. Files already in Library will be discovered after a provider is selected.")
+            </div>
+        }
+        else
+        {
+            <div role="status" class="alert alert-success alert-soft text-sm">
+                @FormatSettingsText(
+                    SettingsTextKeys.FilesLibraryLocalProviderMessage,
+                    "Library Search uses the local embedding provider {0}.",
+                    _libraryIndex.EmbeddingProviderName)
+            </div>
+        }
+    }
+
+    @if (_isLoading)
+    {
+        <div class="flex justify-center py-10">
+            <span class="loading loading-dots loading-md"></span>
+        </div>
+    }
+    else if (_entries.Count == 0)
+    {
+        <div class="text-center py-10 opacity-60">
+            <iconify-icon icon="lucide:folder-open" width="48" height="48" class="mb-3"></iconify-icon>
+            <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.FilesEmptyDirectoryMessage, "This directory is empty.")</p>
+        </div>
+    }
+    else
+    {
+        <div class="custom-settings-catalog-card custom-settings-files-table custom-settings-table-container overflow-x-auto">
+            <table class="table table-sm custom-settings-adaptive-table">
+                <thead>
+                    <tr>
+                        <th>@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</th>
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.FilesColumnSize, "Size")</th>
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.FilesColumnModified, "Modified")</th>
+                        @if (IsInLibrary)
+                        {
+                            <th>@Loc.GetOrDefault(SettingsTextKeys.FilesLibraryIndexingColumn, "Indexing")</th>
+                        }
+                        <th class="custom-settings-actions">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entry in _entries)
+                    {
+                        var relativePath = CombinePath(_currentPath, entry.Name);
+                        <tr class="hover" @key="entry.Name">
+                            <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")">
+                                @if (entry.IsDirectory)
+                                {
+                                    <button type="button" class="link link-hover inline-flex items-center gap-2" disabled="@IsInteractionDisabled" @onclick="() => NavigateToAsync(relativePath)">
+                                        <iconify-icon icon="lucide:folder" class="text-warning"></iconify-icon>
+                                        @entry.Name
+                                    </button>
+                                }
+                                else if (IsEditable(entry.Name))
+                                {
+                                    <button type="button" class="link link-hover inline-flex items-center gap-2" disabled="@IsInteractionDisabled" @onclick="() => OpenEditorAsync(entry.Name, relativePath)">
+                                        <iconify-icon icon="@FileIconResolver.Resolve(entry.Name)" class="opacity-60"></iconify-icon>
+                                        @entry.Name
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center gap-2">
+                                        <iconify-icon icon="@FileIconResolver.Resolve(entry.Name)" class="opacity-60"></iconify-icon>
+                                        @entry.Name
+                                    </span>
+                                }
+                                @if (!entry.IsDirectory && EncryptedFileContent.IsEncryptedPath(entry.Name))
+                                {
+                                    <span class="iconify lucide--lock size-3 ms-1" role="img"
+                                          aria-label="@Loc.GetOrDefault(SettingsTextKeys.FilesEncrypted, "Encrypted")"
+                                          title="@Loc.GetOrDefault(SettingsTextKeys.FilesEncrypted, "Encrypted")"></span>
+                                }
+                            </td>
+                            <td class="text-xs opacity-60" data-label="@Loc.GetOrDefault(SettingsTextKeys.FilesColumnSize, "Size")">
+                                @if (!entry.IsDirectory)
+                                {
+                                    @ByteSize.Format(entry.Size)
+                                }
+                            </td>
+                            <td class="text-xs opacity-60" data-label="@Loc.GetOrDefault(SettingsTextKeys.FilesColumnModified, "Modified")">@TimeZoneInfo.ConvertTimeFromUtc(entry.LastModified, _userTimeZone).ToString("yyyy-MM-dd HH:mm")</td>
+                            @if (IsInLibrary)
+                            {
+                                var indexEntry = GetLibraryIndexEntry(entry);
+                                <td class="min-w-0" data-label="@Loc.GetOrDefault(SettingsTextKeys.FilesLibraryIndexingColumn, "Indexing")">
+                                    @if (!entry.IsDirectory && indexEntry is not null)
+                                    {
+                                        @switch (indexEntry.State)
+                                        {
+                                            case LibraryFileIndexState.Ready:
+                                                <span class="badge badge-success badge-soft">
+                                                    @Loc.GetOrDefault(SettingsTextKeys.FilesLibraryReadyStatus, "Ready")
+                                                </span>
+                                                break;
+                                            case LibraryFileIndexState.Queued:
+                                                <span class="badge badge-info badge-soft">
+                                                    @Loc.GetOrDefault(SettingsTextKeys.FilesLibraryQueuedStatus, "Queued")
+                                                </span>
+                                                break;
+                                            case LibraryFileIndexState.Indexing:
+                                                <span class="badge badge-info badge-soft gap-1">
+                                                    <span class="loading loading-spinner loading-xs"></span>
+                                                    @Loc.GetOrDefault(SettingsTextKeys.FilesLibraryIndexingStatus, "Indexing")
+                                                </span>
+                                                break;
+                                            case LibraryFileIndexState.Skipped:
+                                                <span class="badge badge-ghost h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">
+                                                    @FormatLibraryStatus(
+                                                        SettingsTextKeys.FilesLibrarySkippedStatus,
+                                                        "Skipped",
+                                                        indexEntry.Reason)
+                                                </span>
+                                                break;
+                                            case LibraryFileIndexState.Failed:
+                                                <span class="badge badge-error badge-soft h-auto max-w-full min-w-0 whitespace-normal text-start [overflow-wrap:anywhere]">
+                                                    @FormatLibraryStatus(
+                                                        SettingsTextKeys.FilesLibraryFailedStatus,
+                                                        "Failed",
+                                                        indexEntry.Reason)
+                                                </span>
+                                                break;
+                                        }
+                                    }
+                                </td>
+                            }
+                            <td class="custom-settings-actions text-right" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                @if (!entry.IsDirectory && IsEditable(entry.Name))
+                                {
+                                    <button class="btn btn-ghost btn-xs" title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")" disabled="@IsInteractionDisabled" @onclick="() => OpenEditorAsync(entry.Name, relativePath)">
+                                        <iconify-icon icon="lucide:square-pen"></iconify-icon>
+                                    </button>
+                                }
+                                @if (!entry.IsDirectory)
+                                {
+                                    <button class="btn btn-ghost btn-xs" title="@CommonLoc.GetOrDefault(CommonTextKeys.Download, "Download")" disabled="@IsInteractionDisabled" @onclick="() => DownloadFileAsync(entry.Name, relativePath)">
+                                        <iconify-icon icon="lucide:download"></iconify-icon>
+                                    </button>
+                                }
+                                @if (CanDelete(entry))
+                                {
+                                    <button class="btn btn-ghost btn-xs text-error" title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")" disabled="@IsInteractionDisabled" @onclick="() => DeleteEntryAsync(entry, relativePath)">
+                                        <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private FileRoot _root = FileRoot.Home;
+    private bool _canUseShared;
+    private string _currentPath = string.Empty;
+    private List<FileSystemEntry> _entries = [];
+    private LibraryIndexView? _libraryIndex;
+    private CancellationTokenSource? _libraryIndexRefreshCts;
+    private bool _isLoading;
+    private bool _isBusy;
+    private bool IsInteractionDisabled => _isBusy || _isLoading;
+    private TimeZoneInfo _userTimeZone = TimeZoneInfo.Utc;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uiSettings = await SettingsApiClient.GetUiSettingsAsync();
+        _userTimeZone = TimeZoneResolver.ResolveOrLocal(uiSettings.TimeZoneId);
+        _canUseShared = (await Permissions.GetGrantedAsync(UserScope.UserId)).Contains(UserPermissionKeys.SharedFolder);
+        await LoadEntriesAsync();
+    }
+
+    private string RootName => _root == FileRoot.Shared
+        ? Loc.GetOrDefault(SettingsTextKeys.FilesSharedBreadcrumb, "Shared")
+        : Loc.GetOrDefault(SettingsTextKeys.FilesHomeBreadcrumb, "Home");
+
+    private async Task SelectRootAsync(FileRoot root)
+    {
+        if (IsInteractionDisabled || root == _root) { return; }
+
+        _root = root;
+        _currentPath = string.Empty;
+        await LoadEntriesAsync();
+    }
+
+    private List<(string Name, string Path)> PathSegments
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_currentPath))
+            {
+                return [];
+            }
+
+            var parts = _currentPath.Split('/', '\\');
+            var segments = new List<(string Name, string Path)>();
+            for (var index = 0; index < parts.Length; index++)
+            {
+                var path = string.Join(Path.DirectorySeparatorChar, parts.Take(index + 1));
+                segments.Add((parts[index], path));
+            }
+
+            return segments;
+        }
+    }
+
+    private bool IsInLibrary => _root == FileRoot.Home && IsLibraryPath(_currentPath);
+
+    private async Task LoadEntriesAsync()
+    {
+        await RunAsync(v => _isLoading = v, async () =>
+        {
+            // A failed load must not leave the previous folder's rows actionable.
+            _entries = [];
+            _libraryIndex = null;
+            var entriesTask = SettingsApiClient.ListFilesAsync(_currentPath, _root);
+            if (!IsInLibrary)
+            {
+                _entries = (await entriesTask).ToList();
+                _libraryIndex = null;
+                return;
+            }
+
+            _libraryIndex = null;
+            var libraryIndexTask = SettingsApiClient.GetLibraryIndexAsync();
+            _entries = (await entriesTask).ToList();
+            _libraryIndex = await libraryIndexTask;
+        });
+
+        RestartLibraryIndexRefresh();
+    }
+
+    private async Task NavigateToAsync(string path)
+    {
+        if (IsInteractionDisabled) { return; }
+        _currentPath = path;
+        await LoadEntriesAsync();
+    }
+
+    private async Task OpenCreateDialogAsync(FileRoot root, string directory, bool isDirectory)
+    {
+        if (IsInteractionDisabled) { return; }
+        var result = await DialogService.ShowAsync<CreateFileSystemItemDialog, string>(
+            new Dictionary<string, object?>
+            {
+                ["IsDirectory"] = isDirectory
+            });
+
+        if (result.IsCancelled || string.IsNullOrWhiteSpace(result.Data))
+        {
+            return;
+        }
+
+        await CreateEntryAsync(root, directory, isDirectory, result.Data);
+    }
+
+    private async Task CreateEntryAsync(FileRoot root, string directory, bool isDirectory, string itemName)
+    {
+        var name = itemName.Trim();
+
+        await RunAsync(v => _isBusy = v, async () =>
+        {
+            if (isDirectory)
+            {
+                await SettingsApiClient.CreateDirectoryAsync(directory, name, root);
+                ToastService.Show(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        Loc.GetOrDefault(SettingsTextKeys.FilesFolderCreatedToast, "Folder '{0}' created."),
+                        name),
+                    ToastType.Success);
+            }
+            else
+            {
+                var content = FileTemplateProvider.GetTemplate(name);
+                await SettingsApiClient.CreateFileAsync(directory, name, content, root);
+                ToastService.Show(
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        Loc.GetOrDefault(SettingsTextKeys.FilesFileCreatedToast, "File '{0}' created."),
+                        name),
+                    ToastType.Success);
+            }
+
+            await LoadEntriesAsync();
+        });
+    }
+
+    private async Task DeleteEntryAsync(FileSystemEntry entry, string relativePath)
+    {
+        if (IsInteractionDisabled) { return; }
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.FilesDeleteConfirmTitle, "Confirm Delete"),
+            string.Format(
+                CultureInfo.CurrentCulture,
+                Loc.GetOrDefault(SettingsTextKeys.FilesDeleteConfirmMessage, "Are you sure you want to delete \"{0}\"?{1}"),
+                entry.Name,
+                entry.IsDirectory ? Loc.GetOrDefault(SettingsTextKeys.FilesDeleteDirectoryWarning, " This will delete all contents.") : string.Empty));
+
+        if (result != DialogResult.Ok)
+        {
+            return;
+        }
+
+        var root = _root;
+        await RunAsync(v => _isBusy = v, async () =>
+        {
+            await SettingsApiClient.DeleteFileSystemEntryAsync(relativePath, entry.IsDirectory, root);
+            ToastService.Show(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Loc.GetOrDefault(SettingsTextKeys.FilesDeletedToast, "'{0}' deleted."),
+                    entry.Name),
+                ToastType.Success);
+            await LoadEntriesAsync();
+        });
+    }
+
+    private async Task DownloadFileAsync(string fileName, string relativePath)
+    {
+        if (IsInteractionDisabled) { return; }
+        await RunAsync(v => _isBusy = v, async () =>
+        {
+            using var streamReference = new DotNetStreamReference(
+                await SettingsApiClient.DownloadFileAsync(relativePath, _root));
+            await using var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            await utilsModule.InvokeVoidAsync("downloadFileFromStream", fileName, streamReference);
+        });
+    }
+
+    private async Task UploadFilesAsync(FileRoot root, string directory, InputFileChangeEventArgs args)
+    {
+        if (IsInteractionDisabled) { return; }
+        await RunAsync(v => _isBusy = v, async () =>
+        {
+            // Reject over-limit selections without leaving the file controls busy.
+            foreach (var file in args.GetMultipleFiles(10))
+            {
+                try
+                {
+                    if (file.Size > UserFileLimits.MaxUploadSizeBytes)
+                    {
+                        ToastService.Show(
+                            string.Format(
+                                CultureInfo.CurrentCulture,
+                                Loc.GetOrDefault(SettingsTextKeys.FilesFileTooLargeToast, "'{0}' exceeds the {1} limit."),
+                                file.Name,
+                                ByteSize.Format(UserFileLimits.MaxUploadSizeBytes)),
+                            ToastType.Warning);
+                        continue;
+                    }
+
+                    await SettingsApiClient.UploadFileAsync(directory, file, root);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Failed to upload {FileName}", file.Name);
+                    ToastService.Show(
+                        string.Format(
+                            CultureInfo.CurrentCulture,
+                            Loc.GetOrDefault(SettingsTextKeys.FilesUploadFailedToast, "Failed to upload '{0}': {1}"),
+                            file.Name,
+                            ex.Message),
+                        ToastType.Error);
+                }
+            }
+
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.FilesUploadCompleteToast, "Upload complete."), ToastType.Success);
+            await LoadEntriesAsync();
+        });
+    }
+
+    private static bool IsEditable(string fileName) => UserEditableFileTypes.ContainsFileName(fileName);
+
+    private bool CanDelete(FileSystemEntry entry) =>
+        _root == FileRoot.Shared || !(entry.IsDirectory &&
+          string.Equals(_currentPath, UserFileNames.WorkspaceDirectory, StringComparison.OrdinalIgnoreCase) &&
+          string.Equals(entry.Name, UserFileNames.LibraryWorkspaceDirectory, StringComparison.OrdinalIgnoreCase));
+
+    private async Task OpenEditorAsync(string fileName, string relativePath)
+    {
+        if (IsInteractionDisabled) { return; }
+
+        var parameters = new Dictionary<string, object?>
+        {
+            ["RelativePath"] = relativePath,
+            ["FileName"] = fileName
+        };
+        if (_root == FileRoot.Shared)
+        {
+            // Shared files keep no backups, so the editor reads and saves through the shared root directly.
+            parameters["LoadContentAsync"] = (Func<Task<string>>)(async () =>
+                (await SettingsApiClient.ReadFileTextAsync(relativePath, FileRoot.Shared)).Content);
+            parameters["SaveContentAsync"] = (Func<string, Task>)(content =>
+                SettingsApiClient.WriteFileTextAsync(relativePath, content, EncryptedFileContent.IsEncryptedPath(relativePath), FileRoot.Shared));
+        }
+
+        var result = await DialogService.ShowAsync<FileEditorDialog>(parameters);
+
+        if (result == DialogResult.Ok)
+        {
+            await LoadEntriesAsync();
+        }
+    }
+
+    private void RestartLibraryIndexRefresh()
+    {
+        StopLibraryIndexRefresh();
+        if (!IsInLibrary || !HasActiveLibraryIndexing())
+        {
+            return;
+        }
+
+        var cts = new CancellationTokenSource();
+        _libraryIndexRefreshCts = cts;
+        // Poll only while indexing is active so completed states appear without permanent background traffic.
+        _ = RefreshLibraryIndexUntilSettledAsync(cts);
+    }
+
+    private async Task RefreshLibraryIndexUntilSettledAsync(CancellationTokenSource cts)
+    {
+        try
+        {
+            while (IsInLibrary && HasActiveLibraryIndexing())
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
+                _libraryIndex = await SettingsApiClient.GetLibraryIndexAsync(cts.Token);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) when (cts.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Library indexing status could not be refreshed.");
+        }
+        finally
+        {
+            if (ReferenceEquals(_libraryIndexRefreshCts, cts))
+            {
+                _libraryIndexRefreshCts = null;
+            }
+
+            cts.Dispose();
+        }
+    }
+
+    private bool HasActiveLibraryIndexing()
+    {
+        return _libraryIndex?.IsEmbeddingProviderAvailable == true &&
+               _libraryIndex.Files.Any(file =>
+                   file.State is LibraryFileIndexState.Queued or LibraryFileIndexState.Indexing);
+    }
+
+    private void StopLibraryIndexRefresh()
+    {
+        var cts = _libraryIndexRefreshCts;
+        _libraryIndexRefreshCts = null;
+        cts?.Cancel();
+    }
+
+    private LibraryFileIndexItemView? GetLibraryIndexEntry(FileSystemEntry entry)
+    {
+        if (entry.IsDirectory || _libraryIndex is null)
+        {
+            return null;
+        }
+
+        // The file browser uses user-relative paths; index status intentionally exposes Library-relative paths.
+        var userRelativePath = CombinePath(_currentPath, entry.Name);
+        var libraryRelativePath = GetLibraryRelativePath(userRelativePath);
+        // Case-distinct files on case-sensitive platforms have separate index entries.
+        return libraryRelativePath is null
+            ? null
+            : _libraryIndex.Files.FirstOrDefault(item =>
+                PathHelper.ArePathsEqual(item.Path, libraryRelativePath));
+    }
+
+    private static string LibraryUserRelativeRoot =>
+        $"{UserFileNames.WorkspaceDirectory}/{UserFileNames.LibraryWorkspaceDirectory}";
+
+    private static bool IsLibraryPath(string path)
+        => GetLibraryRelativePath(path) is not null;
+
+    private static string? GetLibraryRelativePath(string userRelativePath) =>
+        PathHelper.GetRelativePathUnderRoot(
+            userRelativePath,
+            LibraryUserRelativeRoot,
+            StringComparison.OrdinalIgnoreCase);
+
+    private (string Title, string Description)? GetFolderPurpose()
+    {
+        if (_root == FileRoot.Shared)
+        {
+            return string.IsNullOrEmpty(_currentPath)
+                ? LocalizeFolderPurpose(
+                    SettingsTextKeys.FilesSharedFolderTitle,
+                    "Shared folder",
+                    SettingsTextKeys.FilesSharedFolderDescription,
+                    "Every user with the Shared folder permission can open, change and delete these files, including encrypted ones.")
+                : null;
+        }
+
+        var segments = PathHelper.ToSlashSeparatedRelativePath(_currentPath)
+            .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        return segments switch
+        {
+            [var root] when IsFolderName(root, UserFileNames.AgentsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesAgentsFolderTitle,
+                "Managed agent folders",
+                SettingsTextKeys.FilesAgentsFolderDescription,
+                "Contains the main agent, custom agent definitions, shared-agent context, and each agent's persistent data."),
+            [var root, var agent] when IsFolderName(root, UserFileNames.AgentsDirectory) &&
+                                            IsFolderName(agent, UserFileNames.MainAgentDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesMainAgentFolderTitle,
+                "Main agent folder",
+                SettingsTextKeys.FilesMainAgentFolderDescription,
+                "Stores the built-in main agent definition and its private persistent data."),
+            [var root, var shared] when IsFolderName(root, UserFileNames.AgentsDirectory) &&
+                                             IsFolderName(shared, UserFileNames.SharedAgentsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesSharedAgentsFolderTitle,
+                "Shared-agent context",
+                SettingsTextKeys.FilesSharedAgentsFolderDescription,
+                "Contains your personal context files for shared agents."),
+            [var root, var shared, _] when IsFolderName(root, UserFileNames.AgentsDirectory) &&
+                                                IsFolderName(shared, UserFileNames.SharedAgentsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesSharedAgentFolderTitle,
+                "Shared-agent personal context",
+                SettingsTextKeys.FilesSharedAgentFolderDescription,
+                "Stores your private context for this shared agent."),
+            [var root, var agent] when IsFolderName(root, UserFileNames.AgentsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesCustomAgentFolderTitle,
+                "Custom agent folder",
+                SettingsTextKeys.FilesCustomAgentFolderDescription,
+                "Stores this custom agent's definition, tool policies, and private persistent data."),
+            [var root, var agent, var data] when IsFolderName(root, UserFileNames.AgentsDirectory) &&
+                                                     !IsFolderName(agent, UserFileNames.SharedAgentsDirectory) &&
+                                                     IsFolderName(data, UserFileNames.AgentPrivateDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesAgentPrivateFolderTitle,
+                "Agent private folder",
+                SettingsTextKeys.FilesAgentPrivateFolderDescription,
+                "Provides this agent's persistent private folder for notes, progress records, and other files."),
+            [var root, var agent, var data, var notes] when IsFolderName(root, UserFileNames.AgentsDirectory) &&
+                                                                !IsFolderName(agent, UserFileNames.SharedAgentsDirectory) &&
+                                                                IsFolderName(data, UserFileNames.AgentPrivateDirectory) &&
+                                                                IsFolderName(notes, "notes") => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesAgentNotesFolderTitle,
+                "Private agent notes",
+                SettingsTextKeys.FilesAgentNotesFolderDescription,
+                "Stores this agent's private improvement notes, which can be loaded into future runs."),
+            [var root] when IsFolderName(root, UserFileNames.WorkspaceDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesWorkspaceRootTitle,
+                "Managed workspaces",
+                SettingsTextKeys.FilesWorkspaceRootDescription,
+                "Contains workspace folders that can be assigned to agents."),
+            [var root, var workspace] when IsFolderName(root, UserFileNames.WorkspaceDirectory) &&
+                                                IsFolderName(workspace, UserFileNames.DefaultWorkspaceDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesDefaultWorkspaceTitle,
+                "Default workspace",
+                SettingsTextKeys.FilesDefaultWorkspaceDescription,
+                "Provides the automatically created general workspace initially assigned to the main agent."),
+            [var root, var workspace] when IsFolderName(root, UserFileNames.WorkspaceDirectory) &&
+                                                IsFolderName(workspace, UserFileNames.LibraryWorkspaceDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesLibraryWorkspaceTitle,
+                "Library workspace",
+                SettingsTextKeys.FilesLibraryWorkspaceDescription,
+                "Stores reference documents indexed for Library Search and exposed to assigned agents as read-only files."),
+            [var root, _] when IsFolderName(root, UserFileNames.WorkspaceDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesWorkspaceFolderTitle,
+                "Workspace folder",
+                SettingsTextKeys.FilesWorkspaceFolderDescription,
+                "Provides a user-managed workspace that can be assigned to agents."),
+            [var root] when IsFolderName(root, UserFileNames.SettingsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesSettingsFolderTitle,
+                "Managed settings",
+                SettingsTextKeys.FilesSettingsFolderDescription,
+                "Stores your settings domains as YAML files."),
+            [var root] when IsFolderName(root, UserFileNames.PromptsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesPromptsFolderTitle,
+                "Runtime instructions",
+                SettingsTextKeys.FilesPromptsFolderDescription,
+                "Stores editable instructions used by future agent runs."),
+            [var root] when IsFolderName(root, UserFileNames.SkillsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesSkillsFolderTitle,
+                "Managed skills",
+                SettingsTextKeys.FilesSkillsFolderDescription,
+                "Contains imported and agent-authored skills available for assignment."),
+            [var root, var skill] when IsFolderName(root, UserFileNames.SkillsDirectory) &&
+                                            !IsFolderName(skill, ".import-staging") => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesSkillFolderTitle,
+                "Skill folder",
+                SettingsTextKeys.FilesSkillFolderDescription,
+                "Contains one skill package rooted by SKILL.md, plus any resources, scripts, or assets it uses."),
+            [var root] when IsFolderName(root, UserFileNames.TasksDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesTasksFolderTitle,
+                "Managed tasks",
+                SettingsTextKeys.FilesTasksFolderDescription,
+                "Contains scheduled and externally triggered task definitions."),
+            [var root, _] when IsFolderName(root, UserFileNames.TasksDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesTaskFolderTitle,
+                "Task folder",
+                SettingsTextKeys.FilesTaskFolderDescription,
+                "Stores one task definition and its run history."),
+            [var root, _, var runs] when IsFolderName(root, UserFileNames.TasksDirectory) &&
+                                              IsFolderName(runs, UserFileNames.RunsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesTaskRunsFolderTitle,
+                "Task run history",
+                SettingsTextKeys.FilesTaskRunsFolderDescription,
+                "Stores managed run indexes, transcripts, and session artifacts for this task."),
+            [var root] when IsFolderName(root, UserFileNames.MemoryDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesMemoryFolderTitle,
+                "User memory",
+                SettingsTextKeys.FilesMemoryFolderDescription,
+                "Stores long-term, topic, daily, and conversation memory data."),
+            [var root, var daily] when IsFolderName(root, UserFileNames.MemoryDirectory) &&
+                                            IsFolderName(daily, "daily") => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesDailyMemoryFolderTitle,
+                "Daily memory",
+                SettingsTextKeys.FilesDailyMemoryFolderDescription,
+                "Stores dated Markdown memory logs used by memory routines."),
+            [var root] when IsFolderName(root, UserFileNames.ChatDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesChatFolderTitle,
+                "Saved conversations",
+                SettingsTextKeys.FilesChatFolderDescription,
+                "Stores saved conversation indexes, transcripts, session metadata, and attachment state."),
+            [var root, var attachments] when IsFolderName(root, UserFileNames.ChatDirectory) &&
+                                                  IsFolderName(attachments, "attachments") => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesChatAttachmentsFolderTitle,
+                "Chat attachments",
+                SettingsTextKeys.FilesChatAttachmentsFolderDescription,
+                "Stores uploaded attachments in folders grouped by conversation."),
+            [var root] when IsFolderName(root, UserFileNames.LogsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesLogsFolderTitle,
+                "Application logs",
+                SettingsTextKeys.FilesLogsFolderDescription,
+                "Stores this user's application log files."),
+            [var root] when IsFolderName(root, UserFileNames.MetricsDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesMetricsFolderTitle,
+                "Usage metrics",
+                SettingsTextKeys.FilesMetricsFolderDescription,
+                "Stores this user's runtime metrics event stream."),
+            [var root] when IsFolderName(root, UserFileNames.AuditDirectory) => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesAuditFolderTitle,
+                "Egress audit",
+                SettingsTextKeys.FilesAuditFolderDescription,
+                "Stores audit records for outbound provider activity."),
+            [var root] when IsFolderName(root, "notifications") => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesNotificationsFolderTitle,
+                "Notification inbox",
+                SettingsTextKeys.FilesNotificationsFolderDescription,
+                "Stores this user's persistent notification inbox."),
+            [var root] when IsFolderName(root, "tool-governance") => LocalizeFolderPurpose(
+                SettingsTextKeys.FilesToolGovernanceFolderTitle,
+                "Tool usage state",
+                SettingsTextKeys.FilesToolGovernanceFolderDescription,
+                "Stores quota counters used by governed tool-call limits."),
+            _ => null
+        };
+    }
+
+    private (string Title, string Description) LocalizeFolderPurpose(
+        string titleKey,
+        string titleFallback,
+        string descriptionKey,
+        string descriptionFallback) =>
+        (
+            Loc.GetOrDefault(titleKey, titleFallback),
+            Loc.GetOrDefault(descriptionKey, descriptionFallback)
+        );
+
+    private static bool IsFolderName(string actual, string expected) =>
+        string.Equals(actual, expected, StringComparison.OrdinalIgnoreCase);
+
+    private static string CombinePath(string? parentPath, string name)
+    {
+        var path = string.IsNullOrWhiteSpace(parentPath)
+            ? name
+            : Path.Combine(parentPath, name);
+        return PathHelper.ToSlashSeparatedRelativePath(path);
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(key, fallback),
+            args);
+    }
+
+    private string FormatLibraryStatus(string key, string fallback, string? reason)
+    {
+        var status = Loc.GetOrDefault(key, fallback);
+        return string.IsNullOrWhiteSpace(reason)
+            ? status
+            : $"{status}: {reason}";
+    }
+
+    public void Dispose()
+    {
+        StopLibraryIndexRefresh();
+    }
+}
+

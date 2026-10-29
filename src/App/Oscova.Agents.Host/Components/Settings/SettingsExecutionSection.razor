@@ -1,0 +1,124 @@
+@using Oscova.Agents.Plugins
+@using Oscova.Agents.Execution
+@using Oscova.Agents.Infrastructure.Plugins
+@using Oscova.Agents.Infrastructure.Skills
+@using Oscova.Agents.Core.Auth
+@using Oscova.Agents.Host.Services.UI
+@implements IDisposable
+@inject UserServiceScope UserScope
+@inject ExecutionEnvironmentCatalog Environments
+@inject PluginSettingsCatalog Panels
+@inject PluginPresentationService Presentation
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ExecutionSettingsService Execution
+@inject IDialogService DialogService
+@inherits SettingsComponentBase
+
+@if (UserScope.IsInRole("Admin"))
+{
+<div class="space-y-6">
+    <div class="card custom-settings-catalog-card">
+        <div class="card-body gap-4">
+            <div class="space-y-1">
+                <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.ExecutionLabel, "Execution")</h4>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsScriptExecutionDescription, "The operator chooses where shell commands and bundled skill scripts run for every account. Host is the default. Start a new run after changing the environment.")</p>
+            </div>
+            <div class="form-control">
+                <label for="execution-environment" class="label block mb-1 pl-0"><span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ExecutionEnvironmentLabel, "Execution environment")</span></label>
+                <div class="flex items-center gap-2">
+                    <select id="execution-environment" class="select select-bordered w-full max-w-xs" @bind="_draft" @bind:after="CheckAsync" disabled="@_saving">
+                        <option value="">@Loc.GetOrDefault(SettingsTextKeys.SkillsExecutionModeDisabled, "Disabled")</option>
+                        @foreach (var environment in Environments.Environments)
+                        { <option value="@environment.Id">@Title(environment)</option> }
+                        @if (!Available && _draft.Length > 0) { <option value="@_draft">@_draft</option> }
+                    </select>
+                    <button type="button" class="btn btn-primary btn-sm" aria-label="@Loc.GetOrDefault(SettingsTextKeys.SkillsSaveExecutionModeButton, "Save execution environment")"
+                            title="@Loc.GetOrDefault(SettingsTextKeys.SkillsSaveExecutionModeButton, "Save execution environment")" disabled="@(_saving || !Dirty || _checking || _availability?.IsAvailable != true)" @onclick="SaveAsync">
+                        <iconify-icon icon="lucide:save"></iconify-icon>
+                    </button>
+                </div>
+                <p class="text-xs mt-2 opacity-60">@Description</p>
+                @if (_draft.Length > 0)
+                {
+                    <p class="text-xs mt-1" role="status">@AvailabilityText</p>
+                }
+                <p class="text-xs mt-1 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.GeneralUnsavedChangesHint, "Changes are not saved automatically.")</p>
+            </div>
+        </div>
+    </div>
+    @foreach (var entry in Panels.Entries.Where(entry => entry.Panel.SlotId == PluginSettingsSlots.ExecutionEnvironment
+        && string.Equals(entry.Panel.AssociationId, _draft, StringComparison.OrdinalIgnoreCase)
+        && Environments.Find(entry.Panel.AssociationId) is not null))
+    { <PluginSettingsPanel Entry="@entry" @key="@(entry.Plugin.Manifest.Id + entry.Panel.Id + entry.Panel.AssociationId)" /> }
+    <div class="alert alert-info alert-soft">
+        <iconify-icon icon="lucide:info"></iconify-icon>
+        <div class="space-y-1 text-sm">
+            <div class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.SkillsSupportedScriptTypesTitle, "Supported bundled script types")</div>
+            <p>@Loc.GetOrDefault(SettingsTextKeys.ExecutionScriptsDescription, "Scripts need a runtime installed in the selected environment and a valid invocation for its shell.")</p>
+        </div>
+    </div>
+</div>
+}
+@code {
+    private string _draft = string.Empty;
+    private bool _saving;
+    private bool _checking;
+    private bool _disposed;
+    private CancellationTokenSource? _check;
+    private ExecutionAvailabilityResult? _availability;
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserScope.IsInRole("Admin")) { return; }
+        var saved = UserScope.ExecutionSettings.ProviderId;
+        _draft = Environments.Find(saved)?.Id ?? saved ?? string.Empty;
+        await CheckAsync();
+    }
+    private string AvailabilityText => _checking ? Loc.GetOrDefault(SettingsTextKeys.ExecutionChecking, "Checking…")
+        : _availability?.IsAvailable == true ? Loc.GetOrDefault(SettingsTextKeys.ExecutionAvailable, "Available on this machine")
+        : Presentation.Text(Environments.Owner(_draft), _availability?.ReasonKey, _availability?.Reason ?? Description);
+
+    private async Task CheckAsync()
+    {
+        _check?.Cancel();
+        var check = new CancellationTokenSource();
+        _check = check;
+        _checking = true;
+        _availability = null;
+        try
+        {
+            var result = await Execution.CheckAsync(UserScope.UserId, _draft.Length == 0 ? null : _draft, check.Token);
+            if (!_disposed && ReferenceEquals(_check, check)) { _availability = result; }
+        }
+        catch (OperationCanceledException) when (check.IsCancellationRequested) { }
+        finally
+        {
+            if (!_disposed && ReferenceEquals(_check, check)) { _checking = false; _check = null; }
+            check.Dispose();
+        }
+    }
+    private bool Dirty => !string.Equals(_draft, UserScope.ExecutionSettings.ProviderId ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+    private bool Available => _draft.Length == 0 || Environments.Find(_draft) is not null;
+    private string Title(ExecutionEnvironmentDefinition environment) => environment.Id == "host" ? Loc.GetOrDefault(SettingsTextKeys.SkillsExecutionModeHost, "Host")
+        : Presentation.Text(Environments.Owner(environment.Id), environment.TitleKey, environment.Title);
+    private string Description => _draft.Length == 0 ? Loc.GetOrDefault(SettingsTextKeys.SkillsExecutionModeDisabledDescription, "Shell commands and bundled skill scripts cannot run.")
+        : Environments.Find(_draft) is { } environment ? environment.Id == "host" ? Loc.GetOrDefault(SettingsTextKeys.SkillsExecutionModeHostDescription, environment.Description)
+            : Presentation.Text(Environments.Owner(environment.Id), environment.DescriptionKey, environment.Description)
+        : Loc.GetOrDefault(SettingsTextKeys.ExecutionUnavailableDescription, "This environment is unavailable. Enable its plugin and restart, or select and save another environment.");
+    private Task SaveAsync() => RunAsync(value => _saving = value, async () =>
+    {
+        if (_checking || _availability?.IsAvailable != true) { return; }
+        var saved = await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
+        {
+            try { await Execution.SaveAsync(UserScope.UserId, _draft.Length == 0 ? null : _draft, confirmed, CancellationToken.None); return true; }
+            catch (ExecutionPermissionRegistry.ConfirmationRequiredException) { return false; }
+        });
+        if (saved) { ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.SkillsExecutionModeSavedToast, "Execution environment saved. Start a new run to use it."), ToastType.Success); }
+    });
+
+    public void Dispose()
+    {
+        _disposed = true;
+        _check?.Cancel();
+    }
+}

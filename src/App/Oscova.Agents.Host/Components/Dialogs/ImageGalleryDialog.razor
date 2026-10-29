@@ -1,0 +1,447 @@
+@using System.Globalization
+@inject ManagementApiClient ManagementApiClient
+@inject IToastService ToastService
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject WallpaperRefreshState WallpaperRefreshState
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@GalleryTitle"
+                Subtitle="@GalleryDescription"
+                Icon="@GalleryIcon"
+                HelpTopic="@HelpTopics.ImageGallery"
+                MaxWidthClass="@(IsWallpaper ? "max-w-5xl" : "max-w-3xl")"
+                BodyClass="max-h-[70vh] overflow-y-auto px-5 py-4"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_isApplying)"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="@GalleryLayoutClass">
+            <div class="space-y-4">
+                @if (!string.IsNullOrWhiteSpace(_loadError))
+                {
+                    <div role="alert" class="alert alert-error alert-soft">
+                        <span class="iconify lucide--circle-alert size-5" aria-hidden="true"></span>
+                        <span>@_loadError</span>
+                    </div>
+                }
+                else if (_isLoading)
+                {
+                    <div class="@SeedGridClass">
+                        @for (int index = 0; index < 10; index++)
+                        {
+                            <div class="skeleton @SeedAspectClass rounded-box"></div>
+                        }
+                    </div>
+                }
+                else if (_seedNames.Count == 0)
+                {
+                    <div role="alert" class="alert alert-info alert-soft">
+                        <span class="iconify lucide--info size-5" aria-hidden="true"></span>
+                        <span>@GalleryEmptyLabel</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-medium">@ChooseFromGalleryLabel</h4>
+                        <div class="max-h-[20.5rem] overflow-y-auto pr-2">
+                            <div class="@SeedGridClass">
+                                @for (var index = 0; index < _seedNames.Count; index++)
+                                {
+                                    var seedName = _seedNames[index];
+                                    <button type="button"
+                                            class="@GetSeedTileClass(seedName)"
+                                            aria-pressed="@(IsSeedSelected(seedName) ? "true" : "false")"
+                                            aria-label="@FormatCommonText(SeedOptionLabelKey, SeedOptionLabelFallback, index + 1)"
+                                            disabled="@_isApplying"
+                                            @onclick="() => SelectSeed(seedName)">
+                                        <div class="h-full w-full @(IsWallpaper ? string.Empty : "avatar")">
+                                            <div class="@SeedImageFrameClass">
+                                                <img src="@GetSeedPictureUrl(seedName)" alt="" class="h-full w-full object-cover" />
+                                            </div>
+                                        </div>
+                                        @if (IsSeedSelected(seedName))
+                                        {
+                                            <span class="absolute right-2 top-2 rounded-full bg-primary p-1 text-primary-content">
+                                                <span class="iconify lucide--check size-3" aria-hidden="true"></span>
+                                            </span>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="space-y-2">
+                    <h4 class="text-sm font-medium">@UploadOwnLabel</h4>
+                    <label for="@_uploadInputId"
+                           class="@GetUploadTileClass()"
+                           aria-disabled="@(_isApplying ? "true" : "false")">
+                        @if (!string.IsNullOrWhiteSpace(_uploadPreviewUrl))
+                        {
+                            <div class="@(IsWallpaper ? "w-full" : "avatar")">
+                                <div class="@UploadPreviewClass">
+                                    <img src="@_uploadPreviewUrl" alt="" class="h-full w-full object-cover" />
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="@UploadPlaceholderClass">
+                                <span class="iconify lucide--upload size-7" aria-hidden="true"></span>
+                            </span>
+                        }
+                        <span class="text-sm font-medium">@UploadOwnLabel</span>
+                        <span class="text-xs opacity-60">@RequirementsLabel</span>
+                        @* A visually hidden native input keeps keyboard activation and the file chooser intact. *@
+                        <InputFile id="@_uploadInputId"
+                                   class="sr-only"
+                                   aria-label="@UploadOwnLabel"
+                                   OnChange="SelectUploadAsync"
+                                   accept="image/png,image/jpeg,image/webp"
+                                   disabled="@_isApplying" />
+                    </label>
+                </div>
+            </div>
+
+            <aside class="space-y-3">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium opacity-60">@CurrentLabel</p>
+                    <div class="@(IsWallpaper ? "w-full" : "avatar")">
+                        <div class="@SidePreviewClass">
+                            @if (!string.IsNullOrWhiteSpace(CurrentPictureUrl))
+                            {
+                                <img src="@CurrentPictureUrl" alt="" class="h-full w-full object-cover" />
+                            }
+                            else
+                            {
+                                <div class="flex h-full w-full items-center justify-center text-base-content/40">
+                                    <span class="iconify lucide--image size-8" aria-hidden="true"></span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-xs font-medium opacity-60">@SelectedLabel</p>
+                    <div class="@(IsWallpaper ? "w-full" : "avatar")">
+                        <div class="@SidePreviewClass">
+                            @if (!string.IsNullOrWhiteSpace(SelectedPreviewUrl))
+                            {
+                                <img src="@SelectedPreviewUrl" alt="" class="h-full w-full object-cover" />
+                            }
+                            else
+                            {
+                                <div class="flex h-full w-full items-center justify-center text-base-content/40">
+                                    <span class="iconify lucide--image size-8" aria-hidden="true"></span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button"
+                class="btn btn-ghost btn-sm"
+                disabled="@_isApplying"
+                @onclick="CancelAsync">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button"
+                class="btn btn-primary btn-sm"
+                disabled="@(!CanApply)"
+                @onclick="ApplyAsync">
+            @if (_isApplying)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+            }
+            @UseSelectedLabel
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    private readonly string _uploadInputId = $"image-gallery-upload-{Guid.NewGuid():N}";
+    private List<string> _seedNames = [];
+    private string? _selectedSeedName;
+    private IBrowserFile? _selectedUpload;
+    private string? _uploadPreviewUrl;
+    private string? _loadError;
+    private bool _isLoading = true;
+    private bool _isApplying;
+
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    public ImageGalleryTarget Target { get; set; }
+
+    public string? AgentId { get; set; }
+
+    public string CurrentPictureUrl { get; set; } = string.Empty;
+
+    private bool IsWallpaper => Target == ImageGalleryTarget.Wallpaper;
+    private bool CanApply => !_isApplying && (_selectedSeedName is not null || _selectedUpload is not null);
+
+    private long MaxUploadSizeBytes => IsWallpaper
+        ? WallpaperContent.MaxUploadSizeBytes
+        : ProfilePictureContent.MaxUploadSizeBytes;
+    private string GalleryTitle => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperGalleryTitle, "Choose a wallpaper")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureGalleryTitle, "Choose a picture");
+    private string GalleryDescription => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperGalleryDescription, "Pick a built-in wallpaper or upload your own.")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureGalleryDescription, "Pick a built-in profile picture or upload your own.");
+    private const string GalleryIcon = "lucide:image";
+    private string GalleryLayoutClass => IsWallpaper
+        ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]"
+        : "grid gap-5 lg:grid-cols-[minmax(0,1fr)_12rem]";
+    private string SeedGridClass => IsWallpaper
+        ? "grid grid-cols-1 gap-3 sm:grid-cols-2"
+        : "grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5";
+    private string SeedAspectClass => IsWallpaper ? "aspect-video" : "aspect-square";
+    private string SeedImageFrameClass => IsWallpaper
+        ? "h-full w-full overflow-hidden rounded-lg bg-base-200"
+        : "mask mask-squircle h-full w-full bg-base-200";
+    private string UploadPreviewClass => IsWallpaper
+        ? "aspect-video w-full overflow-hidden rounded-box bg-base-200"
+        : "mask mask-squircle h-20 w-20 bg-base-200";
+    private string UploadPlaceholderClass => IsWallpaper
+        ? "flex aspect-video w-full items-center justify-center rounded-box bg-base-200 text-base-content/60"
+        : "flex h-20 w-20 items-center justify-center rounded-box bg-base-200 text-base-content/60";
+    private string SidePreviewClass => IsWallpaper
+        ? "aspect-video w-full overflow-hidden rounded-box border border-base-300 bg-base-200"
+        : "mask mask-squircle h-32 w-32 bg-base-200";
+    private string GalleryEmptyLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperGalleryEmpty, "No built-in wallpapers are available right now.")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureGalleryEmpty, "No built-in pictures are available right now.");
+    private string ChooseFromGalleryLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperChooseFromGallery, "Built-in wallpapers")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureChooseFromGallery, "Built-in pictures");
+    private string UploadOwnLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperUploadOwn, "Upload your own")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureUploadOwn, "Upload your own");
+    private string RequirementsLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperRequirements, "PNG, JPEG, or WebP. 10 MB max. 1920 × 1080 recommended.")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureRequirements, "PNG, JPEG, or WebP. 2 MB max.");
+    private string CurrentLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperCurrent, "Current")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureCurrent, "Current");
+    private string SelectedLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperSelected, "Selected")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureSelected, "Selected");
+    private string UseSelectedLabel => IsWallpaper
+        ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperUseSelected, "Use this wallpaper")
+        : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureUseSelected, "Use this picture");
+    private string SeedOptionLabelKey => IsWallpaper
+        ? CommonTextKeys.WallpaperSeedOptionLabel
+        : CommonTextKeys.ProfilePictureSeedOptionLabel;
+    private string SeedOptionLabelFallback => IsWallpaper ? "Built-in wallpaper {0}" : "Built-in picture {0}";
+
+    private string? SelectedPreviewUrl =>
+        _selectedSeedName is not null
+            ? GetSeedPictureUrl(_selectedSeedName)
+            : _uploadPreviewUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Target = DialogInstance.Get(nameof(Target), Target);
+        AgentId = DialogInstance.Get<string?>(nameof(AgentId), AgentId);
+        CurrentPictureUrl = DialogInstance.Get(nameof(CurrentPictureUrl), CurrentPictureUrl) ?? string.Empty;
+
+        try
+        {
+            var seedNames = IsWallpaper
+                ? await ManagementApiClient.GetWallpaperSeedsAsync()
+                : await ManagementApiClient.GetProfilePictureSeedsAsync();
+            _seedNames = [.. seedNames.Order(StringComparer.Ordinal)];
+        }
+        catch
+        {
+            _loadError = IsWallpaper
+                ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperGalleryLoadFailed, "Could not load the wallpaper gallery.")
+                : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureGalleryLoadFailed, "Could not load the picture gallery.");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void SelectSeed(string seedName)
+    {
+        _selectedSeedName = seedName;
+        _selectedUpload = null;
+        _uploadPreviewUrl = null;
+    }
+
+    private async Task SelectUploadAsync(InputFileChangeEventArgs args)
+    {
+        if (_isApplying || args.File is null)
+        {
+            return;
+        }
+
+        IBrowserFile file = args.File;
+        _selectedSeedName = null;
+        _selectedUpload = null;
+        _uploadPreviewUrl = null;
+
+        if (file.Size > MaxUploadSizeBytes)
+        {
+            ToastService.Show(FormatCommonText(CommonTextKeys.FileTooLarge, "File is too large. Maximum size is {0}.", ByteSize.Format(MaxUploadSizeBytes)), ToastType.Error);
+            return;
+        }
+
+        await using Stream stream = file.OpenReadStream(MaxUploadSizeBytes);
+        using var memory = new MemoryStream();
+        await stream.CopyToAsync(memory);
+
+        byte[] bytes = memory.ToArray();
+        string contentType = ImageContent.SniffContentType(bytes);
+        if (contentType == ImageContent.DefaultContentType)
+        {
+            var message = IsWallpaper
+                ? CommonLoc.GetOrDefault(CommonTextKeys.WallpaperUnsupportedType, "File must be a PNG, JPEG, or WebP image.")
+                : CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureUnsupportedType, "File must be a PNG, JPEG, or WebP image.");
+            ToastService.Show(message, ToastType.Error);
+            return;
+        }
+
+        _selectedUpload = file;
+        _uploadPreviewUrl = $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
+    }
+
+    private async Task ApplyAsync()
+    {
+        if (!CanApply)
+        {
+            return;
+        }
+
+        _isApplying = true;
+
+        try
+        {
+            if (_selectedSeedName is not null)
+            {
+                await ApplySeedAsync(_selectedSeedName);
+            }
+            else if (_selectedUpload is not null)
+            {
+                await ApplyUploadAsync(_selectedUpload);
+            }
+
+            if (IsWallpaper)
+            {
+                WallpaperRefreshState.Refresh();
+                ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.DialogWallpaperUpdated, "Wallpaper updated."), ToastType.Success);
+            }
+            else
+            {
+                ProfilePictureRefreshState.Refresh();
+                ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.DialogProfilePictureUpdated, "Profile picture updated."), ToastType.Success);
+            }
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            var errorKey = IsWallpaper
+                ? CommonTextKeys.DialogWallpaperUpdateFailed
+                : CommonTextKeys.DialogProfilePictureUpdateFailed;
+            var errorFallback = IsWallpaper
+                ? "Could not update wallpaper: {0}"
+                : "Could not update profile picture: {0}";
+            ToastService.Show(FormatCommonText(errorKey, errorFallback, ex.Message), ToastType.Error);
+        }
+        finally
+        {
+            _isApplying = false;
+        }
+    }
+
+    private async Task ApplySeedAsync(string seedName)
+    {
+        if (IsWallpaper)
+        {
+            await ManagementApiClient.ApplyUserSeedWallpaperAsync(seedName);
+            return;
+        }
+
+        if (Target == ImageGalleryTarget.AgentProfilePicture)
+        {
+            if (string.IsNullOrWhiteSpace(AgentId))
+            {
+                throw new InvalidOperationException(CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureAgentMissing, "Save the agent before changing its picture."));
+            }
+
+            await ManagementApiClient.ApplyAgentSeedPictureAsync(AgentId, seedName);
+            return;
+        }
+
+        await ManagementApiClient.ApplyUserSeedPictureAsync(seedName);
+    }
+
+    private async Task ApplyUploadAsync(IBrowserFile file)
+    {
+        await using Stream stream = file.OpenReadStream(MaxUploadSizeBytes);
+
+        if (IsWallpaper)
+        {
+            await ManagementApiClient.UploadUserWallpaperAsync(stream, file.Name);
+            return;
+        }
+
+        if (Target == ImageGalleryTarget.AgentProfilePicture)
+        {
+            if (string.IsNullOrWhiteSpace(AgentId))
+            {
+                throw new InvalidOperationException(CommonLoc.GetOrDefault(CommonTextKeys.ProfilePictureAgentMissing, "Save the agent before changing its picture."));
+            }
+
+            await ManagementApiClient.UploadAgentProfilePictureAsync(AgentId, stream, file.Name);
+            return;
+        }
+
+        await ManagementApiClient.UploadUserProfilePictureAsync(stream, file.Name);
+    }
+
+    private Task CancelAsync()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+        return Task.CompletedTask;
+    }
+
+    private bool IsSeedSelected(string seedName) => _selectedSeedName == seedName;
+
+    private string GetSeedPictureUrl(string seedName) => IsWallpaper
+        ? $"/{ApiRoutes.Wallpapers.SeedByName(seedName)}"
+        : $"/{ApiRoutes.ProfilePictures.SeedByName(seedName)}";
+
+    private string GetSeedTileClass(string seedName)
+    {
+        var borderClass = IsSeedSelected(seedName)
+            ? "border-primary ring-2 ring-primary"
+            : "border-base-300 hover:border-primary/60";
+
+        return $"relative {SeedAspectClass} cursor-pointer rounded-box border bg-base-100 p-2 transition {borderClass}";
+    }
+
+    private string GetUploadTileClass()
+    {
+        var borderClass = _selectedUpload is not null
+            ? "border-primary ring-2 ring-primary"
+            : "border-base-300 hover:border-primary/60";
+
+        var disabledClass = _isApplying ? "cursor-not-allowed opacity-60" : "cursor-pointer";
+        var heightClass = IsWallpaper ? "min-h-52" : "min-h-36";
+        return $"image-gallery-upload flex {heightClass} flex-col items-center justify-center gap-2 rounded-box border border-dashed bg-base-100 p-4 text-center transition {borderClass} {disabledClass}";
+    }
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+    }
+}

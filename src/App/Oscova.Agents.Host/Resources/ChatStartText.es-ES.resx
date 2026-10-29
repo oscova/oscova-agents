@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.Start.Dynamic.Common.Returns.Greeting">
+		<value>{0} vuelve.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.Returns.Question">
+		<value>¿Qué pensamos juntos?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.FirstChat.Welcome.Greeting">
+		<value>Te damos la bienvenida a Oscova, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.FirstChat.Welcome.Question">
+		<value>Pregúntame cómo funciona cualquier cosa aquí o elige una idea de abajo.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.Alright.Greeting">
+		<value>¿Todo listo, {0}?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ThereYouAre.Greeting">
+		<value>Ahí estás, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ThereYouAre.Question">
+		<value>¿Qué desenredamos primero?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ReadyWhen.Greeting">
+		<value>Listo cuando tú quieras, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ReadyWhen.Question">
+		<value>Empieza por donde quieras.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.FloorYours.Greeting">
+		<value>La palabra es tuya, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.FloorYours.Question">
+		<value>¿A qué le damos forma hoy?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.BackBoard.Greeting">
+		<value>De vuelta al tablero, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.BackBoard.Question">
+		<value>¿Qué merece una forma más clara?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.LetsBegin.Greeting">
+		<value>Empecemos, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.LetsBegin.Question">
+		<value>Trae la versión desordenada.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.YouMadeIt.Greeting">
+		<value>Llegaste, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.YouMadeIt.Question">
+		<value>¿Qué necesita tu atención?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.GoodMorning.Greeting">
+		<value>Buenos días, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.GoodMorning.Question">
+		<value>¿Por dónde empezamos?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.FreshStart.Greeting">
+		<value>Nuevo comienzo, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.FreshStart.Question">
+		<value>¿Cuál es la primera cosa útil?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.YoureEarly.Greeting">
+		<value>Llegaste temprano, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.YoureEarly.Question">
+		<value>¿Qué hacemos avanzar?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.Morning.Greeting">
+		<value>Mañana, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.Morning.Question">
+		<value>¿Necesitas un plan, un borrador o otro cerebro?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.GoodAfternoon.Greeting">
+		<value>Buenas tardes, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.GoodAfternoon.Question">
+		<value>¿En qué trabajamos?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.NextThing.Greeting">
+		<value>¿Listo para lo siguiente, {0}?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Focus.Greeting">
+		<value>Tarde de enfoque, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Focus.Question">
+		<value>¿Qué aclaramos?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Useful.Greeting">
+		<value>Hagamos útil la tarde, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Useful.Question">
+		<value>¿Qué hacemos menos molesto?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.GoodEvening.Greeting">
+		<value>Buenas noches, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.GoodEvening.Question">
+		<value>¿Qué pensamos juntos?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.QuietHours.Greeting">
+		<value>Horas tranquilas, ideas claras, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.QuietHours.Question">
+		<value>¿Qué necesita una mirada más tranquila?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.StillThinking.Greeting">
+		<value>¿Sigues pensando, {0}?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.WrapOrRefine.Greeting">
+		<value>Noche tranquila, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.WrapOrRefine.Question">
+		<value>¿Qué cerramos o refinamos?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.LateMode.Greeting">
+		<value>Modo nocturno, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.LateMode.Question">
+		<value>¿Qué nos atrevemos a desenredar?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.UpLate.Greeting">
+		<value>¿Trasnochando, {0}?</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.NightShift.Greeting">
+		<value>Turno de noche, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.NightShift.Question">
+		<value>Trae la versión desordenada.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.QuietHours.Greeting">
+		<value>Horas silenciosas, {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Night.QuietHours.Question">
+		<value>¿Qué merece una forma más clara?</value>
+	</data>
+</root>

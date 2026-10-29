@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>oscova</ToolCommandName>
+    <PackageId>Oscova.Agents.App</PackageId>
+    <Title>Oscova Agents</Title>
+    <Description>The oscova command that installs, starts and manages Oscova, a self-hosted AI agent OS. Run `oscova start` after installing.</Description>
+    <PackageTags>oscova;oscova-agents;ai;assistant;agent;cli;dotnet-tool;oscova-framework-version-$(OscovaAgentsVersion)</PackageTags>
+    <Version>$(OscovaAppVersion)</Version>
+    <PackageLicenseFile>EULA.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RootNamespace>Oscova.Agents.App</RootNamespace>
+    <AssemblyName>Oscova.Agents.App</AssemblyName>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+    <ToolPackageRuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</ToolPackageRuntimeIdentifiers>
+    <!-- Include the Host's bundled plugin archive in each RID tool package. -->
+    <NoDefaultExcludes Condition="'$(RuntimeIdentifier)' != ''">true</NoDefaultExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="OscovaToolPackageVersion" Value="$(PackageVersion)" />
+    <None Include="EULA.txt" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.14" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.14" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.57.2" />
+    <PackageReference Include="Spectre.Console" Version="0.57.3-alpha.0.29" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Oscova.Agents\Oscova.Agents.csproj" />
+    <ProjectReference Include="..\Oscova.Agents.Host\Oscova.Agents.Host.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.317" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
+    <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackagedHostPublishDir>$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(BaseIntermediateOutputPath)'))packaged-host-publish\$(RuntimeIdentifier)\</PackagedHostPublishDir>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddHostPublishedWwwrootToPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="PublishHostAssetsForToolPackage" Condition="'$(RuntimeIdentifier)' != ''">
+    <MSBuild Projects="$(MSBuildThisFileDirectory)..\Oscova.Agents.Host\Oscova.Agents.Host.csproj" Targets="Publish" Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(PackagedHostPublishDir);NoBuild=false" />
+  </Target>
+
+  <Target Name="AddHostPublishedWwwrootToPackage" DependsOnTargets="PublishHostAssetsForToolPackage" Condition="'$(RuntimeIdentifier)' != ''">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(PackagedHostPublishDir)wwwroot\**\*.*" Exclude="$(PackagedHostPublishDir)wwwroot\**\*.br;$(PackagedHostPublishDir)wwwroot\**\*.gz" PackagePath="tools/$(TargetFramework)/$(RuntimeIdentifier)/wwwroot/%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Update="SourceGear.sqlite3" Version="3.53.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="SQLitePCLRaw.config.e_sqlite3" Version="3.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
+  </ItemGroup>
+
+</Project>

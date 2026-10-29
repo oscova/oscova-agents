@@ -1,0 +1,181 @@
+@inject ManagementApiClient ManagementApiClient
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject IStringLocalizer<ChatText> ChatLoc
+@inject IStringLocalizer<CommonText> CommonLoc
+@using Oscova.Agents.Core.Utils
+@using Oscova.Agents.Utils
+
+<AppDialogShell Title="@FormatCommonText(CommonTextKeys.TaskRunsTitle, "Runs - {0}", _taskName)"
+                MaxWidthClass="max-w-3xl"
+                HelpTopic="@HelpTopics.AgentTaskRuns"
+                OnClose="Close">
+    <ChildContent>
+        @if (_runs.Count == 0)
+        {
+            <p class="text-base-content/60 text-sm py-6 text-center">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNoRunsYet, "No runs yet.")</p>
+        }
+        else
+        {
+            <div class="custom-settings-table-container overflow-x-auto max-h-96">
+                <table class="table table-sm custom-settings-adaptive-table custom-dialog-data-table custom-run-data-table">
+                    <thead>
+                        <tr>
+                            <th>@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")</th>
+                            <th>@CommonLoc.GetOrDefault(CommonTextKeys.Started, "Started")</th>
+                            <th>@CommonLoc.GetOrDefault(CommonTextKeys.Completed, "Completed")</th>
+                            <th>@CommonLoc.GetOrDefault(CommonTextKeys.Summary, "Summary")</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var run in _runs)
+                        {
+                            <tr>
+                                <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")">
+                                    <span class="badge badge-sm @GetStatusBadgeClass(run.Status)">
+                                        @GetStatusText(run.Status)
+                                    </span>
+                                </td>
+                                <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Started, "Started")" class="text-xs">@FormatTimestamp(run.StartedAt)</td>
+                                <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Completed, "Completed")" class="text-xs">@FormatTimestamp(run.CompletedAt)</td>
+                                <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Summary, "Summary")" class="text-xs">
+                                    @if (!string.IsNullOrEmpty(run.Error))
+                                    {
+                                        <span class="text-error">@run.Error</span>
+                                    }
+                                    else if (run.ResultSummary is not null)
+                                    {
+                                        <div class="markdown-content">@((MarkupString)MarkdownRenderer.ToHtml(run.ResultSummary))</div>
+                                    }
+                                    else
+                                    {
+                                        @("—")
+                                    }
+                                </td>
+                                <td>
+                                    @if (run.LiveMessages != null)
+                                    {
+                                        <button class="btn btn-ghost btn-xs" title="@ChatLoc.GetOrDefault(ChatTextKeys.InspectSessionTitle, "Inspect session")" aria-label="@ChatLoc.GetOrDefault(ChatTextKeys.InspectSessionTitle, "Inspect session")"
+                                                @onclick="() => InspectRunAsync(run)">
+                                            <iconify-icon icon="lucide:scan-search" width="14" height="14"></iconify-icon>
+                                        </button>
+                                    }
+                                    @* The newest finished run sets the next due time, so it stays. *@
+                                    @if (run.Status != AgentTaskStatus.Running && run.Id != _newestFinishedRunId)
+                                    {
+                                        <button class="btn btn-ghost btn-xs text-error" title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")"
+                                                @onclick="() => DeleteRunAsync(run)">
+                                            <iconify-icon icon="lucide:trash-2" width="14" height="14"></iconify-icon>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button class="btn" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter]
+    public string UserTimeZoneId { get; set; } = string.Empty;
+
+    private string _taskId = string.Empty;
+    private string _taskName = string.Empty;
+    private string _userId = string.Empty;
+    private List<AgentTaskRun> _runs = [];
+    private string? _newestFinishedRunId;
+    private TimeZoneInfo _userTimeZone = TimeZoneInfo.Local;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // DialogService passes these values through the cascading instance.
+        UserTimeZoneId = DialogInstance.Get<string>(nameof(UserTimeZoneId), UserTimeZoneId);
+        _userTimeZone = TimeZoneResolver.ResolveOrLocal(UserTimeZoneId);
+
+        if (DialogInstance.TryGet<AgentTaskDefinition>("Task", out var task) && task is not null)
+        {
+            _taskId = task.Id;
+            _taskName = task.Name;
+            _userId = task.UserId;
+            await LoadRunsAsync();
+        }
+    }
+
+    private async Task LoadRunsAsync()
+    {
+        _runs = [.. await ManagementApiClient.GetTaskRunsAsync(_taskId)];
+        _newestFinishedRunId = _runs.Where(run => run.Status != AgentTaskStatus.Running).MaxBy(run => run.StartedAt)?.Id;
+    }
+
+    private async Task InspectRunAsync(AgentTaskRun run)
+    {
+        await DialogService.ShowAsync<SessionInspectorDialog>(new Dictionary<string, object?> { ["Run"] = run, ["UserId"] = _userId });
+    }
+
+    private async Task DeleteRunAsync(AgentTaskRun run)
+    {
+        var confirmResult = await DialogService.ShowAsync<ConfirmDialog>(
+            CommonLoc.GetOrDefault(CommonTextKeys.TaskRunDeleteConfirmTitle, "Delete Run"),
+            FormatCommonText(CommonTextKeys.TaskRunDeleteConfirmMessage, "Delete the run started {0}? Its transcript is deleted too.", FormatTimestamp(run.StartedAt)));
+        if (confirmResult != DialogResult.Ok)
+        {
+            return;
+        }
+
+        try
+        {
+            await ManagementApiClient.DeleteTaskRunAsync(_taskId, run.Id);
+            await LoadRunsAsync();
+            ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.TaskRunDeletedSuccessfully, "Run deleted."), ToastType.Success);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+    }
+
+    private void Close()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+
+    private static string GetStatusBadgeClass(AgentTaskStatus status)
+    {
+        return status switch
+        {
+            AgentTaskStatus.Completed => "badge-success",
+            AgentTaskStatus.Running   => "badge-warning",
+            AgentTaskStatus.Failed    => "badge-error",
+            AgentTaskStatus.Pending   => "badge-neutral",
+            AgentTaskStatus.Skipped   => "badge-warning",
+            _ => "badge-ghost"
+        };
+    }
+
+    private string GetStatusText(AgentTaskStatus status)
+    {
+        return AgentTaskStatusDisplay.GetRunText(status, CommonLoc);
+    }
+
+    private string FormatTimestamp(DateTimeOffset? timestamp)
+    {
+        return timestamp is null
+            ? "—"
+            : timestamp.Value.ToUserTime(_userTimeZone).ToString("g");
+    }
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+    }
+}

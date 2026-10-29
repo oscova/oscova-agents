@@ -1,0 +1,238 @@
+@implements IDisposable
+@inject ArtifactApiClient ArtifactApiClient
+@inject IStringLocalizer<ChatText> Loc
+
+<section class="artifact-preview" aria-label="@Artifact.FileName">
+    <header class="artifact-preview-header">
+        <span class="artifact-preview-icon" aria-hidden="true">
+            <iconify-icon icon="@FileIconResolver.Resolve(Artifact.FileName)"></iconify-icon>
+        </span>
+        <div class="min-w-0 grow">
+            <p class="truncate text-xs text-base-content/55" title="@($"{Artifact.AgentPath} · {UpdatedLabel}")">@Artifact.AgentPath</p>
+        </div>
+        <div class="flex shrink-0 items-center gap-1">
+            @if (CanCopy)
+            {
+                <CopyActionButton Text="@(_editingFile?.Text ?? _textResult?.Content ?? string.Empty)" TextProvider="@GetCopyTextAsync" />
+            }
+            @if (_fileAvailable)
+            {
+                <a class="btn btn-ghost btn-sm btn-square"
+                   href="@DownloadUrl"
+                   download="@Artifact.FileName"
+                   title="@DownloadLabel"
+                   aria-label="@DownloadLabel">
+                    <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                </a>
+            }
+        </div>
+    </header>
+
+    <div class="artifact-preview-surface @(_editingFile is not null ? "flex flex-col" : null)">
+        @if (_isLoading)
+        {
+            <div class="artifact-preview-loading" role="status" aria-label="@LoadingLabel">
+                <div class="skeleton h-4 w-2/3 rounded-box"></div>
+            </div>
+        }
+        else if (!_fileAvailable)
+        {
+            <p class="artifact-preview-message" role="status">@UnavailableMessage</p>
+        }
+        else
+        {
+            @if (_editingFile is not null)
+            {
+                <WorkspaceTextEditor File="@_editingFile" RefreshVersion="@(Artifact.UpdatedAt.UtcTicks + RefreshVersion)" />
+            }
+            else
+            {
+            @switch (Artifact.PreviewKind)
+            {
+                case ArtifactPreviewKind.Markdown:
+                    @if (_textResult?.IsAvailable == true)
+                    {
+                        <div class="artifact-markdown markdown-content">
+                            @((MarkupString)MarkdownRenderer.ToHtml(_textResult.Content ?? string.Empty))
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="artifact-preview-message">
+                            <span class="iconify lucide--file-warning size-7 text-warning" aria-hidden="true"></span>
+                            <p class="mt-2 text-sm font-medium">@UnavailableMessage</p>
+                            <a class="btn btn-outline btn-sm mt-3" href="@DownloadUrl" download="@Artifact.FileName">
+                                <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                                @DownloadLabel
+                            </a>
+                        </div>
+                    }
+                    break;
+                case ArtifactPreviewKind.Text:
+                    @if (_textResult?.IsAvailable == true)
+                    {
+                        <pre class="artifact-text"><code>@(_textResult.Content ?? string.Empty)</code></pre>
+                    }
+                    else
+                    {
+                        <div class="artifact-preview-message">
+                            <span class="iconify lucide--file-warning size-7 text-warning" aria-hidden="true"></span>
+                            <p class="mt-2 text-sm font-medium">@UnavailableMessage</p>
+                            <a class="btn btn-outline btn-sm mt-3" href="@DownloadUrl" download="@Artifact.FileName">
+                                <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                                @DownloadLabel
+                            </a>
+                        </div>
+                    }
+                    break;
+                case ArtifactPreviewKind.Image:
+                    <div class="artifact-image-stage">
+                        <img src="@ContentUrl" alt="@Artifact.FileName" loading="lazy" @onerror="() => _fileAvailable = false" />
+                    </div>
+                    break;
+                case ArtifactPreviewKind.Pdf:
+                    <iframe class="artifact-pdf"
+                            src="@ContentUrl"
+                            title="@Artifact.FileName"></iframe>
+                    break;
+                default:
+                    <div class="artifact-preview-message">
+                        <span class="iconify lucide--file-down size-8 text-primary" aria-hidden="true"></span>
+                        <p class="mt-2 text-sm font-medium">
+                            @Loc.GetOrDefault(ChatTextKeys.ArtifactsDownloadOnly, "Preview is not available for this file type.")
+                        </p>
+                        <a class="btn btn-primary btn-sm mt-3" href="@DownloadUrl" download="@Artifact.FileName">
+                            <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                            @DownloadLabel
+                        </a>
+                    </div>
+                    break;
+            }
+            }
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public bool NodeProject { get; set; }
+
+    [Parameter, EditorRequired]
+    public string ThreadId { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public ThreadArtifact Artifact { get; set; } = default!;
+    [CascadingParameter] public WorkspaceEditingState? EditingState { get; set; }
+    private WorkspaceFileDraft? _editingFile;
+    [Parameter] public long RefreshVersion { get; set; }
+
+    private CancellationTokenSource? _loadCts;
+    private ArtifactTextPreviewResult? _textResult;
+    private string? _loadedThreadId;
+    private string? _loadedArtifactId;
+    private DateTimeOffset? _loadedArtifactUpdatedAt;
+    private bool _isLoading;
+    private bool _fileAvailable;
+
+    private string ContentUrl =>
+        $"{ApiRoutes.Chat.ArtifactContent(ThreadId, Artifact.Id)}?revision={Artifact.UpdatedAt.UtcTicks.ToString(CultureInfo.InvariantCulture)}";
+    private bool CanCopy => (_textResult?.IsAvailable == true || _editingFile?.Snapshot?.State == ProjectReadState.Ready) &&
+        Artifact.PreviewKind is ArtifactPreviewKind.Markdown or ArtifactPreviewKind.Text;
+    private string DownloadUrl => ApiRoutes.Chat.ArtifactDownload(ThreadId, Artifact.Id);
+    private string DownloadLabel => Loc.GetOrDefault(ChatTextKeys.ArtifactsDownload, "Download artifact");
+    private string LoadingLabel => Loc.GetOrDefault(ChatTextKeys.ArtifactsLoading, "Loading artifact preview");
+    private string UnavailableMessage => _textResult?.IsTooLarge == true
+        ? Loc.GetOrDefault(ChatTextKeys.ArtifactsPreviewTooLarge, "This file is too large to preview here.")
+        : NodeProject
+            ? Loc.GetOrDefault(ChatTextKeys.NodeArtifactsUnavailable, "File unavailable. Start the project's device, check project access and that the file still exists, then reopen this preview.")
+            : Loc.GetOrDefault(ChatTextKeys.ArtifactsPreviewUnavailable, "This preview is no longer available.");
+    private string UpdatedLabel => string.Format(
+        CultureInfo.CurrentCulture,
+        Loc.GetOrDefault(ChatTextKeys.ArtifactsUpdatedFormat, "Updated {0}"),
+        Artifact.UpdatedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
+
+    private async Task<string> GetCopyTextAsync()
+    {
+        if (EditingState is not null) { await EditingState.CaptureAsync(); }
+        return _editingFile?.Text ?? _textResult?.Content ?? string.Empty;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Routine dashboard renders must preserve the loaded preview until its file revision changes.
+        if (string.Equals(_loadedThreadId, ThreadId, StringComparison.Ordinal) &&
+            string.Equals(_loadedArtifactId, Artifact.Id, StringComparison.Ordinal) &&
+            _loadedArtifactUpdatedAt == Artifact.UpdatedAt)
+        {
+            return;
+        }
+
+        _loadedThreadId = ThreadId;
+        _loadedArtifactId = Artifact.Id;
+        _loadedArtifactUpdatedAt = Artifact.UpdatedAt;
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+        _loadCts = null;
+        _textResult = null;
+        _isLoading = false;
+
+        if (EditingState is not null && Artifact.PreviewKind is ArtifactPreviewKind.Markdown or ArtifactPreviewKind.Text)
+        {
+            var threadId = ThreadId;
+            var artifactId = Artifact.Id;
+            var key = $"artifact:{threadId}:{artifactId}";
+            if (!EditingState.Files.TryGetValue(key, out _editingFile))
+            {
+                _editingFile = new(key, Artifact.FileName,
+                    ct => ArtifactApiClient.ReadEditableAsync(threadId, artifactId, ct),
+                    (request, ct) => ArtifactApiClient.SaveEditableAsync(threadId, artifactId, request, ct));
+                EditingState.Files.Add(key, _editingFile);
+            }
+            _fileAvailable = true;
+            return;
+        }
+
+        var loadCts = new CancellationTokenSource();
+        var cancellationToken = loadCts.Token;
+        _loadCts = loadCts;
+        _isLoading = true;
+        try
+        {
+            var result = Artifact.PreviewKind is ArtifactPreviewKind.Markdown or ArtifactPreviewKind.Text
+                ? await ArtifactApiClient.GetTextAsync(ThreadId, Artifact.Id, cancellationToken)
+                : null;
+            var available = result is null
+                ? await ArtifactApiClient.IsAvailableAsync(ThreadId, Artifact.Id, cancellationToken)
+                : result.IsAvailable || result.IsTooLarge;
+            if (ReferenceEquals(_loadCts, loadCts))
+            {
+                _fileAvailable = available;
+                _textResult = result;
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (HttpRequestException)
+        {
+            if (ReferenceEquals(_loadCts, loadCts))
+            {
+                _textResult = ArtifactTextPreviewResult.Unavailable;
+                _fileAvailable = false;
+            }
+        }
+        finally
+        {
+            if (ReferenceEquals(_loadCts, loadCts))
+            {
+                _isLoading = false;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+    }
+}

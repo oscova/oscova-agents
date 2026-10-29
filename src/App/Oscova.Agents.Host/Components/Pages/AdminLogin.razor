@@ -1,0 +1,7 @@
+@page "/login/admin"
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<AuthText> Loc
+
+<LoginPanel RedirectOnSuccess="true"
+            SecondaryActionLabel="@(Loc.GetOrDefault(AuthTextKeys.AdminLoginBackButton, "Back to profile sign-in"))"
+            SecondaryActionUrl="/login" />

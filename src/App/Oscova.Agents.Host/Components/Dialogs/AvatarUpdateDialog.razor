@@ -1,0 +1,180 @@
+@implements IAsyncDisposable
+@inject ManagementApiClient ApiClient
+@inject UserServiceScope UserScope
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<AvatarUpdateDialog> Logger
+
+@if (UserScope.IsInRole("Admin"))
+{
+    <AppDialogShell Title="@Text(SettingsTextKeys.AvatarUpdateTitle, "Avatar Engine")" Icon="lucide:download"
+                    MaxWidthClass="max-w-xl" HelpTopic="@HelpTopics.AvatarUpdate" CanClose="@(!_starting)"
+                    CloseResult="@DialogResult.Cancel">
+        <ChildContent>
+            <div class="space-y-4">
+                @if (_status is not null)
+                {
+                    <p class="text-sm">@Format(SettingsTextKeys.AvatarUpdateComputer, "Computer: {0}", _status.ComputerName)</p>
+                    @if (!_status.Managed)
+                    {
+                        <div role="status" class="alert alert-info alert-soft"><span>@Text(SettingsTextKeys.AvatarUpdateUnmanaged, "Launch with 'oscova start' to manage Avatar Engine on this computer.")</span></div>
+                    }
+                    else
+                    {
+                        <p class="break-words">@Format(SettingsTextKeys.AvatarUpdateVersions, "Local: {0}. Available: {1}. Download: {2}.",
+                            _status.InstalledRelease?.Version ?? Text(_status.Installed ? SettingsTextKeys.AvatarUpdateUnknown : SettingsTextKeys.AvatarNotInstalled, _status.Installed ? "Unknown version" : "Not installed"),
+                            _status.AvailableRelease?.Version ?? Text(SettingsTextKeys.AvatarUpdateUnknown, "Unknown version"),
+                            ByteSize.Format(_status.AvailableRelease?.SizeBytes ?? 0).Replace(' ', '\u00a0'))</p>
+                        <p class="text-sm">@Text(_status.Running ? SettingsTextKeys.AvatarUpdateRunning : SettingsTextKeys.AvatarUpdateStopped, _status.Running ? "Running" : "Stopped")</p>
+                        @if (!_status.Supported)
+                        {
+                            <div role="status" class="alert alert-info alert-soft"><span>@Text(SettingsTextKeys.AvatarUpdateUnsupported, "Avatar installation and updates require Windows.")</span></div>
+                        }
+                        @if (_status.IsBusy)
+                        {
+                            <div role="status" aria-live="polite" class="space-y-2">
+                                <p id="avatar-update-progress-label">@PhaseText</p>
+                                <progress class="progress progress-primary w-full" value="@_status.ReceivedBytes" max="@Math.Max(1, _status.TotalBytes)" aria-labelledby="avatar-update-progress-label"></progress>
+                            </div>
+                        }
+                        else if (_status.State == "InstalledNotRunning")
+                        {
+                            <div role="status" class="alert alert-warning alert-soft"><span>@Text(SettingsTextKeys.AvatarUpdateNotRunning, "Avatar Engine is installed but is not running. Start it from Avatar settings or run 'oscova avatar start'.")</span></div>
+                        }
+                        else if (_status.State == "Succeeded")
+                        {
+                            <div role="status" class="alert alert-success alert-soft"><span>@Text(SettingsTextKeys.AvatarUpdateCompleted, "Avatar Engine installed.")</span></div>
+                        }
+                        else if (_status.AvailableRelease is not null && _status.InstalledRelease?.MatchesContent(_status.AvailableRelease) == true)
+                        {
+                            <p role="status">@Text(SettingsTextKeys.AvatarUpdateCurrent, "Avatar Engine is up to date.")</p>
+                        }
+                        @if (_status.CanInstall)
+                        {
+                            @if (_status.Running)
+                            {
+                                <div role="alert" class="alert alert-warning alert-soft"><span>@Text(SettingsTextKeys.AvatarUpdateStopImpact, "The local Avatar Engine will stop, then restart after installation.")</span></div>
+                            }
+                            <label class="flex items-start gap-2">
+                                <input type="checkbox" class="checkbox checkbox-sm mt-0.5 shrink-0" disabled="@_starting" @bind="_confirmed" />
+                                <span>@Text(SettingsTextKeys.AvatarUpdateConfirm, "I confirm installing this release on this computer.")</span>
+                            </label>
+                        }
+                    }
+                }
+                @if (!string.IsNullOrWhiteSpace(_error ?? _status?.Error))
+                {
+                    <div role="alert" class="alert alert-error alert-soft"><span class="min-w-0 break-words">@(_error ?? _status?.Error)</span></div>
+                }
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <button type="button" class="btn btn-ghost btn-sm" disabled="@_starting" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+            <button type="button" class="btn btn-ghost btn-sm" disabled="@(_starting || _status?.IsBusy == true)" @onclick="RefreshAsync">@Text(SettingsTextKeys.ApplicationUpdateRefresh, "Refresh")</button>
+            @if (_status?.CanInstall == true)
+            {
+                <button type="button" class="btn btn-primary btn-sm" disabled="@(!_confirmed || _starting || _submissionUncertain)" @onclick="StartAsync">
+                    @Text(_status.Installed ? SettingsTextKeys.AvatarUpdateAction : SettingsTextKeys.AvatarInstall, _status.Installed ? "Update Avatar" : "Install Avatar")
+                </button>
+            }
+        </FooterContent>
+    </AppDialogShell>
+}
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    private readonly CancellationTokenSource _disposal = new();
+    private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(1));
+    private AvatarUpdateStatus? _status;
+    private Task? _polling;
+    private bool _confirmed;
+    private bool _starting;
+    private bool _submissionUncertain;
+    private string? _error;
+
+    private string Text(string key, string fallback) => Loc.GetOrDefault(key, fallback);
+    private string Format(string key, string fallback, params object[] args) => string.Format(CultureInfo.CurrentCulture, Text(key, fallback), args);
+    private string PhaseText => _status?.State switch
+    {
+        "Stopping" => Text(SettingsTextKeys.AvatarUpdateStopping, "Stopping Avatar Engine..."),
+        "Restarting" => Text(SettingsTextKeys.AvatarUpdateRestarting, "Restarting Avatar Engine..."),
+        "Installing" => Text(SettingsTextKeys.AvatarUpdateInstalling, "Installing..."),
+        "Verifying" => Text(SettingsTextKeys.AvatarUpdateVerifying, "Verifying download..."),
+        _ => Format(SettingsTextKeys.AvatarUpdateDownloading, "Downloading {0} of {1}", _status?.ReceivedBytes is null or 0 ? "0 B" : ByteSize.Format(_status.ReceivedBytes), ByteSize.Format(_status?.TotalBytes ?? 0))
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserScope.IsInRole("Admin")) { return; }
+        await RefreshAsync();
+        _polling = PollAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        _confirmed = false;
+        await LoadAsync(true);
+    }
+
+    private async Task LoadAsync(bool refresh)
+    {
+        try
+        {
+            _status = await ApiClient.GetAvatarUpdateStatusAsync(refresh, _disposal.Token);
+            _submissionUncertain = false;
+            _error = null;
+        }
+        catch (OperationCanceledException) when (_disposal.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not read Avatar update status.");
+            _error = Text(SettingsTextKeys.ApplicationUpdateCheckUnavailable, "The release check is unavailable. Try Refresh or update from the terminal.");
+        }
+    }
+
+    private async Task StartAsync()
+    {
+        if (!_confirmed || _status?.CanInstall != true || _status.AvailableRelease is null || _starting || _submissionUncertain) { return; }
+        _starting = true;
+        try
+        {
+            _status = await ApiClient.StartAvatarUpdateAsync(new(_status.AvailableRelease, true), _disposal.Token);
+            _confirmed = false;
+            _error = null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Avatar installation acceptance could not complete.");
+            _submissionUncertain = true;
+            _confirmed = false;
+            await LoadAsync(false);
+            _error = ex.Message;
+        }
+        finally { _starting = false; }
+    }
+
+    private async Task PollAsync()
+    {
+        try
+        {
+            while (await _timer.WaitForNextTickAsync(_disposal.Token))
+            {
+                if (_status?.IsBusy == true || _submissionUncertain)
+                {
+                    await InvokeAsync(async () => { await LoadAsync(false); StateHasChanged(); });
+                }
+            }
+        }
+        catch (OperationCanceledException) when (_disposal.IsCancellationRequested) { }
+    }
+
+    private void Close() => DialogInstance.Close(DialogResult.Cancel);
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposal.Cancel();
+        _timer.Dispose();
+        if (_polling is not null) { await _polling; }
+        _disposal.Dispose();
+    }
+}

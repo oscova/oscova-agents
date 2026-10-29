@@ -1,0 +1,89 @@
+@inject IJSRuntime JS
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ManagementApiClient ManagementApiClient
+@inherits SettingsComponentBase
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="space-y-6">
+    <section class="custom-settings-group custom-settings-form space-y-4">
+        <div class="space-y-1">
+            <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.ImportExportExportTitle, "Export Environment")</h4>
+            <p class="text-sm opacity-70">
+                @Loc.GetOrDefault(SettingsTextKeys.ImportExportExportDescription, "Download your restorable environment as an encrypted .oscb backup. Models, voices, logs, and pending operations are not included.")
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary btn-sm"
+                disabled="@_isExporting"
+                @onclick="ExportAsync">
+            @if (_isExporting)
+            {
+                <span class="loading loading-spinner loading-sm mr-2"></span>
+            }
+            else
+            {
+                <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+            }
+            @Loc.GetOrDefault(SettingsTextKeys.ImportExportExportButton, "Export")
+        </button>
+    </section>
+
+    <section class="custom-settings-group custom-settings-form space-y-4">
+        <div class="space-y-1">
+            <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetTitle, "Reset Environment")</h4>
+            <p class="text-sm opacity-70">
+                @Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetDescription, "Retain the current environment, then restart Oscova with fresh app data.")
+            </p>
+        </div>
+
+        <button type="button" class="btn btn-error btn-sm" @onclick="OpenResetAsync">
+            @Loc.GetOrDefault(SettingsTextKeys.EnvironmentResetTitle, "Reset Environment")
+        </button>
+    </section>
+</div>
+
+@code {
+    private bool _isExporting;
+
+    private async Task ExportAsync()
+    {
+        var dialog = await DialogService.ShowAsync<ExportWizardDialog, string?>();
+        if (!dialog.IsOk)
+        {
+            return;
+        }
+
+        await RunAsync(v => _isExporting = v, async () =>
+        {
+            var exportUrl = NavigationManager.ToAbsoluteUri(ApiRoutes.Environment.BrowserExport).ToString();
+            await using var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            await utilsModule.InvokeVoidAsync(
+                "postDownloadFile",
+                exportUrl,
+                new
+                {
+                    passphrase = string.IsNullOrWhiteSpace(dialog.Data) ? null : dialog.Data
+                });
+
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.ImportExportExportStartedToast, "Environment export started."), ToastType.Success);
+        });
+    }
+
+    private async Task OpenResetAsync()
+    {
+        try
+        {
+            var preview = await ManagementApiClient.GetEnvironmentResetPreviewAsync();
+            await DialogService.ShowAsync<EnvironmentResetDialog>(new Dictionary<string, object?>
+            {
+                [nameof(EnvironmentResetDialog.Preview)] = preview
+            });
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+    }
+}

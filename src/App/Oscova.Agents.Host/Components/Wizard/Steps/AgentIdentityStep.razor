@@ -1,0 +1,115 @@
+@inject IStringLocalizer<WizardText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="space-y-4">
+    <p class="text-sm text-base-content/70">@Loc.GetOrDefault(WizardTextKeys.WizardAgentIntro, "Give your assistant a name, choose a profile picture, and select a personality. You can fine-tune it later in the main agent's settings.")</p>
+
+    <fieldset class="fieldset">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(WizardTextKeys.WizardAgentNameLabel, "Name")</legend>
+        <label class="input w-full focus:outline-0">
+            <span class="iconify lucide--bot text-base-content/60 size-4.5"></span>
+            <input id="wizard-agent-name" class="grow focus:outline-0"
+                   aria-label="@Loc.GetOrDefault(WizardTextKeys.WizardAgentNameLabel, "Name")"
+                   type="text"
+                   required
+                   maxlength="80"
+                   value="@Name"
+                   @oninput="OnNameInput" />
+        </label>
+        @if (string.IsNullOrWhiteSpace(Name))
+        {
+            <p class="text-xs text-error mt-1">@Loc.GetOrDefault(WizardTextKeys.WizardAgentNameRequired, "A name is required to finish.")</p>
+        }
+    </fieldset>
+
+    <fieldset class="fieldset">
+        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.ProfilePicture, "Profile picture")</legend>
+        <p id="wizard-agent-profile-picture-hint" class="text-base-content/60 mb-2 text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardProfilePictureHint, "Keep this one or pick another.")</p>
+        <ProfilePictureSeedPicker SelectedSeedName="@SelectedProfilePictureSeedName"
+                                  SelectedSeedNameChanged="@SelectedProfilePictureSeedNameChanged"
+                                  AriaDescribedBy="wizard-agent-profile-picture-hint" />
+    </fieldset>
+
+    <fieldset class="fieldset">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaLabel, "Personality")</legend>
+        <div class="grid gap-3 md:grid-cols-2">
+            @foreach (var personaId in PersonaOptions)
+            {
+                <label class="@PersonaChoiceClass(personaId)">
+                    <span class="flex items-start gap-3">
+                        <input type="radio"
+                               class="radio radio-primary mt-1"
+                               name="wizard-agent-persona"
+                               checked="@string.Equals(SelectedPersonaId, personaId, StringComparison.Ordinal)"
+                               @onchange="() => SelectPersonaAsync(personaId)" />
+                        <span class="min-w-0">
+                            <span class="flex items-center gap-2 font-medium">
+                                <iconify-icon icon="@PersonaIcon(personaId)" width="16" height="16"></iconify-icon>
+                                @PersonaName(personaId)
+                            </span>
+                            <span class="text-base-content/65 mt-1 block text-sm">@PersonaDescription(personaId)</span>
+                        </span>
+                    </span>
+                </label>
+            }
+        </div>
+        <p class="text-base-content/50 mt-2 text-xs">@Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaHint, "This sets the agent's system instruction. You can refine it later under the main agent's System Instruction.")</p>
+    </fieldset>
+</div>
+
+@code {
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> NameChanged { get; set; }
+
+    [Parameter] public string SelectedPersonaId { get; set; } = AgentPersonas.None;
+    [Parameter] public EventCallback<string> SelectedPersonaIdChanged { get; set; }
+
+    [Parameter] public string? SelectedProfilePictureSeedName { get; set; }
+    [Parameter] public EventCallback<string?> SelectedProfilePictureSeedNameChanged { get; set; }
+
+    private Task OnNameInput(ChangeEventArgs args) => NameChanged.InvokeAsync(args.Value?.ToString() ?? string.Empty);
+
+    private static IReadOnlyList<string> PersonaOptions { get; } =
+    [
+        AgentPersonas.None,
+        AgentPersonas.Professional,
+        AgentPersonas.Friendly,
+        AgentPersonas.Efficient
+    ];
+
+    private Task SelectPersonaAsync(string personaId) => SelectedPersonaIdChanged.InvokeAsync(personaId);
+
+    private string PersonaName(string personaId) => personaId switch
+    {
+        AgentPersonas.Professional => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaProfessional, "Professional"),
+        AgentPersonas.Friendly => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaFriendly, "Friendly"),
+        AgentPersonas.Efficient => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaEfficient, "Efficient"),
+        _ => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaNone, "No persona")
+    };
+
+    private string PersonaDescription(string personaId) => personaId switch
+    {
+        AgentPersonas.Professional => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaProfessionalDescription, "Polished, structured, and businesslike."),
+        AgentPersonas.Friendly => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaFriendlyDescription, "Warm, conversational, and supportive."),
+        AgentPersonas.Efficient => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaEfficientDescription, "Concise and direct, with minimal preamble."),
+        _ => Loc.GetOrDefault(WizardTextKeys.WizardAgentPersonaNoneDescription, "Start neutral and customize the agent later.")
+    };
+
+    private static string PersonaIcon(string personaId) => personaId switch
+    {
+        AgentPersonas.Professional => "lucide:briefcase",
+        AgentPersonas.Friendly => "lucide:smile",
+        AgentPersonas.Efficient => "lucide:timer",
+        _ => "lucide:circle-minus"
+    };
+
+    private string PersonaChoiceClass(string personaId)
+    {
+        var selected = string.Equals(SelectedPersonaId, personaId, StringComparison.Ordinal);
+        var selectedClass = selected
+            ? "border-primary bg-primary/5 ring-primary/25 ring-2"
+            : "border-base-300 bg-base-100 hover:border-primary/50 hover:bg-base-200/50";
+
+        return $"rounded-box cursor-pointer border p-4 text-left transition {selectedClass}";
+    }
+}

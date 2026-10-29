@@ -1,0 +1,123 @@
+@inject ManagementApiClient ManagementApiClient
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@using Oscova.Agents.Core.ApiContracts.Agents
+@inherits SettingsComponentBase
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="custom-settings-tools space-y-4">
+    <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.ToolsAvailableToolsTitle, "Available Tools")</h4>
+    <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ToolsAvailableToolsDescription, "These are the tools available to your agents, including built-in toolsets and MCP server tools.")</p>
+
+    @if (_isLoading)
+    {
+        <p class="text-sm opacity-70" role="status">@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</p>
+    }
+    else if (_toolGroups.Count == 0)
+    {
+        <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ToolsNoToolsAvailableMessage, "No tools available. Configure MCP servers in Settings -> MCP Servers to add external tools.")</div>
+    }
+    else
+    {
+        @* Reuses the shared tools table so browsing stays consistent with the agent editor. *@
+        <SettingsToolsTable ToolGroups="_toolGroups"
+                            GovernanceByToolName="@_governanceByToolName"
+                            IsEgressDisabled="@_isEgressDisabled"
+                            ShowGovernanceActions="true"
+                            OnConfigureToolGovernance="OpenGovernanceDialogAsync"
+                            HeightClass="h-[min(72vh,52rem)]" />
+    }
+</div>
+
+@code {
+    private bool _isLoading = true;
+    private readonly List<ToolGroup> _toolGroups = [];
+    private Dictionary<string, ToolGovernanceEntrySummary> _governanceByToolName = new(StringComparer.OrdinalIgnoreCase);
+    private bool _isEgressDisabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var configurationTask = ManagementApiClient.GetAgentConfigurationAsync();
+        var privacyTask = SettingsApiClient.GetPrivacySettingsAsync();
+        var governanceTask = ManagementApiClient.GetToolGovernanceSummaryAsync();
+
+        await Task.WhenAll(configurationTask, privacyTask, governanceTask);
+
+        var configuration = await configurationTask;
+        var privacy = await privacyTask;
+        var governance = await governanceTask;
+        _isEgressDisabled = privacy.IsLocalOnly;
+        SetGovernanceSummary(governance);
+        _toolGroups.Clear();
+        _toolGroups.AddRange(configuration.ToolGroups
+            .OrderBy(group => group.ServerName, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new ToolGroup
+            {
+                ServerName = group.ServerName,
+                Tools = [.. group.Tools
+                    .OrderBy(tool => tool.OriginalName, StringComparer.OrdinalIgnoreCase)
+                    .Select(tool => new ToolDefinition
+                    {
+                        QualifiedName = tool.QualifiedName,
+                        OriginalName = tool.OriginalName,
+                        Description = tool.Description,
+                        DefaultApprovalMode = tool.DefaultApprovalMode,
+                        NetworkScope = tool.NetworkScope
+                    })]
+            }));
+        _isLoading = false;
+    }
+
+    private async Task OpenGovernanceDialogAsync(string qualifiedName)
+    {
+        var tool = _toolGroups
+            .SelectMany(group => group.Tools.Select(candidate => (Group: group, Tool: candidate)))
+            .FirstOrDefault(candidate => string.Equals(candidate.Tool.QualifiedName, qualifiedName, StringComparison.OrdinalIgnoreCase));
+
+        if (tool.Tool is null)
+        {
+            return;
+        }
+
+        _governanceByToolName.TryGetValue(qualifiedName, out var governance);
+        var result = await DialogService.ShowAsync<ToolGovernanceDialog, UpdateToolGovernanceRequest>(
+            new Dictionary<string, object?>
+            {
+                ["Tool"] = tool.Tool,
+                ["ServerName"] = tool.Group.ServerName,
+                ["Governance"] = governance,
+                ["IsEgressDisabled"] = _isEgressDisabled
+            });
+
+        if (!result.IsOk || result.Data is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await ManagementApiClient.SaveToolGovernanceAsync(result.Data);
+            SetGovernanceSummary(await ManagementApiClient.GetToolGovernanceSummaryAsync());
+            ToastService.Show(
+                Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceSavedToast, "Tool policy saved."),
+                ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceSaveFailedToast, "Tool policy could not be saved: {0}"),
+                    ex.Message),
+                ToastType.Error);
+        }
+    }
+
+    private void SetGovernanceSummary(ToolGovernanceSummary summary)
+    {
+        _governanceByToolName = summary.Tools.ToDictionary(
+            tool => tool.QualifiedName,
+            StringComparer.OrdinalIgnoreCase);
+    }
+}

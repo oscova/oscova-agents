@@ -1,0 +1,9 @@
+@* Shares determinate and indeterminate progress rendering across preparation and downloads. *@
+<progress class="progress progress-primary w-full @CssClass"
+          value="@Percent" max="100" aria-label="@Label"></progress>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public double? Percent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+}

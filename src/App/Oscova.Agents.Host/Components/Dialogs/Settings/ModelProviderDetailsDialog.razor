@@ -1,0 +1,172 @@
+@using Microsoft.Extensions.AI
+@using Oscova.Agents.Llm
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Shows a read-only model-provider summary from the settings table row. *@
+<AppDialogShell Title="@Provider.Name"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDetailsDialogTitle, "Provider details"))"
+                Icon="lucide:server-cog"
+                MaxWidthClass="max-w-3xl"
+                HelpTopic="@HelpTopics.ModelProviderDetails"
+                CloseResult="@DialogResult.Ok">
+    <ChildContent>
+        <div class="space-y-5">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="badge badge-neutral badge-soft">@Provider.Type</span>
+                @if (IsDefaultProvider)
+                {
+                    <span class="badge badge-primary badge-soft">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDefaultBadge, "Default")</span>
+                }
+                @if (IsFallbackProvider)
+                {
+                    <span class="badge badge-info badge-soft">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFallbackBadge, "Fallback")</span>
+                }
+            </div>
+
+            <dl class="grid gap-3 text-sm sm:grid-cols-[11rem_minmax(0,1fr)]">
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelIdLabel, "Model ID")</dt>
+                <dd class="font-mono text-xs break-all">@DisplayValue(Provider.ModelId, Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelNotSet, "Model not set"))</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlLabel, "Base URL")</dt>
+                <dd class="font-mono text-xs break-all">@DisplayValue(Provider.BaseUrl, Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointDefault, "Default endpoint"))</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialSectionTitle, "Credential")</dt>
+                <dd class="@(CredentialHasValue ? "text-success" : "text-warning")">@CredentialSummary</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersContextWindowSizeLabel, "Context Window Size")</dt>
+                <dd>@FormatContextWindow()</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersInputCostLabel, "Input price, USD per 1M tokens")</dt>
+                <dd>@FormatCost(Provider.InputCostPerMillionTokens)</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersOutputCostLabel, "Output price, USD per 1M tokens")</dt>
+                <dd>@FormatCost(Provider.OutputCostPerMillionTokens)</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelConfigurationTitle, "Model Configuration")</dt>
+                <dd>
+                    <div class="flex flex-wrap gap-2">
+                        @if (Provider.SupportsImages)
+                        {
+                            <span class="badge badge-info badge-soft badge-sm">
+                                <iconify-icon icon="lucide:image" width="12" height="12"></iconify-icon>
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSupportsImagesLabel, "Supports images")
+                            </span>
+                        }
+                        @if (Provider.SupportsThinking)
+                        {
+                            <span class="badge badge-secondary badge-soft badge-sm">
+                                <iconify-icon icon="lucide:brain" width="12" height="12"></iconify-icon>
+                                @Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSupportsThinkingLabel, "Supports thinking outputs")
+                            </span>
+                        }
+                        @if (!Provider.SupportsImages && !Provider.SupportsThinking)
+                        {
+                            <span class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoCapabilities, "No extra capabilities")</span>
+                        }
+                    </div>
+                </dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTableHeaderLastTest, "Last Test")</dt>
+                <dd class="@GetTestClass()">@GetTestMessage()</dd>
+            </dl>
+
+            <div class="rounded-box border border-base-300 p-4">
+                <h4 class="mb-3 text-sm font-semibold">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersDialogTabChatOptions, "Chat Options")</h4>
+                <div class="grid gap-3 text-sm sm:grid-cols-2">
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTemperatureLabel, "Temperature"), Provider.ChatOptions?.Temperature)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTopPLabel, "Top P"), Provider.ChatOptions?.TopP)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersTopKLabel, "Top K"), Provider.ChatOptions?.TopK)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersMaxOutputTokensLabel, "Max Output Tokens"), Provider.ChatOptions?.MaxOutputTokens)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersFrequencyPenaltyLabel, "Frequency Penalty"), Provider.ChatOptions?.FrequencyPenalty)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersPresencePenaltyLabel, "Presence Penalty"), Provider.ChatOptions?.PresencePenalty)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSeedLabel, "Seed"), Provider.ChatOptions?.Seed)
+                    @RenderChatOption(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersToolCallBehaviorLabel, "Tool Call Behavior"), FormatAllowMultipleToolCalls())
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private ModelProviderConfig Provider { get; set; } = new();
+    private string CredentialSummary { get; set; } = string.Empty;
+    private bool CredentialHasValue { get; set; }
+    private bool IsDefaultProvider { get; set; }
+    private bool IsFallbackProvider { get; set; }
+    private string? TestMessage { get; set; }
+    private bool? TestSuccess { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Provider = DialogInstance.Get<ModelProviderConfig>("Provider") ?? new ModelProviderConfig();
+        CredentialSummary = DialogInstance.Get<string>("CredentialSummary", string.Empty);
+        CredentialHasValue = DialogInstance.Get<bool>("CredentialHasValue");
+        IsDefaultProvider = DialogInstance.Get<bool>("IsDefaultProvider");
+        IsFallbackProvider = DialogInstance.Get<bool>("IsFallbackProvider");
+        TestMessage = DialogInstance.Get<string?>("TestMessage", null);
+        TestSuccess = DialogInstance.Get<bool?>("TestSuccess", null);
+    }
+
+    private string FormatContextWindow()
+    {
+        return Provider.ContextWindowSize > 0
+            ? string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCapabilityText, "{0:N0} context"), Provider.ContextWindowSize)
+            : CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set");
+    }
+
+    private string FormatCost(decimal? cost)
+    {
+        if (cost is not { } price)
+        {
+            return CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set");
+        }
+
+        return price.ToString(CultureInfo.CurrentCulture);
+    }
+
+    private string GetTestMessage()
+    {
+        return string.IsNullOrWhiteSpace(TestMessage)
+            ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNoTestRun, "Not tested")
+            : TestMessage;
+    }
+
+    private string GetTestClass() => TestSuccess switch
+    {
+        true => "text-success",
+        false => "text-error",
+        _ => "text-base-content/60"
+    };
+
+    private string FormatAllowMultipleToolCalls()
+    {
+        return Provider.ChatOptions?.AllowMultipleToolCalls switch
+        {
+            true => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAllowValue, "Allow"),
+            false => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSingleValue, "Single"),
+            _ => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAutoValue, "Auto")
+        };
+    }
+
+    private RenderFragment RenderChatOption(string label, object? value) => @<div class="rounded-box bg-base-200/60 p-3">
+        <div class="text-base-content/60 text-xs">@label</div>
+        <div class="mt-1 font-medium">@DisplayValue(value?.ToString(), Loc.GetOrDefault(SettingsTextKeys.ModelProvidersAutoValue, "Auto"))</div>
+    </div>;
+
+    private static string DisplayValue(string? value, string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value) ? fallback : value;
+    }
+
+    private void Close()
+    {
+        DialogInstance.Close(DialogResult.Ok);
+    }
+}

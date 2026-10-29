@@ -1,0 +1,315 @@
+@using Oscova.Agents.Core.ApiContracts.Profile
+@inject ManagementApiClient ManagementApiClient
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject TimeProvider Clock
+@inject ILogger<VaultGate> Logger
+
+@if (ShouldBlockRoute)
+{
+    <div class="modal modal-open app-aurora-backdrop app-aurora-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="vault-gate-title"
+         aria-describedby="vault-gate-description">
+        <div class="modal-box flex max-h-[90vh] w-11/12 max-w-md flex-col p-0">
+            <div class="border-base-200 flex items-center gap-3 border-b px-5 py-4">
+                <span class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-box">
+                    <iconify-icon icon="lucide:key-round" width="18" height="18"></iconify-icon>
+                </span>
+                <div class="min-w-0">
+                    <h2 id="vault-gate-title" class="text-lg font-semibold">@GateTitle</h2>
+                    <p id="vault-gate-description" class="text-base-content/60 mt-1 text-xs">@GateDescription</p>
+                </div>
+                <div class="ms-auto shrink-0">
+                    <HelpTriggerButton Topic="@HelpTopics.VaultPassword" />
+                </div>
+            </div>
+
+            @if (_status is null || _loadFailed)
+            {
+                <div class="overflow-y-auto px-5 py-4">
+                    @if (_errorMessage is not null)
+                    {
+                        <div role="alert" class="alert alert-error alert-soft">
+                            <span>@_errorMessage</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="flex justify-center">
+                            <span class="loading loading-spinner loading-md" aria-label="Loading"></span>
+                        </div>
+                    }
+                </div>
+                @if (_loadFailed)
+                {
+                    <div class="modal-action px-5 pb-5 pt-0">
+                        <button class="btn btn-ghost" type="button" @onclick="SignOut" disabled="@_isBusy">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.SignOut, "Sign out")
+                        </button>
+                        <button class="btn btn-primary" type="button" @onclick="LoadStateAsync" disabled="@_isBusy">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+                        </button>
+                    </div>
+                }
+            }
+            else if (!_status.IsOperatorReady)
+            {
+                <div class="modal-action px-5 pb-5 pt-4">
+                    <button class="btn btn-ghost" type="button" @onclick="SignOut" disabled="@_isBusy">
+                        @CommonLoc.GetOrDefault(CommonTextKeys.SignOut, "Sign out")
+                    </button>
+                    <button class="btn btn-primary" type="button" @onclick="LoadStateAsync" disabled="@_isBusy">
+                        @CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")
+                    </button>
+                </div>
+            }
+            else if (!_status.IsConfigured)
+            {
+                <form @onsubmit="CreateVaultAsync" @onsubmit:preventDefault>
+                    <div class="space-y-4 overflow-y-auto px-5 py-4">
+                        @if (_errorMessage is not null)
+                        {
+                            <div role="alert" class="alert alert-error alert-soft">
+                                <span>@_errorMessage</span>
+                            </div>
+                        }
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start gap-2">
+                                <span class="iconify lucide--lock text-primary mt-0.5 size-4 shrink-0" aria-hidden="true"></span>
+                                <span>@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordSetupEncrypts, "It encrypts your chats, memory, settings and saved keys on this machine.")</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="iconify lucide--key-round text-primary mt-0.5 size-4 shrink-0" aria-hidden="true"></span>
+                                <span>@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordSetupSeparate, "It is separate from your sign-in password.")</span>
+                            </li>
+                            <li class="text-warning flex items-start gap-2">
+                                <span class="iconify lucide--triangle-alert mt-0.5 size-4 shrink-0" aria-hidden="true"></span>
+                                <span>@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordRecoveryWarning, "Save this password safely. Oscova cannot recover it, and protected data cannot be opened without it.")</span>
+                            </li>
+                        </ul>
+                        <fieldset class="fieldset">
+                            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordTitle, "Vault Password")</legend>
+                            <input id="vault-setup-password" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordTitle, "Vault Password")" class="input w-full" type="password" @bind="_password" autocomplete="new-password" autofocus />
+                        </fieldset>
+                        <fieldset class="fieldset">
+                            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordConfirm, "Confirm Vault Password")</legend>
+                            <input id="vault-setup-confirmation" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordConfirm, "Confirm Vault Password")" class="input w-full" type="password" @bind="_confirmation" autocomplete="new-password" />
+                        </fieldset>
+                    </div>
+                    <div class="modal-action px-5 pb-5 pt-0">
+                        <button class="btn btn-ghost" type="button" @onclick="SignOut" disabled="@_isBusy">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.SignOut, "Sign out")
+                        </button>
+                        <button class="btn btn-primary" type="submit" @onclick="CreateVaultAsync" @onclick:preventDefault disabled="@_isBusy">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordCreateButton, "Create vault")
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <form @onsubmit="UnlockVaultAsync" @onsubmit:preventDefault>
+                    <div class="space-y-4 overflow-y-auto px-5 py-4">
+                        <SignInRetryNotice RetryUntil="@_retryUntil" WasBlocked="@true" OnExpired="@RetryExpired" />
+                        @if (_errorMessage is not null)
+                        {
+                            <div role="alert" class="alert alert-error alert-soft">
+                                <span>@_errorMessage</span>
+                            </div>
+                        }
+                        <fieldset class="fieldset">
+                            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordTitle, "Vault Password")</legend>
+                            <input id="vault-unlock-password" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordTitle, "Vault Password")" class="input w-full" type="password" @bind="_password" autocomplete="current-password" autofocus />
+                        </fieldset>
+                    </div>
+                    <div class="modal-action px-5 pb-5 pt-0">
+                        <button class="btn btn-ghost" type="button" @onclick="SignOut" disabled="@_isBusy">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.SignOut, "Sign out")
+                        </button>
+                        <button class="btn btn-primary" type="submit" @onclick="UnlockVaultAsync" @onclick:preventDefault disabled="@(_isBusy || IsWaiting)">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.Unlock, "Unlock")
+                        </button>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private VaultStatus? _status;
+    private string _password = string.Empty;
+    private string _confirmation = string.Empty;
+    private string? _errorMessage;
+    private bool _isAuthenticated;
+    private bool _loadFailed;
+    private bool _isBusy;
+    private DateTimeOffset? _retryUntil;
+    private bool IsWaiting => _retryUntil > Clock.GetUtcNow();
+
+    private void RetryExpired() => _retryUntil = null;
+
+    private bool ShouldBlockRoute =>
+        _isAuthenticated && (_status is null || !_status.IsOperatorReady || !_status.IsConfigured || !_status.IsUnlocked);
+
+    private string GateTitle => _status switch
+    {
+        { IsOperatorReady: false } => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogOperatorVaultTitle, "Waiting for the operator"),
+        { IsConfigured: false } => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogVaultPasswordSetupTitle,
+            "Create your Vault Password"),
+        { IsConfigured: true } => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogVaultPasswordUnlockTitle,
+            "Unlock your vault"),
+        _ => CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordTitle, "Vault Password")
+    };
+
+    private string GateDescription => _status switch
+    {
+        { IsOperatorReady: false } => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogOperatorVaultDescription, "The operator must unlock their vault. Then select Retry to continue."),
+        { IsConfigured: false } => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogVaultPasswordSetupDescription,
+            "Only you hold this password."),
+        { IsConfigured: true } => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogVaultPasswordUnlockDescription,
+            "Enter your Vault Password to unlock saved credentials and protected data."),
+        _ when _loadFailed => CommonLoc.GetOrDefault(
+            CommonTextKeys.DialogVaultPasswordStateLoadFailed,
+            "Vault status could not be loaded."),
+        _ => CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = authenticationState.User.Identity?.IsAuthenticated == true;
+        if (_isAuthenticated)
+        {
+            await LoadStateAsync();
+        }
+    }
+
+    private async Task LoadStateAsync()
+    {
+        _isBusy = true;
+        _loadFailed = false;
+        _errorMessage = null;
+        try
+        {
+            _status = await ManagementApiClient.GetVaultStatusAsync();
+            _retryUntil = _status.RetryUntil;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load vault status.");
+            _status = null;
+            _loadFailed = true;
+            _errorMessage = CommonLoc.GetOrDefault(
+                CommonTextKeys.DialogVaultPasswordStateLoadFailed,
+                "Vault status could not be loaded.");
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private async Task CreateVaultAsync()
+    {
+        _errorMessage = ValidatePassword();
+        if (_errorMessage is not null)
+        {
+            ClearPasswords();
+            return;
+        }
+
+        _isBusy = true;
+        try
+        {
+            _status = await ManagementApiClient.SetVaultPasswordAsync(new SetVaultPasswordRequest
+            {
+                Password = _password,
+                ConfirmPassword = _confirmation
+            });
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isBusy = false;
+            ClearPasswords();
+        }
+    }
+
+    private async Task UnlockVaultAsync()
+    {
+        if (_isBusy || IsWaiting) { return; }
+        _errorMessage = null;
+        _isBusy = true;
+        try
+        {
+            _status = await ManagementApiClient.UnlockVaultAsync(
+                new UnlockVaultRequest { Password = _password });
+        }
+        catch (VaultRetryException ex)
+        {
+            _retryUntil = ex.RetryUntil;
+        }
+        catch (InvalidOperationException ex) when (string.Equals(
+            ex.Message,
+            "The Vault Password is incorrect.",
+            StringComparison.Ordinal))
+        {
+            _errorMessage = CommonLoc.GetOrDefault(
+                CommonTextKeys.DialogVaultPasswordIncorrect,
+                "The Vault Password is incorrect.");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isBusy = false;
+            ClearPasswords();
+        }
+    }
+
+    private string? ValidatePassword()
+    {
+        if (_password.Length is < 12 or > 256)
+        {
+            return CommonLoc.GetOrDefault(
+                CommonTextKeys.DialogVaultPasswordLengthError,
+                "The Vault Password must be between 12 and 256 characters.");
+        }
+
+        return string.Equals(_password, _confirmation, StringComparison.Ordinal)
+            ? null
+            : CommonLoc.GetOrDefault(
+                CommonTextKeys.DialogVaultPasswordConfirmationError,
+                "The Vault Password confirmation does not match.");
+    }
+
+    private void ClearPasswords()
+    {
+        _password = string.Empty;
+        _confirmation = string.Empty;
+    }
+
+    private void SignOut() => NavigationManager.NavigateTo("/auth/logout-redirect", forceLoad: true);
+}

@@ -1,0 +1,75 @@
+@using Oscova.Agents.Core.Mcp
+@using System.Text.Json
+@using System.Globalization
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.McpServersImportDialogTitle, "Import MCP Server Configuration"))"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.McpServersImportDialogDescription, "Paste JSON from VS Code, Cursor, or Claude Desktop format."))"
+                Icon="lucide:file-json-2"
+                HelpTopic="@HelpTopics.McpImport"
+                TitleClass="truncate text-lg font-bold"
+                CloseResult="@DialogResult.Cancel"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <textarea dir="ltr" class="textarea textarea-bordered w-full h-48 font-mono text-xs"
+                  aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersImportDialogTitle, "Import MCP Server Configuration")"
+                  placeholder='{ "mcpServers": { "my-server": { "command": "npx", "args": ["-y", "package-name"] } } }'
+                  @bind="_importJsonText"></textarea>
+        @if (!string.IsNullOrEmpty(_importError))
+        {
+            <div class="text-error text-sm mt-2">@_importError</div>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button class="btn btn-ghost btn-sm" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button class="btn btn-primary btn-sm" @onclick="Import">@Loc.GetOrDefault(SettingsTextKeys.McpServersImportJsonButton, "Import")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _importJsonText = string.Empty;
+    private string? _importError;
+
+    private void Cancel()
+    {
+        DialogInstance.Close<IReadOnlyList<McpServerConfig>>(DialogResult.Cancel, null);
+    }
+
+    private void Import()
+    {
+        _importError = null;
+        try
+        {
+            var servers = McpConfigJsonParser.Parse(_importJsonText);
+            if (servers.Count == 0)
+            {
+                _importError = Loc.GetOrDefault(SettingsTextKeys.McpServersNoServersFoundError, "No servers found in the provided JSON.");
+                return;
+            }
+
+            DialogInstance.Close(DialogResult.Ok, servers);
+        }
+        catch (JsonException ex)
+        {
+            _importError = FormatSettingsText(SettingsTextKeys.McpServersInvalidJsonError, "Invalid JSON: {0}", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _importError = FormatCommonText(CommonTextKeys.ImportFailed, "Import failed: {0}", ex.Message);
+        }
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+    }
+}

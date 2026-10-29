@@ -1,0 +1,88 @@
+namespace Oscova.Agents.Host.Localization;
+
+/// <summary>
+/// Resource keys for authentication and first-run setup UI strings.
+/// </summary>
+public static class AuthTextKeys
+{
+    public const string HeroDynamicPrefix = "Auth.Hero.Dynamic.";
+    public const string LoginTitle = "Auth.Login.Title";
+    public const string LoginSubtitle = "Auth.Login.Subtitle";
+    public const string ShowPasswordLabel = "Auth.ShowPasswordLabel";
+    public const string LoggingInButton = "Auth.LoggingInButton";
+    public const string LoginButton = "Auth.LoginButton";
+    public const string InvalidCredentialsError = "Auth.InvalidCredentialsError";
+    public const string InvalidLoginTicketError = "Auth.InvalidLoginTicketError";
+    public const string InvalidProfileError = "Auth.InvalidProfileError";
+    public const string LoginFailedError = "Auth.LoginFailedError";
+    public const string HomeTitle = "Auth.Home.Title";
+    public const string HomeSubtitle = "Auth.Home.Subtitle";
+    public const string NoProfilesMessage = "Auth.Home.NoProfilesMessage";
+    public const string ProfileFallbackName = "Auth.Home.ProfileFallbackName";
+    public const string ProfilesLabel = "Auth.Home.ProfilesLabel";
+    public const string PinHelp = "Auth.Home.PinHelp";
+    public const string SwitchProfileButton = "Auth.Home.SwitchProfileButton";
+    public const string PinLabel = "Auth.Home.PinLabel";
+    public const string PinPlaceholder = "Auth.Home.PinPlaceholder";
+    public const string ShowPinLabel = "Auth.Home.ShowPinLabel";
+    public const string SigningInButton = "Auth.Home.SigningInButton";
+    public const string ContinueButton = "Auth.Home.ContinueButton";
+    public const string AdminPasswordSignInButton = "Auth.Home.AdminPasswordSignInButton";
+    public const string PinSessionExpiredError = "Auth.Home.PinSessionExpiredError";
+    public const string ChooseProfileFirstError = "Auth.Home.ChooseProfileFirstError";
+    public const string MissingPinError = "Auth.Home.MissingPinError";
+    public const string InvalidPinError = "Auth.Home.InvalidPinError";
+    public const string PinValidationError = "Auth.Home.PinValidationError";
+    public const string AdminLoginBackButton = "Auth.AdminLogin.BackButton";
+    public const string AdminSetupTitle = "Auth.AdminSetup.Title";
+    public const string AdminSetupSubtitle = "Auth.AdminSetup.Subtitle";
+    public const string FullNameLabel = "Auth.AdminSetup.FullNameLabel";
+    public const string FullNamePlaceholder = "Auth.AdminSetup.FullNamePlaceholder";
+    public const string FullNameHelp = "Auth.AdminSetup.FullNameHelp";
+    public const string EmailLabel = "Auth.AdminSetup.EmailLabel";
+    public const string EmailPlaceholder = "Auth.AdminSetup.EmailPlaceholder";
+    public const string EmailHelp = "Auth.AdminSetup.EmailHelp";
+    public const string UsernamePlaceholder = "Auth.AdminSetup.UsernamePlaceholder";
+    public const string UsernameHelp = "Auth.AdminSetup.UsernameHelp";
+    public const string NewPasswordPlaceholder = "Auth.AdminSetup.NewPasswordPlaceholder";
+    public const string PasswordHelp = "Auth.AdminSetup.PasswordHelp";
+    public const string ConfirmPasswordLabel = "Auth.AdminSetup.ConfirmPasswordLabel";
+    public const string ConfirmPasswordPlaceholder = "Auth.AdminSetup.ConfirmPasswordPlaceholder";
+    public const string ConfirmPasswordHelp = "Auth.AdminSetup.ConfirmPasswordHelp";
+    public const string CreateAdminButton = "Auth.AdminSetup.CreateAdminButton";
+    public const string AdminSetupRestoreTitle = "Auth.AdminSetup.RestoreTitle";
+    public const string AdminSetupRestoreDescription = "Auth.AdminSetup.RestoreDescription";
+    public const string AdminSetupRestoreFileLabel = "Auth.AdminSetup.RestoreFileLabel";
+    public const string AdminSetupRestorePassphraseLabel = "Auth.AdminSetup.RestorePassphraseLabel";
+    public const string AdminSetupRestorePassphrasePlaceholder = "Auth.AdminSetup.RestorePassphrasePlaceholder";
+    public const string AdminSetupRestoreButton = "Auth.AdminSetup.RestoreButton";
+    public const string AdminSetupRestoreChooseFileButton = "Auth.AdminSetup.RestoreChooseFileButton";
+    public const string AdminSetupRestoreFileRequired = "Auth.AdminSetup.RestoreFileRequired";
+    public const string AdminSetupRestoreUnsupportedFile = "Auth.AdminSetup.RestoreUnsupportedFile";
+    public const string AdminSetupRestorePassphraseRequired = "Auth.AdminSetup.RestorePassphraseRequired";
+    public const string AdminSetupRestoreFreshInstallOnly = "Auth.AdminSetup.RestoreFreshInstallOnly";
+    public const string AdminSetupRestorePending = "Auth.AdminSetup.RestorePending";
+    public const string AdminSetupCreated = "Auth.AdminSetup.Created";
+    public const string AdminSetupRestoreFailed = "Auth.AdminSetup.RestoreFailed";
+    public const string AdminSetupRestoreInProgress = "Auth.AdminSetup.RestoreInProgress";
+    public const string AdminSetupRestoreRestarting = "Auth.AdminSetup.RestoreRestarting";
+    public const string PasswordsDoNotMatchError = "Auth.AdminSetup.PasswordsDoNotMatchError";
+    public const string UsernameExistsError = "Auth.AdminSetup.UsernameExistsError";
+    public const string EmailExistsError = "Auth.AdminSetup.EmailExistsError";
+    public const string CliAuthTitle = "Auth.CliAuth.Title";
+    public const string CliAuthSubtitle = "Auth.CliAuth.Subtitle";
+    public const string CliAuthCodeLabel = "Auth.CliAuth.CodeLabel";
+    public const string CliAuthClientLabel = "Auth.CliAuth.ClientLabel";
+    public const string CliAuthMachineLabel = "Auth.CliAuth.MachineLabel";
+    public const string CliAuthApproveButton = "Auth.CliAuth.ApproveButton";
+    public const string CliAuthDenyButton = "Auth.CliAuth.DenyButton";
+    public const string CliAuthApprovedMessage = "Auth.CliAuth.ApprovedMessage";
+    public const string CliAuthDeniedMessage = "Auth.CliAuth.DeniedMessage";
+    public const string CliAuthInvalidCodeMessage = "Auth.CliAuth.InvalidCodeMessage";
+    public const string CliAuthExpiredCodeMessage = "Auth.CliAuth.ExpiredCodeMessage";
+    public const string ToggleThemeLabel = "Auth.ToggleThemeLabel";
+    public const string SignInMismatch = "Auth.SignIn.Mismatch";
+    public const string SignInRetryCountdown = "Auth.SignIn.RetryCountdown";
+    public const string SignInWaitCountdown = "Auth.SignIn.WaitCountdown";
+    public const string TryAgainButton = "Auth.SignIn.TryAgain";
+}

@@ -1,0 +1,31 @@
+@inject IStringLocalizer<NavigationText> Loc
+
+<div class="workspace-utilities">
+    <ApplicationUpdateButton IconOnly="@true" />
+
+    @if (ActiveView == ActiveView.Chat)
+    {
+        <HelpTriggerButton Topic="@HelpTopics.Dashboard" />
+    }
+    else if (ActiveView == ActiveView.Dashboard)
+    {
+        <HelpTriggerButton Topic="@HelpTopics.MetricsDashboard" />
+    }
+    else if (ActiveView == ActiveView.Achievements)
+    {
+        <HelpTriggerButton Topic="@HelpTopics.Achievements" />
+    }
+
+    <button id="workspace-customizer-btn" type="button" class="workspace-rail-button"
+            title="@Loc.GetOrDefault(NavigationTextKeys.OpenCustomization, "Open customization")"
+            aria-label="@Loc.GetOrDefault(NavigationTextKeys.OpenCustomization, "Open customization")" @onclick="OnCustomizerClicked">
+        <span class="iconify lucide--palette size-4.5" aria-hidden="true"></span>
+    </button>
+
+</div>
+
+@code {
+    [Parameter] public ActiveView ActiveView { get; set; }
+    [Parameter] public EventCallback OnCustomizerClicked { get; set; }
+
+}

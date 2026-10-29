@@ -1,0 +1,259 @@
+@inject HelpPanelHost Host
+@inject IHelpContentService ContentService
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject NavigationManager Nav
+@inject IJSRuntime JsRuntime
+@implements IDisposable
+
+<dialog id="@DialogId"
+        aria-label="@_title"
+        class="m-0 h-dvh max-h-none w-screen max-w-none overflow-hidden border-0 bg-transparent p-0 backdrop:bg-transparent"
+        @onkeydown="HandleKeyDown">
+    <div id="layout-help-panel" class="@(_isOpen ? "rightbar-open" : "")">
+        <div class="rightbar-overlay" @onclick="Close" aria-hidden="true"></div>
+        <div class="app-solid-overlay-surface rightbar-panel bg-base-100 text-base-content w-full sm:w-[28rem] lg:w-[32rem]"
+             role="document"
+             aria-label="@_title"
+             aria-hidden="@(_isOpen ? null : "true")"
+             inert="@(_isOpen ? null : "")">
+            <div class="bg-base-200/30 border-base-200 flex h-16 min-h-16 items-center justify-between border-b px-5">
+                <div class="flex min-w-0 items-center gap-2">
+                    @if (_history.Count > 1)
+                    {
+                        <button class="btn btn-ghost btn-sm btn-circle"
+                                disabled="@(!CanGoBack)"
+                                aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Back, "Back")"
+                                @onclick="GoBack">
+                            <iconify-icon icon="lucide:arrow-left" width="20" height="20"></iconify-icon>
+                        </button>
+                        <button class="btn btn-ghost btn-sm btn-circle"
+                                disabled="@(!CanGoForward)"
+                                aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Forward, "Forward")"
+                                @onclick="GoForward">
+                            <iconify-icon icon="lucide:arrow-right" width="20" height="20"></iconify-icon>
+                        </button>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(_icon))
+                    {
+                        <span class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg" aria-hidden="true">
+                            <PresentationIcon ImageSource="@_iconImageSource" Icon="@_icon" />
+                        </span>
+                    }
+                    <p class="truncate text-lg font-medium">@_title</p>
+                </div>
+                <button class="btn btn-ghost btn-sm btn-circle shrink-0"
+                        aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")"
+                        @onclick="Close">
+                    <iconify-icon icon="lucide:x" width="20" height="20"></iconify-icon>
+                </button>
+            </div>
+            <div class="markdown-content custom-scrollbar overflow-y-auto p-5" style="height: calc(100% - 4rem);">
+                @((MarkupString)_html)
+                <p class="mt-5 border-t border-base-200 pt-4"><a class="link link-primary" href="@ReleaseNotesLinks.History" target="_blank" rel="noopener noreferrer">@CommonLoc.GetOrDefault(CommonTextKeys.ReleaseNotes, "Release notes")</a></p>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+@code {
+    private const string DialogId = "layout-help-panel-dialog";
+    private const int PanelTransitionMilliseconds = 300;
+    private bool _isOpen;
+    private bool _isDialogOpen;
+    private bool _isClosing;
+    private string _title = "";
+    private string _icon = HelpTopicDescriptor.DefaultIcon;
+    private string? _iconImageSource;
+    private string _html = "";
+    private IJSObjectReference? _uiModule;
+
+    // Topic keys viewed in this panel session, oldest first; _cursor marks the visible one.
+    private readonly List<string> _history = new();
+    private int _cursor = -1;
+
+    private bool CanGoBack => _cursor > 0;
+    private bool CanGoForward => _cursor >= 0 && _cursor < _history.Count - 1;
+
+    protected override void OnInitialized()
+    {
+        Host.Register(OpenAsync);
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_isClosing || _isOpen)
+        {
+            return;
+        }
+
+        await Task.Delay(PanelTransitionMilliseconds);
+        if (_isClosing && !_isOpen)
+        {
+            await CloseDialogAsync();
+            _isClosing = false;
+        }
+    }
+
+    public async Task OpenAsync(string topicKey)
+    {
+        if (!TryLoad(topicKey)) return;
+        _history.Clear();
+        _history.Add(topicKey);
+        _cursor = 0;
+        _isClosing = false;
+        await ShowDialogAsync();
+        await _uiModule!.InvokeVoidAsync("waitForAnimationFrame");
+        _isOpen = true;
+        StateHasChanged();
+    }
+
+    // While the panel is open, an in-document help link adds ?helptopic= to the URL
+    // (swap content in place); any other navigation closes the panel.
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        if (!_isOpen) return;
+
+        var query = QueryHelpers.ParseQuery(Nav.ToAbsoluteUri(e.Location).Query);
+        if (query.TryGetValue("helptopic", out var topic) && !string.IsNullOrWhiteSpace(topic))
+        {
+            var topicKey = topic.ToString();
+            if (TryLoad(topicKey))
+            {
+                RecordHistory(topicKey);
+                StateHasChanged();
+            }
+            return;
+        }
+
+        Close();
+    }
+
+    // Records a successful topic load in the back/forward history. A load that matches the
+    // neighbouring entry is a Back/Forward step (cursor moves); anything else is a new branch
+    // (the forward trail is dropped). One rule keeps the panel consistent whether the
+    // navigation came from a link click, the panel's own buttons, or the browser history.
+    private void RecordHistory(string topicKey)
+    {
+        if (_cursor > 0 && string.Equals(_history[_cursor - 1], topicKey, StringComparison.OrdinalIgnoreCase))
+        {
+            _cursor--;
+        }
+        else if (_cursor < _history.Count - 1 && string.Equals(_history[_cursor + 1], topicKey, StringComparison.OrdinalIgnoreCase))
+        {
+            _cursor++;
+        }
+        else
+        {
+            if (_cursor < _history.Count - 1)
+            {
+                _history.RemoveRange(_cursor + 1, _history.Count - _cursor - 1);
+            }
+            _history.Add(topicKey);
+            _cursor = _history.Count - 1;
+        }
+    }
+
+    private void GoBack()
+    {
+        if (CanGoBack)
+        {
+            Nav.NavigateTo(BuildHelpUrl(_history[_cursor - 1]));
+        }
+    }
+
+    private void GoForward()
+    {
+        if (CanGoForward)
+        {
+            Nav.NavigateTo(BuildHelpUrl(_history[_cursor + 1]));
+        }
+    }
+
+    // Adds or replaces only the helptopic parameter, leaving the rest of the current
+    // path and query intact so query state on the underlying screen is not lost.
+    private string BuildHelpUrl(string topicKey) =>
+        Nav.GetUriWithQueryParameter("helptopic", topicKey);
+
+    // Loads a topic's title + HTML into the panel fields. Returns false for unknown/missing topics.
+    private bool TryLoad(string topicKey)
+    {
+        var content = ContentService.Load(topicKey);
+        if (content is null) return false;
+        _title = content.Title;
+        _icon = content.Icon;
+        _iconImageSource = content.IconImageSource;
+        _html = PrefixTopicLinks(content.Html);
+        return true;
+    }
+
+    // In-document help links are rendered with a bare "?helptopic=" href. Because the page
+    // declares <base href="/">, a bare query href resolves against the site root and would
+    // navigate away from the current screen. Rebuilding the href from the current URL keeps
+    // the click on this screen — and preserves its other query parameters — so only the
+    // panel content swaps.
+    private string PrefixTopicLinks(string html)
+    {
+        // Drop any current helptopic; each link appends its own to whatever query remains.
+        var baseUri = Nav.GetUriWithQueryParameter("helptopic", (string?)null);
+        var separator = baseUri.Contains('?', StringComparison.Ordinal) ? "&" : "?";
+        return html.Replace(
+            "href=\"?helptopic=",
+            $"href=\"{baseUri}{separator}helptopic=",
+            StringComparison.Ordinal);
+    }
+
+    private void Close()
+    {
+        if (!_isDialogOpen)
+        {
+            return;
+        }
+
+        _isOpen = false;
+        _isClosing = true;
+        StateHasChanged();
+    }
+
+    private async Task ShowDialogAsync()
+    {
+        if (_isDialogOpen)
+        {
+            return;
+        }
+
+        _uiModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ui-services.js");
+        await _uiModule.InvokeVoidAsync("showModal", DialogId);
+        _isDialogOpen = true;
+    }
+
+    private async Task CloseDialogAsync()
+    {
+        if (!_isDialogOpen)
+        {
+            return;
+        }
+
+        _uiModule ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ui-services.js");
+        await _uiModule.InvokeVoidAsync("closeModal", DialogId);
+        _isDialogOpen = false;
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            Close();
+        }
+    }
+
+    public void Dispose()
+    {
+        Host.Unregister();
+        Nav.LocationChanged -= OnLocationChanged;
+        if (_uiModule is not null)
+        {
+            _ = _uiModule.DisposeAsync();
+        }
+    }
+}

@@ -1,0 +1,94 @@
+@using System.Text.Json
+@inject IWebHostEnvironment HostEnvironment
+@inject ILogger<ThirdPartyLicensesDialog> Logger
+@inject IStringLocalizer<SettingsText> Loc
+
+<AppDialogShell Title="@Loc.GetOrDefault(SettingsTextKeys.ThirdPartyLicensesTitle, "Credits and licenses")"
+                HelpTopic="@HelpTopics.ThirdPartyLicenses"
+                MaxWidthClass="max-w-4xl"
+                BodyClass="min-h-0 overflow-y-auto px-5 py-4">
+    <ChildContent>
+        <p class="text-base-content/70 text-sm">
+            @Loc.GetOrDefault(
+                SettingsTextKeys.ThirdPartyLicensesDescription,
+                "License notices for third-party software included with Oscova are stored locally and available offline.")
+        </p>
+
+        @if (_isLoading)
+        {
+            <div class="mt-4 flex items-center gap-2 text-sm" role="status">
+                <span class="loading loading-spinner loading-sm"></span>
+                @Loc.GetOrDefault(SettingsTextKeys.ThirdPartyLicensesLoading, "Loading license notices...")
+            </div>
+        }
+        else if (_isUnavailable)
+        {
+            <div class="alert alert-error mt-4" role="alert">
+                @Loc.GetOrDefault(
+                    SettingsTextKeys.ThirdPartyLicensesUnavailable,
+                    "The bundled license notices could not be loaded.")
+            </div>
+        }
+        else
+        {
+            <div class="mt-4 space-y-2">
+                @foreach (var entry in _entries)
+                {
+                    <details class="rounded-box border-base-300 bg-base-100 min-w-0 border">
+                        <summary class="flex min-w-0 flex-wrap cursor-pointer items-center justify-between gap-3 px-4 py-3">
+                            <span class="min-w-0 font-medium [overflow-wrap:anywhere]">@entry.Name</span>
+                            <span class="badge badge-outline h-auto max-w-full shrink-0 whitespace-normal text-start [overflow-wrap:anywhere]">
+                                @entry.License
+                            </span>
+                        </summary>
+                        <pre class="border-base-300 text-base-content/80 m-0 max-w-full whitespace-pre-wrap border-t px-4 py-3 font-mono text-xs [overflow-wrap:anywhere]">@entry.Text</pre>
+                    </details>
+                }
+            </div>
+        }
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private IReadOnlyList<LicenseEntry> _entries = [];
+    private bool _isLoading = true;
+    private bool _isUnavailable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        const string catalogPath = "legal/third-party-licenses.json";
+
+        try
+        {
+            // Source builds and published apps resolve bundled assets through the same provider.
+            await using var stream = HostEnvironment.WebRootFileProvider.GetFileInfo(catalogPath).CreateReadStream();
+
+            var entries = await JsonSerializer.DeserializeAsync<List<LicenseEntry>>(stream, JsonOptions);
+            if (entries is null
+                || entries.Count == 0
+                || entries.Any(entry => string.IsNullOrWhiteSpace(entry.Name)
+                    || string.IsNullOrWhiteSpace(entry.License)
+                    || string.IsNullOrWhiteSpace(entry.Text)))
+            {
+                throw new InvalidDataException("The third-party license catalog contains an invalid entry.");
+            }
+
+            _entries = entries;
+        }
+        catch (Exception ex) when (ex is IOException
+            or UnauthorizedAccessException
+            or JsonException
+            or InvalidDataException)
+        {
+            Logger.LogError(ex, "Could not load third-party license catalog from {CatalogPath}.", catalogPath);
+            _isUnavailable = true;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private sealed record LicenseEntry(string Name, string License, string Text);
+}

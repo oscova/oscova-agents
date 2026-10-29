@@ -1,0 +1,159 @@
+@using System.Globalization
+@using Oscova.Agents.Core.Mcp
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Shows the MCP server row details without embedding an editor in the settings table. *@
+<AppDialogShell Title="@DisplayName"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.McpServersDetailsDialogTitle, "Server configuration"))"
+                Icon="@GetTransportIcon(Server.Transport)"
+                MaxWidthClass="max-w-3xl"
+                HelpTopic="@HelpTopics.McpServerDetails"
+                CloseResult="@DialogResult.Ok">
+    <ChildContent>
+        <div class="space-y-5">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="badge badge-neutral badge-soft">@FormatTransport(Server.Transport)</span>
+                @if (IsManaged)
+                {
+                    <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@Loc[SettingsTextKeys.SkillsManagedByOperator]</span>
+                }
+                else if (Server.IsValidForConnect())
+                {
+                    <span class="badge badge-neutral badge-soft">@Loc.GetOrDefault(SettingsTextKeys.McpServersConfiguredBadge, "Configured")</span>
+                }
+                else
+                {
+                    <span class="badge badge-warning badge-soft">@Loc.GetOrDefault(SettingsTextKeys.McpServersIncompleteBadge, "Incomplete")</span>
+                }
+            </div>
+
+            <dl class="grid gap-3 text-sm sm:grid-cols-[11rem_minmax(0,1fr)]">
+                <dt class="text-base-content/60">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</dt>
+                <dd>@DisplayName</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportLabel, "Transport")</dt>
+                <dd>@FormatTransport(Server.Transport)</dd>
+
+                <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersNetworkScopeLabel, "Network use")</dt>
+                <dd>@Loc.GetNetworkScopeLabel(Server.NetworkScope)</dd>
+
+                @if (!IsManaged && Server.Transport == McpTransportType.Http)
+                {
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersEndpointLabel, "Endpoint")</dt>
+                    <dd class="font-mono text-xs break-all">@DisplayValue(Server.Endpoint)</dd>
+
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersHeadersLabel, "Headers (key=value per line)")</dt>
+                    <dd>
+                        @if (Server.Headers is { Count: > 0 })
+                        {
+                            <div class="space-y-1">
+                                @foreach (var header in Server.Headers.OrderBy(header => header.Key, StringComparer.OrdinalIgnoreCase))
+                                {
+                                    <div class="rounded-box bg-base-200/60 px-3 py-2 font-mono text-xs break-all">
+                                        <span class="text-base-content/60">@header.Key</span>=@header.Value
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersNoHeaders, "No headers")</span>
+                        }
+                    </dd>
+                }
+                else if (!IsManaged)
+                {
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentLabel, "Execution environment")</dt>
+                    <dd>@FormatExecutionEnvironment(Server.ExecutionEnvironment)</dd>
+
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersCommandLabel, "Command")</dt>
+                    <dd class="font-mono text-xs break-all">@DisplayValue(Server.Command)</dd>
+
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersArgumentsLabel, "Arguments (space separated)")</dt>
+                    <dd class="font-mono text-xs break-all">@DisplayArguments()</dd>
+
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersWorkingDirectoryLabel, "Working Directory (optional)")</dt>
+                    <dd class="font-mono text-xs break-all">@DisplayValue(Server.WorkingDirectory)</dd>
+
+                    <dt class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersEnvironmentVariablesLabel, "Environment Variables (KEY=VALUE or KEY per line)")</dt>
+                    <dd>
+                        @if (Server.EnvironmentVariables is { Count: > 0 })
+                        {
+                            <div class="space-y-1">
+                                @foreach (var envVar in Server.EnvironmentVariables.OrderBy(envVar => envVar.Key, StringComparer.OrdinalIgnoreCase))
+                                {
+                                    <div class="rounded-box bg-base-200/60 px-3 py-2 font-mono text-xs break-all">
+                                        <span class="text-base-content/60">@envVar.Key</span>@(envVar.Value is null ? null : $"={envVar.Value}")
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-base-content/60">@Loc.GetOrDefault(SettingsTextKeys.McpServersNoEnvironmentVariables, "No environment variables")</span>
+                        }
+                    </dd>
+                }
+            </dl>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private McpServerConfig Server { get; set; } = new();
+    private bool IsManaged => DialogInstance.Get<bool>("IsManaged");
+
+    private string DisplayName => string.IsNullOrWhiteSpace(Server.Name)
+        ? Loc.GetOrDefault(SettingsTextKeys.McpServersUnnamedServerLabel, "(unnamed server)")
+        : Server.Name;
+
+    protected override void OnInitialized()
+    {
+        Server = DialogInstance.Get<McpServerConfig>("Server") ?? new McpServerConfig();
+    }
+
+    private string DisplayArguments()
+    {
+        return Server.Arguments is { Count: > 0 }
+            ? string.Join(' ', Server.Arguments)
+            : Loc.GetOrDefault(SettingsTextKeys.McpServersNoArguments, "No arguments");
+    }
+
+    private string DisplayValue(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set")
+            : value;
+    }
+
+    private string FormatTransport(McpTransportType transport)
+    {
+        return transport == McpTransportType.Http
+            ? Loc.GetOrDefault(SettingsTextKeys.McpServersTransportHttp, "HTTP")
+            : Loc.GetOrDefault(SettingsTextKeys.McpServersTransportStdio, "STDIO");
+    }
+
+    private string FormatExecutionEnvironment(McpExecutionEnvironment environment)
+    {
+        return environment == McpExecutionEnvironment.Containerized
+            ? Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentContainer, "Docker sandbox")
+            : Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentHost, "Host process");
+    }
+
+    private static string GetTransportIcon(McpTransportType transport)
+    {
+        return transport == McpTransportType.Http ? "lucide:globe" : "lucide:terminal";
+    }
+
+    private void Close()
+    {
+        DialogInstance.Close(DialogResult.Ok);
+    }
+}

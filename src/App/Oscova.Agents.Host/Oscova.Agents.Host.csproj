@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<UserSecretsId>Oscova.Agents.Host.LocalDevelopment</UserSecretsId>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+    <Version>$(OscovaAppVersion)</Version>
+    <EmbedOscovaPackageVersions>true</EmbedOscovaPackageVersions>
+		<SatelliteResourceLanguages>en;zh;ja;hi;es;fr;it;pt</SatelliteResourceLanguages>
+		<!-- Single, stable assembly name for both CPU and GPU builds -->
+		<AssemblyName>Oscova.Agents.Host</AssemblyName>
+		<RootNamespace>Oscova.Agents.Host</RootNamespace>
+		<!-- Allow duplicate native libraries - runtime will choose the correct one -->
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+		<Title>Oscova Agents</Title>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DiffPlex" Version="1.9.0" />
+		<PackageReference Include="Microsoft.Agents.AI.Hosting.AGUI.AspNetCore" Version="1.26.0-preview.261023.1" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="6.2.2" />
+		<PackageReference Include="QRCoder" Version="1.8.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.14" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.14" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="10.0.14" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Oscova.Agents.Infrastructure\Oscova.Agents.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\Oscova.Agents\Oscova.Agents.csproj" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../../Plugins/**/oscova-plugin*.json" Exclude="../../Plugins/**/bin/**;../../Plugins/**/obj/**" LogicalName="PluginManifests.%(RecursiveDir)%(Filename)%(Extension)" />
+    <PackageDownload Include="Oscova.Agents.Plugins.AgentTemplates" Version="[$(AgentTemplatesPluginVersion)]" />
+    <None Include="$([System.IO.Path]::Combine('$(NuGetPackageRoot)', 'oscova.agents.plugins.agenttemplates/$(AgentTemplatesPluginVersion)/oscova.agents.plugins.agenttemplates.$(AgentTemplatesPluginVersion).nupkg'))" Link="bundled-plugins/oscova.agents.plugins.agenttemplates.$(AgentTemplatesPluginVersion).nupkg" TargetPath="bundled-plugins/oscova.agents.plugins.agenttemplates.$(AgentTemplatesPluginVersion).nupkg" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="false" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Content Update="nlog.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Help markdown ships into app_data\help so there is a single runtime source of truth, also reachable by AI agent file tools -->
+		<!-- Root-only glob: help topics are a flat set, so the output stays flat with no name-collision risk -->
+		<None Update="HelpContent\*.md">
+			<Link>app_data\help\%(Filename)%(Extension)</Link>
+			<TargetPath>app_data\help\%(Filename)%(Extension)</TargetPath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="oa_icon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<!-- Exclude runtime-generated TTS audio cache from build and publish output -->
+	<ItemGroup>
+		<Content Remove="wwwroot\tts\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.317" />
+	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
+	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="SourceGear.sqlite3" Version="3.53.4" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="SQLitePCLRaw.config.e_sqlite3" Version="3.0.5" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
+	</ItemGroup>
+</Project>

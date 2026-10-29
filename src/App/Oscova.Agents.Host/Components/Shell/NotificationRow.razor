@@ -1,0 +1,123 @@
+@inject UserServiceScope UserScope
+@inject AgentAvatarLookup AgentLookup
+@inject IAgentTaskRepository TaskRepository
+@inject AuthenticationStateProvider AuthState
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<button type="button" class="rounded-box my-0.5 flex w-full cursor-pointer items-start gap-3 px-3 py-2 text-left transition-all hover:bg-base-200 active:scale-[.98]" @onclick="OnClick">
+    <div class="mt-0.5 shrink-0">
+        @if (_avatar is not null)
+        {
+            <div class="avatar">
+                <div class="mask mask-squircle size-9 bg-base-200">
+                    <img src="@_avatar.PictureUrl" alt="" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-base-200 text-base-content/70 flex size-9 items-center justify-center rounded-box">
+                <span class="iconify @IconClass size-4.5"></span>
+            </div>
+        }
+    </div>
+    <div class="min-w-0 grow">
+        <div class="flex items-start gap-2">
+            <p class="min-w-0 grow truncate text-sm font-medium">@(string.IsNullOrWhiteSpace(_taskName) ? Entry.Title : _taskName)</p>
+            @if (!Entry.IsRead)
+            {
+                <span class="status status-primary status-xs mt-1.5 shrink-0"></span>
+            }
+        </div>
+        <p class="mt-0.5 line-clamp-2 text-xs text-base-content/65">@Entry.Body</p>
+        <div class="mt-1 flex items-center gap-2 text-[11px] text-base-content/55">
+            <span class="badge badge-ghost badge-xs">@KindLabel</span>
+            <span>@FormatTimestamp(Entry.CreatedAt)</span>
+        </div>
+    </div>
+</button>
+
+@code {
+    [Parameter, EditorRequired] public NotificationEntry Entry { get; set; } = default!;
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private AgentAvatar? _avatar;
+    private string? _taskName;
+
+    private string IconClass => Entry.Kind switch
+    {
+        NotificationKind.TaskSuccess => "lucide--check-check text-success",
+        NotificationKind.TaskFailure => "lucide--circle-alert text-error",
+        NotificationKind.SystemError => "lucide--circle-alert text-error",
+        NotificationKind.SystemWarning => "lucide--triangle-alert text-warning",
+        NotificationKind.ChatMessage => "lucide--message-circle text-info",
+        NotificationKind.HarnessUpdate or NotificationKind.AvatarUpdate => "lucide--download text-primary",
+        _ => "lucide--bell text-base-content/70"
+    };
+
+    private string KindLabel => Entry.Kind switch
+    {
+        NotificationKind.TaskSuccess => CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusHealthy, "Healthy"),
+        NotificationKind.TaskFailure => CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusNeedsAttention, "Needs attention"),
+        NotificationKind.SystemError => CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelError, "Error"),
+        NotificationKind.SystemWarning => CommonLoc.GetOrDefault(CommonTextKeys.DialogLogLevelWarn, "Warn"),
+        NotificationKind.ChatMessage => CommonLoc.GetOrDefault(CommonTextKeys.Assistant, "Assistant"),
+        _ => CommonLoc.GetOrDefault(CommonTextKeys.NotificationsTitle, "Notifications")
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _avatar = null;
+        _taskName = null;
+        if (string.IsNullOrWhiteSpace(Entry.AgentId) && string.IsNullOrWhiteSpace(Entry.TaskId))
+        {
+            return;
+        }
+
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        var userId = auth.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(Entry.AgentId))
+        {
+            _avatar = await AgentLookup.TryResolveAsync(userId, Entry.AgentId);
+        }
+
+        // The inbox stores only stock text, so the task name is resolved here instead of being persisted.
+        if (!string.IsNullOrWhiteSpace(Entry.TaskId))
+        {
+            try
+            {
+                _taskName = (await TaskRepository.GetTaskAsync(userId, Entry.TaskId))?.Name;
+            }
+            catch (IOException)
+            {
+                // A task deleted while the row renders keeps the stored title.
+            }
+        }
+    }
+
+    private string FormatTimestamp(DateTimeOffset value)
+    {
+        var elapsed = DateTimeOffset.UtcNow - value.ToUniversalTime();
+        if (elapsed.TotalMinutes < 1)
+        {
+            return CommonLoc.GetOrDefault(CommonTextKeys.NotificationsJustNow, "Just now");
+        }
+
+        if (elapsed.TotalHours < 1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(CommonTextKeys.NotificationsMinutesAgo, "{0}m ago"), (int)elapsed.TotalMinutes);
+        }
+
+        if (elapsed.TotalDays < 1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(CommonTextKeys.NotificationsHoursAgo, "{0}h ago"), (int)elapsed.TotalHours);
+        }
+
+        return TimeZoneInfo.ConvertTime(value, UserScope.UiSettings.GetTimeZone()).ToString("g", CultureInfo.CurrentCulture);
+    }
+}

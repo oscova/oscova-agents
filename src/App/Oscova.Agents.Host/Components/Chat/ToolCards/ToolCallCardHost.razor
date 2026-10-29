@@ -1,0 +1,9 @@
+@inject IStringLocalizer<ChatText> Loc
+
+<ToolCardFrame Context="@Context" />
+
+@code {
+    [Parameter, EditorRequired] public ChatSegment Segment { get; set; } = default!;
+
+    private ToolCardContext Context => new(Segment, ToolCardDescriptor.For(Segment.FunctionCall?.Name, Loc));
+}

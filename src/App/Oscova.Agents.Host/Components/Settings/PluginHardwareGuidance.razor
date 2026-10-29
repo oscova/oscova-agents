@@ -1,0 +1,69 @@
+@using Oscova.Agents.Core.Hardware
+@using Oscova.Agents.Infrastructure.Hardware
+@using Oscova.Agents.Plugins
+@inject HostHardwareProbe HardwareProbe
+@inject IStringLocalizer<SettingsText> Loc
+@implements IDisposable
+
+<div class="my-2 space-y-1 text-xs text-start break-words" role="status" aria-live="polite">
+    @if (Compact)
+    {
+        <p>
+            <bdi>@RequirementText</bdi>
+            @if (Assessment.Requirement is not null && Assessment.Observation != "observed")
+            {
+                <span> · @ObservationText</span>
+            }
+            @foreach (var adapter in Assessment.MatchingAdapters)
+            {
+                <span> · <bdi>@adapter.Name</bdi></span>
+            }
+        </p>
+    }
+    else
+    {
+        <p>@Loc[SettingsTextKeys.PluginsRuntimeRequirements]: <bdi>@RequirementText</bdi></p>
+        <p>@ObservationText</p>
+        @foreach (var adapter in Assessment.MatchingAdapters)
+        {
+            <p><bdi>@adapter.Name</bdi></p>
+        }
+        <p class="opacity-70">@Loc[SettingsTextKeys.PluginsRuntimeUnverified]</p>
+    }
+</div>
+
+@code {
+    [Parameter] public PluginHardwareRequirement? Requirement { get; set; }
+    [Parameter] public bool Compact { get; set; }
+    private HostHardwareSnapshot? _hardware;
+    private readonly CancellationTokenSource _lifetime = new();
+    private PluginHardwareAssessment Assessment => PluginHardwareAssessment.Assess(Requirement, _hardware);
+    private string RequirementText => Assessment.Requirement is { } requirement
+        ? requirement.Backend == "cuda" ? $"NVIDIA CUDA {requirement.CudaMajor}" : requirement.Backend.ToUpperInvariant()
+        : Loc[SettingsTextKeys.PluginsHardwareUnknown];
+    private string ObservationText => Assessment.Observation switch
+    {
+        "managed" => Loc[SettingsTextKeys.ModelProvidersManagedHardware],
+        "not-detected" => Loc[SettingsTextKeys.PluginsHardwareNotDetected],
+        "observed" => Loc[SettingsTextKeys.PluginsHardwareSummary],
+        _ => Loc[SettingsTextKeys.PluginsHardwareUnknown]
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) { return; }
+
+        try
+        {
+            _hardware = await HardwareProbe.GetAsync(_lifetime.Token);
+            if (!_lifetime.IsCancellationRequested) { StateHasChanged(); }
+        }
+        catch (OperationCanceledException) when (_lifetime.IsCancellationRequested) { }
+    }
+
+    public void Dispose()
+    {
+        _lifetime.Cancel();
+        _lifetime.Dispose();
+    }
+}

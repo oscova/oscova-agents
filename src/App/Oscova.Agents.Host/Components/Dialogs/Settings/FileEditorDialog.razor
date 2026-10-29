@@ -1,0 +1,204 @@
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@inject ILogger<FileEditorDialog> Logger
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@_fileName"
+                HelpTopic="@_helpTopic"
+                Icon="lucide:square-pen"
+                MaxWidthClass="max-w-4xl"
+                BoxContentClass="h-[80vh]"
+                TitleClass="truncate text-lg font-bold"
+                BodyClass="flex min-h-0 min-w-0 flex-1 flex-col px-5 py-4"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_isSaving)"
+                ShowBackdropClose="true">
+    <ChildContent>
+        @if (_isLoading)
+        {
+            <div class="flex-1 flex items-center justify-center">
+                <span class="loading loading-dots loading-md"></span>
+            </div>
+        }
+        else if (_loadError is not null)
+        {
+            <div class="flex-1 flex items-center justify-center">
+                <div class="text-center">
+                    <iconify-icon icon="lucide:circle-alert" width="32" height="32" class="text-error mb-2"></iconify-icon>
+                    <p class="text-error text-sm">@_loadError</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <CodeEditor @ref="_editor"
+                        @bind-Value="_content"
+                        FileName="@_fileName"
+                        Disabled="@_isSaving"
+                        HighlightVariables="@ShouldHighlightVariables" />
+            @if (_saveError is not null)
+            {
+                <div class="text-error text-sm mt-2">@_saveError</div>
+            }
+        }
+    </ChildContent>
+    <FooterContent>
+        @if (_backupCount > 0)
+        {
+            <button class="btn btn-ghost btn-sm" disabled="@_isSaving" @onclick="OpenHistoryAsync">
+                <iconify-icon icon="lucide:history"></iconify-icon>
+                @Loc.GetOrDefault(SettingsTextKeys.FilesBackupHistoryButton, "History")
+                <span class="badge badge-sm">@_backupCount</span>
+            </button>
+        }
+        <button class="btn btn-ghost btn-sm" disabled="@_isSaving" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        @if (_loadError is null && !_isLoading)
+        {
+            <button class="btn btn-primary btn-sm" disabled="@_isSaving" @onclick="SaveAsync">
+                @if (_isSaving)
+                {
+                    <span class="loading loading-spinner loading-xs"></span>
+                }
+                @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+            </button>
+        }
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _helpTopic = HelpTopics.FileEditor;
+    private string _relativePath = string.Empty;
+    private string _fileName = string.Empty;
+    private string _content = string.Empty;
+    private Func<Task<string>>? _loadContentAsync;
+    private Func<string, Task>? _saveContentAsync;
+    private CodeEditor? _editor;
+    private bool _isLoading = true;
+    private bool _isSaving;
+    private bool _encryptOnSave;
+    private int _backupCount;
+    private string? _loadError;
+    private string? _saveError;
+
+    private bool UsesStandardFileApi =>
+        _loadContentAsync is null &&
+        _saveContentAsync is null &&
+        !string.IsNullOrWhiteSpace(_relativePath);
+
+    private bool ShouldHighlightVariables =>
+        string.Equals(Path.GetExtension(_fileName), ".md", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Path.GetExtension(_fileName), ".markdown", StringComparison.OrdinalIgnoreCase);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _helpTopic = DialogInstance.Get<string>("HelpTopic", HelpTopics.FileEditor) ?? HelpTopics.FileEditor;
+        _relativePath = DialogInstance.Get<string>("RelativePath", string.Empty);
+        _fileName = DialogInstance.Get<string>("FileName", string.Empty);
+        _loadContentAsync = DialogInstance.Get<Func<Task<string>>?>("LoadContentAsync", null);
+        _saveContentAsync = DialogInstance.Get<Func<string, Task>?>("SaveContentAsync", null);
+
+        try
+        {
+            _content = _loadContentAsync is not null
+                ? await _loadContentAsync()
+                : await LoadStandardContentAsync();
+
+            if (UsesStandardFileApi)
+            {
+                await LoadBackupCountAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to read file for editing");
+            _loadError = ex.Message;
+        }
+
+        _isLoading = false;
+    }
+
+    private async Task LoadBackupCountAsync()
+    {
+        try
+        {
+            _backupCount = (await SettingsApiClient.ListFileBackupsAsync(_relativePath)).Count;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load file backup count for {RelativePath}", _relativePath);
+            _backupCount = 0;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        _saveError = null;
+        _isSaving = true;
+
+        try
+        {
+            if (_editor is not null)
+            {
+                _content = await _editor.GetValueAsync();
+            }
+
+            if (_saveContentAsync is not null)
+            {
+                await _saveContentAsync(_content);
+            }
+            else
+            {
+                await SettingsApiClient.WriteFileTextAsync(_relativePath, _content, _encryptOnSave);
+            }
+
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save file");
+            _saveError = ex.Message;
+        }
+
+        _isSaving = false;
+    }
+
+    private async Task OpenHistoryAsync()
+    {
+        if (!UsesStandardFileApi)
+        {
+            return;
+        }
+
+        if (_editor is not null)
+        {
+            _content = await _editor.GetValueAsync();
+        }
+
+        var result = await DialogService.ShowAsync<FileBackupHistoryDialog>(
+            new Dictionary<string, object?>
+            {
+                ["RelativePath"] = _relativePath,
+                ["FileName"] = _fileName,
+                ["CurrentContent"] = _content
+            });
+
+        if (result == DialogResult.Ok)
+        {
+            _content = await LoadStandardContentAsync();
+            await LoadBackupCountAsync();
+        }
+    }
+
+    private async Task<string> LoadStandardContentAsync()
+    {
+        var document = await SettingsApiClient.ReadFileTextAsync(_relativePath);
+        _encryptOnSave = document.IsEncrypted;
+        return document.Content;
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+}

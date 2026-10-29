@@ -1,0 +1,151 @@
+@implements IDisposable
+@inject IModelProviderCatalog ModelProviderCatalog
+@inject ILogger<ProviderModelDownloadDialog> Logger
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> SettingsLoc
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.DownloadingModel, "Downloading Model")"
+                HelpTopic="@HelpTopics.ProviderModelDownload"
+                OnClose="CloseFromHeader">
+    <ChildContent>
+        <div class="space-y-3 py-4">
+            <p class="text-sm break-all">@_config.ModelId</p>
+
+            @if (_isComplete)
+            {
+                <div class="alert alert-success text-sm">
+                    <iconify-icon icon="lucide:circle-check"></iconify-icon>
+                    <span>@CommonLoc.GetOrDefault(CommonTextKeys.DownloadComplete, "Download complete!")</span>
+                </div>
+            }
+            else
+            {
+                <ProgressBar Percent="@_percent" Label="@CommonLoc.GetOrDefault(CommonTextKeys.DownloadingModel, "Downloading Model")" />
+                @if (!string.IsNullOrWhiteSpace(_status))
+                {
+                    <p class="text-xs break-words opacity-70" role="status">@_status</p>
+                }
+                @if (_percent is { } percent)
+                {
+                    <div class="text-right text-xs opacity-70">@percent.ToString("F0")%</div>
+                }
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        @if (_isComplete)
+        {
+            <button type="button" class="btn btn-primary" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Ok, "OK")</button>
+        }
+        else
+        {
+            <button type="button" class="btn" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        }
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private ModelProviderConfig _config = new();
+    private double? _percent;
+    private string? _status;
+    private bool _isComplete;
+    private bool _closed;
+    private CancellationTokenSource? _cts;
+
+    protected override void OnInitialized()
+    {
+        _config = DialogInstance.Get<ModelProviderConfig>("Config", new()).Clone();
+        _cts = new CancellationTokenSource();
+        _ = DownloadAsync(_cts.Token);
+    }
+
+    private async Task DownloadAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (ModelProviderCatalog.Find(_config.Type) is not IModelDownloadProvider downloader)
+            {
+                throw new InvalidOperationException(SettingsLoc.GetOrDefault(
+                    SettingsTextKeys.ModelProvidersDownloadUnsupportedMessage,
+                    "The selected provider does not support model downloads."));
+            }
+
+            var progress = new Progress<ModelDownloadProgress>(value =>
+            {
+                if (_closed || cancellationToken.IsCancellationRequested) { return; }
+                _ = InvokeAsync(() =>
+                {
+                    if (_closed || _isComplete || cancellationToken.IsCancellationRequested) { return; }
+                    _percent = value.Percent is { } percent ? Math.Clamp(percent, 0, 100) : null;
+                    _status = value.Status;
+                    StateHasChanged();
+                });
+            });
+            // Providers acquire assets, while this dialog owns progress and its cancellation lifetime.
+            await downloader.DownloadModelAsync(_config, progress, cancellationToken);
+            if (_closed || cancellationToken.IsCancellationRequested) { return; }
+            await InvokeAsync(() =>
+            {
+                if (_closed || cancellationToken.IsCancellationRequested) { return; }
+                _isComplete = true;
+                StateHasChanged();
+            });
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            if (_closed || cancellationToken.IsCancellationRequested) { return; }
+            Logger.LogError(
+                ex,
+                "Failed to download model {ModelId} for provider {ProviderType} at {BaseUrl}.",
+                _config.ModelId,
+                _config.Type,
+                _config.BaseUrl);
+            await InvokeAsync(() =>
+            {
+                // Return failures to the editor without letting a late callback close its parent.
+                if (_closed || cancellationToken.IsCancellationRequested) { return; }
+                _closed = true;
+                DialogInstance.Close(DialogResult.Cancel, ex.Message);
+            });
+        }
+    }
+
+    private void Cancel()
+    {
+        if (_closed) { return; }
+        _closed = true;
+        _cts?.Cancel();
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+
+    private void Close()
+    {
+        if (_closed) { return; }
+        _closed = true;
+        DialogInstance.Close(_isComplete ? DialogResult.Ok : DialogResult.Cancel);
+    }
+
+    private void CloseFromHeader()
+    {
+        if (_isComplete)
+        {
+            Close();
+            return;
+        }
+
+        Cancel();
+    }
+
+    public void Dispose()
+    {
+        _closed = true;
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+}

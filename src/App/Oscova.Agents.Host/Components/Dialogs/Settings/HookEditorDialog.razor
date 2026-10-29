@@ -1,0 +1,297 @@
+@using Oscova.Agents.Core.ApiContracts.Hooks
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Hooks
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Edits one outbound hook definition while the Hooks settings page owns saving. *@
+<AppDialogShell Title="@DialogTitle"
+                Icon="lucide:webhook"
+                MaxWidthClass="max-w-4xl"
+                HelpTopic="@HelpTopics.HookEditor"
+                CloseResult="@DialogResult.Cancel"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-4">
+            <div class="grid gap-3 md:grid-cols-2">
+                <div class="form-control">
+                    <label class="label py-1" for="hook-name"><span class="label-text text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</span></label>
+                    <label class="input input-sm w-full">
+                        <iconify-icon icon="lucide:webhook" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                        <input id="hook-name" class="grow focus:outline-0" placeholder="@Loc.GetOrDefault(SettingsTextKeys.HooksNamePlaceholder, "e.g. Block risky tools")" @bind-value="_hook.Name" @bind-value:event="oninput" />
+                    </label>
+                </div>
+                <div class="form-control">
+                    <label class="label py-1" for="hook-handler-type"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksHandlerTypeLabel, "Handler type")</span></label>
+                    <select id="hook-handler-type" class="select select-bordered select-sm w-full" value="@_hook.HandlerType" @onchange="args => SetHandlerType(args.Value?.ToString())">
+                        <option value="@HookHandlerType.Command">@GetHandlerLabel(HookHandlerType.Command)</option>
+                        <option value="@HookHandlerType.Http">@GetHandlerLabel(HookHandlerType.Http)</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-3 pl-0">
+                        <input type="checkbox" class="toggle toggle-primary toggle-sm" @bind="_hook.IsEnabled" />
+                        <span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksEnabledLabel, "Enable this hook")</span>
+                    </label>
+                </div>
+                <div class="form-control">
+                    <label class="label py-1" for="hook-failure-mode"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksFailureModeLabel, "Failure mode")</span></label>
+                    <select id="hook-failure-mode" class="select select-bordered select-sm w-full" value="@_hook.FailureMode" @onchange="args => SetFailureMode(args.Value?.ToString())">
+                        <option value="@HookFailureMode.FailClosed">@GetFailureModeLabel(HookFailureMode.FailClosed)</option>
+                        <option value="@HookFailureMode.FailOpen">@GetFailureModeLabel(HookFailureMode.FailOpen)</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label class="label py-1" for="hook-timeout"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksTimeoutLabel, "Timeout seconds")</span></label>
+                    <label class="input input-sm w-full">
+                        <iconify-icon icon="lucide:timer" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                        <input id="hook-timeout" type="number" min="1" max="300" class="grow focus:outline-0" @bind-value="_hook.TimeoutSeconds" @bind-value:event="oninput" />
+                    </label>
+                </div>
+                <div class="form-control md:col-span-2">
+                    <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksEventsLabel, "Events")</span></label>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var hookEvent in Enum.GetValues<HookEventKind>())
+                        {
+                            <label class="btn btn-xs @(_hook.Events.Contains(hookEvent) ? "btn-primary" : "btn-outline")">
+                                <input type="checkbox" class="sr-only" checked="@_hook.Events.Contains(hookEvent)" @onchange="args => ToggleEvent(hookEvent, args.Value is true)" />
+                                @GetEventLabel(hookEvent)
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @if (_hook.HandlerType == HookHandlerType.Command)
+            {
+                <div class="grid gap-3 md:grid-cols-2">
+                    <div class="form-control">
+                        <label class="label py-1" for="command-file-name"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksCommandFileNameLabel, "Command")</span></label>
+                        <label class="input input-sm w-full">
+                            <iconify-icon icon="lucide:terminal" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                            <input id="command-file-name" class="grow focus:outline-0" @bind-value="_hook.Command!.FileName" @bind-value:event="oninput" />
+                        </label>
+                    </div>
+                    <div class="form-control">
+                        <label class="label py-1" for="command-working-dir"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksCommandWorkingDirectoryLabel, "Working directory")</span></label>
+                        <label class="input input-sm w-full">
+                            <iconify-icon icon="lucide:folder" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                            <input id="command-working-dir" class="grow focus:outline-0" @bind-value="_hook.Command!.WorkingDirectory" @bind-value:event="oninput" />
+                        </label>
+                    </div>
+                    <div class="form-control md:col-span-2">
+                        <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksCommandArgumentsLabel, "Arguments, one per line")</span></label>
+                        <textarea class="textarea textarea-bordered textarea-sm h-20 w-full font-mono" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksCommandArgumentsLabel, "Arguments, one per line")" value="@GetArgumentsText()" @oninput="args => SetArgumentsText(args.Value?.ToString())"></textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="space-y-3">
+                    <div class="form-control">
+                        <label class="label py-1" for="http-url"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.HooksHttpUrlLabel, "URL")</span></label>
+                        <label class="input input-sm w-full">
+                            <iconify-icon icon="lucide:link" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                            <input id="http-url" class="grow focus:outline-0" placeholder="https://example.com/oscova-hook" @bind-value="_hook.Http!.Url" @bind-value:event="oninput" />
+                        </label>
+                    </div>
+                    <div>
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                            <span class="text-xs font-medium">@Loc.GetOrDefault(SettingsTextKeys.HooksStaticHeadersLabel, "Static headers")</span>
+                            <button type="button" class="btn btn-ghost btn-xs" @onclick="AddStaticHeader">
+                                <span class="iconify lucide--plus size-3" aria-hidden="true"></span>
+                                @Loc.GetOrDefault(SettingsTextKeys.HooksAddHeaderButton, "Add header")
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            @foreach (var header in _hook.Http!.Headers)
+                            {
+                                <div class="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]" @key="header">
+                                    <label class="input input-sm w-full">
+                                        <iconify-icon icon="lucide:heading" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                                        <input class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksHeaderNamePlaceholder, "Header name")" placeholder="@Loc.GetOrDefault(SettingsTextKeys.HooksHeaderNamePlaceholder, "Header name")" @bind-value="header.Name" @bind-value:event="oninput" />
+                                    </label>
+                                    <label class="input input-sm w-full">
+                                        <iconify-icon icon="lucide:text" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                                        <input class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksHeaderValuePlaceholder, "Header value")" placeholder="@Loc.GetOrDefault(SettingsTextKeys.HooksHeaderValuePlaceholder, "Header value")" @bind-value="header.Value" @bind-value:event="oninput" />
+                                    </label>
+                                    <button type="button" class="btn btn-square btn-ghost btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.Remove, "Remove")" @onclick="() => RemoveStaticHeader(header)">
+                                        <iconify-icon icon="lucide:x"></iconify-icon>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                            <span class="text-xs font-medium">@Loc.GetOrDefault(SettingsTextKeys.HooksSecretHeadersLabel, "Secret headers")</span>
+                            <button type="button" class="btn btn-ghost btn-xs" @onclick="AddSecretHeader">
+                                <span class="iconify lucide--plus size-3" aria-hidden="true"></span>
+                                @Loc.GetOrDefault(SettingsTextKeys.HooksAddSecretHeaderButton, "Add secret header")
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            @foreach (var header in _hook.Http!.SecretHeaders)
+                            {
+                                <div class="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]" @key="header">
+                                    <label class="input input-sm w-full">
+                                        <iconify-icon icon="lucide:heading" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                                        <input class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksHeaderNamePlaceholder, "Header name")" placeholder="@Loc.GetOrDefault(SettingsTextKeys.HooksHeaderNamePlaceholder, "Header name")" @bind-value="header.Name" @bind-value:event="oninput" />
+                                    </label>
+                                    <select class="select select-bordered select-sm w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksCredentialSelectPlaceholder, "Select outbound HTTP secret")" @bind="header.CredentialKey">
+                                        <option value="">@Loc.GetOrDefault(SettingsTextKeys.HooksCredentialSelectPlaceholder, "Select outbound HTTP secret")</option>
+                                        @foreach (var secret in _secretCredentials)
+                                        {
+                                            <option value="@secret.CredentialKey">@secret.Alias (@secret.CredentialKey)</option>
+                                        }
+                                    </select>
+                                    <button type="button" class="btn btn-square btn-ghost btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.Remove, "Remove")" @onclick="() => RemoveSecretHeader(header)">
+                                        <iconify-icon icon="lucide:x"></iconify-icon>
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="Save">
+            <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+            @Loc.GetOrDefault(SettingsTextKeys.HooksSaveHookButton, "Save hook")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private HookDefinition _hook = new();
+    private IReadOnlyList<HookSecretCredentialSummary> _secretCredentials = [];
+    private bool _isEditing;
+
+    private string DialogTitle => _isEditing
+        ? Loc.GetOrDefault(SettingsTextKeys.HooksEditHookDialogTitle, "Edit hook")
+        : Loc.GetOrDefault(SettingsTextKeys.HooksAddHookDialogTitle, "Add hook");
+
+    protected override void OnInitialized()
+    {
+        _hook = DialogInstance.Get<HookDefinition>("Hook") ?? new HookDefinition();
+        _secretCredentials = DialogInstance.Get<IReadOnlyList<HookSecretCredentialSummary>>("SecretCredentials") ?? [];
+        _isEditing = DialogInstance.Get("IsEditing", false);
+        EnsureHandlerOptions();
+    }
+
+    private void SetHandlerType(string? value)
+    {
+        if (!Enum.TryParse<HookHandlerType>(value, out var handlerType)) return;
+        _hook.HandlerType = handlerType;
+        EnsureHandlerOptions();
+    }
+
+    private void EnsureHandlerOptions()
+    {
+        if (_hook.HandlerType == HookHandlerType.Command)
+        {
+            _hook.Command ??= new CommandHookOptions();
+            _hook.Http = null;
+        }
+        else
+        {
+            _hook.Http ??= new HttpHookOptions();
+            _hook.Command = null;
+        }
+    }
+
+    private void SetFailureMode(string? value)
+    {
+        if (Enum.TryParse<HookFailureMode>(value, out var failureMode))
+        {
+            _hook.FailureMode = failureMode;
+        }
+    }
+
+    private void ToggleEvent(HookEventKind hookEvent, bool isChecked)
+    {
+        if (isChecked && !_hook.Events.Contains(hookEvent))
+        {
+            _hook.Events.Add(hookEvent);
+        }
+        else if (!isChecked)
+        {
+            _hook.Events.Remove(hookEvent);
+        }
+    }
+
+    private string GetArgumentsText()
+    {
+        return string.Join(Environment.NewLine, _hook.Command?.Arguments ?? []);
+    }
+
+    private void SetArgumentsText(string? value)
+    {
+        _hook.Command ??= new CommandHookOptions();
+        _hook.Command.Arguments = (value ?? string.Empty)
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+    }
+
+    private void AddStaticHeader()
+    {
+        _hook.Http?.Headers.Add(new HookHeader());
+    }
+
+    private void RemoveStaticHeader(HookHeader header)
+    {
+        _hook.Http?.Headers.Remove(header);
+    }
+
+    private void AddSecretHeader()
+    {
+        _hook.Http?.SecretHeaders.Add(new HookSecretHeader { FieldName = null });
+    }
+
+    private void RemoveSecretHeader(HookSecretHeader header)
+    {
+        _hook.Http?.SecretHeaders.Remove(header);
+    }
+
+    private string GetEventLabel(HookEventKind hookEvent) => hookEvent switch
+    {
+        HookEventKind.TaskStart => Loc.GetOrDefault(SettingsTextKeys.HooksEventTaskStart, "Task start"),
+        HookEventKind.TaskComplete => Loc.GetOrDefault(SettingsTextKeys.HooksEventTaskComplete, "Task complete"),
+        HookEventKind.TaskFailed => Loc.GetOrDefault(SettingsTextKeys.HooksEventTaskFailed, "Task failed"),
+        HookEventKind.SessionStart => Loc.GetOrDefault(SettingsTextKeys.HooksEventSessionStart, "Session start"),
+        HookEventKind.UserPromptSubmit => Loc.GetOrDefault(SettingsTextKeys.HooksEventUserPromptSubmit, "User prompt submit"),
+        HookEventKind.PreToolUse => Loc.GetOrDefault(SettingsTextKeys.HooksEventPreToolUse, "Before tool use"),
+        HookEventKind.PostToolUse => Loc.GetOrDefault(SettingsTextKeys.HooksEventPostToolUse, "After tool use"),
+        _ => hookEvent.ToString()
+    };
+
+    private string GetHandlerLabel(HookHandlerType handlerType) => handlerType switch
+    {
+        HookHandlerType.Command => Loc.GetOrDefault(SettingsTextKeys.HooksHandlerCommand, "Command"),
+        HookHandlerType.Http => Loc.GetOrDefault(SettingsTextKeys.HooksHandlerHttp, "HTTP"),
+        _ => handlerType.ToString()
+    };
+
+    private string GetFailureModeLabel(HookFailureMode failureMode) => failureMode switch
+    {
+        HookFailureMode.FailClosed => Loc.GetOrDefault(SettingsTextKeys.HooksFailureFailClosed, "Fail closed"),
+        HookFailureMode.FailOpen => Loc.GetOrDefault(SettingsTextKeys.HooksFailureFailOpen, "Fail open"),
+        _ => failureMode.ToString()
+    };
+
+    private void Save()
+    {
+        DialogInstance.Close(DialogResult.Ok, _hook);
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close<HookDefinition>(DialogResult.Cancel, null);
+    }
+}

@@ -1,0 +1,1 @@
+The previous response was interrupted. Continue the last user request from where the previous assistant response stopped. Do not repeat text already provided. Use completed tool results already in the conversation. Check the state of interrupted actions before repeating them.

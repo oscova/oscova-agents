@@ -1,0 +1,189 @@
+@using Oscova.Agents.Core.ApiContracts.Skills.Registry
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Core.Skills.Registry
+@inject SettingsApiClient SettingsApiClient
+@inject ILogger<SkillRegistrySourcesDialog> Logger
+@inject IToastService ToastService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesDialogTitle, "Skill sources"))"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesDescription, "Configure the GitHub repositories used by Find skills online."))"
+                Icon="lucide:database"
+                HelpTopic="@HelpTopics.SkillRegistrySources"
+                TitleClass="truncate text-lg font-bold"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_saving)"
+                ShowBackdropClose="true">
+    <ChildContent>
+        @if (_loading)
+        {
+            <div class="flex justify-center py-6"><span class="loading loading-dots loading-md"></span></div>
+        }
+        else
+        {
+            <div class="space-y-2 mb-4">
+                <label for="skill-search-method" class="text-sm font-semibold">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySearchMethodLabel, "Search method")</label>
+                <select id="skill-search-method" class="select select-bordered select-sm w-full" @bind="_searchMethod">
+                    <option value="@SkillRegistrySearchMethod.GitHubApi">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySearchMethodApi, "GitHub API")</option>
+                    <option value="@SkillRegistrySearchMethod.LocalRepository">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySearchMethodLocal, "Local repository downloads")</option>
+                </select>
+                <p class="text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySearchMethodHint, "Applies to everyone using this host.")</p>
+                @if (_searchMethod == SkillRegistrySearchMethod.LocalRepository)
+                {
+                    <p role="alert" class="text-sm text-warning">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySearchMethodLocalNotice, "Downloads entire repositories, including scripts, to the computer running Oscova.")</p>
+                }
+            </div>
+            <div class="custom-skill-source-grid grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-3">
+                <div class="custom-skill-source-heading text-sm font-semibold opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesOwnerLabel, "Owner")</div>
+                <div class="custom-skill-source-heading text-sm font-semibold opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesRepoLabel, "Repository")</div>
+                <div class="custom-skill-source-heading text-sm font-semibold opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesBranchLabel, "Branch")</div>
+                <div class="custom-skill-source-heading"></div>
+                @for (var index = 0; index < _sources.Count; index++)
+                {
+                    var sourceIndex = index;
+                    var repositoryLabel = Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesRepoLabel, "Repository");
+                    <div class="contents" @key="sourceIndex">
+                        <label class="min-w-0" for="owner-@sourceIndex">
+                            <span class="custom-skill-source-label text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesOwnerLabel, "Owner")</span>
+                            <input id="owner-@sourceIndex" class="input input-bordered input-sm w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesOwnerLabel, "Owner")" @bind="_sources[sourceIndex].Owner" @bind:event="oninput" />
+                        </label>
+                        <label class="min-w-0" for="repo-@sourceIndex">
+                            <span class="custom-skill-source-label text-xs opacity-70">@repositoryLabel</span>
+                            <input id="repo-@sourceIndex" class="input input-bordered input-sm w-full" aria-label="@repositoryLabel" @bind="_sources[sourceIndex].Repo" @bind:event="oninput" />
+                        </label>
+                        <label class="min-w-0" for="branch-@sourceIndex">
+                            <span class="custom-skill-source-label text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesBranchLabel, "Branch")</span>
+                            <input id="branch-@sourceIndex" class="input input-bordered input-sm w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesBranchLabel, "Branch")" @bind="_sources[sourceIndex].Branch" @bind:event="oninput" />
+                        </label>
+                        <div class="flex items-center gap-1">
+                            @if (!string.IsNullOrWhiteSpace(_sources[sourceIndex].Owner) &&
+                                 !string.IsNullOrWhiteSpace(_sources[sourceIndex].Repo))
+                            {
+                                var repositoryLinkLabel = $"{repositoryLabel}: {_sources[sourceIndex].Owner.Trim()}/{_sources[sourceIndex].Repo.Trim()}";
+                                <a class="btn btn-ghost btn-square btn-xs"
+                                   href="@BuildGitHubBranchUrl(_sources[sourceIndex])"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   title="@repositoryLinkLabel"
+                                   aria-label="@repositoryLinkLabel">
+                                    <span class="iconify lucide--external-link size-3" aria-hidden="true"></span>
+                                </a>
+                            }
+                            <button type="button" class="btn btn-ghost btn-xs"
+                                    aria-label="@($"{CommonLoc[CommonTextKeys.Remove]}: {_sources[sourceIndex].Owner}/{_sources[sourceIndex].Repo}")"
+                                    @onclick="() => RemoveAt(sourceIndex)">
+                                <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                            </button>
+                        </div>
+                        <div class="col-span-full min-w-0 space-y-1">
+                            <label for="skill-root-@sourceIndex" class="text-xs opacity-70">
+                                @Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesFolderLabel, "Skills folder (optional)")
+                            </label>
+                            <input id="skill-root-@sourceIndex" class="input input-bordered input-sm w-full"
+                                   @bind="_sources[sourceIndex].SkillRoot" @bind:event="oninput" />
+                            <div class="text-xs opacity-70">
+                                @Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesFolderHint, "For example: skills. Leave blank to search the whole repository.")
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <button type="button" class="btn btn-outline btn-sm col-span-full justify-self-start" @onclick="AddRow">
+                    <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySourcesAddRow, "Add source")
+                </button>
+            </div>
+
+            <div role="alert" class="alert alert-soft mt-4">
+                <iconify-icon icon="lucide:info"></iconify-icon>
+                <span class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.SkillsRegistryPatHint, "An admin can add a Personal Access Token on the Admin page under GitHub Skill Search for authenticated repository access.")</span>
+            </div>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_saving" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(_loading || _saving)" @onclick="SaveAsync">
+            @if (_saving)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+            }
+            <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+            @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private bool _loading = true;
+    private bool _saving;
+    private List<SkillRegistrySource> _sources = [];
+    private SkillRegistrySearchMethod _searchMethod;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var snapshot = await SettingsApiClient.GetSkillRegistrySettingsAsync();
+            _sources = [.. snapshot.Sources];
+            _searchMethod = snapshot.SearchMethod;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load skill registry sources.");
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void AddRow() => _sources.Add(new SkillRegistrySource { Branch = "main" });
+
+    private void RemoveAt(int index) => _sources.RemoveAt(index);
+
+    private static string BuildGitHubBranchUrl(SkillRegistrySource source)
+    {
+        var branch = string.IsNullOrWhiteSpace(source.Branch) ? "main" : source.Branch.Trim();
+
+        // Keep editable values inside their GitHub URL segments.
+        return $"https://github.com/{Uri.EscapeDataString(source.Owner.Trim())}/{Uri.EscapeDataString(source.Repo.Trim())}/tree/{Uri.EscapeDataString(branch)}";
+    }
+
+    private async Task SaveAsync()
+    {
+        _saving = true;
+        try
+        {
+            var cleaned = _sources
+                .Where(source => !string.IsNullOrWhiteSpace(source.Owner) && !string.IsNullOrWhiteSpace(source.Repo))
+                .Select(source => new SkillRegistrySource
+                {
+                    Owner = source.Owner.Trim(),
+                    Repo = source.Repo.Trim(),
+                    Branch = string.IsNullOrWhiteSpace(source.Branch) ? "main" : source.Branch.Trim(),
+                    SkillRoot = source.SkillRoot
+                })
+                .ToList();
+            await SettingsApiClient.SaveSkillRegistrySettingsAsync(new UpdateSkillRegistrySettingsRequest
+            {
+                SearchMethod = _searchMethod,
+                Sources = cleaned
+            });
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.SkillsRegistrySavedToast, "Skill sources saved."), ToastType.Success);
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save skill registry sources.");
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally { _saving = false; }
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+}

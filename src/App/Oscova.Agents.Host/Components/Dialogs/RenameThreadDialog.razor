@@ -1,0 +1,79 @@
+@using Oscova.Agents.Core.ApiContracts.Chat
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Collects a replacement title for one dashboard conversation. *@
+<AppDialogShell Title="@Loc.GetOrDefault(ChatTextKeys.RenameThreadDialogTitle, "Rename conversation")"
+                HelpTopic="@HelpTopics.RenameConversation"
+                Icon="lucide:pencil"
+                MaxWidthClass="max-w-md"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <form id="rename-thread-form" @onsubmit="Save" @onsubmit:preventDefault>
+            <fieldset class="fieldset p-0">
+                <label class="fieldset-legend" for="rename-thread-title">
+                    @Loc.GetOrDefault(ChatTextKeys.ThreadTitleLabel, "Conversation title")
+                </label>
+                <input id="rename-thread-title"
+                       class="input input-bordered w-full"
+                       maxlength="@RenameThreadRequest.MaxTitleLength"
+                       aria-describedby="rename-thread-title-help"
+                       @bind="_title"
+                       @bind:event="oninput"
+                       autofocus />
+                <p id="rename-thread-title-help" class="fieldset-label">
+                    @Loc.GetOrDefault(ChatTextKeys.ThreadTitleHelp, "Enter 1 to 120 characters.")
+                </p>
+            </fieldset>
+        </form>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="submit"
+                form="rename-thread-form"
+                class="btn btn-primary btn-sm"
+                disabled="@(!CanSave)"
+                @onclick="Save">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _title = string.Empty;
+    private string _originalTitle = string.Empty;
+
+    private bool CanSave
+    {
+        get
+        {
+            var title = _title.Trim();
+            return title.Length is > 0 and <= RenameThreadRequest.MaxTitleLength &&
+                   !string.Equals(title, _originalTitle, StringComparison.Ordinal);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _originalTitle = DialogInstance.Get<string>("CurrentTitle", string.Empty).Trim();
+        _title = _originalTitle;
+    }
+
+    private void Save()
+    {
+        if (CanSave)
+        {
+            DialogInstance.Close(DialogResult.Ok, _title.Trim());
+        }
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close<string>(DialogResult.Cancel, null);
+    }
+}

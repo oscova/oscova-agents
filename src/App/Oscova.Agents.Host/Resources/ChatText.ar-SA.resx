@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.RetryServiceCheckTitle">
+		<value>إعادة محاولة فحص الخدمة</value>
+
+	</data>
+	<data name="Chat.RetryNow">
+		<value>إعادة المحاولة الآن</value>
+
+	</data>
+	<data name="Chat.CheckingChatServiceStatus">
+		<value>جارٍ التحقق من حالة خدمة الدردشة...</value>
+
+	</data>
+	<data name="Chat.ServiceNotRunning">
+		<value>خدمة الدردشة لا تعمل. قم بتشغيلها ثم أعد المحاولة.</value>
+
+	</data>
+	<data name="Chat.AgentSelectorPrefix">
+		<value>الوكيل:</value>
+
+	</data>
+	<data name="Chat.AgentConversation.ReadOnly">
+		<value>للقراءة فقط</value>
+
+	</data>
+	<data name="Chat.AgentConversation.TabsLabel">
+		<value>المحادثات بين الوكلاء</value>
+
+	</data>
+	<data name="Chat.AssistantFallbackName">
+		<value>المساعد</value>
+
+	</data>
+	<data name="Chat.AttachFileLabel">
+		<value>إرفاق ملف</value>
+
+	</data>
+	<data name="Chat.CheckingAvailability">
+		<value>جارٍ التحقق من التوفر</value>
+
+	</data>
+	<data name="Chat.DefaultInputPlaceholder">
+		<value>اكتب رسالتك...</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmMessage">
+		<value>حذف هذه المحادثة؟ لا يمكن التراجع. ستُحذف المرفقات المؤقتة وملفات مخرجات الأدوات أيضًا، حتى إذا حفظت تعديلاتها أولًا. تبقى ملفات مساحة العمل والمشروع العادية.</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmTitle">
+		<value>تأكيد حذف المحادثة</value>
+
+	</data>
+	<data name="Chat.FileSizeExceeded">
+		<value>يتجاوز '{0}' الحد الأقصى للحجم البالغ {1}.</value>
+
+	</data>
+	<data name="Chat.GeneratingResponseStatus">
+		<value>جارٍ إنشاء الرد</value>
+
+	</data>
+	<data name="Chat.ResponseComplete">
+		<value>اكتمل الرد.</value>
+
+	</data>
+	<data name="Chat.ResponseFailed">
+		<value>تعذر إكمال رد الدردشة.</value>
+
+	</data>
+	<data name="Chat.ImageAttachmentKind">
+		<value>صورة</value>
+
+	</data>
+	<data name="Chat.InspectSessionTitle">
+		<value>فحص الجلسة</value>
+
+	</data>
+	<data name="Chat.LiveAndReady">
+		<value>متصل وجاهز</value>
+
+	</data>
+	<data name="Chat.ModelNotSetLabel">
+		<value>النموذج غير محدد</value>
+
+	</data>
+	<data name="Chat.MultipleFilesReadyLabel">
+		<value>عدد الملفات الجاهزة: {0}</value>
+
+	</data>
+	<data name="Chat.NewChatLabel">
+		<value>دردشة جديدة</value>
+
+	</data>
+	<data name="Chat.NoConversationsFound">
+		<value>لم يتم العثور على محادثات</value>
+
+	</data>
+	<data name="Chat.NoModelProviderConfigured">
+		<value>لم يتم تكوين مزود نماذج</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersConfigured">
+		<value>لم يتم تكوين مزودي نماذج</value>
+
+	</data>
+	<data name="Chat.NoDefaultModelProviderSelected">
+		<value>لم يتم تحديد مزود نماذج افتراضي</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersPresence">
+		<value>يلزم وجود مزود نماذج</value>
+
+	</data>
+	<data name="Chat.ModelProviderSelectionRequiredPresence">
+		<value>اختر مزود نماذج</value>
+
+	</data>
+	<data name="Chat.AddModelProviderToStartChatting">
+		<value>أضف مزود نماذج لبدء الدردشة.</value>
+
+	</data>
+	<data name="Chat.SelectModelProviderToStartChatting">
+		<value>اختر مزود نماذج أدناه لبدء الدردشة.</value>
+
+	</data>
+	<data name="Chat.AddModelProviderAction">
+		<value>إضافة مزود</value>
+
+	</data>
+	<data name="Chat.OneFileReadyLabel">
+		<value>ملف واحد جاهز</value>
+
+	</data>
+	<data name="Chat.ProcessingPlaceholder">
+		<value>جارٍ المعالجة...</value>
+
+	</data>
+	<data name="Chat.ReadAloudLabel">
+		<value>قراءة بصوت عالٍ</value>
+
+	</data>
+	<data name="Chat.RemoveAttachmentLabel">
+		<value>إزالة المرفق: {0}</value>
+
+	</data>
+	<data name="Chat.RenameThread">
+		<value>إعادة تسمية</value>
+
+	</data>
+	<data name="Chat.RenameThreadBusy">
+		<value>انتظر حتى ينتهي الرد، ثم حاول إعادة التسمية مرة أخرى.</value>
+
+	</data>
+	<data name="Chat.RenameThreadDialogTitle">
+		<value>إعادة تسمية المحادثة</value>
+
+	</data>
+	<data name="Chat.RenameThreadFailed">
+		<value>تعذرت إعادة تسمية المحادثة.</value>
+
+	</data>
+	<data name="Chat.SearchChatsLabel">
+		<value>البحث في الدردشات</value>
+
+	</data>
+	<data name="Chat.SendLabel">
+		<value>إرسال</value>
+
+	</data>
+	<data name="Chat.ServiceOffline">
+		<value>الخدمة غير متصلة</value>
+
+	</data>
+	<data name="Chat.ShowChatsLabel">
+		<value>إظهار الدردشات</value>
+
+	</data>
+	<data name="Chat.SpeakingPlaceholder">
+		<value>جارٍ التحدث...</value>
+
+	</data>
+	<data name="Chat.StartListeningLabel">
+		<value>بدء الاستماع</value>
+
+	</data>
+	<data name="Chat.StartVoiceModeLabel">
+		<value>بدء وضع الصوت</value>
+
+	</data>
+	<data name="Chat.StopLabel">
+		<value>إيقاف</value>
+
+	</data>
+	<data name="Chat.StopListeningLabel">
+		<value>إيقاف الاستماع</value>
+
+	</data>
+	<data name="Chat.StopVoiceModeLabel">
+		<value>إيقاف وضع الصوت</value>
+
+	</data>
+	<data name="Chat.Start.Card.Agenda.Action">
+		<value>إنشاء جدول الأعمال</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Description">
+		<value>احصل على جدول أعمال بأوقات محددة لاجتماع تديره.</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Prompt">
+		<value>ساعدني في إعداد جدول أعمال لاجتماع أديره، مع وقت لكل موضوع.</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Title">
+		<value>إعداد جدول أعمال الاجتماع</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Action">
+		<value>بدء الميزانية</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Description">
+		<value>اعرض الدخل والإنفاق الشهري في عرض واحد.</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Prompt">
+		<value>ساعدني في إعداد ميزانية شهرية بسيطة من دخلي ومصروفاتي.</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Title">
+		<value>إعداد ميزانية بسيطة</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Action">
+		<value>إنشاء رسم بياني</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Description">
+		<value>اعرض الأرقام في رسم بياني تقارنه بنظرة واحدة.</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Prompt">
+		<value>أنشئ رسمًا بيانيًا من أرقام سأشاركها حتى أقارنها بنظرة واحدة.</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Title">
+		<value>رسم بياني لأرقام</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Action">
+		<value>إنشاء قائمة</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Description">
+		<value>قسّم مهمة إلى خطوات واضحة يمكنك تحديدها عند إنجازها.</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Prompt">
+		<value>أنشئ قائمة مراجعة خطوة بخطوة لمهمة سأقوم بها.</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Title">
+		<value>إنشاء قائمة مراجعة</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Action">
+		<value>مراجعة الشيفرة</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Description">
+		<value>افهم ما تفعله الشيفرة واكتشف الأخطاء المحتملة.</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Prompt">
+		<value>اشرح خطوة بخطوة ما يفعله جزء من الشيفرة سألصقه، وأشر إلى الأخطاء المحتملة.</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Title">
+		<value>شرح شيفرة برمجية</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Action">
+		<value>ربط تطبيق</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Description">
+		<value>دع Oscova يعمل مع تطبيق تستخدمه بالفعل.</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Prompt">
+		<value>أريدك أن تعمل مع تطبيق أستخدمه. ابحث عن طريقة لربطه وأعدّه.</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Title">
+		<value>ربط تطبيق</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Action">
+		<value>بدء البحث</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Description">
+		<value>احصل على تقرير قصير موثق المصادر عن سؤال تحدده.</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Prompt">
+		<value>ابحث في موضوع سأحدده وقدّم لي تقريرًا قصيرًا مع المصادر.</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Title">
+		<value>البحث في موضوع</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Action">
+		<value>تحليل البيانات</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Description">
+		<value>اكتشف الاتجاهات والقيم الغريبة في ملف CSV.</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Prompt">
+		<value>سأرفق ملف CSV. أخبرني بما يحتويه وأشر إلى أي اتجاهات أو قيم غريبة.</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Title">
+		<value>استكشاف جدول بيانات</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Action">
+		<value>مقارنة الخيارات</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Description">
+		<value>قارن الخيارات بالإيجابيات والسلبيات مع توصية.</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Prompt">
+		<value>ساعدني في الموازنة في قرار بسرد الخيارات وإيجابياتها وسلبياتها وما توصي به.</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Title">
+		<value>الموازنة في قرار</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Action">
+		<value>صياغة رد</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Description">
+		<value>الصق رسالة واحصل على رد واضح ومهذب.</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Prompt">
+		<value>ساعدني في الرد على رسالة بريد إلكتروني. سألصقها بعد ذلك. اجعل الرد واضحًا ومهذبًا.</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Title">
+		<value>الرد على بريد إلكتروني</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Action">
+		<value>اشرحه</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Description">
+		<value>افهم موضوعًا صعبًا بمثال واضح.</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Prompt">
+		<value>اشرح لي بلغة بسيطة موضوعًا يثير فضولي، مع مثال بسيط.</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Title">
+		<value>شرح شيء ببساطة</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Action">
+		<value>بدء التدرب</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Description">
+		<value>تدرّب على الإجابات مع ملاحظات بعد كل سؤال.</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Prompt">
+		<value>أجرِ معي مقابلة عمل تجريبية لوظيفة سأصفها. اطرح سؤالًا واحدًا في كل مرة وقدّم ملاحظاتك بعد كل إجابة.</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Title">
+		<value>التدرب على مقابلة</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Action">
+		<value>تخطيط الوجبات</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Description">
+		<value>وجبات بسيطة وقائمة تسوق واحدة مجمّعة.</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Prompt">
+		<value>خطط لوجبات بسيطة للأسبوع وأعطني قائمة تسوق واحدة مجمّعة.</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Title">
+		<value>تخطيط وجبات الأسبوع</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Action">
+		<value>تنظيم الملاحظات</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Description">
+		<value>حوّل الملاحظات الأولية إلى قرارات ومسؤولين وخطوات تالية.</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Prompt">
+		<value>سألصق ملاحظات اجتماعي. حوّلها إلى ملخص قصير يتضمن القرارات والمسؤولين والخطوات التالية.</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Title">
+		<value>ترتيب ملاحظات الاجتماع</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Action">
+		<value>البحث في PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Description">
+		<value>اعثر على الأجزاء المهمة من ملف PDF واقتبسها.</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Prompt">
+		<value>سأرفق ملف PDF. اعثر على الأجزاء المتعلقة بموضوع أحدده واقتبسها.</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Title">
+		<value>البحث في ملف PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Action">
+		<value>إعداد مسودة خطة</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Description">
+		<value>حوّل فكرة مبدئية إلى خطة عملية للخطوات القادمة.</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Prompt">
+		<value>ساعدني في تحويل فكرة مشروع مبدئية إلى خطة عملية بخطوات قادمة واضحة.</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Title">
+		<value>تخطيط مشروع</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Action">
+		<value>تحسين النص</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Description">
+		<value>حسّن الوضوح والأسلوب، مع شرح التغييرات الرئيسية.</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Prompt">
+		<value>حسّن وضوح وأسلوب نص سألصقه، واشرح التغييرات الرئيسية.</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Title">
+		<value>تحسين كتابتي</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Action">
+		<value>بدء الاختبار</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Description">
+		<value>تعلّم بالإجابة عن سؤال واحد في كل مرة.</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Prompt">
+		<value>اختبرني في موضوع أتعلمه، سؤالًا واحدًا في كل مرة، واشرح لي ما أخطئ فيه.</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Title">
+		<value>اختبرني في موضوع</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Action">
+		<value>جدولته</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Description">
+		<value>احصل على تذكير في كل يوم عمل لمراجعة أولوياتك.</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Prompt">
+		<value>ذكّرني في كل يوم عمل الساعة 9 صباحًا بمراجعة أولوياتي لليوم.</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Title">
+		<value>ضبط تذكير يومي</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Action">
+		<value>البحث عن مهارة</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Description">
+		<value>ابحث عن مهارة لمهمة تقوم بها كثيرًا وأضفها.</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Prompt">
+		<value>ابحث عن مهارة تساعدني في مهمة أقوم بها كثيرًا، وأعدّها لي.</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Title">
+		<value>تعليم Oscova مهارة</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Action">
+		<value>تلخيص الملاحظات</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Description">
+		<value>استخرج النقاط المهمة من الملاحظات أو المستندات أو الملفات.</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Prompt">
+		<value>ساعدني في تلخيص هذا المستند وتحديد القرارات الرئيسية والمخاطر والإجراءات القادمة.</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Title">
+		<value>تلخيص مستند</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Action">
+		<value>ابدأ الجولة</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Description">
+		<value>اكتشف ما يمكن أن يفعله Oscova وما الذي تعدّه أولًا.</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Prompt">
+		<value>أنا جديد على Oscova. بماذا يمكنك مساعدتي، وما الذي يجب أن أعدّه أولًا؟</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Title">
+		<value>تعرّف على Oscova</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Action">
+		<value>ترجمة</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Description">
+		<value>ترجم مع الحفاظ على أسلوب طبيعي.</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Prompt">
+		<value>ترجم نصًا سألصقه وحافظ على أسلوبه الطبيعي.</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Title">
+		<value>ترجمة نص</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Action">
+		<value>تخطيط الرحلة</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Description">
+		<value>احصل على برنامج يومي وقائمة بما تحزمه.</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Prompt">
+		<value>ساعدني في التخطيط لرحلة قصيرة مع برنامج يومي وقائمة بما أحزمه.</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Title">
+		<value>التخطيط لرحلة</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Action">
+		<value>قراءة رابط</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Description">
+		<value>احصل على النقاط الرئيسية من رابط.</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Prompt">
+		<value>اقرأ صفحة ويب سأرسل رابطها وأعطني نقاطها الرئيسية.</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Title">
+		<value>تلخيص صفحة ويب</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Action">
+		<value>تخطيط الأسبوع</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Description">
+		<value>حوّل التزامات هذا الأسبوع إلى خطة واقعية.</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Prompt">
+		<value>ساعدني في التخطيط لأسبوعي. سأذكر التزاماتي، وحوّلها أنت إلى خطة يومية واقعية.</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Title">
+		<value>خطط لأسبوعي</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Action">
+		<value>صياغة نص</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Description">
+		<value>صياغة رسالة بريد إلكتروني، أو رد، أو إعلان، أو تحديث قصير.</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Prompt">
+		<value>ساعدني في صياغة رسالة واضحة وودية لهذا الموقف.</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Title">
+		<value>كتابة رسالة</value>
+	</data>
+	<data name="Chat.Start.CheckingQuestion">
+		<value>جارٍ تجهيز مساعدك...</value>
+
+	</data>
+	<data name="Chat.Start.Greeting">
+		<value>مرحباً، {0}</value>
+
+	</data>
+	<data name="Chat.Start.InputPlaceholder">
+		<value>أخبرنا بما تحتاجه...</value>
+
+	</data>
+	<data name="Chat.Start.Question">
+		<value>كيف يمكنني مساعدتك اليوم؟</value>
+
+	</data>
+	<data name="Chat.TextAttachmentKind">
+		<value>نص</value>
+
+	</data>
+	<data name="Chat.ThreadActionsLabel">
+		<value>إجراءات المحادثة</value>
+
+	</data>
+	<data name="Chat.ThreadTitleHelp">
+		<value>أدخل من 1 إلى 120 حرفاً.</value>
+
+	</data>
+	<data name="Chat.ThreadTitleLabel">
+		<value>عنوان المحادثة</value>
+
+	</data>
+	<data name="Chat.ThreadUnreadLabel">
+		<value>غير مقروء</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Empty">
+		<value>لا توجد مهام بعد.</value>
+
+	</data>
+	<data name="Chat.TodoPanel.ProgressFormat">
+		<value>تم إنجاز {0} من {1}</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Title">
+		<value>المهام</value>
+
+	</data>
+	<data name="Chat.TooManyFilesAttached">
+		<value>الحد الأقصى لعدد الملفات المرفقة بكل رسالة هو {0}.</value>
+
+	</data>
+	<data name="Chat.TranscribingPlaceholder">
+		<value>جارٍ النسخ الصوتي...</value>
+
+	</data>
+	<data name="Chat.TypeYourMessagePlaceholder">
+		<value>اكتب رسالتك...</value>
+
+	</data>
+	<data name="Chat.UnableToStartSpeechSynthesis">
+		<value>تعذر بدء تحويل النص إلى كلام.</value>
+
+	</data>
+	<data name="Chat.UnableToTranscribeAudio">
+		<value>تعذر نسخ الصوت.</value>
+
+	</data>
+	<data name="Chat.UnsupportedFileType">
+		<value>'{0}' ليس نوع ملف مدعوماً حتى الآن.</value>
+
+	</data>
+	<data name="Chat.UsingProviderPrefix">
+		<value>باستخدام</value>
+
+	</data>
+	<data name="Chat.VoiceModeListeningPlaceholder">
+		<value>جارٍ الاستماع...</value>
+
+	</data>
+	<data name="Chat.VoiceModeMissingServices">
+		<value>يتطلب وضع الصوت كلاً من خدمات التعرف على الكلام وتحويل النص إلى كلام.</value>
+
+	</data>
+	<data name="Chat.VoiceModeStartFailed">
+		<value>فشل بدء وضع الصوت.</value>
+
+	</data>
+	<data name="Chat.VoiceModeWaitingPlaceholder">
+		<value>في انتظار الكلام...</value>
+
+	</data>
+	<data name="Chat.Yesterday">
+		<value>أمس</value>
+
+	</data>
+	<data name="Chat.ThreadGroupToday"><value>اليوم</value></data>
+	<data name="Chat.ThreadGroupPreviousSevenDays"><value>آخر 7 أيام</value></data>
+	<data name="Chat.ThreadGroupOlder"><value>أقدم</value></data>
+	<data name="Chat.NoConversationsMatchSearch"><value>لا توجد محادثات تطابق بحثك.</value></data>
+	<data name="Chat.ThreadSearchFailed"><value>البحث في المحادثات غير متاح.</value></data>
+	<data name="Chat.ToolCallLabel"><value>استدعاء الأداة</value></data>
+	<data name="Chat.ToolCard.ArgumentsSummaryFormat"><value>عدد الوسائط المقدمة: {0}.</value></data>
+	<data name="Chat.ToolCard.Applying"><value>جارٍ تطبيق التغيير...</value></data>
+	<data name="Chat.ToolCard.AvatarTitle"><value>إجراء الصورة الرمزية</value></data>
+	<data name="Chat.ToolCard.CommunicationTitle"><value>أداة الاتصال</value></data>
+	<data name="Chat.ToolCard.DiagnosticsTitle"><value>التشخيص</value></data>
+	<data name="Chat.ToolCard.DirectoryTitle"><value>عرض محتويات الدليل</value></data>
+	<data name="Chat.ToolCard.DocumentTitle"><value>قراءة المستند</value></data>
+	<data name="Chat.ToolCard.ExternalTitle"><value>بحث عبر الإنترنت</value></data>
+	<data name="Chat.ToolCard.FileChangeTitle"><value>تعديل الملف</value></data>
+	<data name="Chat.ToolCard.FileLabel"><value>ملف</value></data>
+	<data name="Chat.ToolCard.FileReadTitle"><value>قراءة الملف</value></data>
+	<data name="Chat.ToolCard.Installing"><value>جارٍ التثبيت...</value></data>
+	<data name="Chat.ToolCard.MemoryTitle"><value>استخدام الذاكرة</value></data>
+	<data name="Chat.ToolCard.NoArgumentsSummary"><value>لم يتم توفير وسائط.</value></data>
+	<data name="Chat.ToolCard.NotificationTitle"><value>إشعار</value></data>
+	<data name="Chat.ToolCard.Reading"><value>جارٍ قراءة المحتوى...</value></data>
+	<data name="Chat.ToolCard.ResultLabel"><value>النتيجة</value></data>
+	<data name="Chat.ToolCard.Running"><value>جارٍ العمل...</value></data>
+	<data name="Chat.ToolCard.Saving"><value>جارٍ الحفظ...</value></data>
+	<data name="Chat.ToolCard.ScheduleTitle"><value>أداة التقويم</value></data>
+	<data name="Chat.ToolCard.SearchTitle"><value>البحث في مساحة العمل</value></data>
+	<data name="Chat.ToolCard.Searching"><value>جارٍ البحث...</value></data>
+	<data name="Chat.ToolCard.ShellRunning"><value>جارٍ تشغيل الأمر...</value></data>
+	<data name="Chat.ToolCard.ShellTitle"><value>أمر Shell</value></data>
+	<data name="Chat.ToolCard.SkillAuthoringTitle"><value>حفظ المهارة</value></data>
+	<data name="Chat.ToolCard.SkillInspectTitle"><value>فحص المهارة</value></data>
+	<data name="Chat.ToolCard.SkillInstallTitle"><value>تثبيت المهارة</value></data>
+	<data name="Chat.ToolCard.SkillSearchTitle"><value>البحث عن المهارات</value></data>
+	<data name="Chat.ToolCard.Status.Completed"><value>مكتمل</value></data>
+	<data name="Chat.ToolCard.Status.Failed"><value>فشل</value></data>
+	<data name="Chat.ToolCard.Status.Queued"><value>في قائمة الانتظار</value></data>
+	<data name="Chat.ToolCard.Status.Running"><value>قيد التشغيل</value></data>
+	<data name="Chat.NoParameters"><value>بلا معلمات</value></data>
+	<data name="Chat.SpeechModelsUnavailableTooltip"><value>نماذج الصوت غير متوفرة. قم بإعداده من الإعدادات ← الصوت.</value></data>
+	<data name="Chat.ToolApprovalTitle"><value>يلزم اعتماد الأداة</value></data>
+	<data name="Chat.ToolApprovalArgumentsLabel"><value>الوسائط</value></data>
+	<data name="Chat.ToolApprovalApproveButton"><value>موافقة</value></data>
+	<data name="Chat.ToolApprovalRejectButton"><value>رفض</value></data>
+	<data name="Chat.ToolApprovalSubmitFailed"><value>تعذر إرسال هذا الاعتماد.</value></data>
+	<data name="Chat.ToolApprovalSkillCreateMessage"><value>هل توافق على إنشاء هذه المهارة؟</value></data>
+	<data name="Chat.ToolApprovalSkillUpdateMessage"><value>هل توافق على تحديث هذه المهارة؟</value></data>
+	<data name="Chat.ToolApprovalSkillNameLabel"><value>المهارة</value></data>
+	<data name="Chat.ToolApprovalSkillDescriptionLabel"><value>الوصف</value></data>
+	<data name="Chat.ToolApprovalRegistrySkillMessage"><value>هل توافق على تثبيت هذه المهارة؟</value></data>
+	<data name="Chat.ToolApprovalRegistryServerMessage"><value>هل توافق على تثبيت خادم MCP هذا؟</value></data>
+	<data name="Chat.ToolApprovalServerLabel"><value>خادم MCP</value></data>
+	<data name="Chat.ToolApprovalPublisherLabel"><value>الناشر</value></data>
+	<data name="Chat.ToolApprovalVersionLabel"><value>الإصدار</value></data>
+	<data name="Chat.ToolApprovalSourceLabel"><value>المصدر</value></data>
+	<data name="Chat.ToolApprovalCommandLabel"><value>الأمر</value></data>
+	<data name="Chat.ToolApprovalConnectsToLabel"><value>يتصل بـ</value></data>
+	<data name="Chat.ToolApprovalNetworkLabel"><value>الشبكة</value></data>
+	<data name="Chat.ToolApprovalNetworkNone"><value>لا وصول إلى الشبكة</value></data>
+	<data name="Chat.ToolApprovalNetworkIncidental"><value>استخدام عرضي للشبكة</value></data>
+	<data name="Chat.ToolApprovalNetworkEgress"><value>يرسل البيانات إلى خدمات خارجية</value></data>
+	<data name="Chat.ToolApprovalTaskCreateMessage"><value>هل توافق على إنشاء هذه المهمة المجدولة؟</value></data>
+	<data name="Chat.ToolApprovalTaskUpdateMessage"><value>هل توافق على تحديث هذه المهمة المجدولة؟</value></data>
+	<data name="Chat.ToolApprovalTaskDeleteMessage"><value>هل توافق على حذف هذه المهمة المجدولة؟</value></data>
+	<data name="Chat.ToolApprovalTaskRunMessage"><value>هل توافق على تشغيل هذه المهمة المجدولة الآن؟</value></data>
+	<data name="Chat.ToolApprovalTaskNameLabel"><value>المهمة</value></data>
+	<data name="Chat.ToolApprovalTaskNewNameLabel"><value>الاسم الجديد</value></data>
+	<data name="Chat.ToolApprovalTaskAgentLabel"><value>الوكيل</value></data>
+	<data name="Chat.ToolApprovalTaskScheduleLabel"><value>الجدول الزمني</value></data>
+	<data name="Chat.ToolApprovalTaskRunModeLabel"><value>الأدوات المقيدة</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveValue"><value>معتمدة تلقائياً أثناء عمليات التشغيل</value></data>
+	<data name="Chat.ToolApprovalTaskAutoRejectValue"><value>مرفوضة تلقائياً أثناء عمليات التشغيل</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveWarning"><value>الموافقة على هذا التغيير تتيح للأدوات التي تتطلب اعتماداً العمل دون مراقبة. يمكن لأوامر صدفة المضيف تغيير الجهاز الذي يشغل Oscova.</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetLabel"><value>هدف التنفيذ</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetHost"><value>المضيف</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetContainer"><value>Docker</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetDisabled"><value>تنفيذ الصدفة معطل</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetUnavailable"><value>هدف التنفيذ غير متاح</value></data>
+	<data name="Chat.ToolApprovalHostWarning"><value>يعمل على الجهاز الذي يشغل Oscova بصلاحيات حساب نظام التشغيل الخاص به.</value></data>
+	<data name="Chat.ToolApprovalContainerWarning"><value>يعمل داخل Docker مع تحميل المجلدات الممنوحة.</value></data>
+	<data name="Chat.ToolApprovalScriptWarning"><value>تؤدي الموافقة إلى تشغيل البرنامج النصي بالكامل. لا تتم الموافقة على الأوامر داخله بصورة منفصلة.</value></data>
+	<data name="Chat.ApprovalModeSelectorPrefix"><value>الموافقات:</value></data>
+	<data name="Chat.ApprovalModeUsePolicy"><value>استخدام سياسة الوكيل</value></data>
+	<data name="Chat.ApprovalModeAutoApprove"><value>موافقة تلقائية</value></data>
+	<data name="Chat.ApprovalModeAutoReject"><value>رفض تلقائي</value></data>
+	<data name="Chat.ThinkingLabel"><value>يفكر</value></data>
+	<data name="Chat.ThoughtDurationManyFormat"><value>فكّر لمدة {0:F3} ثانية</value></data>
+	<data name="Chat.ThoughtDurationOneFormat"><value>فكّر لمدة {0:F3} ثانية</value></data>
+	<data name="Chat.ResponseCopyLabel"><value>نسخ</value></data>
+	<data name="Chat.ResponseCopiedLabel"><value>تم النسخ</value></data>
+	<data name="Chat.ResponseCopyFailed"><value>تعذر النسخ.</value></data>
+	<data name="Chat.RegenerateLabel"><value>إعادة إنشاء</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Attachments"><value>المرفقات</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.ContextProviders"><value>موفرو السياق</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.CurrentDraft"><value>المسودة الحالية</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Instructions"><value>التعليمات</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.OutputReserve"><value>احتياطي الإخراج</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.PriorHistory"><value>السجل السابق</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Title"><value>تفصيل التقدير</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Tools"><value>الأدوات</value></data>
+	<data name="Chat.ContextWindowWarning.ContextWindowLabel"><value>نافذة السياق</value></data>
+	<data name="Chat.ContextWindowWarning.ContinueButton"><value>المتابعة على أي حال</value></data>
+	<data name="Chat.ContextWindowWarning.DialogBody"><value>لا يزال بإمكانك الإرسال، ولكن قد يفشل النموذج، أو يقتطع السياق، أو يفوت التفاصيل السابقة.</value></data>
+	<data name="Chat.ContextWindowWarning.DialogLead"><value>قد تكون هذه المسودة كبيرة جداً بالنسبة للنموذج المحدد.</value></data>
+	<data name="Chat.ContextWindowWarning.DialogTitle"><value>تحذير نافذة السياق</value></data>
+	<data name="Chat.ContextWindowWarning.EstimatedInputLabel"><value>الإدخال المقدر</value></data>
+	<data name="Chat.ContextWindowWarning.OutputReserveLabel"><value>الإخراج المحجوز</value></data>
+	<data name="Chat.ContextWindowWarning.OverageLabel"><value>التجاوز المقدر</value></data>
+	<data name="Chat.ContextWindowWarning.ProviderLabel"><value>المزود</value></data>
+	<data name="Chat.ContextWindowWarning.SummaryFormat"><value>يقدر {0} عدد {1:N0} من رموز الإدخال بالإضافة إلى {2:N0} من رموز الإخراج المحجوزة لنافذة سعتها {3:N0} رمز، أي زيادة بنحو {4:N0} رمز.</value></data>
+	<data name="Chat.Activity.CommandRanTitle"><value>تم تشغيل الأمر</value></data>
+	<data name="Chat.Activity.Collapse"><value>إغلاق مساحة العمل</value></data>
+	<data name="Chat.Activity.DetailsTitle"><value>مساحة العمل</value></data>
+	<data name="Chat.Activity.FileReadTitle"><value>تمت قراءة الملف</value></data>
+	<data name="Chat.Activity.FileUpdatedTitle"><value>تم تحديث الملف</value></data>
+	<data name="Chat.Activity.InProgress"><value>قيد التقدم</value></data>
+	<data name="Chat.Activity.JumpToLatest"><value>الانتقال إلى الأحدث</value></data>
+	<data name="Chat.Activity.ManyActivitiesFormat"><value>{0} من الأنشطة</value></data>
+	<data name="Chat.Activity.MemoryReadTitle"><value>تمت قراءة الذاكرة</value></data>
+	<data name="Chat.Activity.OneActivity"><value>نشاط واحد</value></data>
+	<data name="Chat.Activity.Open"><value>فتح مساحة العمل</value></data>
+	<data name="Chat.Activity.SkillUsedTitle"><value>تم استخدام المهارة</value></data>
+	<data name="Chat.Activity.StatusSuccess"><value>نجاح</value></data>
+	<data name="Chat.Activity.UseStandardView"><value>العودة إلى المحادثة</value></data>
+	<data name="Chat.Activity.UseWideView"><value>فتح العرض الكامل</value></data>
+	<data name="Chat.Activity.WebSearchedTitle"><value>تم البحث في الويب</value></data>
+	<data name="Chat.Activity.WorkspaceSearchedTitle"><value>تم البحث في مساحة العمل</value></data>
+	<data name="Chat.ResizeThreadListLabel"><value>تغيير حجم قائمة المحادثات</value></data>
+	<data name="Chat.ResizeDetailsPanelLabel"><value>تغيير حجم لوحة مساحة العمل</value></data>
+	<data name="Chat.Artifacts.Tab"><value>العناصر الناتجة</value></data>
+	<data name="Chat.Artifacts.EmptyTitle"><value>لا توجد عناصر ناتجة بعد</value></data>
+	<data name="Chat.Artifacts.EmptyDescription"><value>ستظهر الملفات التي تم إنشاؤها أو تحديثها بواسطة هذه المحادثة هنا.</value></data>
+	<data name="Chat.Artifacts.Download"><value>تنزيل العنصر الناتج</value></data>
+	<data name="Chat.Artifacts.Loading"><value>جارٍ تحميل معاينة العنصر الناتج</value></data>
+	<data name="Chat.Artifacts.UpdatedFormat"><value>تم التحديث {0}</value></data>
+	<data name="Chat.Artifacts.PreviewTooLarge"><value>هذا الملف كبير جداً ولا يمكن معاينته هنا.</value></data>
+	<data name="Chat.Artifacts.PreviewUnavailable"><value>هذه المعاينة لم تعد متوفرة.</value></data>
+	<data name="Chat.Artifacts.DownloadOnly"><value>المعاينة غير متوفرة لهذا النوع من الملفات.</value></data>
+	<data name="Chat.Artifacts.FileType"><value>ملف</value></data>
+	<data name="Chat.IncognitoChatDisclosure"><value>لا يتم حفظ هذه الدردشة أو إضافتها إلى الذاكرة. يتم حذفها عند تسجيل الخروج، أو بعد حوالي 30 دقيقة من عدم النشاط، أو عند إعادة تشغيل Oscova. تُحذف المرفقات معها. قد تظل النماذج والأدوات الخارجية تتلقى ما ترسله.</value></data>
+	<data name="Chat.IncognitoChatDisclosureSummary"><value>لا يتم الحفظ · يُمسح بعد نحو 30 دقيقة</value></data>
+	<data name="Chat.IncognitoChatExpiredToast"><value>انتهت صلاحية المحادثة المتخفية وتم حذفها.</value></data>
+	<data name="Chat.IncognitoChatLabel"><value>متخفٍ</value></data>
+	<data name="Chat.IncognitoChatUnavailableTooltip"><value>يتم تثبيت الوضع المتخفي بعد بدء المحادثة. ابدأ محادثة جديدة لتغييره.</value></data>
+	<data name="Chat.ContextUsage.AriaLabelFormat"><value>استخدام السياق المقدر: {0:N0}% مستخدم، {1:N0}% فارغ</value></data>
+	<data name="Chat.ContextUsage.DialogTitle"><value>استخدام السياق</value></data>
+	<data name="Chat.ContextUsage.UsedLabel"><value>مستخدم</value></data>
+	<data name="Chat.ContextUsage.FreeInputLabel"><value>مساحة فارغة</value></data>
+	<data name="Chat.ContextUsage.TotalLabel"><value>نافذة السياق</value></data>
+	<data name="Chat.ContextUsage.ReservedOutputLabel"><value>الإخراج المحجوز</value></data>
+	<data name="Chat.ContextUsage.SummaryFormat"><value>المقدر: تم استخدام {0:N0} من أصل {1:N0} رمز ({2:N0}%).</value></data>
+	<data name="Chat.ContextUsage.UnavailableLabel"><value>استخدام السياق غير متوفر</value></data>
+	<data name="Chat.ContextUsage.UnavailableBody"><value>عيّن حجم نافذة السياق لمزود النموذج هذا للاطلاع على الاستخدام.</value></data>
+  <data name="Chat.EasterEgg.CozyMessage"><value>آمن، وسليم، وخاص بك وحدك.</value></data>
+  <data name="Chat.Slash.CompactComplete"><value>تم ضغط السياق.</value></data>
+  <data name="Chat.Slash.CompactDescription"><value>تلخيص السياق الأقدم الآن</value></data>
+  <data name="Chat.Slash.CompactFailed"><value>تعذر ضغط السياق.</value></data>
+  <data name="Chat.Slash.CompactNoChange"><value>لا يوجد سياق أقدم لضغطه.</value></data>
+  <data name="Chat.HistorySummarizedNotice"><value>تم تلخيص الرسائل السابقة.</value></data>
+  <data name="Chat.Slash.ContextDescription"><value>إظهار استخدام السياق المقدر</value></data>
+  <data name="Chat.Slash.ContextFailed"><value>تعذر تحميل استخدام السياق.</value></data>
+  <data name="Chat.Slash.MenuLabel"><value>أوامر المحادثة</value></data>
+  <data name="Chat.Slash.NewDescription"><value>بدء محادثة جديدة</value></data>
+  <data name="Chat.Slash.RenameDescription"><value>إعادة تسمية هذه المحادثة</value></data>
+  <data name="Chat.Slash.ResearchDescription"><value>ابحث في موضوع واحفظ تقريرًا موثق المصادر</value></data>
+  <data name="Chat.Slash.UnknownCommandFormat"><value>أمر غير معروف أو غير متوفر: {0}</value></data>
+  <data name="Chat.ToolActivity.GenericLabel" xml:space="preserve">
+    <value>نشاط الأدوات</value>
+  </data>
+  <data name="Chat.ToolActivity.ListSeparator" xml:space="preserve">
+    <value>، </value>
+  </data>
+  <data name="Chat.ToolActivity.CategoriesAndMoreFormat" xml:space="preserve">
+    <value>{0} والمزيد</value>
+  </data>
+  <data name="Chat.ToolActivity.RunningCountFormat" xml:space="preserve">
+    <value>{0} قيد التشغيل</value>
+  </data>
+  <data name="Chat.ToolActivity.FailedCountFormat" xml:space="preserve">
+    <value>فشل {0}. وسّع لعرض التفاصيل</value>
+  </data>
+  <data name="Chat.ToolActivity.TechnicalDetails" xml:space="preserve">
+    <value>التفاصيل التقنية</value>
+  </data>
+  <data name="Chat.ToolActivity.ResultTruncated" xml:space="preserve">
+    <value>عرض أول 1,600 حرف</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowFullResult" xml:space="preserve">
+    <value>عرض النتيجة الكاملة</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowLess" xml:space="preserve">
+    <value>عرض أقل</value>
+  </data>
+  <data name="Chat.UserQuestion.CustomAnswer"><value>إجابتك الخاصة</value></data>
+  <data name="Chat.UserQuestion.Recommended"><value>موصى به</value></data>
+  <data name="Chat.UserQuestion.SubmitAnswers"><value>إرسال الإجابات</value></data>
+  <data name="Chat.UserQuestion.Position"><value>{0} من {1}</value></data>
+  <data name="Chat.UserQuestion.Answered"><value>تمت الإجابة</value></data>
+  <data name="Chat.UserQuestion.Dismissed"><value>تم الإلغاء</value></data>
+  <data name="Chat.UserQuestion.Obsolete"><value>لم يعد هذا السؤال نشطًا.</value></data>
+  <data name="Chat.UserQuestion.Unfinished"><value>تعذر إكمال هذا السؤال. أرسل رسالة جديدة للمتابعة.</value></data>
+  <data name="Chat.UserQuestion.AnswerRequired"><value>اختر إجابة أو اكتب إجابتك لكل سؤال.</value></data>
+  <data name="Chat.UserQuestion.SubmitFailed"><value>تعذر إرسال إجاباتك. حاول مجددًا.</value></data>
+  <data name="Chat.UserQuestion.DismissFailed"><value>تعذر إلغاء هذه الأسئلة. حاول مجددًا.</value></data>
+  <data name="Chat.Project.Add" xml:space="preserve"><value>إضافة مشروع</value></data>
+  <data name="Chat.Project.Name" xml:space="preserve"><value>اسم المشروع</value></data>
+  <data name="Chat.Project.HostFolder" xml:space="preserve"><value>مجلد المشروع على الجهاز المحدد</value></data>
+  <data name="Chat.Project.AccessHelp" xml:space="preserve"><value>اختر مجلدًا موجودًا على الجهاز المحدد. تعمل أوامر الصدفة الأصلية بأذونات نظام التشغيل الخاصة بحساب الجهاز.</value></data>
+  <data name="Chat.Project.General" xml:space="preserve"><value>عام</value></data>
+  <data name="Chat.Project.Unavailable" xml:space="preserve"><value>المشروع غير متاح</value></data>
+  <data name="Chat.Project.Remove" xml:space="preserve"><value>إزالة المشروع</value></data>
+  <data name="Chat.Project.RemoveConfirm" xml:space="preserve"><value>إزالة مرجع المشروع وإيقاف عمليات التشغيل النشطة؟ ستبقى المحادثات والملفات.</value></data>
+  <data name="Chat.Project.Files" xml:space="preserve"><value>الملفات</value></data>
+  <data name="Chat.Project.Changes" xml:space="preserve"><value>التغييرات</value></data>
+  <data name="Chat.Project.PrivateData" xml:space="preserve"><value>بيانات خاصة</value></data>
+  <data name="Chat.Project.EmptyFolder" xml:space="preserve"><value>هذا المجلد فارغ.</value></data>
+  <data name="Chat.Project.ListLimit" xml:space="preserve"><value>يُعرض حتى 500 عنصر. افتح مجلداً أكثر تحديداً.</value></data>
+  <data name="Chat.Project.ChangesLimit" xml:space="preserve"><value>يُعرض حتى 2000 تغيير. قلّل التغييرات في عميل Git.</value></data>
+  <data name="Chat.Project.RepositoryScope" xml:space="preserve"><value>تشمل تغييرات المستودع تعديلات جميع المحادثات والأدوات الأخرى.</value></data>
+  <data name="Chat.Project.Choose" xml:space="preserve"><value>اختر مشروعاً لمراجعة تغييرات Git.</value></data>
+  <data name="Chat.Project.SendFirst" xml:space="preserve"><value>أرسل رسالة لاستعراض مجلدات الوكيل.</value></data>
+  <data name="Chat.Project.NoChanges" xml:space="preserve"><value>لا توجد تغييرات.</value></data>
+  <data name="Chat.Project.staged" xml:space="preserve"><value>مُرحّلة</value></data>
+  <data name="Chat.Project.unstaged" xml:space="preserve"><value>غير مُرحّلة</value></data>
+  <data name="Chat.Project.untracked" xml:space="preserve"><value>غير متتبعة</value></data>
+  <data name="Chat.Project.Read.Ready" xml:space="preserve"><value>جاهز</value></data>
+  <data name="Chat.Project.Read.Binary" xml:space="preserve"><value>لا يمكن معاينة الملفات الثنائية.</value></data>
+  <data name="Chat.Project.Read.TooLarge" xml:space="preserve"><value>تقتصر المعاينة على 256 KiB و5000 سطر لكل جانب.</value></data>
+  <data name="Chat.Project.Read.Unavailable" xml:space="preserve"><value>الملف أو المستودع غير متاح. حدّث وتحقق من صلاحية الوصول.</value></data>
+  <data name="Chat.Project.Read.NotRepository" xml:space="preserve"><value>هذا المجلد ليس مستودع Git.</value></data>
+  <data name="Chat.Project.Read.GitMissing" xml:space="preserve"><value>ثبّت Git على مضيف Oscova لمراجعة التغييرات.</value></data>
+  <data name="Chat.Project.Read.Unsupported" xml:space="preserve"><value>بنية Git أو إعداداته أو نوع الملف هذا غير مدعوم.</value></data>
+  <data name="Chat.Project.Read.RefreshRequired" xml:space="preserve"><value>تغيّر العنصر المحدد. حدّث القائمة.</value></data>
+  <data name="Chat.ToolCard.Status.Cancelled" xml:space="preserve"><value>ملغى</value></data>
+  <data name="Chat.FollowUps.Label" xml:space="preserve"><value>رسائل المتابعة</value></data>
+  <data name="Chat.FollowUps.SteeringBadge" xml:space="preserve"><value>جارٍ التوجيه</value></data>
+  <data name="Chat.FollowUps.Steer" xml:space="preserve"><value>توجيه</value></data>
+  <data name="Chat.FollowUps.Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="Chat.FollowUps.More" xml:space="preserve"><value>المزيد من الإجراءات</value></data>
+  <data name="Chat.FollowUps.Edit" xml:space="preserve"><value>تعديل الرسالة</value></data>
+<data name="Chat.Branch.Label" xml:space="preserve"><value>إنشاء فرع في محادثة جديدة</value></data>
+<data name="Chat.Branch.Failed" xml:space="preserve"><value>تعذر إنشاء فرع للمحادثة. حاول مرة أخرى.</value></data>
+<data name="Chat.Branch.ContinuedFrom" xml:space="preserve"><value>متابعة من محادثة</value></data>
+<data name="Chat.Branch.SourceUnavailable" xml:space="preserve"><value>المحادثة الأصلية غير متاحة</value></data>
+<data name="Chat.Project.Device" xml:space="preserve"><value>الجهاز</value></data><data name="Chat.Project.ServerDevice" xml:space="preserve"><value>هذا الخادم</value></data><data name="Chat.Project.SelectDevice" xml:space="preserve"><value>اختر جهازًا</value></data><data name="Chat.Project.DeviceUnavailable" xml:space="preserve"><value>غير متاح</value></data><data name="Chat.Project.PermissionDisabled" xml:space="preserve"><value>اطلب من المشغّل تفعيل المشاريع لحسابك.</value></data><data name="Chat.Project.NodeRequired" xml:space="preserve"><value>شغّل Oscova node على جهاز الكمبيوتر لإضافة مشروع.</value></data><data name="Chat.Artifacts.NodeUnavailable" xml:space="preserve"><value>الملف غير متاح. شغّل جهاز المشروع وتحقق من صلاحية الوصول ومن وجود الملف، ثم أعد فتح هذه المعاينة.</value></data>
+  <data name="Chat.ToolApprovalProjectWarning" xml:space="preserve"><value>يعمل على جهاز المشروع المحدد باستخدام أذونات نظام التشغيل لحساب ذلك الجهاز.</value></data>
+  <data name="Chat.Project.NodeOffline" xml:space="preserve"><value>العقدة المحددة غير متصلة. شغّل Oscova node على ذلك الجهاز وحاول مرة أخرى.</value></data>
+  <data name="Chat.Project.FolderMissing" xml:space="preserve"><value>مجلد المشروع مفقود. استعده ثم حاول مرة أخرى.</value></data>
+  <data name="Chat.Mcp.ConnectionFailed" xml:space="preserve"><value>تعذّر بدء اتصال MCP ‏'{0}'. افتح إعدادات خادم MCP، وتحقق من إعداداته على جهاز التنفيذ، ثم أعد الاتصال.</value></data>
+  <data name="Chat.Mcp.DockerMissing" xml:space="preserve"><value>تعذّر بدء اتصال MCP ‏'{0}'. ثبّت Docker أو اختر تشغيل MCP مباشرةً على جهاز التنفيذ.</value></data>
+  <data name="Chat.Workspace.Preview" xml:space="preserve">
+    <value>معاينة</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedTitle" xml:space="preserve">
+    <value>تغييرات ملف غير محفوظة</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedMessage" xml:space="preserve">
+    <value>احفظ تغييراتك قبل المتابعة أو تجاهلها. الإلغاء يبقي الملفات الحالية مفتوحة.</value>
+  </data>
+  <data name="Chat.Workspace.Discard" xml:space="preserve">
+    <value>تجاهل</value>
+  </data>
+  <data name="Chat.Workspace.ConflictTitle" xml:space="preserve">
+    <value>تم تغيير الملف</value>
+  </data>
+  <data name="Chat.Workspace.ConflictMessage" xml:space="preserve">
+    <value>تم تغيير الملف منذ فتحه. لم يتم حفظ تغييراتك.</value>
+  </data>
+  <data name="Chat.Workspace.ConflictActions" xml:space="preserve">
+    <value>الاستبدال يكتب تغييراتك فوق الملف الأحدث. إعادة التحميل تتجاهل تغييراتك بعد التأكيد.</value>
+  </data>
+  <data name="Chat.Workspace.Overwrite" xml:space="preserve">
+    <value>استبدال بتغييراتي</value>
+  </data>
+  <data name="Chat.Workspace.ReloadLatest" xml:space="preserve">
+    <value>إعادة تحميل الأحدث</value>
+  </data>
+  <data name="Chat.Workspace.LoadFailed" xml:space="preserve">
+    <value>تعذر تحميل الملف. تحقق من صلاحية الوصول واتصال الجهاز ثم أعد المحاولة.</value>
+  </data>
+  <data name="Chat.Workspace.SaveFailed" xml:space="preserve">
+    <value>تعذر تأكيد الحفظ. تحقق من الوصول وحدود 512 KiB و5,000 سطر واتصال الجهاز. المسودة محفوظة. أعد الحفظ أو التحميل.</value>
+  </data>
+<data name="Chat.Workspace.ReloadConfirm" xml:space="preserve"><value>هل تريد تحميل أحدث ملف والتخلي عن تعديلاتك غير المحفوظة؟</value></data>
+  <data name="Chat.Workspace.TooLarge" xml:space="preserve"><value>تقتصر المعاينة والتحرير على 512 KiB و5,000 سطر.</value></data>
+  <data name="Chat.Browser.NewTab" xml:space="preserve"><value>علامة تبويب متصفح جديدة</value></data>
+  <data name="Chat.Browser.Address" xml:space="preserve"><value>ابحث أو أدخل عنوان URL</value></data>
+  <data name="Chat.Browser.Viewport" xml:space="preserve"><value>صفحة المتصفح المباشرة</value></data>
+  <data name="Chat.Browser.PhoneView" xml:space="preserve"><value>العرض فقط على أجهزة اللمس. استخدم حاسوبًا للتفاعل.</value></data>
+  <data name="Chat.Browser.Failed" xml:space="preserve"><value>فشل إجراء المتصفح.</value></data>
+  <data name="Chat.Browser.Disconnected" xml:space="preserve"><value>انقطع اتصال المتصفح. أعد فتح علامة التبويب.</value></data>
+  <data name="Chat.Browser.Clipboard" xml:space="preserve"><value>تعذر الوصول إلى الحافظة. اسمح بالوصول أو الصق بلوحة المفاتيح.</value></data>
+  <data name="Chat.Browser.InvalidAddress" xml:space="preserve"><value>أدخل عنوان HTTP أو HTTPS أو اسم مضيف أو عبارة بحث (حتى 4096 حرفًا).</value></data>
+  <data name="Chat.Browser.UploadLimit" xml:space="preserve"><value>اختر حتى 8 ملفات بحجم إجمالي لا يتجاوز 32 MiB.</value></data>
+  <data name="Chat.Browser.Cut" xml:space="preserve"><value>قص</value></data>
+  <data name="Chat.Browser.Copy" xml:space="preserve"><value>نسخ</value></data>
+  <data name="Chat.Browser.Paste" xml:space="preserve"><value>لصق</value></data>
+  <data name="Chat.Browser.SelectAll" xml:space="preserve"><value>تحديد الكل</value></data>
+  <data name="Chat.Browser.ChooseFile" xml:space="preserve"><value>اختر ملفًا من جهازك لهذا الموقع</value></data>
+  <data name="Chat.Browser.FileReady" xml:space="preserve"><value>الملف جاهز</value></data>
+  <data name="Chat.Browser.SaveToDevice" xml:space="preserve"><value>حفظ على الجهاز</value></data>
+  <data name="Chat.Permissions.AllowOnce" xml:space="preserve">
+    <value>السماح مرة واحدة</value>
+  </data>
+  <data name="Chat.Permissions.AllowForSession" xml:space="preserve">
+    <value>السماح لهذه الجلسة</value>
+  </data>
+  <data name="Chat.Permissions.SessionLifetime" xml:space="preserve">
+    <value>يسري على هذه الأداة والوكيل والمحادثة حتى إلغائه أو انتهاء جلسة الخادم. يحتفظ التحديث أو تبديل المحادثة بالإذن. تؤدي إعادة تشغيل Oscova إلى مسحه.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnavailable" xml:space="preserve">
+    <value>إذن الجلسة غير متاح لعدم وجود هوية موثوقة للأداة أو الوكيل أو هدف التنفيذ.</value>
+  </data>
+  <data name="Chat.Permissions.AllowedOnce" xml:space="preserve">
+    <value>مسموح مرة واحدة</value>
+  </data>
+  <data name="Chat.Permissions.AllowedForSession" xml:space="preserve">
+    <value>مسموح لهذه الجلسة</value>
+  </data>
+  <data name="Chat.Permissions.Denied" xml:space="preserve">
+    <value>مرفوض</value>
+  </data>
+  <data name="Chat.Permissions.SessionAutoApproved" xml:space="preserve">
+    <value>تمت الموافقة تلقائيًا بإذن الجلسة</value>
+  </data>
+  <data name="Chat.Permissions.AutoApproved" xml:space="preserve">
+    <value>تمت الموافقة تلقائيًا</value>
+  </data>
+  <data name="Chat.Permissions.AutoRejected" xml:space="preserve">
+    <value>تم الرفض تلقائيًا</value>
+  </data>
+  <data name="Chat.Permissions.FullAccess" xml:space="preserve">
+    <value>وصول كامل</value>
+  </data>
+  <data name="Chat.Permissions.ApprovalExpired" xml:space="preserve">
+    <value>انتهت صلاحية طلب الموافقة. اطلب الأداة مجددًا.</value>
+  </data>
+  <data name="Chat.Permissions.SessionPermissions" xml:space="preserve">
+    <value>أذونات الجلسة</value>
+  </data>
+  <data name="Chat.Permissions.Revoke" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Chat.Permissions.RevokeAll" xml:space="preserve">
+    <value>إلغاء الكل</value>
+  </data>
+  <data name="Chat.Permissions.NoSessionPermissions" xml:space="preserve">
+    <value>لا توجد أذونات جلسة نشطة.</value>
+  </data>
+  <data name="Chat.Permissions.RunningPermission" xml:space="preserve">
+    <value>الدور الجاري: {0}. يسري الخيار المحدد على التشغيل التالي.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningUsePolicy" xml:space="preserve">
+    <value>اتبع سياسات أدوات الوكيل.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoApprove" xml:space="preserve">
+    <value>تجاوز طلبات الموافقة. تظل قيود التنفيذ سارية.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoReject" xml:space="preserve">
+    <value>ارفض الاستدعاءات التي تتطلب الموافقة.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningFullAccess" xml:space="preserve">
+    <value>تجاوز طلبات الموافقة. شغّل أوامر shell دون تصفية على {0} خارج Docker.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedFullAccess" xml:space="preserve">
+    <value>غير مستخدمة في الوصول الكامل. الإلغاء لا يوقف الوصول الكامل.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoApprove" xml:space="preserve">
+    <value>غير مستخدمة أثناء تجاوز طلبات الموافقة.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoReject" xml:space="preserve">
+    <value>غير مستخدمة أثناء رفض الاستدعاءات التي تتطلب الموافقة.</value>
+  </data>
+  <data name="Chat.ToolApproval.ExecutionEnvironmentWarning" xml:space="preserve">
+    <value>يعمل في بيئة التنفيذ المحددة.</value>
+  </data>
+  <data name="Chat.ToolCard.ToolSearchTitle" xml:space="preserve">
+    <value>تحميل الأدوات</value>
+  </data>
+  <data name="VisualizationTitle" xml:space="preserve"><value>تصوّر تفاعلي</value></data>
+  <data name="VisualizationGenerating" xml:space="preserve"><value>جارٍ إنشاء التصوّر</value></data>
+  <data name="VisualizationUnavailable" xml:space="preserve"><value>التصوّر غير متاح</value></data>
+  <data name="VisualizationLocalOnly" xml:space="preserve"><value>التصوّرات معطّلة في الوضع المحلي فقط.</value></data>
+  <data name="Chat.ComposerOptions" xml:space="preserve"><value>خيارات المحادثة</value></data>
+  <data name="Chat.History.LoadingConversation" xml:space="preserve"><value>جارٍ تحميل المحادثة…</value></data>
+  <data name="Chat.History.LoadOlderMessages" xml:space="preserve"><value>تحميل الرسائل الأقدم</value></data>
+  <data name="Chat.History.LoadingOlderMessages" xml:space="preserve"><value>جارٍ تحميل الرسائل الأقدم…</value></data>
+  <data name="Chat.History.StartOfConversation" xml:space="preserve"><value>بداية المحادثة</value></data>
+  <data name="Chat.History.LoadOlderMessagesFailed" xml:space="preserve"><value>تعذر تحميل الرسائل الأقدم. حاول مرة أخرى.</value></data>
+  <data name="RemoveRecipient" xml:space="preserve"><value>إزالة المستلم</value></data>
+  <data name="ConsultAgent" xml:space="preserve"><value>استشارة وكيل</value></data>
+  <data name="NoMatchingAgents" xml:space="preserve"><value>لا توجد وكلاء مطابقة</value></data>
+  <data name="Chat.ExpandTable" xml:space="preserve"><value>توسيع الجدول</value></data>
+  <data name="Chat.ExpandedTable" xml:space="preserve"><value>جدول</value></data>
+  <data name="Chat.Goal.Edit" xml:space="preserve"><value>تعديل الهدف</value></data>
+  <data name="Chat.Goal.Title" xml:space="preserve">
+    <value>الهدف</value>
+  </data>
+  <data name="Chat.Goal.Start" xml:space="preserve">
+    <value>بدء الهدف</value>
+  </data>
+  <data name="Chat.Goal.Save" xml:space="preserve">
+    <value>حفظ الهدف</value>
+  </data>
+  <data name="Chat.Goal.Pause" xml:space="preserve">
+    <value>إيقاف مؤقت</value>
+  </data>
+  <data name="Chat.Goal.Running" xml:space="preserve">
+    <value>الهدف قيد التنفيذ</value>
+  </data>
+  <data name="Chat.Goal.Paused" xml:space="preserve">
+    <value>الهدف متوقف مؤقتًا</value>
+  </data>
+  <data name="Chat.Goal.Blocked" xml:space="preserve">
+    <value>الهدف متعذر</value>
+  </data>
+  <data name="Chat.Goal.Achieved" xml:space="preserve">
+    <value>تم تحقيق الهدف</value>
+  </data>
+  <data name="Chat.Goal.SaveFailed" xml:space="preserve">
+    <value>تعذر حفظ الهدف</value>
+  </data>
+  <data name="Chat.Goal.ActionFailed" xml:space="preserve">
+    <value>تعذر تحديث الهدف</value>
+  </data>
+  <data name="Chat.Slash.GoalDescription" xml:space="preserve">
+    <value>مواصلة العمل لتحقيق هدف</value>
+  </data>
+  <data name="Chat.Goal.ClearFirst" xml:space="preserve">
+    <value>امسح الهدف الحالي قبل بدء هدف آخر.</value>
+  </data>
+  <data name="Chat.Goal.AnswerOrDismiss" xml:space="preserve">
+    <value>أجب عن السؤال أو أغلقه أولًا</value>
+  </data>
+  <data name="Chat.Goal.ReasonStopped" xml:space="preserve">
+    <value>متوقف</value>
+  </data>
+  <data name="Chat.Goal.ReasonRestarted" xml:space="preserve">
+    <value>أُعيد تشغيل التطبيق</value>
+  </data>
+  <data name="Chat.Goal.ReasonBudget" xml:space="preserve">
+    <value>تم بلوغ الميزانية</value>
+  </data>
+  <data name="Chat.Goal.ReasonIterations" xml:space="preserve">
+    <value>حد التكرارات</value>
+  </data>
+  <data name="Chat.Goal.ReasonProvider" xml:space="preserve">
+    <value>المزود غير متاح</value>
+  </data>
+  <data name="Chat.Goal.ReasonJudge" xml:space="preserve">
+    <value>تعذر التحقق من الاكتمال</value>
+  </data>
+  <data name="Chat.Goal.ReasonWorker" xml:space="preserve">
+    <value>تعذرت المتابعة</value>
+  </data>
+  <data name="Chat.Goal.ReasonQuestion" xml:space="preserve">
+    <value>بانتظار إجابتك</value>
+  </data>
+  <data name="Chat.Goal.ReasonDismissed" xml:space="preserve">
+    <value>أُغلق السؤال</value>
+  </data>
+  <data name="Chat.AttachmentReadFailed" xml:space="preserve">
+    <value>تعذر إرفاق '{0}'. حدده مرة أخرى.</value>
+  </data>
+  <data name="Chat.RecipientOwnModelProvider" xml:space="preserve">
+    <value>يستخدم {0} مزوّد النماذج الخاص به.</value>
+  </data>
+  <data name="Chat.RecipientModelProviderUnavailable" xml:space="preserve">
+    <value>مزوّد نماذج الوكيل غير متاح</value>
+  </data>
+  <data name="Chat.Workspace.NewTab" xml:space="preserve"><value>علامة تبويب جديدة</value></data>
+  <data name="Chat.Workspace.ResizeFiles" xml:space="preserve"><value>تغيير حجم لوحة الملفات</value></data>
+  <data name="Chat.Workspace.SelectFile" xml:space="preserve"><value>اختر ملفًا من شجرة ملفات مساحة العمل.</value></data>
+  <data name="Chat.Workspace.FileActions" xml:space="preserve"><value>إجراءات الملف</value></data>
+  <data name="Chat.Workspace.AddToChat" xml:space="preserve"><value>إضافة إلى المحادثة</value></data>
+  <data name="Chat.Workspace.RelativePath" xml:space="preserve"><value>المسار النسبي</value></data>
+  <data name="Chat.Workspace.AbsolutePath" xml:space="preserve"><value>المسار المطلق</value></data>
+  <data name="Chat.Workspace.Filename" xml:space="preserve"><value>اسم الملف</value></data>
+  <data name="Chat.WaitingForSubagentsStatus" xml:space="preserve"><value>في انتظار الوكلاء الفرعيين</value></data>
+  <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>في انتظار إجابتك والوكلاء الفرعيين</value></data>
+  <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>بانتظار الموافقة</value></data>
+  <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>متوقف</value></data>
+</root>

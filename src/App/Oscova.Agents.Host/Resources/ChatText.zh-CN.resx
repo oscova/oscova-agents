@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.RetryServiceCheckTitle">
+		<value>重试服务检查</value>
+
+	</data>
+	<data name="Chat.RetryNow">
+		<value>立即重试</value>
+
+	</data>
+	<data name="Chat.CheckingChatServiceStatus">
+		<value>正在检查对话服务状态...</value>
+
+	</data>
+	<data name="Chat.ServiceNotRunning">
+		<value>对话服务未运行。请启动该服务后重试。</value>
+
+	</data>
+	<data name="Chat.AgentSelectorPrefix">
+		<value>智能体：</value>
+
+	</data>
+	<data name="Chat.AgentConversation.ReadOnly">
+		<value>只读</value>
+
+	</data>
+	<data name="Chat.AgentConversation.TabsLabel">
+		<value>智能体对话</value>
+
+	</data>
+	<data name="Chat.AssistantFallbackName">
+		<value>助手</value>
+
+	</data>
+	<data name="Chat.AttachFileLabel">
+		<value>附加文件</value>
+
+	</data>
+	<data name="Chat.CheckingAvailability">
+		<value>正在检查可用性</value>
+
+	</data>
+	<data name="Chat.DefaultInputPlaceholder">
+		<value>输入你的消息...</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmMessage">
+		<value>删除此聊天？此操作无法撤销。暂存附件和工具输出文件也会被删除，即使先保存编辑。普通工作区和项目文件会保留。</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmTitle">
+		<value>确认删除对话</value>
+
+	</data>
+	<data name="Chat.FileSizeExceeded">
+		<value>'{0}' 超出了 {1} 的大小限制。</value>
+
+	</data>
+	<data name="Chat.GeneratingResponseStatus">
+		<value>正在生成回复</value>
+
+	</data>
+	<data name="Chat.ResponseComplete">
+		<value>回复完成。</value>
+
+	</data>
+	<data name="Chat.ResponseFailed">
+		<value>无法完成对话回复。</value>
+
+	</data>
+	<data name="Chat.ImageAttachmentKind">
+		<value>图片</value>
+
+	</data>
+	<data name="Chat.InspectSessionTitle">
+		<value>检查会话</value>
+
+	</data>
+	<data name="Chat.LiveAndReady">
+		<value>活跃并就绪</value>
+
+	</data>
+	<data name="Chat.ModelNotSetLabel">
+		<value>未设置模型</value>
+
+	</data>
+	<data name="Chat.MultipleFilesReadyLabel">
+		<value>{0} 个文件就绪</value>
+
+	</data>
+	<data name="Chat.NewChatLabel">
+		<value>新建对话</value>
+
+	</data>
+	<data name="Chat.NoConversationsFound">
+		<value>未找到对话</value>
+
+	</data>
+	<data name="Chat.NoModelProviderConfigured">
+		<value>未配置模型提供商</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersConfigured">
+		<value>未配置模型提供商</value>
+
+	</data>
+	<data name="Chat.NoDefaultModelProviderSelected">
+		<value>未选择默认模型提供商</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersPresence">
+		<value>需要模型提供商</value>
+
+	</data>
+	<data name="Chat.ModelProviderSelectionRequiredPresence">
+		<value>选择模型提供商</value>
+
+	</data>
+	<data name="Chat.AddModelProviderToStartChatting">
+		<value>添加模型提供商以开始对话。</value>
+
+	</data>
+	<data name="Chat.SelectModelProviderToStartChatting">
+		<value>在下方选择模型提供商以开始对话。</value>
+
+	</data>
+	<data name="Chat.AddModelProviderAction">
+		<value>添加提供商</value>
+
+	</data>
+	<data name="Chat.OneFileReadyLabel">
+		<value>1 个文件就绪</value>
+
+	</data>
+	<data name="Chat.ProcessingPlaceholder">
+		<value>正在处理...</value>
+
+	</data>
+	<data name="Chat.ReadAloudLabel">
+		<value>朗读</value>
+
+	</data>
+	<data name="Chat.RemoveAttachmentLabel">
+		<value>移除附件：{0}</value>
+
+	</data>
+	<data name="Chat.RenameThread">
+		<value>重命名</value>
+
+	</data>
+	<data name="Chat.RenameThreadBusy">
+		<value>请等待回复完成，然后再尝试重命名。</value>
+
+	</data>
+	<data name="Chat.RenameThreadDialogTitle">
+		<value>重命名对话</value>
+
+	</data>
+	<data name="Chat.RenameThreadFailed">
+		<value>无法重命名该对话。</value>
+
+	</data>
+	<data name="Chat.SearchChatsLabel">
+		<value>搜索对话</value>
+
+	</data>
+	<data name="Chat.SendLabel">
+		<value>发送</value>
+
+	</data>
+	<data name="Chat.ServiceOffline">
+		<value>服务离线</value>
+
+	</data>
+	<data name="Chat.ShowChatsLabel">
+		<value>显示对话</value>
+
+	</data>
+	<data name="Chat.SpeakingPlaceholder">
+		<value>正在讲话...</value>
+
+	</data>
+	<data name="Chat.StartListeningLabel">
+		<value>开始聆听</value>
+
+	</data>
+	<data name="Chat.StartVoiceModeLabel">
+		<value>启动语音模式</value>
+
+	</data>
+	<data name="Chat.StopLabel">
+		<value>停止</value>
+
+	</data>
+	<data name="Chat.StopListeningLabel">
+		<value>停止聆听</value>
+
+	</data>
+	<data name="Chat.StopVoiceModeLabel">
+		<value>停止语音模式</value>
+
+	</data>
+	<data name="Chat.Start.Card.Agenda.Action">
+		<value>制定议程</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Description">
+		<value>为你主持的会议制定带时间安排的议程。</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Prompt">
+		<value>帮我为我主持的会议准备议程，并为每个议题安排时间。</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Title">
+		<value>准备会议议程</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Action">
+		<value>开始预算</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Description">
+		<value>在一个视图中列出每月收入和支出。</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Prompt">
+		<value>根据我的收入和支出，帮我制定一份简单的月度预算。</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Title">
+		<value>制定简单预算</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Action">
+		<value>制作图表</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Description">
+		<value>用图表展示数字，一眼就能比较。</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Prompt">
+		<value>用我提供的一些数字制作图表，让我一眼就能比较。</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Title">
+		<value>绘制数据图表</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Action">
+		<value>制作清单</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Description">
+		<value>把任务拆成可逐项勾选的清晰步骤。</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Prompt">
+		<value>为我即将要做的一项任务制作分步清单。</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Title">
+		<value>制作清单</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Action">
+		<value>审查代码</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Description">
+		<value>逐步了解代码的作用并发现可能的错误。</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Prompt">
+		<value>逐步解释我将粘贴的一段代码的作用，并指出可能的错误。</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Title">
+		<value>解释代码</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Action">
+		<value>连接应用</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Description">
+		<value>让 Oscova 与你已在使用的应用协同工作。</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Prompt">
+		<value>我希望你能和我使用的一个应用协同工作。找到连接它的方法并完成设置。</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Title">
+		<value>连接应用</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Action">
+		<value>开始研究</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Description">
+		<value>就你提出的问题获取一份带来源的简短报告。</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Prompt">
+		<value>研究我将指定的一个主题，并给我一份带来源的简短报告。</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Title">
+		<value>研究一个主题</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Action">
+		<value>分析数据</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Description">
+		<value>发现 CSV 文件中的趋势和异常值。</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Prompt">
+		<value>我会附上一个 CSV 文件。告诉我其中有什么，并指出趋势或异常值。</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Title">
+		<value>浏览电子表格</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Action">
+		<value>比较选项</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Description">
+		<value>比较各选项的优缺点并给出建议。</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Prompt">
+		<value>帮我权衡一个决定：列出各个选项及其优缺点，并给出你的建议。</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Title">
+		<value>权衡一个决定</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Action">
+		<value>起草回复</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Description">
+		<value>粘贴一封邮件，获得清晰、礼貌的回复。</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Prompt">
+		<value>帮我回复一封电子邮件。我接下来会粘贴它。回复要清晰、礼貌。</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Title">
+		<value>回复电子邮件</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Action">
+		<value>解释一下</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Description">
+		<value>通过浅显的例子理解复杂的主题。</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Prompt">
+		<value>用通俗的语言解释我感兴趣的一个主题，并举一个简单的例子。</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Title">
+		<value>简单解释一件事</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Action">
+		<value>开始练习</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Description">
+		<value>演练回答，每个问题后都有反馈。</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Prompt">
+		<value>针对我将描述的职位，和我进行一次模拟求职面试。一次只问一个问题，并在每次回答后给出反馈。</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Title">
+		<value>练习面试</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Action">
+		<value>规划餐食</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Description">
+		<value>简单的餐食和一份合并的购物清单。</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Prompt">
+		<value>为这一周规划简单的餐食，并给我一份合并的购物清单。</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Title">
+		<value>规划一周餐食</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Action">
+		<value>整理记录</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Description">
+		<value>把零散的记录整理成决定、负责人和后续步骤。</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Prompt">
+		<value>我会粘贴会议记录。请整理成一份简短总结，包含决定、负责人和后续步骤。</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Title">
+		<value>整理会议记录</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Action">
+		<value>搜索 PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Description">
+		<value>找到并引用 PDF 中的重要部分。</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Prompt">
+		<value>我会附上一个 PDF。找到与我指定主题相关的部分并引用出来。</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Title">
+		<value>搜索 PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Action">
+		<value>起草计划</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Description">
+		<value>将初步想法转化为切实可行的下一步计划。</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Prompt">
+		<value>帮我将一个初步的项目想法转化为具有明确下一步的切实计划。</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Title">
+		<value>规划项目</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Action">
+		<value>润色文字</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Description">
+		<value>提升清晰度和语气，并说明主要改动。</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Prompt">
+		<value>改进我将粘贴的文字的清晰度和语气，并说明主要改动。</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Title">
+		<value>润色我的文字</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Action">
+		<value>开始测验</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Description">
+		<value>一次回答一个问题，边答边学。</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Prompt">
+		<value>就我正在学习的主题考考我，一次一个问题，并解释我答错的地方。</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Title">
+		<value>就某个主题考考我</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Action">
+		<value>设置计划</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Description">
+		<value>每个工作日提醒你回顾优先事项。</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Prompt">
+		<value>每个工作日上午 9 点提醒我回顾当天的优先事项。</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Title">
+		<value>设置每日提醒</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Action">
+		<value>查找技能</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Description">
+		<value>为常做的任务查找并添加技能。</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Prompt">
+		<value>找一项能帮助我完成常做任务的技能，并帮我设置好。</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Title">
+		<value>教 Oscova 一项技能</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Action">
+		<value>总结笔记</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Description">
+		<value>从笔记、文档或文件中提取重要要点。</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Prompt">
+		<value>帮我总结这份文档，并列出关键决策、风险和后续行动。</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Title">
+		<value>总结文档</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Action">
+		<value>开始导览</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Description">
+		<value>看看 Oscova 能做什么，以及应先设置什么。</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Prompt">
+		<value>我刚开始使用 Oscova。你能帮我做什么？我应该先设置什么？</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Title">
+		<value>了解 Oscova</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Action">
+		<value>翻译</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Description">
+		<value>翻译时保持自然的语气。</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Prompt">
+		<value>翻译我将粘贴的文字，并保持自然的语气。</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Title">
+		<value>翻译文字</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Action">
+		<value>规划旅行</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Description">
+		<value>获取每日行程概要和行李清单。</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Prompt">
+		<value>帮我规划一次短途旅行，包括每日行程概要和行李清单。</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Title">
+		<value>规划旅行</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Action">
+		<value>阅读链接</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Description">
+		<value>获取链接中的要点。</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Prompt">
+		<value>阅读我提供链接的网页，并告诉我其中的要点。</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Title">
+		<value>总结网页</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Action">
+		<value>规划本周</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Description">
+		<value>把本周的安排变成切实可行的计划。</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Prompt">
+		<value>帮我规划这一周。我会列出我的安排，请把它们变成切实可行的每日计划。</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Title">
+		<value>规划我的一周</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Action">
+		<value>起草文案</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Description">
+		<value>撰写电子邮件、回复、公告或简短更新。</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Prompt">
+		<value>帮我为这种情况起草一条清晰、友好的消息。</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Title">
+		<value>编写消息</value>
+	</data>
+	<data name="Chat.Start.CheckingQuestion">
+		<value>正在准备你的助手...</value>
+
+	</data>
+	<data name="Chat.Start.Greeting">
+		<value>你好，{0}</value>
+
+	</data>
+	<data name="Chat.Start.InputPlaceholder">
+		<value>告诉我们你需要什么...</value>
+
+	</data>
+	<data name="Chat.Start.Question">
+		<value>今天我能为你提供什么帮助？</value>
+
+	</data>
+	<data name="Chat.TextAttachmentKind">
+		<value>文本</value>
+
+	</data>
+	<data name="Chat.ThreadActionsLabel">
+		<value>对话操作</value>
+
+	</data>
+	<data name="Chat.ThreadTitleHelp">
+		<value>输入 1 到 120 个字符。</value>
+
+	</data>
+	<data name="Chat.ThreadTitleLabel">
+		<value>对话标题</value>
+
+	</data>
+	<data name="Chat.ThreadUnreadLabel">
+		<value>未读</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Empty">
+		<value>尚无任务。</value>
+
+	</data>
+	<data name="Chat.TodoPanel.ProgressFormat">
+		<value>已完成 {0} / {1}</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Title">
+		<value>任务</value>
+
+	</data>
+	<data name="Chat.TooManyFilesAttached">
+		<value>每条消息最多可附加 {0} 个文件。</value>
+
+	</data>
+	<data name="Chat.TranscribingPlaceholder">
+		<value>正在转录...</value>
+
+	</data>
+	<data name="Chat.TypeYourMessagePlaceholder">
+		<value>输入你的消息...</value>
+
+	</data>
+	<data name="Chat.UnableToStartSpeechSynthesis">
+		<value>无法启动语音合成。</value>
+
+	</data>
+	<data name="Chat.UnableToTranscribeAudio">
+		<value>无法转录音频。</value>
+
+	</data>
+	<data name="Chat.UnsupportedFileType">
+		<value>'{0}' 尚不是受支持的文件类型。</value>
+
+	</data>
+	<data name="Chat.UsingProviderPrefix">
+		<value>使用</value>
+
+	</data>
+	<data name="Chat.VoiceModeListeningPlaceholder">
+		<value>正在聆听...</value>
+
+	</data>
+	<data name="Chat.VoiceModeMissingServices">
+		<value>语音模式需要语音识别和语音合成服务。</value>
+
+	</data>
+	<data name="Chat.VoiceModeStartFailed">
+		<value>无法启动语音模式。</value>
+
+	</data>
+	<data name="Chat.VoiceModeWaitingPlaceholder">
+		<value>等待说话...</value>
+
+	</data>
+	<data name="Chat.Yesterday">
+		<value>昨天</value>
+
+	</data>
+	<data name="Chat.ThreadGroupToday"><value>今天</value></data>
+	<data name="Chat.ThreadGroupPreviousSevenDays"><value>过去 7 天</value></data>
+	<data name="Chat.ThreadGroupOlder"><value>更早</value></data>
+	<data name="Chat.NoConversationsMatchSearch"><value>没有与你的搜索匹配的对话。</value></data>
+	<data name="Chat.ThreadSearchFailed"><value>对话搜索不可用。</value></data>
+	<data name="Chat.ToolCallLabel"><value>工具调用</value></data>
+	<data name="Chat.ToolCard.ArgumentsSummaryFormat"><value>已提供 {0} 个参数。</value></data>
+	<data name="Chat.ToolCard.Applying"><value>正在应用更改...</value></data>
+	<data name="Chat.ToolCard.AvatarTitle"><value>虚拟形象操作</value></data>
+	<data name="Chat.ToolCard.CommunicationTitle"><value>通信工具</value></data>
+	<data name="Chat.ToolCard.DiagnosticsTitle"><value>诊断</value></data>
+	<data name="Chat.ToolCard.DirectoryTitle"><value>正在列出目录</value></data>
+	<data name="Chat.ToolCard.DocumentTitle"><value>正在读取文档</value></data>
+	<data name="Chat.ToolCard.ExternalTitle"><value>在线查询</value></data>
+	<data name="Chat.ToolCard.FileChangeTitle"><value>正在修改文件</value></data>
+	<data name="Chat.ToolCard.FileLabel"><value>文件</value></data>
+	<data name="Chat.ToolCard.FileReadTitle"><value>正在读取文件</value></data>
+	<data name="Chat.ToolCard.Installing"><value>正在安装...</value></data>
+	<data name="Chat.ToolCard.MemoryTitle"><value>正在使用记忆</value></data>
+	<data name="Chat.ToolCard.NoArgumentsSummary"><value>未提供参数。</value></data>
+	<data name="Chat.ToolCard.NotificationTitle"><value>通知</value></data>
+	<data name="Chat.ToolCard.Reading"><value>正在读取内容...</value></data>
+	<data name="Chat.ToolCard.ResultLabel"><value>结果</value></data>
+	<data name="Chat.ToolCard.Running"><value>正在运行...</value></data>
+	<data name="Chat.ToolCard.Saving"><value>正在保存...</value></data>
+	<data name="Chat.ToolCard.ScheduleTitle"><value>日历工具</value></data>
+	<data name="Chat.ToolCard.SearchTitle"><value>正在搜索工作区</value></data>
+	<data name="Chat.ToolCard.Searching"><value>正在搜索...</value></data>
+	<data name="Chat.ToolCard.ShellRunning"><value>正在运行命令...</value></data>
+	<data name="Chat.ToolCard.ShellTitle"><value>Shell 命令</value></data>
+	<data name="Chat.ToolCard.SkillAuthoringTitle"><value>正在保存技能</value></data>
+	<data name="Chat.ToolCard.SkillInspectTitle"><value>正在检查技能</value></data>
+	<data name="Chat.ToolCard.SkillInstallTitle"><value>正在安装技能</value></data>
+	<data name="Chat.ToolCard.SkillSearchTitle"><value>正在搜索技能</value></data>
+	<data name="Chat.ToolCard.Status.Completed"><value>已完成</value></data>
+	<data name="Chat.ToolCard.Status.Failed"><value>失败</value></data>
+	<data name="Chat.ToolCard.Status.Queued"><value>排队中</value></data>
+	<data name="Chat.ToolCard.Status.Running"><value>运行中</value></data>
+	<data name="Chat.NoParameters"><value>无参数</value></data>
+	<data name="Chat.SpeechModelsUnavailableTooltip"><value>语音模型不可用。请在“设置 → 语音”中设置。</value></data>
+	<data name="Chat.ToolApprovalTitle"><value>需要工具审批</value></data>
+	<data name="Chat.ToolApprovalArgumentsLabel"><value>参数</value></data>
+	<data name="Chat.ToolApprovalApproveButton"><value>批准</value></data>
+	<data name="Chat.ToolApprovalRejectButton"><value>拒绝</value></data>
+	<data name="Chat.ToolApprovalSubmitFailed"><value>无法提交该审批。</value></data>
+	<data name="Chat.ToolApprovalSkillCreateMessage"><value>批准创建此技能？</value></data>
+	<data name="Chat.ToolApprovalSkillUpdateMessage"><value>批准更新此技能？</value></data>
+	<data name="Chat.ToolApprovalSkillNameLabel"><value>技能</value></data>
+	<data name="Chat.ToolApprovalSkillDescriptionLabel"><value>说明</value></data>
+	<data name="Chat.ToolApprovalRegistrySkillMessage"><value>批准安装此技能？</value></data>
+	<data name="Chat.ToolApprovalRegistryServerMessage"><value>批准安装此 MCP 服务器？</value></data>
+	<data name="Chat.ToolApprovalServerLabel"><value>MCP 服务器</value></data>
+	<data name="Chat.ToolApprovalPublisherLabel"><value>发布者</value></data>
+	<data name="Chat.ToolApprovalVersionLabel"><value>版本</value></data>
+	<data name="Chat.ToolApprovalSourceLabel"><value>来源</value></data>
+	<data name="Chat.ToolApprovalCommandLabel"><value>命令</value></data>
+	<data name="Chat.ToolApprovalConnectsToLabel"><value>连接到</value></data>
+	<data name="Chat.ToolApprovalNetworkLabel"><value>网络</value></data>
+	<data name="Chat.ToolApprovalNetworkNone"><value>无网络访问</value></data>
+	<data name="Chat.ToolApprovalNetworkIncidental"><value>偶尔使用网络</value></data>
+	<data name="Chat.ToolApprovalNetworkEgress"><value>向外部服务发送数据</value></data>
+	<data name="Chat.ToolApprovalTaskCreateMessage"><value>批准创建此计划任务？</value></data>
+	<data name="Chat.ToolApprovalTaskUpdateMessage"><value>批准更新此计划任务？</value></data>
+	<data name="Chat.ToolApprovalTaskDeleteMessage"><value>批准删除此计划任务？</value></data>
+	<data name="Chat.ToolApprovalTaskRunMessage"><value>批准立即运行此计划任务？</value></data>
+	<data name="Chat.ToolApprovalTaskNameLabel"><value>任务</value></data>
+	<data name="Chat.ToolApprovalTaskNewNameLabel"><value>新名称</value></data>
+	<data name="Chat.ToolApprovalTaskAgentLabel"><value>智能体</value></data>
+	<data name="Chat.ToolApprovalTaskScheduleLabel"><value>计划</value></data>
+	<data name="Chat.ToolApprovalTaskRunModeLabel"><value>受限工具</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveValue"><value>运行期间自动批准</value></data>
+	<data name="Chat.ToolApprovalTaskAutoRejectValue"><value>运行期间自动拒绝</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveWarning"><value>批准此任务更改后，需要审批的工具可在无人值守的情况下运行。主机 Shell 命令可以更改运行 Oscova 的计算机。</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetLabel"><value>执行目标</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetHost"><value>主机</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetContainer"><value>Docker</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetDisabled"><value>Shell 执行已禁用</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetUnavailable"><value>执行目标不可用</value></data>
+	<data name="Chat.ToolApprovalHostWarning"><value>在运行 Oscova 的计算机上以其操作系统账户的权限运行。</value></data>
+	<data name="Chat.ToolApprovalContainerWarning"><value>在 Docker 内运行，并挂载已授予的文件夹。</value></data>
+	<data name="Chat.ToolApprovalScriptWarning"><value>批准后会运行整个脚本。脚本内的命令不会单独审批。</value></data>
+	<data name="Chat.ApprovalModeSelectorPrefix"><value>审批：</value></data>
+	<data name="Chat.ApprovalModeUsePolicy"><value>使用智能体策略</value></data>
+	<data name="Chat.ApprovalModeAutoApprove"><value>自动批准</value></data>
+	<data name="Chat.ApprovalModeAutoReject"><value>自动拒绝</value></data>
+	<data name="Chat.ThinkingLabel"><value>思考中</value></data>
+	<data name="Chat.ThoughtDurationManyFormat"><value>思考了 {0:F3} 秒</value></data>
+	<data name="Chat.ThoughtDurationOneFormat"><value>思考了 {0:F3} 秒</value></data>
+	<data name="Chat.ResponseCopyLabel"><value>复制</value></data>
+	<data name="Chat.ResponseCopiedLabel"><value>已复制</value></data>
+	<data name="Chat.ResponseCopyFailed"><value>无法复制。</value></data>
+	<data name="Chat.RegenerateLabel"><value>重新生成</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Attachments"><value>附件</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.ContextProviders"><value>上下文提供程序</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.CurrentDraft"><value>当前草稿</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Instructions"><value>指令</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.OutputReserve"><value>输出预留</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.PriorHistory"><value>先前历史</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Title"><value>预估明细</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Tools"><value>工具</value></data>
+	<data name="Chat.ContextWindowWarning.ContextWindowLabel"><value>上下文窗口</value></data>
+	<data name="Chat.ContextWindowWarning.ContinueButton"><value>仍要继续</value></data>
+	<data name="Chat.ContextWindowWarning.DialogBody"><value>你仍可发送，但模型可能会失败、截断上下文或遗漏前面的细节。</value></data>
+	<data name="Chat.ContextWindowWarning.DialogLead"><value>此草稿对于所选模型可能过大。</value></data>
+	<data name="Chat.ContextWindowWarning.DialogTitle"><value>上下文窗口警告</value></data>
+	<data name="Chat.ContextWindowWarning.EstimatedInputLabel"><value>预估输入</value></data>
+	<data name="Chat.ContextWindowWarning.OutputReserveLabel"><value>预留输出</value></data>
+	<data name="Chat.ContextWindowWarning.OverageLabel"><value>预估超出量</value></data>
+	<data name="Chat.ContextWindowWarning.ProviderLabel"><value>提供商</value></data>
+	<data name="Chat.ContextWindowWarning.SummaryFormat"><value>{0} 预估输入 Token {1:N0} 个，外加预留输出 Token {2:N0} 个，对应 {3:N0} 个 Token 的窗口，超出约 {4:N0} 个 Token。</value></data>
+	<data name="Chat.Activity.CommandRanTitle"><value>运行了命令</value></data>
+	<data name="Chat.Activity.Collapse"><value>关闭工作区</value></data>
+	<data name="Chat.Activity.DetailsTitle"><value>工作区</value></data>
+	<data name="Chat.Activity.FileReadTitle"><value>读取了文件</value></data>
+	<data name="Chat.Activity.FileUpdatedTitle"><value>更新了文件</value></data>
+	<data name="Chat.Activity.InProgress"><value>进行中</value></data>
+	<data name="Chat.Activity.JumpToLatest"><value>跳至最新</value></data>
+	<data name="Chat.Activity.ManyActivitiesFormat"><value>{0} 项活动</value></data>
+	<data name="Chat.Activity.MemoryReadTitle"><value>读取了记忆</value></data>
+	<data name="Chat.Activity.OneActivity"><value>1 项活动</value></data>
+	<data name="Chat.Activity.Open"><value>打开工作区</value></data>
+	<data name="Chat.Activity.SkillUsedTitle"><value>使用了技能</value></data>
+	<data name="Chat.Activity.StatusSuccess"><value>成功</value></data>
+	<data name="Chat.Activity.UseStandardView"><value>返回聊天</value></data>
+	<data name="Chat.Activity.UseWideView"><value>进入完整视图</value></data>
+	<data name="Chat.Activity.WebSearchedTitle"><value>搜索了网络</value></data>
+	<data name="Chat.Activity.WorkspaceSearchedTitle"><value>搜索了工作区</value></data>
+	<data name="Chat.ResizeThreadListLabel"><value>调整会话列表大小</value></data>
+	<data name="Chat.ResizeDetailsPanelLabel"><value>调整工作区面板大小</value></data>
+	<data name="Chat.Artifacts.Tab"><value>工件</value></data>
+	<data name="Chat.Artifacts.EmptyTitle"><value>尚无工件</value></data>
+	<data name="Chat.Artifacts.EmptyDescription"><value>由此会话创建或更新的文件将显示在此处。</value></data>
+	<data name="Chat.Artifacts.Download"><value>下载工件</value></data>
+	<data name="Chat.Artifacts.Loading"><value>正在加载工件预览</value></data>
+	<data name="Chat.Artifacts.UpdatedFormat"><value>更新于 {0}</value></data>
+	<data name="Chat.Artifacts.PreviewTooLarge"><value>此文件过大，无法在此处预览。</value></data>
+	<data name="Chat.Artifacts.PreviewUnavailable"><value>此预览已不再可用。</value></data>
+	<data name="Chat.Artifacts.DownloadOnly"><value>此文件类型不支持预览。</value></data>
+	<data name="Chat.Artifacts.FileType"><value>文件</value></data>
+	<data name="Chat.IncognitoChatDisclosure"><value>此对话不会保存或添加到记忆中。它将在你退出登录、闲置约 30 分钟或 Oscova 重启时被删除。附件也会随之删除。外部模型和工具仍可能接收你发送的内容。</value></data>
+	<data name="Chat.IncognitoChatDisclosureSummary"><value>不保存 · 约 30 分钟后清除</value></data>
+	<data name="Chat.IncognitoChatExpiredToast"><value>无痕对话已过期并被删除。</value></data>
+	<data name="Chat.IncognitoChatLabel"><value>无痕</value></data>
+	<data name="Chat.IncognitoChatUnavailableTooltip"><value>对话开始后无痕模式即已固定。开启新对话以更改。</value></data>
+	<data name="Chat.ContextUsage.AriaLabelFormat"><value>预估上下文使用量：已用 {0:N0}%，空闲 {1:N0}%</value></data>
+	<data name="Chat.ContextUsage.DialogTitle"><value>上下文使用量</value></data>
+	<data name="Chat.ContextUsage.UsedLabel"><value>已用</value></data>
+	<data name="Chat.ContextUsage.FreeInputLabel"><value>空闲空间</value></data>
+	<data name="Chat.ContextUsage.TotalLabel"><value>上下文窗口</value></data>
+	<data name="Chat.ContextUsage.ReservedOutputLabel"><value>预留输出</value></data>
+	<data name="Chat.ContextUsage.SummaryFormat"><value>预估：已使用 {0:N0} / {1:N0} 个 Token ({2:N0}%)。</value></data>
+	<data name="Chat.ContextUsage.UnavailableLabel"><value>上下文使用量不可用</value></data>
+	<data name="Chat.ContextUsage.UnavailableBody"><value>为此模型提供商设置上下文窗口大小以查看使用量。</value></data>
+  <data name="Chat.EasterEgg.CozyMessage"><value>安然无恙，尽归于你。</value></data>
+  <data name="Chat.Slash.CompactComplete"><value>上下文已压缩。</value></data>
+  <data name="Chat.Slash.CompactDescription"><value>立即汇总较早的上下文</value></data>
+  <data name="Chat.Slash.CompactFailed"><value>无法压缩上下文。</value></data>
+  <data name="Chat.Slash.CompactNoChange"><value>没有更早的上下文可压缩。</value></data>
+  <data name="Chat.HistorySummarizedNotice"><value>较早的消息已被总结。</value></data>
+  <data name="Chat.Slash.ContextDescription"><value>显示预估上下文使用量</value></data>
+  <data name="Chat.Slash.ContextFailed"><value>无法加载上下文使用量。</value></data>
+  <data name="Chat.Slash.MenuLabel"><value>会话命令</value></data>
+  <data name="Chat.Slash.NewDescription"><value>开始新对话</value></data>
+  <data name="Chat.Slash.RenameDescription"><value>重命名此对话</value></data>
+  <data name="Chat.Slash.ResearchDescription"><value>研究一个主题并保存带来源的报告</value></data>
+  <data name="Chat.Slash.UnknownCommandFormat"><value>未知或不可用的命令：{0}</value></data>
+  <data name="Chat.ToolActivity.GenericLabel" xml:space="preserve">
+    <value>工具活动</value>
+  </data>
+  <data name="Chat.ToolActivity.ListSeparator" xml:space="preserve">
+    <value>、</value>
+  </data>
+  <data name="Chat.ToolActivity.CategoriesAndMoreFormat" xml:space="preserve">
+    <value>{0}等</value>
+  </data>
+  <data name="Chat.ToolActivity.RunningCountFormat" xml:space="preserve">
+    <value>{0} 个正在运行</value>
+  </data>
+  <data name="Chat.ToolActivity.FailedCountFormat" xml:space="preserve">
+    <value>{0} 个失败。展开查看详情</value>
+  </data>
+  <data name="Chat.ToolActivity.TechnicalDetails" xml:space="preserve">
+    <value>技术详情</value>
+  </data>
+  <data name="Chat.ToolActivity.ResultTruncated" xml:space="preserve">
+    <value>显示前 1,600 个字符</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowFullResult" xml:space="preserve">
+    <value>显示完整结果</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowLess" xml:space="preserve">
+    <value>收起</value>
+  </data>
+  <data name="Chat.UserQuestion.CustomAnswer"><value>自行填写答案</value></data>
+  <data name="Chat.UserQuestion.Recommended"><value>推荐</value></data>
+  <data name="Chat.UserQuestion.SubmitAnswers"><value>提交答案</value></data>
+  <data name="Chat.UserQuestion.Position"><value>第 {0} 项，共 {1} 项</value></data>
+  <data name="Chat.UserQuestion.Answered"><value>已回答</value></data>
+  <data name="Chat.UserQuestion.Dismissed"><value>已取消</value></data>
+  <data name="Chat.UserQuestion.Obsolete"><value>此问题已失效。</value></data>
+  <data name="Chat.UserQuestion.Unfinished"><value>此问题未能完成。请发送新消息以继续。</value></data>
+  <data name="Chat.UserQuestion.AnswerRequired"><value>请为每个问题选择答案或自行填写。</value></data>
+  <data name="Chat.UserQuestion.SubmitFailed"><value>无法提交答案。请重试。</value></data>
+  <data name="Chat.UserQuestion.DismissFailed"><value>无法取消这些问题。请重试。</value></data>
+  <data name="Chat.Project.Add" xml:space="preserve"><value>添加项目</value></data>
+  <data name="Chat.Project.Name" xml:space="preserve"><value>项目名称</value></data>
+  <data name="Chat.Project.HostFolder" xml:space="preserve"><value>所选设备上的项目文件夹</value></data>
+  <data name="Chat.Project.AccessHelp" xml:space="preserve"><value>选择所选设备上已有的文件夹。原生 Shell 命令具有该设备账户的操作系统权限。</value></data>
+  <data name="Chat.Project.General" xml:space="preserve"><value>常规</value></data>
+  <data name="Chat.Project.Unavailable" xml:space="preserve"><value>项目不可用</value></data>
+  <data name="Chat.Project.Remove" xml:space="preserve"><value>移除项目</value></data>
+  <data name="Chat.Project.RemoveConfirm" xml:space="preserve"><value>移除此项目引用并停止其正在运行的任务？聊天和文件将保留。</value></data>
+  <data name="Chat.Project.Files" xml:space="preserve"><value>文件</value></data>
+  <data name="Chat.Project.Changes" xml:space="preserve"><value>更改</value></data>
+  <data name="Chat.Project.PrivateData" xml:space="preserve"><value>私有数据</value></data>
+  <data name="Chat.Project.EmptyFolder" xml:space="preserve"><value>此文件夹为空。</value></data>
+  <data name="Chat.Project.ListLimit" xml:space="preserve"><value>最多显示 500 项。请打开更具体的子文件夹。</value></data>
+  <data name="Chat.Project.ChangesLimit" xml:space="preserve"><value>最多显示 2,000 项更改。请在 Git 客户端中缩小更改范围。</value></data>
+  <data name="Chat.Project.RepositoryScope" xml:space="preserve"><value>整个仓库的更改包括所有聊天及其他工具的编辑。</value></data>
+  <data name="Chat.Project.Choose" xml:space="preserve"><value>选择一个项目以查看 Git 更改。</value></data>
+  <data name="Chat.Project.SendFirst" xml:space="preserve"><value>发送消息后即可浏览此代理的文件夹。</value></data>
+  <data name="Chat.Project.NoChanges" xml:space="preserve"><value>没有更改。</value></data>
+  <data name="Chat.Project.staged" xml:space="preserve"><value>已暂存</value></data>
+  <data name="Chat.Project.unstaged" xml:space="preserve"><value>未暂存</value></data>
+  <data name="Chat.Project.untracked" xml:space="preserve"><value>未跟踪</value></data>
+  <data name="Chat.Project.Read.Ready" xml:space="preserve"><value>就绪</value></data>
+  <data name="Chat.Project.Read.Binary" xml:space="preserve"><value>无法预览二进制文件。</value></data>
+  <data name="Chat.Project.Read.TooLarge" xml:space="preserve"><value>每侧预览最多 256 KiB 和 5,000 行。</value></data>
+  <data name="Chat.Project.Read.Unavailable" xml:space="preserve"><value>文件或仓库不可用。请刷新并检查访问权限。</value></data>
+  <data name="Chat.Project.Read.NotRepository" xml:space="preserve"><value>此文件夹不是 Git 仓库。</value></data>
+  <data name="Chat.Project.Read.GitMissing" xml:space="preserve"><value>请在 Oscova 主机上安装 Git 以查看更改。</value></data>
+  <data name="Chat.Project.Read.Unsupported" xml:space="preserve"><value>不支持此 Git 布局、配置或文件类型。</value></data>
+  <data name="Chat.Project.Read.RefreshRequired" xml:space="preserve"><value>所选更改已变化。请刷新列表。</value></data>
+  <data name="Chat.ToolCard.Status.Cancelled" xml:space="preserve"><value>已取消</value></data>
+  <data name="Chat.FollowUps.Label" xml:space="preserve"><value>后续消息</value></data>
+  <data name="Chat.FollowUps.SteeringBadge" xml:space="preserve"><value>正在引导</value></data>
+  <data name="Chat.FollowUps.Steer" xml:space="preserve"><value>引导</value></data>
+  <data name="Chat.FollowUps.Delete" xml:space="preserve"><value>删除</value></data>
+  <data name="Chat.FollowUps.More" xml:space="preserve"><value>更多操作</value></data>
+  <data name="Chat.FollowUps.Edit" xml:space="preserve"><value>编辑消息</value></data>
+<data name="Chat.Branch.Label" xml:space="preserve"><value>在新聊天中创建分支</value></data>
+<data name="Chat.Branch.Failed" xml:space="preserve"><value>无法创建聊天分支。请重试。</value></data>
+<data name="Chat.Branch.ContinuedFrom" xml:space="preserve"><value>延续自聊天</value></data>
+<data name="Chat.Branch.SourceUnavailable" xml:space="preserve"><value>来源聊天不可用</value></data>
+<data name="Chat.Project.Device" xml:space="preserve"><value>设备</value></data><data name="Chat.Project.ServerDevice" xml:space="preserve"><value>此服务器</value></data><data name="Chat.Project.SelectDevice" xml:space="preserve"><value>选择设备</value></data><data name="Chat.Project.DeviceUnavailable" xml:space="preserve"><value>不可用</value></data><data name="Chat.Project.PermissionDisabled" xml:space="preserve"><value>请让操作员为你的账户启用项目。</value></data><data name="Chat.Project.NodeRequired" xml:space="preserve"><value>在你的计算机上启动 Oscova node 以添加项目。</value></data><data name="Chat.Artifacts.NodeUnavailable" xml:space="preserve"><value>文件不可用。请启动项目设备，检查项目访问权限并确认文件仍然存在，然后重新打开预览。</value></data>
+  <data name="Chat.ToolApprovalProjectWarning" xml:space="preserve"><value>在所选项目的设备上运行，使用该设备账户的操作系统权限。</value></data>
+  <data name="Chat.Project.NodeOffline" xml:space="preserve"><value>所选节点已离线。请在该设备上启动 Oscova node，然后重试。</value></data>
+  <data name="Chat.Project.FolderMissing" xml:space="preserve"><value>项目文件夹缺失。请恢复该文件夹，然后重试。</value></data>
+  <data name="Chat.Mcp.ConnectionFailed" xml:space="preserve"><value>无法启动 MCP 连接“{0}”。请打开 MCP 服务器设置，检查执行设备上的配置，然后重新连接。</value></data>
+  <data name="Chat.Mcp.DockerMissing" xml:space="preserve"><value>无法启动 MCP 连接“{0}”。请在执行设备上安装 Docker，或选择原生 MCP 执行方式。</value></data>
+  <data name="Chat.Workspace.Preview" xml:space="preserve">
+    <value>预览</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedTitle" xml:space="preserve">
+    <value>未保存的文件更改</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedMessage" xml:space="preserve">
+    <value>请先保存或放弃更改再继续。取消将保留当前打开的文件。</value>
+  </data>
+  <data name="Chat.Workspace.Discard" xml:space="preserve">
+    <value>放弃</value>
+  </data>
+  <data name="Chat.Workspace.ConflictTitle" xml:space="preserve">
+    <value>文件已更改</value>
+  </data>
+  <data name="Chat.Workspace.ConflictMessage" xml:space="preserve">
+    <value>文件在打开后已被更改。你的更改尚未保存。</value>
+  </data>
+  <data name="Chat.Workspace.ConflictActions" xml:space="preserve">
+    <value>覆盖会用你的更改替换较新的文件。重新加载会在确认后放弃你的更改。</value>
+  </data>
+  <data name="Chat.Workspace.Overwrite" xml:space="preserve">
+    <value>用我的更改覆盖</value>
+  </data>
+  <data name="Chat.Workspace.ReloadLatest" xml:space="preserve">
+    <value>重新加载最新版本</value>
+  </data>
+  <data name="Chat.Workspace.LoadFailed" xml:space="preserve">
+    <value>无法加载文件。请检查文件访问权限和设备连接，然后重试。</value>
+  </data>
+  <data name="Chat.Workspace.SaveFailed" xml:space="preserve">
+    <value>无法确认保存结果。请检查访问权限、512 KiB 和 5,000 行的限制以及设备连接。草稿已保留。请重试保存或重新加载。</value>
+  </data>
+<data name="Chat.Workspace.ReloadConfirm" xml:space="preserve"><value>重新加载最新文件并放弃未保存的编辑？</value></data>
+  <data name="Chat.Workspace.TooLarge" xml:space="preserve"><value>预览和编辑限制为 512 KiB 和 5,000 行。</value></data>
+  <data name="Chat.Browser.NewTab" xml:space="preserve"><value>新建浏览器标签页</value></data>
+  <data name="Chat.Browser.Address" xml:space="preserve"><value>搜索或输入网址</value></data>
+  <data name="Chat.Browser.Viewport" xml:space="preserve"><value>实时浏览器页面</value></data>
+  <data name="Chat.Browser.PhoneView" xml:space="preserve"><value>触屏设备仅支持查看。请使用桌面设备操作。</value></data>
+  <data name="Chat.Browser.Failed" xml:space="preserve"><value>浏览器操作失败。</value></data>
+  <data name="Chat.Browser.Disconnected" xml:space="preserve"><value>浏览器连接已断开。请重新打开标签页。</value></data>
+  <data name="Chat.Browser.Clipboard" xml:space="preserve"><value>无法访问剪贴板。请允许剪贴板权限或使用键盘粘贴。</value></data>
+  <data name="Chat.Browser.InvalidAddress" xml:space="preserve"><value>请输入 HTTP 或 HTTPS 地址、主机名或搜索词（最多 4096 个字符）。</value></data>
+  <data name="Chat.Browser.UploadLimit" xml:space="preserve"><value>最多选择 8 个文件，总大小不超过 32 MiB。</value></data>
+  <data name="Chat.Browser.Cut" xml:space="preserve"><value>剪切</value></data>
+  <data name="Chat.Browser.Copy" xml:space="preserve"><value>复制</value></data>
+  <data name="Chat.Browser.Paste" xml:space="preserve"><value>粘贴</value></data>
+  <data name="Chat.Browser.SelectAll" xml:space="preserve"><value>全选</value></data>
+  <data name="Chat.Browser.ChooseFile" xml:space="preserve"><value>从你的设备中选择要提供给此网站的文件</value></data>
+  <data name="Chat.Browser.FileReady" xml:space="preserve"><value>文件已就绪</value></data>
+  <data name="Chat.Browser.SaveToDevice" xml:space="preserve"><value>保存到设备</value></data>
+  <data name="Chat.Permissions.AllowOnce" xml:space="preserve">
+    <value>仅允许一次</value>
+  </data>
+  <data name="Chat.Permissions.AllowForSession" xml:space="preserve">
+    <value>在此会话期间允许</value>
+  </data>
+  <data name="Chat.Permissions.SessionLifetime" xml:space="preserve">
+    <value>适用于此工具、代理和对话，直到撤销或服务器会话结束。刷新或切换聊天会保留权限。重启 Oscova 会清除权限。</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnavailable" xml:space="preserve">
+    <value>此请求缺少可信的工具、代理或执行目标，因此无法允许整个会话。</value>
+  </data>
+  <data name="Chat.Permissions.AllowedOnce" xml:space="preserve">
+    <value>已允许一次</value>
+  </data>
+  <data name="Chat.Permissions.AllowedForSession" xml:space="preserve">
+    <value>已允许此会话</value>
+  </data>
+  <data name="Chat.Permissions.Denied" xml:space="preserve">
+    <value>已拒绝</value>
+  </data>
+  <data name="Chat.Permissions.SessionAutoApproved" xml:space="preserve">
+    <value>通过会话权限自动批准</value>
+  </data>
+  <data name="Chat.Permissions.AutoApproved" xml:space="preserve">
+    <value>已自动批准</value>
+  </data>
+  <data name="Chat.Permissions.AutoRejected" xml:space="preserve">
+    <value>已自动拒绝</value>
+  </data>
+  <data name="Chat.Permissions.FullAccess" xml:space="preserve">
+    <value>完全访问</value>
+  </data>
+  <data name="Chat.Permissions.ApprovalExpired" xml:space="preserve">
+    <value>此批准请求已过期。请重新请求工具。</value>
+  </data>
+  <data name="Chat.Permissions.SessionPermissions" xml:space="preserve">
+    <value>会话权限</value>
+  </data>
+  <data name="Chat.Permissions.Revoke" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="Chat.Permissions.RevokeAll" xml:space="preserve">
+    <value>全部撤销</value>
+  </data>
+  <data name="Chat.Permissions.NoSessionPermissions" xml:space="preserve">
+    <value>没有有效的会话权限。</value>
+  </data>
+  <data name="Chat.Permissions.RunningPermission" xml:space="preserve">
+    <value>当前运行轮次：{0}。所选预设适用于下一次运行。</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningUsePolicy" xml:space="preserve">
+    <value>遵循智能体的工具策略。</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoApprove" xml:space="preserve">
+    <value>跳过批准提示。执行限制仍然有效。</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoReject" xml:space="preserve">
+    <value>拒绝需要批准的调用。</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningFullAccess" xml:space="preserve">
+    <value>跳过批准提示。在 {0} 上于 Docker 外运行不受过滤的 Shell 命令。</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedFullAccess" xml:space="preserve">
+    <value>完全访问模式下不使用这些权限。撤销不会关闭完全访问。</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoApprove" xml:space="preserve">
+    <value>跳过批准提示时不使用这些权限。</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoReject" xml:space="preserve">
+    <value>拒绝需要批准的调用时不使用这些权限。</value>
+  </data>
+  <data name="Chat.ToolApproval.ExecutionEnvironmentWarning" xml:space="preserve">
+    <value>在所选执行环境中运行。</value>
+  </data>
+  <data name="Chat.ToolCard.ToolSearchTitle" xml:space="preserve">
+    <value>加载工具</value>
+  </data>
+  <data name="VisualizationTitle" xml:space="preserve"><value>交互式可视化</value></data>
+  <data name="VisualizationGenerating" xml:space="preserve"><value>正在生成可视化</value></data>
+  <data name="VisualizationUnavailable" xml:space="preserve"><value>可视化不可用</value></data>
+  <data name="VisualizationLocalOnly" xml:space="preserve"><value>仅本地模式下已禁用可视化。</value></data>
+  <data name="Chat.ComposerOptions" xml:space="preserve"><value>聊天选项</value></data>
+  <data name="Chat.History.LoadingConversation" xml:space="preserve"><value>正在加载对话…</value></data>
+  <data name="Chat.History.LoadOlderMessages" xml:space="preserve"><value>加载更早的消息</value></data>
+  <data name="Chat.History.LoadingOlderMessages" xml:space="preserve"><value>正在加载更早的消息…</value></data>
+  <data name="Chat.History.StartOfConversation" xml:space="preserve"><value>对话开始</value></data>
+  <data name="Chat.History.LoadOlderMessagesFailed" xml:space="preserve"><value>无法加载更早的消息。请重试。</value></data>
+  <data name="RemoveRecipient" xml:space="preserve"><value>移除接收者</value></data>
+  <data name="ConsultAgent" xml:space="preserve"><value>咨询智能体</value></data>
+  <data name="NoMatchingAgents" xml:space="preserve"><value>没有匹配的智能体</value></data>
+  <data name="Chat.ExpandTable" xml:space="preserve"><value>展开表格</value></data>
+  <data name="Chat.ExpandedTable" xml:space="preserve"><value>表格</value></data>
+  <data name="Chat.Goal.Edit" xml:space="preserve"><value>编辑目标</value></data>
+  <data name="Chat.Goal.Title" xml:space="preserve">
+    <value>目标</value>
+  </data>
+  <data name="Chat.Goal.Start" xml:space="preserve">
+    <value>启动目标</value>
+  </data>
+  <data name="Chat.Goal.Save" xml:space="preserve">
+    <value>保存目标</value>
+  </data>
+  <data name="Chat.Goal.Pause" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="Chat.Goal.Running" xml:space="preserve">
+    <value>目标进行中</value>
+  </data>
+  <data name="Chat.Goal.Paused" xml:space="preserve">
+    <value>目标已暂停</value>
+  </data>
+  <data name="Chat.Goal.Blocked" xml:space="preserve">
+    <value>目标受阻</value>
+  </data>
+  <data name="Chat.Goal.Achieved" xml:space="preserve">
+    <value>目标已达成</value>
+  </data>
+  <data name="Chat.Goal.SaveFailed" xml:space="preserve">
+    <value>无法保存目标</value>
+  </data>
+  <data name="Chat.Goal.ActionFailed" xml:space="preserve">
+    <value>无法更新目标</value>
+  </data>
+  <data name="Chat.Slash.GoalDescription" xml:space="preserve">
+    <value>持续工作以达成目标</value>
+  </data>
+  <data name="Chat.Goal.ClearFirst" xml:space="preserve">
+    <value>请先清除当前目标，再开始新目标。</value>
+  </data>
+  <data name="Chat.Goal.AnswerOrDismiss" xml:space="preserve">
+    <value>请先回答或关闭问题</value>
+  </data>
+  <data name="Chat.Goal.ReasonStopped" xml:space="preserve">
+    <value>已停止</value>
+  </data>
+  <data name="Chat.Goal.ReasonRestarted" xml:space="preserve">
+    <value>应用已重启</value>
+  </data>
+  <data name="Chat.Goal.ReasonBudget" xml:space="preserve">
+    <value>已达到预算</value>
+  </data>
+  <data name="Chat.Goal.ReasonIterations" xml:space="preserve">
+    <value>迭代次数上限</value>
+  </data>
+  <data name="Chat.Goal.ReasonProvider" xml:space="preserve">
+    <value>提供商不可用</value>
+  </data>
+  <data name="Chat.Goal.ReasonJudge" xml:space="preserve">
+    <value>无法检查完成情况</value>
+  </data>
+  <data name="Chat.Goal.ReasonWorker" xml:space="preserve">
+    <value>无法继续</value>
+  </data>
+  <data name="Chat.Goal.ReasonQuestion" xml:space="preserve">
+    <value>等待你的回答</value>
+  </data>
+  <data name="Chat.Goal.ReasonDismissed" xml:space="preserve">
+    <value>问题已关闭</value>
+  </data>
+  <data name="Chat.AttachmentReadFailed" xml:space="preserve">
+    <value>无法附加“{0}”。请重新选择。</value>
+  </data>
+  <data name="Chat.RecipientOwnModelProvider" xml:space="preserve">
+    <value>{0} 使用自己的模型提供商。</value>
+  </data>
+  <data name="Chat.RecipientModelProviderUnavailable" xml:space="preserve">
+    <value>智能体模型提供商不可用</value>
+  </data>
+  <data name="Chat.Workspace.NewTab" xml:space="preserve"><value>新建标签页</value></data>
+  <data name="Chat.Workspace.ResizeFiles" xml:space="preserve"><value>调整文件面板大小</value></data>
+  <data name="Chat.Workspace.SelectFile" xml:space="preserve"><value>从工作区文件树中选择一个文件。</value></data>
+  <data name="Chat.Workspace.FileActions" xml:space="preserve"><value>文件操作</value></data>
+  <data name="Chat.Workspace.AddToChat" xml:space="preserve"><value>添加到聊天</value></data>
+  <data name="Chat.Workspace.RelativePath" xml:space="preserve"><value>相对路径</value></data>
+  <data name="Chat.Workspace.AbsolutePath" xml:space="preserve"><value>绝对路径</value></data>
+  <data name="Chat.Workspace.Filename" xml:space="preserve"><value>文件名</value></data>
+  <data name="Chat.WaitingForSubagentsStatus" xml:space="preserve"><value>正在等待子代理</value></data>
+  <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>正在等待你的回答和子代理</value></data>
+  <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>等待批准</value></data>
+  <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>已中断</value></data>
+</root>

@@ -1,0 +1,417 @@
+@page "/admin"
+@attribute [Authorize(Roles = "Admin")]
+@inject IDialogService DialogService
+@inject ManagementApiClient ManagementApiClient
+@inject SettingsApiClient SettingsApiClient
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<NavigationText> NavigationLoc
+@inject IStringLocalizer<SettingsText> SettingsLoc
+
+<DashboardShell ActiveView="ActiveView.Admin">
+<div class="min-sm:container mx-auto flex h-full min-h-0 w-full min-w-0 flex-col">
+<div class="flex h-full min-w-0 flex-col gap-4 overflow-hidden">
+    <div class="custom-admin-heading-container custom-scrollbar">
+        <header class="custom-settings-heading custom-management-heading">
+            <div>
+                <div class="custom-settings-title">
+                    <h1>@CommonLoc.GetOrDefault(CommonTextKeys.AdminTitle, "Administration")</h1>
+                    <HelpTriggerButton Topic="@HelpTopics.Admin" />
+                </div>
+                <p>@CommonLoc.GetOrDefault(CommonTextKeys.AdminDescription, "Create users and keep access secure.")</p>
+            </div>
+        </header>
+    </div>
+
+    <div class="custom-management-body custom-management-admin custom-scrollbar min-w-0 flex-1 overflow-y-auto">
+        <div class="space-y-6">
+            <div class="card custom-settings-catalog-card">
+                <div class="card-body p-6">
+                    <div class="grid grid-cols-1 gap-6 xl:grid-cols-5">
+                        <div class="xl:col-span-2">
+                            <div class="flex items-center gap-2">
+                                <iconify-icon icon="lucide:shield-check" width="20" height="20"></iconify-icon>
+                                <p class="text-lg font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModeLabel, "Authentication Mode")</p>
+                            </div>
+                            <p class="text-base-content/60 mt-1 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModeDescription, "Switch between standard password login and the simplified Home profile-select flow.")</p>
+                        </div>
+                        <div class="space-y-4 xl:col-span-3">
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <label class="border-base-300 hover:bg-base-200 rounded-box flex cursor-pointer items-start gap-3 border p-4">
+                                    <input type="radio" class="radio radio-primary mt-1" name="auth-mode" disabled="@_isSavingAuthSettings" checked="@(_authMode == AuthMode.Standard)" @onchange="() => _authMode = AuthMode.Standard" />
+                                    <div>
+                                        <p class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModeStandardLabel, "Standard")</p>
+                                        <p class="text-base-content/60 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModeStandardDescription, "Use the existing username and password login screen.")</p>
+                                    </div>
+                                </label>
+                                <label class="border-base-300 hover:bg-base-200 rounded-box flex cursor-pointer items-start gap-3 border p-4">
+                                    <input type="radio" class="radio radio-primary mt-1" name="auth-mode" disabled="@_isSavingAuthSettings" checked="@(_authMode == AuthMode.Home)" @onchange="() => _authMode = AuthMode.Home" />
+                                    <div>
+                                        <p class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModeHomeLabel, "Home")</p>
+                                        <p class="text-base-content/60 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModeHomeDescription, "Show a profile picker, then sign in with a PIN.")</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="border-base-300 rounded-box border p-4">
+                                <p class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModePinRequirementTitle, "PIN requirement")</p>
+                                <p class="text-base-content/60 mt-1 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthModePinRequirementDescription, "Profiles need a PIN before they can sign in through Home mode.")</p>
+                            </div>
+
+                            @if (_authMode == AuthMode.Home && !_hasAdminPin)
+                            {
+                                <div class="alert alert-warning alert-soft">
+                                    <iconify-icon icon="lucide:triangle-alert" width="18" height="18"></iconify-icon>
+                                    <span>@CommonLoc.GetOrDefault(CommonTextKeys.AdminHomeModeRequiresPin, "At least one operator PIN is required before Home mode can be enabled.")</span>
+                                </div>
+                            }
+
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <p class="text-base-content/60 text-sm">
+                                    @CommonLoc.GetOrDefault(CommonTextKeys.AdminPasswordFallbackHint, "Password sign-in remains available from the login screen.")
+                                </p>
+                                <button type="button" class="btn btn-primary btn-sm" disabled="@_isSavingAuthSettings" @onclick="SaveAuthSettingsAsync">
+                                    @if (_isSavingAuthSettings)
+                                    {
+                                        <span class="loading loading-spinner loading-sm"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+                                    }
+                                    @CommonLoc.GetOrDefault(CommonTextKeys.AdminSaveAuthSettingsButton, "Save auth settings")
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card custom-settings-catalog-card">
+                <div class="card-body divide-base-300 divide-y p-0">
+                    <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <iconify-icon icon="lucide:key-round" width="20" height="20"></iconify-icon>
+                                <p class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.OAuthTitle, "OAuth Providers")</p>
+                            </div>
+                            <p class="text-base-content/60 mt-1 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.OAuthDescription, "Configure the shared Google and Microsoft OAuth apps used for connected accounts and future integrations.")</p>
+                            <div class="mt-2 flex flex-wrap gap-3 text-sm">
+                                @if (_isLoadingOAuth)
+                                {
+                                    <span class="loading loading-spinner loading-sm"></span>
+                                }
+                                else
+                                {
+                                    @foreach (var provider in _oauthProviders)
+                                    {
+                                        <span class="flex items-center gap-1.5">@provider.DisplayName <span class="badge badge-sm @(provider.IsConfigured ? "badge-success badge-soft" : "badge-ghost")">@ConfigurationStatus(provider.IsConfigured)</span></span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm w-full shrink-0 sm:w-auto" disabled="@_isLoadingOAuth" @onclick="OpenOAuthProvidersAsync">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.AdminManageOAuthProvidersButton, "Manage providers")
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <iconify-icon icon="lucide:github" width="20" height="20"></iconify-icon>
+                                <p class="font-medium">@SettingsLoc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialTitle, "GitHub Skill Search")</p>
+                            </div>
+                            <p class="text-base-content/60 mt-1 text-sm">@SettingsLoc.GetOrDefault(SettingsTextKeys.GitHubSkillsCredentialDescription, "Optional Personal Access Token used by Find skills online. Raises the GitHub API rate limit from 60 to 5,000 requests per hour for the whole host.")</p>
+                            <div class="mt-2">
+                                @if (_isLoadingGitHub)
+                                {
+                                    <span class="loading loading-spinner loading-sm"></span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-sm @(_gitHubConfigured ? "badge-success badge-soft" : "badge-ghost")">@ConfigurationStatus(_gitHubConfigured)</span>
+                                }
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm w-full shrink-0 sm:w-auto" disabled="@_isLoadingGitHub" @onclick="OpenGitHubSkillSearchAsync">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.AdminManageGitHubTokenButton, "Manage GitHub token")
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card custom-settings-catalog-card">
+                <div class="card-body p-0">
+                    <div class="flex flex-col gap-3 px-5 pt-5 pb-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="lucide:users" width="20" height="20"></iconify-icon>
+                            <p class="text-lg font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserDirectoryTitle, "User Directory")</p>
+                            <span class="badge badge-neutral badge-sm">@_users.Count</span>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" @onclick="OpenCreateUserAsync">
+                            <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                            @CommonLoc.GetOrDefault(CommonTextKeys.AdminCreateUserButton, "Create user")
+                        </button>
+                    </div>
+
+                    <div class="custom-settings-table-container overflow-x-auto">
+                        <table class="table custom-settings-adaptive-table custom-admin-directory-table">
+                            <thead>
+                                <tr>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.User, "User")</th>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.Roles, "Roles")</th>
+                                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserPinHeader, "PIN")</th>
+                                    <th class="text-end">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var entry in _users)
+                                {
+                                    <tr class="hover:bg-base-200/40">
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.User, "User")">
+                                            <div class="flex items-center gap-3">
+                                                <div class="avatar placeholder shrink-0">
+                                                    <div class="bg-neutral text-neutral-content mask mask-squircle flex size-9 items-center justify-center">
+                                                        <span class="text-sm font-medium">@StringUtils.GetInitials(string.IsNullOrWhiteSpace(entry.FullName) ? entry.UserName : entry.FullName)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="font-medium">@entry.FullName</p>
+                                                    <p class="text-base-content/60 text-xs">@($"@{entry.UserName}")</p>
+                                                    <p class="text-base-content/60 text-xs">@entry.Email</p>
+                                                </div>
+                                                @if (entry.IsCurrentUser)
+                                                {
+                                                    <span class="badge badge-primary badge-sm">@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserYouBadge, "You")</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Roles, "Roles")">
+                                            <div class="flex flex-wrap gap-1">
+                                                @foreach (var role in entry.SelectedRoles.OrderBy(role => role))
+                                                {
+                                                    <span class="badge badge-sm @GetRoleBadgeClass(role)">@GetRoleDisplayName(role)</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserPinHeader, "PIN")">
+                                            <span class="badge badge-sm @(entry.HasPin ? "badge-success" : "badge-ghost")">
+                                                @(entry.HasPin ? CommonLoc.GetOrDefault(CommonTextKeys.TaskPageConfiguredBadge, "Configured") : CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set"))
+                                            </span>
+                                        </td>
+                                        <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                            <div class="flex justify-end gap-1">
+                                                <button type="button" class="btn btn-square btn-ghost btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserEditTitleAttribute, "Edit user")" disabled="@(_deletingUserId == entry.Id)" @onclick="() => OpenEditUserAsync(entry)">
+                                                    <iconify-icon icon="lucide:pencil" width="16" height="16" class="text-base-content/70"></iconify-icon>
+                                                </button>
+                                                <button type="button" class="btn btn-square btn-ghost btn-sm text-error" title="@CommonLoc.GetOrDefault(CommonTextKeys.AdminDeleteUserTitleAttribute, "Delete user")" disabled="@(entry.IsCurrentUser || _deletingUserId is not null)" @onclick="() => DeleteUserAsync(entry)">
+                                                    @if (_deletingUserId == entry.Id)
+                                                    {
+                                                        <span class="loading loading-spinner loading-sm"></span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <iconify-icon icon="lucide:trash-2" width="16" height="16"></iconify-icon>
+                                                    }
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</DashboardShell>
+
+@code {
+    private readonly List<UserEntry> _users = [];
+    private AuthMode _authMode;
+    private bool _hasAdminPin;
+    private IReadOnlyList<OAuthProviderAdminEntry> _oauthProviders = [];
+    private bool _gitHubConfigured;
+    private bool _isLoadingOAuth = true;
+    private bool _isLoadingGitHub = true;
+    private bool _isSavingAuthSettings;
+    private string? _deletingUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAdminSnapshotAsync();
+        await LoadOAuthStatusAsync();
+        await LoadGitHubStatusAsync();
+    }
+
+    private async Task OpenCreateUserAsync()
+    {
+        if (await DialogService.ShowAsync<CreateUserDialog>() == DialogResult.Ok)
+        {
+            await LoadAdminSnapshotAsync();
+        }
+    }
+
+    private async Task OpenEditUserAsync(UserEntry user)
+    {
+        await DialogService.ShowAsync<EditUserDialog>(new Dictionary<string, object?>
+        {
+            ["User"] = user
+        });
+        await LoadAdminSnapshotAsync();
+    }
+
+    private async Task OpenOAuthProvidersAsync()
+    {
+        await DialogService.ShowAsync<OAuthProvidersDialog>();
+        await LoadOAuthStatusAsync();
+    }
+
+    private async Task OpenGitHubSkillSearchAsync()
+    {
+        if (await DialogService.ShowAsync<GitHubSkillSearchDialog>() == DialogResult.Ok)
+        {
+            await LoadGitHubStatusAsync();
+        }
+    }
+
+    private async Task SaveAuthSettingsAsync()
+    {
+        if (_isSavingAuthSettings)
+        {
+            return;
+        }
+
+        _isSavingAuthSettings = true;
+        try
+        {
+            await ManagementApiClient.SaveAuthSettingsAsync(_authMode);
+            ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.AdminAuthSettingsSaved, "Authentication settings saved."), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isSavingAuthSettings = false;
+        }
+    }
+
+    private async Task DeleteUserAsync(UserEntry entry)
+    {
+        if (_deletingUserId is not null)
+        {
+            return;
+        }
+
+        if (entry.IsCurrentUser)
+        {
+            ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.AdminUserCannotDeleteOwnAccount, "You cannot delete your own account."), ToastType.Error);
+            return;
+        }
+
+        var confirmDialog = await DialogService.ShowAsync<ConfirmDialog>(
+            CommonLoc.GetOrDefault(CommonTextKeys.AdminUserDeleteConfirmTitle, "Confirm Deletion"),
+            FormatCommonText(CommonTextKeys.AdminUserDeleteConfirmMessage, "Are you sure you want to delete user '{0}'? This action cannot be undone.", entry.UserName));
+
+        if (confirmDialog != DialogResult.Ok || _deletingUserId is not null)
+        {
+            return;
+        }
+
+        _deletingUserId = entry.Id;
+        // Confirmation resumes outside the original click render, so show the pending deletion immediately.
+        await InvokeAsync(StateHasChanged);
+        try
+        {
+            var result = await ManagementApiClient.DeleteUserAsync(entry.Id);
+            ToastService.Show(result.Message, result.HasWarnings ? ToastType.Warning : ToastType.Success);
+            await LoadAdminSnapshotAsync();
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _deletingUserId = null;
+        }
+    }
+
+    private async Task LoadAdminSnapshotAsync()
+    {
+        try
+        {
+            var snapshot = await ManagementApiClient.GetAdminSnapshotAsync();
+            _authMode = snapshot.AuthMode;
+            _hasAdminPin = snapshot.HasAdminPin;
+            _users.Clear();
+            _users.AddRange(snapshot.Users);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+    }
+
+    private async Task LoadOAuthStatusAsync()
+    {
+        _isLoadingOAuth = true;
+        try
+        {
+            var config = await ManagementApiClient.GetOAuthProviderConfigurationAsync();
+            _oauthProviders = config.Providers;
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isLoadingOAuth = false;
+        }
+    }
+
+    private async Task LoadGitHubStatusAsync()
+    {
+        _isLoadingGitHub = true;
+        try
+        {
+            _gitHubConfigured = await SettingsApiClient.GetGitHubSkillsCredentialConfiguredAsync();
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+        finally
+        {
+            _isLoadingGitHub = false;
+        }
+    }
+
+    private string ConfigurationStatus(bool configured) => configured
+        ? CommonLoc.GetOrDefault(CommonTextKeys.OAuthConfiguredStatus, "Configured")
+        : CommonLoc.GetOrDefault(CommonTextKeys.NotConfigured, "Not configured");
+
+    private static string GetRoleBadgeClass(string role) => role switch
+    {
+        "Admin" => "badge-primary",
+        "Moderator" => "badge-secondary",
+        _ => "badge-ghost"
+    };
+
+    private string GetRoleDisplayName(string role) => role switch
+    {
+        "Admin" => NavigationLoc.GetOrDefault(NavigationTextKeys.RoleAdmin, "Operator"),
+        "Moderator" => NavigationLoc.GetOrDefault(NavigationTextKeys.RoleModerator, "Moderator"),
+        "User" => NavigationLoc.GetOrDefault(NavigationTextKeys.RoleUser, "User"),
+        _ => role
+    };
+
+    private string FormatCommonText(string key, string fallback, params object?[] args) =>
+        string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+}

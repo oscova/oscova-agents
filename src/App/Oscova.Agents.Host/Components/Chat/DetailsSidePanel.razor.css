@@ -1,0 +1,293 @@
+.activity-side-panel-host {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+}
+
+.activity-side-panel {
+    container-type: inline-size;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--app-glass-surface, var(--color-base-100));
+    -webkit-backdrop-filter: var(--app-glass-filter, none);
+    backdrop-filter: var(--app-glass-filter, none);
+}
+
+.activity-side-panel-header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: .25rem;
+    min-height: 2.75rem;
+    padding: .375rem .5rem;
+    border-bottom: 1px solid var(--app-glass-border, var(--color-base-300));
+}
+
+.custom-workspace-document-tabs {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    gap: .125rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.custom-workspace-document-tab {
+    display: flex;
+    flex: 0 0 auto;
+    max-width: 12rem;
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: .5rem;
+    color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+}
+
+.custom-workspace-document-select,
+.custom-workspace-document-close {
+    display: flex;
+    min-width: 0;
+    min-height: 2rem;
+    align-items: center;
+    gap: .375rem;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+.custom-workspace-document-close {
+    flex-shrink: 0;
+    justify-content: center;
+    width: 1.75rem;
+    min-height: 1.75rem;
+    padding: 0;
+    margin-inline-end: .125rem;
+    border-radius: 50%;
+}
+.custom-workspace-document-close:hover {
+    background: var(--color-base-300);
+    color: var(--color-base-content);
+}
+
+.custom-workspace-document-tab-active {
+    border-color: color-mix(in oklab, var(--color-base-content) 12%, transparent);
+}
+
+.custom-workspace-document-tab:hover,
+.custom-workspace-document-tab-active {
+    background: var(--color-base-200);
+    color: var(--color-base-content);
+}
+
+.custom-workspace-document-tab button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+}
+
+.custom-workspace-actions { display: flex; flex-shrink: 0; align-items: center; gap: .125rem; }
+.custom-workspace-current-view {
+    flex: none;
+    padding: .375rem .75rem;
+    border-radius: .5rem;
+    background: var(--color-base-200);
+    font-size: .75rem;
+}
+.custom-workspace-dirty { flex-shrink: 0; color: var(--color-warning); }
+.custom-workspace-document-content { display: flex; flex: 1; min-height: 0; flex-direction: column; overflow: hidden; }
+.custom-workspace-empty { display: flex; flex: 1; flex-direction: column; justify-content: center; align-items: center; gap: .5rem; padding: 1rem; text-align: center; }
+
+.custom-workspace-return {
+    position: absolute;
+    z-index: 2;
+    inset-inline-end: 1rem;
+    bottom: .75rem;
+    border-radius: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.custom-workspace-full {
+    padding-bottom: 3.5rem;
+}
+
+.activity-side-panel-backdrop { display: none; }
+
+.activity-side-panel ::deep .custom-workspace-browser {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.activity-side-panel ::deep .custom-workspace-toolbar,
+.activity-side-panel ::deep .custom-workspace-path {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: .25rem .5rem;
+    border-bottom: 1px solid var(--color-base-300);
+}
+
+.activity-side-panel ::deep .custom-workspace-browser > p {
+    padding: .5rem .75rem;
+}
+
+.activity-side-panel ::deep .custom-workspace-root { flex: 1; min-width: 0; }
+.activity-side-panel ::deep .custom-workspace-root-select {
+    max-width: 100%;
+    gap: .375rem;
+    padding-inline: .375rem;
+    font-size: .75rem;
+    font-weight: 500;
+}
+.activity-side-panel ::deep .custom-workspace-root-select > :not(.truncate) { flex-shrink: 0; }
+.activity-side-panel ::deep .custom-workspace-root-state { font-size: .6875rem; opacity: .65; }
+
+.activity-side-panel ::deep .custom-workspace-content {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+@media (pointer: coarse) {
+    .custom-workspace-document-select,
+    .custom-workspace-document-close { min-height: 2.75rem; }
+    .custom-workspace-document-close { width: 2.75rem; }
+}
+
+.activity-side-panel ::deep .custom-workspace-tree {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+.activity-side-panel ::deep .custom-workspace-tree-scroll { flex: 1; min-height: 0; overflow: auto; padding: .375rem; }
+.activity-side-panel ::deep .custom-workspace-tree-toolbar { gap: .125rem; padding: .125rem .375rem; }
+.activity-side-panel ::deep .custom-workspace-tree-resizer { display: none; }
+.activity-side-panel ::deep .custom-workspace-placeholder { align-items: center; justify-content: center; gap: .5rem; color: color-mix(in oklab, var(--color-base-content) 55%, transparent); font-size: .8125rem; text-align: center; }
+.activity-side-panel ::deep .custom-workspace-content:not(.custom-workspace-has-preview) > .custom-workspace-preview { display: none; }
+
+.activity-side-panel ::deep .custom-workspace-tree button {
+    min-height: 1.625rem;
+    height: auto;
+    padding: .25rem .375rem;
+    font-size: .75rem;
+    font-weight: 400;
+}
+
+.activity-side-panel ::deep .custom-workspace-tree-list { margin: 0; padding: 0; list-style: none; }
+.activity-side-panel ::deep .custom-workspace-tree-list .custom-workspace-tree-list { margin-inline-start: .75rem; border-inline-start: 1px solid var(--color-base-300); }
+.activity-side-panel ::deep .custom-workspace-copy-trigger { display: block; width: 100%; padding: 0; }
+.activity-side-panel ::deep .custom-workspace-copy-trigger > button { display: flex; align-items: center; gap: .5rem; padding: .375rem .75rem; border-radius: .5rem; text-align: start; }
+.activity-side-panel ::deep .custom-workspace-copy-menu { position-area: inline-end span-block-end; position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block; margin: 0 .5rem; }
+.activity-side-panel ::deep .custom-workspace-copy-menu > ul { margin: 0; }
+.activity-side-panel ::deep .custom-workspace-tree-entry {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    width: 100%;
+    min-width: 0;
+    border-radius: .375rem;
+    text-align: start;
+    cursor: pointer;
+}
+.activity-side-panel ::deep .custom-workspace-tree-entry iconify-icon,
+.activity-side-panel ::deep .custom-workspace-disclosure { flex: 0 0 .875rem; }
+.activity-side-panel ::deep .custom-workspace-disclosure { display: flex; align-items: center; }
+.activity-side-panel ::deep [aria-expanded="true"] > .custom-workspace-disclosure { transform: rotate(90deg); }
+.activity-side-panel ::deep .custom-workspace-tree-entry:hover { background: var(--color-base-200); }
+.activity-side-panel ::deep .custom-workspace-tree-entry:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+
+.activity-side-panel ::deep .custom-workspace-tree button[aria-current="page"] {
+    background: var(--color-base-200);
+    color: var(--color-base-content);
+}
+
+.activity-side-panel ::deep .custom-workspace-change-group {
+    display: flex;
+    justify-content: space-between;
+    padding: .5rem .375rem .25rem;
+    font-size: .75rem;
+    font-weight: 500;
+}
+.activity-side-panel ::deep .custom-workspace-change-group > span { opacity: .6; }
+.activity-side-panel ::deep .custom-workspace-change-status { margin-inline-start: auto; flex-shrink: 0; font-family: monospace; color: var(--color-warning); }
+.activity-side-panel ::deep .custom-workspace-changes table { width: max-content; min-width: 100%; }
+.activity-side-panel ::deep .custom-workspace-changes td { padding-block: 0; border: 0; }
+.activity-side-panel ::deep .custom-workspace-changes code { white-space: pre; overflow-wrap: normal; line-height: 1.375rem; }
+
+.activity-side-panel ::deep .custom-workspace-has-preview > .custom-workspace-tree {
+    display: none;
+}
+
+.activity-side-panel ::deep .custom-workspace-preview {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.activity-side-panel ::deep .custom-workspace-preview > p { padding: .75rem; }
+
+.activity-side-panel ::deep .custom-workspace-preview > .oscova-code-editor,
+.activity-side-panel ::deep .custom-workspace-preview > .rounded-box {
+    flex: 1;
+    border: 0;
+    border-radius: 0;
+}
+
+/* Keep navigation beside code once both panes have useful reading width. */
+@container (min-width: 28rem) {
+    .activity-side-panel ::deep .custom-workspace-content > .custom-workspace-tree {
+        display: flex;
+        flex: 0 0 clamp(10rem, var(--workspace-tree-width, 32%), 60%);
+        order: 1;
+        border-inline-start: 1px solid var(--color-base-300);
+    }
+
+    .activity-side-panel ::deep .custom-workspace-back { display: none; }
+    .activity-side-panel ::deep .custom-workspace-content:not(.custom-workspace-has-preview) > .custom-workspace-preview { display: flex; }
+    .activity-side-panel ::deep .custom-workspace-tree-resizer {
+        display: block;
+        position: absolute;
+        inset-inline-start: -.25rem;
+        top: 0;
+        bottom: 0;
+        width: .5rem;
+        z-index: 2;
+        cursor: col-resize;
+        touch-action: none;
+    }
+    .activity-side-panel ::deep .custom-workspace-tree-resizer:hover { background: color-mix(in oklab, var(--color-primary) 40%, transparent); }
+    .activity-side-panel ::deep .custom-workspace-tree-resizer:focus-visible { background: var(--color-primary); outline: none; }
+}
+
+@media (pointer: coarse) {
+    .activity-side-panel ::deep .custom-workspace-tree button { min-height: 2.75rem; }
+}
+
+@media (max-width: 1279px) {
+    .activity-side-panel-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        display: block;
+        background: color-mix(in oklab, black 28%, transparent);
+    }
+}

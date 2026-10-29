@@ -1,0 +1,141 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<ChatText> ChatLoc
+
+<div class="space-y-4">
+    <div class="rounded-box bg-base-200 p-4">
+        <p class="text-sm text-base-content/60">@Text(SettingsTextKeys.AgentsContextInitial, "Estimated initial input tokens")</p>
+        <p class="mt-1 text-2xl font-semibold">@Tokens(Preview.EstimatedInputTokens)</p>
+    </div>
+    <p class="text-xs text-base-content/60">@Text(SettingsTextKeys.AgentsContextScope,
+        "Local estimate for these settings. Conversation input, later skill bodies and tool results are excluded. Model framing and tokenization may differ.")</p>
+
+    <div class="flex h-2 overflow-hidden rounded-full" aria-hidden="true">
+        <div class="bg-primary" style="@Segment(Preview.InstructionTokens)"></div>
+        <div class="bg-info" style="@Segment(Preview.ToolTokens)"></div>
+        <div class="bg-accent" style="@Segment(Preview.MessageTokens)"></div>
+    </div>
+    <dl class="grid gap-3 sm:grid-cols-2">
+        @Metric(InstructionsLabel, Tokens(Preview.InstructionTokens))
+        @Metric(ToolsLabel, Tokens(Preview.ToolTokens))
+        @if (Preview.MessageTokens != 0)
+        {
+            @Metric(MessagesLabel, Tokens(Preview.MessageTokens))
+        }
+        @if (Preview.ContextWindowSize > 0)
+        {
+            @Metric(ChatLoc.GetOrDefault(ChatTextKeys.ContextUsageTotalLabel, "Context window"), Tokens(Preview.ContextWindowSize))
+            @Metric(ChatLoc.GetOrDefault(ChatTextKeys.ContextUsageReservedOutputLabel, "Reserved output"), Tokens(Preview.ReservedOutputTokens))
+        }
+    </dl>
+
+    <details class="rounded-box border border-base-300 p-3" open>
+        <summary class="cursor-pointer font-medium">@InstructionsLabel</summary>
+        <dl class="mt-3 space-y-2">
+            @foreach (var item in Preview.Contributions.Where(item => item.InstructionTokens != 0))
+            {
+                <div class="flex items-start justify-between gap-3">
+                    <dt class="min-w-0 break-words text-sm">@SourceLabel(item.Source)</dt>
+                    <dd class="shrink-0 whitespace-nowrap text-sm">@Tokens(item.InstructionTokens)</dd>
+                </div>
+            }
+        </dl>
+        <details class="mt-3">
+            <summary class="cursor-pointer text-sm">@Text(SettingsTextKeys.AgentsPreviewInstructionTitle, "Resolved system instruction")</summary>
+            <pre dir="auto" class="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-box bg-base-200 p-3 font-mono text-xs">@Preview.Instructions</pre>
+        </details>
+    </details>
+
+    @ToolDetails(Preview.Tools.Where(tool => !tool.IsDeferred), ToolsLabel)
+    @if (Preview.ToolAssemblyAdjustmentTokens != 0)
+    {
+        <p class="text-xs text-base-content/60">@Text(SettingsTextKeys.AgentsContextAssembly, "Tool assembly adjustment"): @Tokens(Preview.ToolAssemblyAdjustmentTokens)</p>
+    }
+    @if (Preview.MessageTokens != 0)
+    {
+        <details class="rounded-box border border-base-300 p-3">
+            <summary class="cursor-pointer font-medium">@MessagesLabel</summary>
+            <dl class="mt-3 space-y-2">
+                @foreach (var item in Preview.Contributions.Where(item => item.MessageTokens != 0))
+                {
+                    <div class="flex items-start justify-between gap-3">
+                        <dt class="min-w-0 break-words text-sm">@SourceLabel(item.Source)</dt>
+                        <dd class="shrink-0 whitespace-nowrap text-sm">@Tokens(item.MessageTokens)</dd>
+                    </div>
+                }
+            </dl>
+        </details>
+    }
+    @if (Preview.Tools.Any(tool => tool.IsDeferred))
+    {
+        <p class="text-xs text-base-content/60">@Text(SettingsTextKeys.AgentsContextDeferredHelp, "Searchable declarations load when needed and are excluded from the initial total.")</p>
+        @ToolDetails(Preview.Tools.Where(tool => tool.IsDeferred), Text(SettingsTextKeys.AgentsContextDeferred, "Deferred tools"))
+    }
+    <p class="text-xs text-base-content/60">@string.Format(CultureInfo.CurrentCulture,
+        Text(SettingsTextKeys.AgentsPreviewInstructionGeneratedAt, "Generated {0}"), Preview.GeneratedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture))</p>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public AgentInstructionPreview Preview { get; set; } = default!;
+
+    private string InstructionsLabel => ChatLoc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownInstructions, "Instructions");
+    private string ToolsLabel => ChatLoc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownTools, "Tools");
+    private string MessagesLabel => ChatLoc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownContextProviders, "Context providers");
+    private string Text(string key, string fallback) => Loc.GetOrDefault(key, fallback);
+    private static string Tokens(int count) => count.ToString("N0", CultureInfo.CurrentCulture);
+
+    private string Segment(int count) => $"width: {(Preview.EstimatedInputTokens == 0 ? 0 : 100d * count / Preview.EstimatedInputTokens).ToString(CultureInfo.InvariantCulture)}%";
+
+    private string SourceLabel(string source) => source switch
+    {
+        "runtime" => Text(SettingsTextKeys.AgentsContextRuntime, "Runtime and workspace"),
+        "instructions" => InstructionsLabel,
+        "discovery" => Text(SettingsTextKeys.AgentsToolSearchToggleLabel, "Tool discovery"),
+        "tools" => ToolsLabel,
+        "notes" => Text(SettingsTextKeys.FilesAgentNotesFolderTitle, "Agent notes"),
+        "agents" => Text(SettingsTextKeys.AgentsAgentToolsTitle, "Agent Tools"),
+        "skills" => Text(SettingsTextKeys.AgentsSkillsTitle, "Skills"),
+        "memory" => Text(SettingsTextKeys.AgentsContextMemory, "Memory"),
+        "library" => Text(SettingsTextKeys.FilesLibraryWorkspaceTitle, "Library"),
+        "todo" => Text(SettingsTextKeys.AgentsContextTodo, "Task list"),
+        "vision" => Text(SettingsTextKeys.AgentsContextVision, "Image analysis"),
+        _ => MessagesLabel
+    };
+
+    private static RenderFragment Metric(string label, string value) => @<div class="rounded-box bg-base-200 p-3">
+        <dt class="text-xs text-base-content/60">@label</dt>
+        <dd class="mt-1 text-sm font-medium">@value</dd>
+    </div>;
+
+    private RenderFragment ToolDetails(IEnumerable<AgentContextTool> tools, string title) => @<details class="rounded-box border border-base-300 p-3">
+        <summary class="cursor-pointer font-medium">@title</summary>
+        <div class="mt-3 space-y-3">
+            @foreach (var group in tools.GroupBy(tool => (tool.ServerName, tool.Source)).OrderByDescending(group => group.Sum(tool => tool.EstimatedTokens)))
+            {
+                <details class="rounded-box bg-base-200 p-3">
+                    <summary class="cursor-pointer">
+                        <span class="inline-flex w-full items-start justify-between gap-3">
+                            <span class="min-w-0 break-words text-sm">@(string.IsNullOrWhiteSpace(group.Key.ServerName) ? SourceLabel(group.Key.Source) : group.Key.ServerName)</span>
+                            <span class="shrink-0 whitespace-nowrap text-sm">@Tokens(group.Sum(tool => tool.EstimatedTokens))</span>
+                        </span>
+                    </summary>
+                    <div class="mt-3 space-y-3">
+                        @foreach (var tool in group.OrderByDescending(tool => tool.EstimatedTokens).ThenBy(tool => tool.Name, StringComparer.Ordinal))
+                        {
+                            <details class="rounded-box bg-base-100 p-3">
+                                <summary class="cursor-pointer">
+                                    <span class="inline-flex w-full items-start justify-between gap-3">
+                                        <span class="min-w-0 break-words font-mono text-xs">@tool.Name</span>
+                                        <span class="shrink-0 whitespace-nowrap text-xs">@Tokens(tool.EstimatedTokens)</span>
+                                    </span>
+                                </summary>
+                                <p dir="auto" class="mt-2 break-words text-sm">@tool.Description</p>
+                                <pre dir="ltr" class="mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words font-mono text-xs">@tool.JsonSchema</pre>
+                            </details>
+                        }
+                    </div>
+                </details>
+            }
+        </div>
+    </details>;
+}

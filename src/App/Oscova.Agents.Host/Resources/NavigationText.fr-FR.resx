@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Navigation.Overview">
+		<value>Vue d'ensemble</value>
+	</data>
+	<data name="Navigation.Chat">
+		<value>Chat</value>
+	</data>
+	<data name="Navigation.Tasks">
+		<value>Tâches</value>
+	</data>
+	<data name="Navigation.Manage">
+		<value>Paramètres</value>
+	</data>
+	<data name="Navigation.Orchestration">
+		<value>Orchestration</value>
+	</data>
+	<data name="Navigation.AgentTasks">
+		<value>Tâches de l'agent</value>
+	</data>
+	<data name="Navigation.Administration">
+		<value>Administration</value>
+	</data>
+	<data name="Navigation.ToggleSidebarHover">
+		<value>Basculer le survol de la barre latérale</value>
+	</data>
+	<data name="Navigation.CloseSidebar">
+		<value>Fermer la barre latérale</value>
+	</data>
+	<data name="Navigation.ToggleSidebar">
+		<value>Basculer la barre latérale</value>
+	</data>
+	<data name="Navigation.ToggleTheme">
+		<value>Basculer le thème</value>
+	</data>
+	<data name="Navigation.OpenCustomization">
+		<value>Ouvrir la personnalisation</value>
+	</data>
+	<data name="Navigation.SettingsMenuTrigger">
+		<value>Déclencheur du menu {0}</value>
+	</data>
+	<data name="Navigation.ToggleLayoutSidebar"><value>Basculer la barre latérale de mise en page</value></data>
+	<data name="Navigation.Customization"><value>Personnalisation</value></data>
+	<data name="Navigation.Reset"><value>Réinitialiser</value></data>
+	<data name="Navigation.CustomizationResetToast"><value>Personnalisation réinitialisée aux valeurs par défaut.</value></data>
+	<data name="Navigation.FullScreen"><value>Plein écran</value></data>
+	<data name="Navigation.Theme"><value>Thème</value></data>
+	<data name="Navigation.Sidebar"><value>Barre latérale</value></data>
+	<data name="Navigation.SidebarThemeAvailability"><value>(*Disponible uniquement avec le thème clair)</value></data>
+	<data name="Navigation.Light"><value>Clair</value></data>
+	<data name="Navigation.Dark"><value>Sombre</value></data>
+	<data name="Navigation.FontFamily"><value>Famille de polices</value></data>
+	<data name="Navigation.Direction"><value>Direction</value></data>
+	<data name="Navigation.LeftToRight"><value>De gauche à droite</value></data>
+	<data name="Navigation.RightToLeft"><value>De droite à gauche</value></data>
+	<data name="Navigation.LeftToRightShort"><value>LTR</value></data>
+	<data name="Navigation.RightToLeftShort"><value>RTL</value></data>
+	<data name="Navigation.Account"><value>Compte</value></data>
+	<data name="Navigation.Logs"><value>Journaux</value></data>
+	<data name="Navigation.ChatMemory"><value>Mémoire du chat</value></data>
+	<data name="Navigation.LogOut"><value>Se déconnecter</value></data>
+	<data name="Navigation.Role.Admin"><value>Opérateur</value></data>
+	<data name="Navigation.Role.Moderator"><value>Modérateur</value></data>
+	<data name="Navigation.Role.User"><value>Utilisateur</value></data>
+	<data name="Navigation.HelpButtonAriaLabel"><value>Ouvrir l'aide</value></data>
+	<data name="Navigation.Dashboard"><value>Tableau de bord</value></data>
+	<data name="Navigation.Dashboard.Window"><value>30 derniers jours</value></data>
+	<data name="Navigation.Dashboard.Loading"><value>Chargement du tableau de bord...</value></data>
+	<data name="Navigation.Dashboard.Error"><value>Impossible de charger les métriques du tableau de bord.</value></data>
+	<data name="Navigation.Dashboard.Empty"><value>Aucune métrique pour le moment</value></data>
+	<data name="Navigation.Dashboard.EmptyHint"><value>Lancez un chat ou une tâche d'agent pour commencer à alimenter ce tableau de bord.</value></data>
+	<data name="Navigation.Dashboard.LastThirtyDays"><value>Activité des 30 derniers jours</value></data>
+	<data name="Navigation.Dashboard.TotalTokens"><value>Total des tokens</value></data>
+	<data name="Navigation.Dashboard.EstimatedCost"><value>Coût estimé</value></data>
+	<data name="Navigation.Dashboard.ProviderRatedUsage"><value>Tarifs standards d’entrée et de sortie</value></data>
+	<data name="Navigation.Dashboard.CostUnavailable"><value>Indisponible</value></data>
+	<data name="Navigation.Dashboard.PartialEstimate"><value>Estimation partielle</value></data>
+	<data name="Navigation.Dashboard.EstimateExplanation"><value>Utilise les jetons d’entrée et de sortie déclarés aux tarifs standards en USD. L’entrée en cache utilise le tarif d’entrée. Les autres frais sont exclus.</value></data>
+	<data name="Navigation.Dashboard.Egress"><value>Données sortantes</value></data>
+	<data name="Navigation.Dashboard.ToolCalls"><value>Appels d'outils</value></data>
+	<data name="Navigation.Dashboard.TaskRuns"><value>Exécutions de tâches</value></data>
+	<data name="Navigation.Dashboard.Agents"><value>Agents</value></data>
+	<data name="Navigation.Dashboard.ModelProviders"><value>Fournisseurs de modèles</value></data>
+	<data name="Navigation.Dashboard.McpServers"><value>Serveurs MCP</value></data>
+	<data name="Navigation.Dashboard.Skills"><value>Compétences</value></data>
+	<data name="Navigation.Dashboard.InputOutput"><value>Entrée / Sortie</value></data>
+	<data name="Navigation.Dashboard.Cloud"><value>Cloud</value></data>
+	<data name="Navigation.Dashboard.Local"><value>Local</value></data>
+	<data name="Navigation.Dashboard.AuditedEvents"><value>Événements audités de sortie de données</value></data>
+	<data name="Navigation.Dashboard.OpenEgressAudit"><value>Ouvrir les détails de l'audit de sortie pour {0} événements</value></data>
+	<data name="Navigation.Dashboard.EgressAuditAction"><value>Audit</value></data>
+	<data name="Navigation.Dashboard.TokenBreakdown"><value>Répartition des tokens</value></data>
+	<data name="Navigation.Dashboard.ByProvider"><value>Par fournisseur</value></data>
+	<data name="Navigation.Dashboard.ByAgent"><value>Par agent</value></data>
+	<data name="Navigation.Dashboard.ByModel"><value>Par modèle</value></data>
+	<data name="Navigation.Dashboard.ToolUsage"><value>Utilisation des outils</value></data>
+	<data name="Navigation.Dashboard.Timeline"><value>Activité récente</value></data>
+	<data name="Navigation.Dashboard.AdminUsage"><value>Utilisation par utilisateur (administration)</value></data>
+	<data name="Navigation.Dashboard.StorageByUser"><value>Stockage par utilisateur</value></data>
+	<data name="Navigation.Dashboard.Date"><value>Date</value></data>
+	<data name="Navigation.Dashboard.Provider"><value>Fournisseur</value></data>
+	<data name="Navigation.Dashboard.Agent"><value>Agent</value></data>
+	<data name="Navigation.Dashboard.Model"><value>Modèle</value></data>
+	<data name="Navigation.Dashboard.Tool"><value>Outil</value></data>
+	<data name="Navigation.Dashboard.Succeeded"><value>Réussies</value></data>
+	<data name="Navigation.Dashboard.Failed"><value>Échouées</value></data>
+	<data name="Navigation.Dashboard.User"><value>Utilisateur</value></data>
+	<data name="Navigation.Dashboard.Tokens"><value>Tokens</value></data>
+	<data name="Navigation.Dashboard.File"><value>fichier</value></data>
+	<data name="Navigation.Dashboard.Files"><value>fichiers</value></data>
+	<data name="Navigation.Dashboard.Other"><value>Autre</value></data>
+	<data name="Navigation.Dashboard.IncognitoBucket"><value>Navigation privée</value></data>
+	<data name="Navigation.Dashboard.BackgroundBucket"><value>Tâches en arrière-plan</value></data>
+	<data name="Navigation.Dashboard.UsageOverview"><value>Aperçu de l'utilisation</value></data>
+	<data name="Navigation.Dashboard.UsageOverviewHint"><value>Entrée, sortie et données sortantes par jour</value></data>
+	<data name="Navigation.Dashboard.InputTokens"><value>Tokens d'entrée</value></data>
+	<data name="Navigation.Dashboard.OutputTokens"><value>Tokens de sortie</value></data>
+	<data name="Navigation.Dashboard.OperationalStatus"><value>État opérationnel</value></data>
+	<data name="Navigation.Dashboard.TaskSuccessRate"><value>Taux de réussite des tâches</value></data>
+	<data name="Navigation.Dashboard.AverageTaskDuration"><value>Durée moyenne des tâches</value></data>
+	<data name="Navigation.Dashboard.Fallbacks"><value>Solutions de repli</value></data>
+	<data name="Navigation.Dashboard.LocalCloudMix"><value>Mix local / cloud</value></data>
+	<data name="Navigation.Dashboard.Distribution"><value>Répartition de l'utilisation</value></data>
+	<data name="Navigation.Dashboard.TokenMix"><value>Mix de tokens</value></data>
+	<data name="Navigation.Dashboard.SecondsShort"><value>s</value></data>
+	<data name="Navigation.Dashboard.MinutesShort"><value>min</value></data>
+	<data name="Navigation.Achievements"><value>Succès</value></data>
+  <data name="Navigation.ShowSettingsNavigation" xml:space="preserve"><value>Afficher la navigation des paramètres</value></data>
+</root>

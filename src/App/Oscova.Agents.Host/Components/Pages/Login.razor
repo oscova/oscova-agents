@@ -1,0 +1,13 @@
+@page "/login"
+@attribute [AllowAnonymous]
+
+@inject AuthSettings AuthSettings
+
+@if (AuthSettings.Mode == AuthMode.Home)
+{
+    <HomeLoginPanel />
+}
+else
+{
+    <LoginPanel RedirectOnSuccess="true" />
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+	<resheader name="version"><value>1.3</value></resheader>
+	<resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<data name="Auth.Login.Title"><value>تسجيل الدخول</value></data>
+	<data name="Auth.Login.Subtitle"><value>وصول سلس، واتصال آمن: بوابتك لتجربة مخصصة.</value></data>
+	<data name="Auth.ShowPasswordLabel"><value>إظهار كلمة المرور</value></data>
+	<data name="Auth.LoggingInButton"><value>جارٍ تسجيل الدخول...</value></data>
+	<data name="Auth.LoginButton"><value>تسجيل الدخول</value></data>
+	<data name="Auth.InvalidCredentialsError"><value>اسم المستخدم أو كلمة المرور غير صالحة.</value></data>
+	<data name="Auth.InvalidLoginTicketError"><value>انتهت صلاحية جلسة تسجيل الدخول. يرجى المحاولة مرة أخرى.</value></data>
+	<data name="Auth.InvalidProfileError"><value>ذلك الملف الشخصي لم يعد متاحاً.</value></data>
+	<data name="Auth.LoginFailedError"><value>فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.</value></data>
+	<data name="Auth.Home.Title"><value>من يستخدم Oscova Agents؟</value></data>
+	<data name="Auth.Home.Subtitle"><value>اختر ملفاً شخصياً للمتابعة، أو سجّل الدخول بكلمة المرور.</value></data>
+	<data name="Auth.Home.NoProfilesMessage"><value>لا توجد ملفات شخصية متاحة بعد.</value></data>
+	<data name="Auth.Home.ProfileFallbackName"><value>مستخدم</value></data>
+	<data name="Auth.Home.ProfilesLabel"><value>الملفات الشخصية</value></data>
+	<data name="Auth.Home.PinHelp"><value>أدخل رمز PIN لتسجيل الدخول.</value></data>
+	<data name="Auth.Home.SwitchProfileButton"><value>تبديل</value></data>
+	<data name="Auth.Home.PinLabel"><value>رمز PIN</value></data>
+	<data name="Auth.Home.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Auth.Home.ShowPinLabel"><value>إظهار رمز PIN</value></data>
+	<data name="Auth.Home.SigningInButton"><value>جارٍ تسجيل الدخول...</value></data>
+	<data name="Auth.Home.ContinueButton"><value>متابعة</value></data>
+	<data name="Auth.Home.AdminPasswordSignInButton"><value>تسجيل الدخول بكلمة المرور</value></data>
+	<data name="Auth.Home.PinSessionExpiredError"><value>انتهت صلاحية جلسة تسجيل الدخول. يرجى المحاولة مرة أخرى.</value></data>
+	<data name="Auth.Home.ChooseProfileFirstError"><value>اختر ملفاً شخصياً أولاً.</value></data>
+	<data name="Auth.Home.MissingPinError"><value>لا يحتوي هذا الملف الشخصي على رمز PIN بعد. اطلب من المشغل تعيين رمز.</value></data>
+	<data name="Auth.Home.InvalidPinError"><value>رمز PIN غير صالح.</value></data>
+	<data name="Auth.Home.PinValidationError"><value>يجب أن يتكون الرمز من 6–64 رقمًا (0–9).</value></data>
+	<data name="Auth.AdminLogin.BackButton"><value>العودة لتسجيل الدخول بالملف الشخصي</value></data>
+	<data name="Auth.AdminSetup.Title"><value>إنشاء المشغل الأول</value></data>
+	<data name="Auth.AdminSetup.Subtitle"><value>قم بإعداد حساب المشغل لبدء استخدام Oscova Agents.</value></data>
+	<data name="Auth.AdminSetup.FullNameLabel"><value>الاسم الكامل</value></data>
+	<data name="Auth.AdminSetup.FullNamePlaceholder"><value>أحمد محمد</value></data>
+	<data name="Auth.AdminSetup.FullNameHelp"><value>أدخل اسمك الكامل.</value></data>
+	<data name="Auth.AdminSetup.EmailLabel"><value>البريد الإلكتروني</value></data>
+	<data name="Auth.AdminSetup.EmailPlaceholder"><value>name@company.com</value></data>
+	<data name="Auth.AdminSetup.EmailHelp"><value>استخدم عنوان بريد إلكتروني صالحاً.</value></data>
+	<data name="Auth.AdminSetup.UsernamePlaceholder"><value>operator</value></data>
+	<data name="Auth.AdminSetup.UsernameHelp"><value>3 أحرف أو أكثر. يجب أن يكون فريداً.</value></data>
+	<data name="Auth.AdminSetup.NewPasswordPlaceholder"><value>6 أحرف على الأقل</value></data>
+	<data name="Auth.AdminSetup.PasswordHelp"><value>استخدم 6 أحرف على الأقل مع مزيج من الحروف والأرقام والرموز.</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordLabel"><value>تأكيد كلمة المرور</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordPlaceholder"><value>أعد إدخال كلمة المرور</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordHelp"><value>يجب أن تتطابق تماماً مع كلمة المرور.</value></data>
+	<data name="Auth.AdminSetup.CreateAdminButton"><value>إنشاء المشغل</value></data>
+	<data name="Auth.AdminSetup.RestoreTitle"><value>استعادة من نسخة احتياطية</value></data>
+	<data name="Auth.AdminSetup.RestoreDescription"><value>استخدم هذا الخيار فقط في التثبيت الجديد. حدد ملف نسخة احتياطية مشفر .oscb وأدخل عبارة المرور الخاصة به.</value></data>
+	<data name="Auth.AdminSetup.RestoreFileLabel"><value>ملف النسخة الاحتياطية</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseLabel"><value>عبارة مرور النسخة الاحتياطية</value></data>
+	<data name="Auth.AdminSetup.RestorePassphrasePlaceholder"><value>أدخل عبارة مرور النسخة الاحتياطية</value></data>
+	<data name="Auth.AdminSetup.RestoreButton"><value>استعادة النسخة الاحتياطية</value></data>
+	<data name="Auth.AdminSetup.RestoreChooseFileButton"><value>اختر ملف النسخة الاحتياطية</value></data>
+	<data name="Auth.AdminSetup.RestoreFileRequired"><value>حدد ملف النسخة الاحتياطية.</value></data>
+	<data name="Auth.AdminSetup.RestoreUnsupportedFile"><value>تُدعم فقط ملفات النسخ الاحتياطي .oscb.</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseRequired"><value>أدخل عبارة مرور النسخة الاحتياطية.</value></data>
+	<data name="Auth.AdminSetup.RestoreFreshInstallOnly"><value>الاستعادة متاحة فقط في التثبيت الجديد.</value></data>
+	<data name="Auth.AdminSetup.RestorePending"><value>هناك استعادة بيئة معلقة. انتظر حتى تتم إعادة تشغيل Oscova قبل إنشاء حساب.</value></data>
+	<data name="Auth.AdminSetup.Created"><value>تم إنشاء المشغّل. سجّل الدخول بحسابك الجديد.</value></data>
+	<data name="Auth.AdminSetup.RestoreFailed"><value>تعذرت استعادة النسخة الاحتياطية.</value></data>
+	<data name="Auth.AdminSetup.RestoreInProgress"><value>قد تستغرق استعادة النسخة الاحتياطية دقيقة. اترك هذه النافذة مفتوحة بينما يجهز Oscova لإعادة التشغيل.</value></data>
+	<data name="Auth.AdminSetup.RestoreRestarting"><value>تمت استعادة النسخة الاحتياطية. جارٍ إعادة تشغيل Oscova...</value></data>
+	<data name="Auth.AdminSetup.PasswordsDoNotMatchError"><value>كلمتا المرور غير متطابقتين.</value></data>
+	<data name="Auth.AdminSetup.UsernameExistsError"><value>يوجد مستخدم بهذا الاسم بالفعل.</value></data>
+	<data name="Auth.AdminSetup.EmailExistsError"><value>يوجد مستخدم بهذا البريد الإلكتروني بالفعل.</value></data>
+	<data name="Auth.CliAuth.Title"><value>الموافقة على وصول CLI</value></data>
+	<data name="Auth.CliAuth.Subtitle"><value>فوّض هذه الطرفية لاستخدام حساب Oscova الخاص بك.</value></data>
+	<data name="Auth.CliAuth.CodeLabel"><value>الرمز</value></data>
+	<data name="Auth.CliAuth.ClientLabel"><value>العميل</value></data>
+	<data name="Auth.CliAuth.MachineLabel"><value>الجهاز</value></data>
+	<data name="Auth.CliAuth.ApproveButton"><value>موافقة</value></data>
+	<data name="Auth.CliAuth.DenyButton"><value>رفض</value></data>
+	<data name="Auth.CliAuth.ApprovedMessage"><value>تمت الموافقة على وصول CLI. يمكنك العودة إلى الطرفية.</value></data>
+	<data name="Auth.CliAuth.DeniedMessage"><value>تم رفض وصول CLI.</value></data>
+	<data name="Auth.CliAuth.InvalidCodeMessage"><value>رمز الموافقة على CLI غير صالح.</value></data>
+	<data name="Auth.CliAuth.ExpiredCodeMessage"><value>انتهت صلاحية رمز الموافقة على CLI.</value></data>
+	<data name="Auth.ToggleThemeLabel"><value>تبديل المظهر</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Title"><value>وكلاؤك، مستعدون عندما تكون جاهزاً.</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Description"><value>نظام تشغيل الوكلاء للمنزل والمكتب، على أجهزتك الخاصة.</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Title"><value>امتلك بيئة التشغيل. احتفظ بالتحكم.</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Description"><value>وكلاء دائمون، وبيانات محلية، وخيارات صريحة بشأن متى يصل أي شيء إلى السحابة.</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Title"><value>خصوصية يمكنك التحقق منها.</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Description"><value>لا قياس عن بُعد، وخيارات صريحة للسحابة، ودليل واضح عندما تغادر البيانات الجهاز.</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Title"><value>أكثر من نافذة محادثة.</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Description"><value>يحتفظ الوكلاء بأدواتهم وذاكرتهم وجداولهم وقنواتهم جاهزة بين المحادثات.</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Title"><value>نماذج صغيرة. عمل جاد.</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Description"><value>يساعد السياق الخفيف وسير العمل المحلي أولاً أجهزتك الخاصة على إنجاز المزيد.</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Title"><value>مفيد حتى عندما لا يتوفر الإنترنت.</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Description"><value>يمكن أن تظل عمليات الوكلاء الأساسية والصوت محلية على أجهزتك الخاصة.</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Title"><value>يبقى العمل الخاص محمياً.</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Description"><value>تخزن جميع الوكلاء المحادثات وتشغيل المهام بشكل مشفر، بما في ذلك الوكيل الرئيسي والوكلاء الفرعيون.</value></data>
+  <data name="Auth.SignIn.Mismatch"><value>غير مطابق. حاول مجددًا.</value></data>
+  <data name="Auth.SignIn.RetryCountdown"><value>غير مطابق. حاول مجددًا بعد {0} ثانية.</value></data>
+  <data name="Auth.SignIn.WaitCountdown"><value>حاول مجددًا بعد {0} ثانية.</value></data>
+  <data name="Auth.SignIn.TryAgain"><value>حاول مجددًا</value></data>
+</root>

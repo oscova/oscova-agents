@@ -1,0 +1,30 @@
+@using System.Globalization
+@inject NavigationManager NavigationManager
+@inject UserServiceScope UserScope
+
+@code {
+    private bool _redirected;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender || _redirected)
+        {
+            return;
+        }
+
+        var targetCulture = UiCultureCatalog.NormalizeOrDefault(UserScope.UiSettings.CultureName);
+        if (string.Equals(CultureInfo.CurrentUICulture.Name, targetCulture, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _redirected = true;
+
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var redirectUri = string.IsNullOrWhiteSpace(relative) ? "/" : "/" + relative;
+
+        NavigationManager.NavigateTo(
+            $"/Culture/Set?culture={Uri.EscapeDataString(targetCulture)}&redirectUri={Uri.EscapeDataString(redirectUri)}",
+            forceLoad: true);
+    }
+}

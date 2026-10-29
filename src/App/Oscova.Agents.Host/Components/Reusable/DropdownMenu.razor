@@ -1,0 +1,87 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@* Provides native toggle and light-dismiss behavior for ordinary DaisyUI menus. *@
+<div class="@RootClass" @onclick:stopPropagation="@StopPropagation">
+    <button type="button"
+            class="@TriggerClass"
+            popovertarget="@_popoverId"
+            style="@TriggerStyle"
+            disabled="@Disabled"
+            aria-label="@AriaLabel"
+            title="@Title"
+            @onclick:stopPropagation="@StopTriggerPropagation"
+            @onclick="() => OnOpen.InvokeAsync()">
+        @TriggerContent
+    </button>
+    <div @ref="_popoverElement"
+         id="@_popoverId"
+         popover="auto"
+         class="custom-menu-surface dropdown @Placement @ContentClass"
+         style="@ContentStyle"
+         @onclick="CloseAsync">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RenderFragment TriggerContent { get; set; } = default!;
+    [Parameter, EditorRequired] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public string RootClass { get; set; } = string.Empty;
+    [Parameter] public string TriggerClass { get; set; } = string.Empty;
+    [Parameter] public string ContentClass { get; set; } = string.Empty;
+    [Parameter] public string Placement { get; set; } = "dropdown-bottom";
+    [Parameter] public string? AriaLabel { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback OnOpen { get; set; }
+    [Parameter] public bool StopPropagation { get; set; }
+    [Parameter] public bool StopTriggerPropagation { get; set; }
+    [Parameter] public bool CloseOnContentClick { get; set; }
+    [Parameter] public bool MatchTriggerWidth { get; set; }
+
+    private readonly string _popoverId = $"dropdown-{Guid.NewGuid():N}";
+    private readonly string _anchorName = $"dropdown-anchor-{Guid.NewGuid():N}";
+    private ElementReference _popoverElement;
+    private IJSObjectReference? _utilsModule;
+    private string TriggerStyle => $"anchor-name: --{_anchorName};";
+    private string ContentStyle => MatchTriggerWidth
+        ? $"position-anchor: --{_anchorName}; width: anchor-size(width);"
+        : $"position-anchor: --{_anchorName};";
+
+    /// <summary>Opens the same menu from a contextual action on its owning row.</summary>
+    public async Task OpenAsync()
+    {
+        _utilsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/utils.js");
+        await _utilsModule.InvokeVoidAsync("showPopover", _popoverElement);
+        await OnOpen.InvokeAsync();
+    }
+
+    private async Task CloseAsync()
+    {
+        if (!CloseOnContentClick)
+        {
+            return;
+        }
+
+        _utilsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/utils.js");
+        await _utilsModule.InvokeVoidAsync("hidePopover", _popoverElement);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        if (_utilsModule is not null)
+        {
+            try
+            {
+                await _utilsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+
+        GC.SuppressFinalize(this);
+    }
+}

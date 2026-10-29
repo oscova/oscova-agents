@@ -1,0 +1,421 @@
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Core.ApiContracts.Settings
+@using Oscova.Agents.Utils
+@inject IDialogService DialogService
+@inject IStringLocalizer<SettingsText> Loc
+@inject NavigationManager NavigationManager
+@inherits SettingsComponentBase
+@inject UserServiceScope UserScope
+@inject SettingsApiClient SettingsApiClient
+@inject RuntimeVersionService RuntimeVersionService
+@inject LayoutCustomizerService LayoutCustomizer
+
+<div class="custom-settings-group">
+	<div class="custom-settings-row">
+		<label for="gamification-toggle" class="label block mb-1 pl-0">
+			<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.GamificationLabel, "Achievements and XP")</span>
+		</label>
+		<div class="flex items-center gap-3">
+			<input id="gamification-toggle"
+				   type="checkbox"
+				   class="toggle toggle-primary toggle-sm"
+				   checked="@(_uiSettings?.IsGamificationEnabled ?? false)"
+				   @onchange="OnGamificationChangedAsync" />
+			<label for="gamification-toggle" class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.GamificationDescription, "Show achievements and XP, and send unlock notifications")</label>
+		</div>
+	</div>
+
+	<div class="custom-settings-row">
+		<label for="chat-title-generation-toggle" class="label block mb-1 pl-0">
+			<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ChatTitleGenerationLabel, "Generate chat titles")</span>
+		</label>
+		<div class="flex items-center gap-3">
+			<input id="chat-title-generation-toggle"
+				   type="checkbox"
+				   class="toggle toggle-primary toggle-sm"
+				   checked="@(_uiSettings?.IsChatTitleGenerationEnabled ?? false)"
+				   @onchange="OnChatTitleGenerationChangedAsync" />
+			<label for="chat-title-generation-toggle" class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ChatTitleGenerationDescription, "Use your selected chat model to rename conversations after a few messages")</label>
+		</div>
+	</div>
+
+	<div class="custom-settings-row custom-settings-battery-row">
+	    <label for="low-battery-protection-toggle" class="label block mb-1 pl-0">
+	        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.LowBatteryProtectionLabel, "Skip scheduled tasks on low battery")</span>
+	    </label>
+	    @* Availability is shown inline, so a duplicate tooltip must not overflow narrow screens. *@
+	    <div class="custom-settings-battery-toggle">
+	        <span tabindex="@(BatteryAvailabilityDescription is not null ? 0 : -1)" aria-describedby="low-battery-availability">
+	            <input id="low-battery-protection-toggle" type="checkbox" class="toggle toggle-primary toggle-sm"
+	                   @bind:get="@(_uiSettings?.IsLowBatteryTaskProtectionEnabled ?? false)"
+	                   disabled="@(_isSaving || _uiSettings is null || (!HasUsableBatteryInformation && !_uiSettings.IsLowBatteryTaskProtectionEnabled))"
+	                   aria-describedby="low-battery-description low-battery-availability"
+	                   @bind:set="OnLowBatteryProtectionChangedAsync" />
+	        </span>
+	    </div>
+	    <div class="custom-settings-battery-description">
+	        <p id="low-battery-description" class="opacity-60">@Loc.GetOrDefault(SettingsTextKeys.LowBatteryProtectionDescription, "Skip automatic task runs below your battery threshold while this server computer is unplugged. You will receive a notification and can run the skipped task manually.")</p>
+	        @if (BatteryAvailabilityDescription is not null)
+	        {
+	            <p id="low-battery-availability" class="mt-2 opacity-60">@BatteryAvailabilityDescription</p>
+	        }
+	    </div>
+	</div>
+	<div class="custom-settings-row">
+	    <label for="low-battery-threshold" class="label block mb-1 pl-0">
+	        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.LowBatteryThresholdLabel, "Battery threshold (%)")</span>
+	    </label>
+	    <input id="low-battery-threshold" type="number" min="@AssistantUiSettings.MinimumLowBatteryTaskThresholdPercentage"
+	           max="@AssistantUiSettings.MaximumLowBatteryTaskThresholdPercentage" step="1" class="input input-bordered w-full max-w-xs"
+	           value="@(_uiSettings?.LowBatteryTaskThresholdPercentage ?? AssistantUiSettings.DefaultLowBatteryTaskThresholdPercentage)"
+	           disabled="@(_isSaving || !(_uiSettings?.IsLowBatteryTaskProtectionEnabled ?? false))"
+	           aria-invalid="@(_lowBatteryThresholdError is not null ? "true" : null)"
+	           aria-describedby="low-battery-threshold-error" @onchange="OnLowBatteryThresholdChangedAsync" />
+	    @if (_lowBatteryThresholdError is not null)
+	    {
+	        <p id="low-battery-threshold-error" class="text-error mt-1 text-xs">@_lowBatteryThresholdError</p>
+	    }
+	</div>
+
+	<div class="custom-settings-row">
+		<label for="chat-resume-window-minutes" class="label block mb-1 pl-0">
+			<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.ChatResumeWindowLabel, "Resume recent chats")</span>
+		</label>
+		<input id="chat-resume-window-minutes"
+			   type="number"
+			   min="0"
+			   step="1"
+			   class="input input-bordered w-full max-w-xs"
+			   value="@ChatResumeWindowMinutes"
+			   disabled="@_isSaving"
+			   aria-invalid="@(_chatResumeWindowError is not null ? "true" : null)"
+			   @onchange="OnChatResumeWindowChangedAsync" />
+		@if (_chatResumeWindowError is not null)
+		{
+			<p class="text-error mt-1 text-xs">@_chatResumeWindowError</p>
+		}
+		<p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.ChatResumeWindowDescription, "Return to the latest current chat when your last message is this many minutes old or newer. Use 0 to always show the start screen.")</p>
+	</div>
+
+	<div class="custom-settings-row custom-settings-followup-row">
+		<label for="chat-follow-up-mode" class="label block mb-1 pl-0">
+			<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.FollowUpModeLabel, "Follow-up behavior")</span>
+		</label>
+		<select id="chat-follow-up-mode"
+				class="select select-bordered"
+				value="@(_uiSettings?.ChatFollowUpMode ?? ChatFollowUpMode.Queue)"
+				disabled="@_isSaving"
+				@onchange="OnChatFollowUpModeChangedAsync">
+			<option value="@ChatFollowUpMode.Steer">@Loc.GetOrDefault(SettingsTextKeys.FollowUpModeSteer, "Steer")</option>
+			<option value="@ChatFollowUpMode.Queue">@Loc.GetOrDefault(SettingsTextKeys.FollowUpModeQueue, "Queue")</option>
+		</select>
+		<p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.FollowUpModeDescription, "While the agent is working, Enter uses this choice. Steer guides the current response. Queue sends your message after it finishes. Ctrl+Enter uses the other choice once.")</p>
+	</div>
+
+	<div class="custom-settings-row custom-settings-wide-row">
+		<label class="label block mb-1 pl-0">
+			<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.TimeZoneLabel, "Time Zone")</span>
+		</label>
+		<SearchableSelect Class="max-w-xs"
+						  Options="@_timeZoneOptions"
+						  Value="@SelectedTimeZoneId"
+						  ValueChanged="@SelectTimeZoneAsync"
+						  AriaLabel="@Loc.GetOrDefault(SettingsTextKeys.TimeZoneLabel, "Time Zone")"
+						  SearchPlaceholder="@Loc.GetOrDefault(SettingsTextKeys.SearchTimeZonesPlaceholder, "Search time zones...")" />
+		<p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.TimeZoneDescription, "Timestamps in the UI will be displayed in this time zone.")</p>
+	</div>
+
+	<div class="custom-settings-row custom-settings-wide-row">
+		<label for="culture-select" class="label block mb-1 pl-0">
+			<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.LanguageLabel, "Language")</span>
+		</label>
+		<select id="culture-select" class="select select-bordered w-full max-w-xs" @bind="SelectedCultureName">
+			@foreach (var cultureName in UiCultureCatalog.SupportedCultureNames)
+			{
+				var culture = CultureInfo.GetCultureInfo(cultureName);
+				<option value="@cultureName">@culture.NativeName</option>
+			}
+		</select>
+		<p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.LanguageReloadHint, "Changes apply after the page reloads.")</p>
+	</div>
+
+</div>
+
+<div class="custom-settings-group custom-settings-about">
+	<label class="label block mb-1 pl-0">
+		<span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AboutTitle, "About")</span>
+	</label>
+	<div class="space-y-1 text-sm opacity-70">
+		<p>@Loc.GetOrDefault(SettingsTextKeys.AboutDescription, "Version details for this app and its agent framework.")</p>
+		<p>
+			<span>@Loc.GetOrDefault(SettingsTextKeys.HostVersionLabel, "Oscova Agents")</span>
+			<span class="opacity-60">:</span>
+			<bdi dir="ltr">@_runtimeVersions.Host.DisplayVersion</bdi>
+		</p>
+		<p>
+			<span>@Loc.GetOrDefault(SettingsTextKeys.FrameworkVersionLabel, "Framework")</span>
+			<span class="opacity-60">:</span>
+			<bdi dir="ltr">@_runtimeVersions.Framework.DisplayVersion</bdi>
+		</p>
+	</div>
+	<button type="button" class="btn btn-outline btn-sm mt-3 w-fit" @onclick="ShowThirdPartyLicensesAsync">
+		@Loc.GetOrDefault(SettingsTextKeys.ThirdPartyLicensesAction, "Credits and licenses")
+	</button>
+</div>
+
+<div class="custom-settings-group custom-settings-danger">
+	<button type="button" class="btn btn-error w-fit" disabled="@((_uiSettings?.ConversationCount ?? 0) == 0 || _isSaving)" @onclick="DeleteAllConversationsAsync">
+		@Loc.GetOrDefault(SettingsTextKeys.DeleteConversationsLabel, "Delete Conversations")
+	</button>
+	<p class="text-xs mt-2 opacity-60">
+		@Loc.GetOrDefault(SettingsTextKeys.DeleteConversationsDescription, "Removes all saved conversations from settings.")
+	</p>
+</div>
+
+@code {
+	private string? _lowBatteryThresholdError;
+	private bool HasUsableBatteryInformation => _uiSettings?.HostPower?.HasUsableBatteryInformation is true;
+	private string? BatteryAvailabilityDescription => _uiSettings is null
+	    ? Loc.GetOrDefault(SettingsTextKeys.BatteryChecking, "Checking battery information on the computer running Oscova.")
+	    : _uiSettings.HostPower?.HasBattery is false
+	        ? Loc.GetOrDefault(SettingsTextKeys.BatteryNotDetected, "No system battery is detected on the computer running Oscova.")
+	        : !HasUsableBatteryInformation
+	            ? Loc.GetOrDefault(SettingsTextKeys.BatteryInformationUnavailable, "Battery or power connection information is unavailable on the computer running Oscova.")
+	            : null;
+
+	/// <summary>Saves the account preference for automatic starts on low battery.</summary>
+	private Task OnLowBatteryProtectionChangedAsync(bool enabled) => SaveUiSettingsAsync(
+	    _uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+	    _uiSettings?.TimeZoneId ?? string.Empty,
+	    _uiSettings?.HideUserNameBadge ?? false,
+	    _uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
+	    isLowBatteryTaskProtectionEnabled: enabled);
+
+	/// <summary>Validates the whole-number battery threshold before saving it.</summary>
+	private async Task OnLowBatteryThresholdChangedAsync(ChangeEventArgs e)
+	{
+	    if (!int.TryParse(e.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var percentage) ||
+	        percentage < AssistantUiSettings.MinimumLowBatteryTaskThresholdPercentage ||
+	        percentage > AssistantUiSettings.MaximumLowBatteryTaskThresholdPercentage)
+	    {
+	        _lowBatteryThresholdError = Loc.GetOrDefault(SettingsTextKeys.LowBatteryThresholdInvalid, "Enter a whole number from 1 to 100.");
+	        return;
+	    }
+	    _lowBatteryThresholdError = null;
+	    await SaveUiSettingsAsync(
+	        _uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+	        _uiSettings?.TimeZoneId ?? string.Empty,
+	        _uiSettings?.HideUserNameBadge ?? false,
+	        _uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
+	        lowBatteryTaskThresholdPercentage: percentage);
+	}
+
+	private IReadOnlyList<SearchableSelectOption> _timeZoneOptions = [];
+	private UiSettingsSummary? _uiSettings;
+	private RuntimeVersionSnapshot _runtimeVersions = default!;
+	private string? _chatResumeWindowError;
+	private bool _isSaving;
+	private AssistantUiSettings UiSettings => UserScope.UiSettings;
+	private int ChatResumeWindowMinutes => _uiSettings?.ChatResumeWindowMinutes ?? AssistantUiSettings.DefaultChatResumeWindowMinutes;
+
+	private string SelectedCultureName
+	{
+		get => _uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName;
+		set
+		{
+			if (!string.Equals(SelectedCultureName, value, StringComparison.Ordinal))
+			{
+				_ = SaveUiSettingsAsync(
+					_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+					_uiSettings?.TimeZoneId ?? string.Empty,
+					_uiSettings?.HideUserNameBadge ?? false,
+					value);
+			}
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		_runtimeVersions = RuntimeVersionService.GetSnapshot();
+		_uiSettings = await SettingsApiClient.GetUiSettingsAsync();
+		_timeZoneOptions =
+		[
+			new(string.Empty, Loc.GetOrDefault(SettingsTextKeys.ServerDefault, "Server Default")),
+			.. TimeZoneInfo.GetSystemTimeZones().Select(zone => new SearchableSelectOption(zone.Id, zone.DisplayName))
+		];
+	}
+
+	private string SelectedTimeZoneId => string.IsNullOrWhiteSpace(_uiSettings?.TimeZoneId)
+		? string.Empty
+		: TimeZoneResolver.ResolveOrLocal(_uiSettings.TimeZoneId).Id;
+
+	private async Task SelectTimeZoneAsync(string? tzId)
+	{
+		await SaveUiSettingsAsync(
+			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+			tzId ?? string.Empty,
+			_uiSettings?.HideUserNameBadge ?? false,
+			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName);
+	}
+
+	private async Task OnGamificationChangedAsync(ChangeEventArgs e)
+	{
+		await SaveUiSettingsAsync(
+			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+			_uiSettings?.TimeZoneId ?? string.Empty,
+			_uiSettings?.HideUserNameBadge ?? false,
+			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
+			isGamificationEnabled: e.Value is true);
+	}
+
+	private async Task OnChatTitleGenerationChangedAsync(ChangeEventArgs e)
+	{
+		await SaveUiSettingsAsync(
+			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+			_uiSettings?.TimeZoneId ?? string.Empty,
+			_uiSettings?.HideUserNameBadge ?? false,
+			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
+			isChatTitleGenerationEnabled: e.Value is true);
+	}
+
+	private async Task OnChatResumeWindowChangedAsync(ChangeEventArgs e)
+	{
+		// Keep whatever the user typed on screen instead of silently saving a substituted default.
+		if (!int.TryParse(e.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var minutes)
+			|| minutes < 0)
+		{
+			_chatResumeWindowError = Loc.GetOrDefault(
+				SettingsTextKeys.ChatResumeWindowInvalid,
+				"Enter a whole number of minutes, 0 or more.");
+			return;
+		}
+
+		_chatResumeWindowError = null;
+		await SaveUiSettingsAsync(
+			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+			_uiSettings?.TimeZoneId ?? string.Empty,
+			_uiSettings?.HideUserNameBadge ?? false,
+			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
+			chatResumeWindowMinutes: minutes);
+	}
+
+	private Task OnChatFollowUpModeChangedAsync(ChangeEventArgs e) =>
+		SaveUiSettingsAsync(
+			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
+			_uiSettings?.TimeZoneId ?? string.Empty,
+			_uiSettings?.HideUserNameBadge ?? false,
+			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
+			chatFollowUpMode: Enum.TryParse<ChatFollowUpMode>(e.Value?.ToString(), out var mode) ? mode : ChatFollowUpMode.Queue);
+
+	private async Task DeleteAllConversationsAsync()
+	{
+		if ((_uiSettings?.ConversationCount ?? 0) == 0)
+		{
+			return;
+		}
+
+		var confirmDialog = await DialogService.ShowAsync<ConfirmDialog>(
+			Loc.GetOrDefault(SettingsTextKeys.DeleteConversationsConfirmTitle, "Confirm Deletion"),
+			string.Format(
+				CultureInfo.CurrentCulture,
+				Loc.GetOrDefault(SettingsTextKeys.DeleteConversationsConfirmMessage, "Permanently delete all {0} conversations? This cannot be undone."),
+				_uiSettings?.ConversationCount ?? 0));
+
+		if (confirmDialog == DialogResult.Ok)
+		{
+			await SettingsApiClient.DeleteAllConversationsAsync();
+			if (_uiSettings is not null)
+			{
+				_uiSettings.ConversationCount = 0;
+			}
+		}
+	}
+
+	private async Task ShowThirdPartyLicensesAsync()
+	{
+		await DialogService.ShowAsync<ThirdPartyLicensesDialog>();
+	}
+
+	private async Task SaveUiSettingsAsync(
+		string theme,
+		string timeZoneId,
+		bool hideUserNameBadge,
+		string cultureName,
+		bool? isChatTitleGenerationEnabled = null,
+		bool? isGamificationEnabled = null,
+		int? chatResumeWindowMinutes = null,
+		ChatFollowUpMode? chatFollowUpMode = null,
+		bool? isLowBatteryTaskProtectionEnabled = null,
+		int? lowBatteryTaskThresholdPercentage = null)
+	{
+		if (_uiSettings is null)
+		{
+			return;
+		}
+
+		await RunAsync(v => _isSaving = v, async () =>
+		{
+			// Built from the live shared settings, not the load-time snapshot, so a mute toggled
+			// from the notification bell since this section rendered is not reverted here.
+			if (isLowBatteryTaskProtectionEnabled is true && !UiSettings.IsLowBatteryTaskProtectionEnabled)
+			{
+				// Refresh availability before activation, with SettingsController checking again at save time.
+				_uiSettings.HostPower = (await SettingsApiClient.GetUiSettingsAsync()).HostPower;
+				if (!HasUsableBatteryInformation)
+				{
+					throw new InvalidOperationException(BatteryAvailabilityDescription);
+				}
+			}
+			var request = SaveUiSettingsRequest.From(UiSettings);
+			request.Theme = string.IsNullOrWhiteSpace(theme) ? AssistantUiSettings.DefaultTheme : theme.Trim();
+			request.TimeZoneId = timeZoneId;
+			request.HideUserNameBadge = hideUserNameBadge;
+			request.CultureName = UiCultureCatalog.NormalizeOrDefault(cultureName);
+			request.IsChatTitleGenerationEnabled = isChatTitleGenerationEnabled ?? request.IsChatTitleGenerationEnabled;
+			request.IsGamificationEnabled = isGamificationEnabled ?? request.IsGamificationEnabled;
+			request.ChatResumeWindowMinutes = AssistantUiSettings.NormalizeChatResumeWindowMinutes(
+				chatResumeWindowMinutes ?? request.ChatResumeWindowMinutes);
+			request.ChatFollowUpMode = chatFollowUpMode ?? request.ChatFollowUpMode;
+
+			request.IsLowBatteryTaskProtectionEnabled = isLowBatteryTaskProtectionEnabled ?? request.IsLowBatteryTaskProtectionEnabled;
+			request.LowBatteryTaskThresholdPercentage = lowBatteryTaskThresholdPercentage ?? request.LowBatteryTaskThresholdPercentage;
+			await SettingsApiClient.SaveUiSettingsAsync(request);
+			_uiSettings = new UiSettingsSummary
+			{
+				Theme = request.Theme,
+				TimeZoneId = request.TimeZoneId,
+				HideUserNameBadge = request.HideUserNameBadge,
+				IsGamificationEnabled = request.IsGamificationEnabled,
+				IsChatTitleGenerationEnabled = request.IsChatTitleGenerationEnabled,
+				AreNotificationsMuted = request.AreNotificationsMuted,
+				ChatFollowUpMode = request.ChatFollowUpMode,
+				ShowLogWarningNotifications = request.ShowLogWarningNotifications,
+				ShowSystemErrorNotifications = request.ShowSystemErrorNotifications,
+				CultureName = request.CultureName,
+				ChatResumeWindowMinutes = request.ChatResumeWindowMinutes,
+				IsLowBatteryTaskProtectionEnabled = request.IsLowBatteryTaskProtectionEnabled,
+				LowBatteryTaskThresholdPercentage = request.LowBatteryTaskThresholdPercentage,
+				HostPower = _uiSettings.HostPower,
+				ConversationCount = _uiSettings.ConversationCount
+			};
+			// Keep the shared same-process settings cache aligned with what was just saved.
+			request.ApplyTo(UiSettings);
+
+			if (!string.Equals(CultureInfo.CurrentUICulture.Name, request.CultureName, StringComparison.OrdinalIgnoreCase))
+			{
+				await LayoutCustomizer.SetDirectionAsync(CultureInfo.GetCultureInfo(request.CultureName).TextInfo.IsRightToLeft ? "rtl" : "ltr");
+				var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+				var redirectUri = string.IsNullOrWhiteSpace(relative) ? "/" : "/" + relative;
+
+				NavigationManager.NavigateTo(
+					$"/Culture/Set?culture={Uri.EscapeDataString(request.CultureName)}&redirectUri={Uri.EscapeDataString(redirectUri)}",
+					forceLoad: true);
+				return;
+			}
+		},
+		Loc.GetOrDefault(
+			SettingsTextKeys.SharedSaveSettingsToast,
+			"Settings saved successfully."));
+	}
+
+}

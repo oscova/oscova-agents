@@ -1,0 +1,161 @@
+@inject ManagementApiClient ManagementApiClient
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Creates an ordinary user without expanding the Administration page. *@
+<AppDialogShell Title="@(CommonLoc.GetOrDefault(CommonTextKeys.AdminCreateUserTitle, "Create User"))"
+                Subtitle="@(CommonLoc.GetOrDefault(CommonTextKeys.AdminCreateUserDescription, "Set the username, email, and password for the new user."))"
+                Icon="lucide:user-plus"
+                HelpTopic="@HelpTopics.CreateUser"
+                CanClose="@(!_isBusy)"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div role="alert" class="alert alert-error alert-soft mb-4">
+                <iconify-icon icon="lucide:alert-circle"></iconify-icon>
+                <span>@_errorMessage</span>
+            </div>
+        }
+
+        <EditForm @ref="_form" id="admin-create-user-form" Model="@_model" OnValidSubmit="@CreateAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-error mb-3 text-sm" />
+
+            <fieldset disabled="@_isBusy">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.FullName, "Full name")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--user text-base-content/60 size-4.5"></span>
+                            <InputText id="admin-create-full-name" class="grow focus:outline-0" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.FullName, "Full name"))" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserFullNamePlaceholder, "Jane Doe")" @bind-Value="_model.FullName" />
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--at-sign text-base-content/60 size-4.5"></span>
+                            <UsernameInput id="admin-create-username" class="grow focus:outline-0" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username"))" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserUsernamePlaceholder, "janedoe")" @bind-Value="_model.Username" />
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Email, "Email")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--mail text-base-content/60 size-4.5"></span>
+                            <InputText id="admin-create-email" class="grow focus:outline-0" type="email" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Email, "Email"))" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.AdminUserEmailPlaceholder, "jane@example.com")" @bind-Value="_model.Email" />
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                            <InputText id="admin-create-password" class="grow focus:outline-0" type="password" autocomplete="new-password" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password"))" placeholder="••••••••" @bind-Value="_model.Password" />
+                        </label>
+                    </fieldset>
+
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.ConfirmPassword, "Confirm password")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                            <InputText id="admin-create-confirm-password" class="grow focus:outline-0" type="password" autocomplete="new-password" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.ConfirmPassword, "Confirm password"))" placeholder="••••••••" @bind-Value="_model.ConfirmPassword" />
+                        </label>
+                    </fieldset>
+                </div>
+            </fieldset>
+        </EditForm>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_isBusy" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="submit" form="admin-create-user-form" class="btn btn-primary btn-sm" disabled="@_isBusy" @onclick="CreateAsync">
+            @if (_isBusy)
+            {
+                <span class="loading loading-spinner loading-sm"></span>
+            }
+            else
+            {
+                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+            }
+            @CommonLoc.GetOrDefault(CommonTextKeys.AdminCreateUserButton, "Create user")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private readonly CreateUserModel _model = new();
+    private EditForm? _form;
+    private string? _errorMessage;
+    private bool _isBusy;
+
+    private async Task CreateAsync()
+    {
+        if (_isBusy || _form?.EditContext?.Validate() != true)
+        {
+            return;
+        }
+
+        _errorMessage = null;
+        _isBusy = true;
+        try
+        {
+            var result = await ManagementApiClient.CreateUserAsync(new CreateUserRequest
+            {
+                Username = _model.Username,
+                FullName = _model.FullName,
+                Email = _model.Email,
+                Password = _model.Password,
+                ConfirmPassword = _model.ConfirmPassword
+            });
+
+            ToastService.Show(result.Message, ToastType.Success);
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+
+    /// <summary>Holds the five validated fields submitted when an operator creates a user.</summary>
+    private sealed class CreateUserModel
+    {
+        [Display(Name = nameof(FormValidationText.Username), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [MinLength(3, ErrorMessageResourceName = nameof(FormValidationText.MinimumLength), ErrorMessageResourceType = typeof(FormValidationText))]
+        public string Username { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.FullName), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [MinLength(1, ErrorMessageResourceName = nameof(FormValidationText.MinimumLength), ErrorMessageResourceType = typeof(FormValidationText))]
+        public string FullName { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.Email), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [EmailAddress(ErrorMessageResourceName = nameof(FormValidationText.InvalidEmail), ErrorMessageResourceType = typeof(FormValidationText))]
+        public string Email { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.Password), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [MinLength(6, ErrorMessageResourceName = nameof(FormValidationText.MinimumLength), ErrorMessageResourceType = typeof(FormValidationText))]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.ConfirmPassword), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [DataType(DataType.Password)]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,503 @@
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="custom-egress-audit-panel flex min-h-0 flex-col gap-4">
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        @SummaryTile(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditTotalEvents, "Total events"), Summary.Total, "lucide--cloud", "status-warning")
+        @SummaryTile(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditProviderEvents, "Provider events"), Summary.ProviderCount, "lucide--bot", "status-info")
+        @SummaryTile(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditToolEvents, "Tool events"), Summary.ToolCount, "lucide--route", "status-success")
+        @SummaryTile(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditEmbeddingEvents, "Embedding events"), Summary.EmbeddingCount, "lucide--brain", "status-secondary")
+    </div>
+
+    @if (ShowFilters)
+    {
+        <div class="flex flex-wrap items-center gap-2">
+            <select class="select select-sm w-36"
+                    aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.TimeRange, "Time range")"
+                    value="@SelectedRange"
+                    @onchange="OnRangeChangedAsync">
+                <option value="last30">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditRangeLastThirtyDays, "Last 30 days")</option>
+                <option value="all">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditRangeAllTime, "All time")</option>
+            </select>
+
+            <select class="select select-sm w-40"
+                    aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditTypeColumn, "Type")"
+                    value="@SelectedKind"
+                    @onchange="OnKindChangedAsync">
+                <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditAllKinds, "All kinds")</option>
+                <option value="@EgressAuditKinds.Provider">@FormatKind(EgressAuditKinds.Provider)</option>
+                <option value="@EgressAuditKinds.Tool">@FormatKind(EgressAuditKinds.Tool)</option>
+                <option value="@EgressAuditKinds.Embedding">@FormatKind(EgressAuditKinds.Embedding)</option>
+            </select>
+
+            <select class="select select-sm w-48"
+                    aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditSourceColumn, "Source")"
+                    value="@SelectedSource"
+                    @onchange="OnSourceChangedAsync">
+                <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditAllSources, "All sources")</option>
+                <option value="@EgressAuditKinds.SourceChat">@FormatSource(EgressAuditKinds.SourceChat)</option>
+                <option value="@EgressAuditKinds.SourceTask">@FormatSource(EgressAuditKinds.SourceTask)</option>
+                <option value="@EgressAuditKinds.SourceEmbeddingIndexing">@FormatSource(EgressAuditKinds.SourceEmbeddingIndexing)</option>
+                <option value="@EgressAuditKinds.SourceEmbeddingSearch">@FormatSource(EgressAuditKinds.SourceEmbeddingSearch)</option>
+            </select>
+
+            <label class="input input-sm min-w-0 flex-1 sm:max-w-xs">
+                <span class="iconify lucide--search text-base-content/60 size-4"></span>
+                <input type="text"
+                       id="egress-search-input"
+                       class="grow focus:outline-0"
+                       aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditSearchPlaceholder, "Search egress")"
+                       placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditSearchPlaceholder, "Search egress")"
+                       value="@SearchTerm"
+                       @oninput="OnSearchInputAsync"
+                       @onkeydown="OnSearchKeyDownAsync" />
+            </label>
+
+            <div class="ms-auto flex items-center gap-1">
+                @if (IsLoading)
+                {
+                    <span class="loading loading-dots loading-sm"></span>
+                }
+                <button type="button"
+                        class="btn btn-ghost btn-sm"
+                        disabled="@IsLoading"
+                        @onclick="() => OnSearchSubmitted.InvokeAsync()">
+                    <span class="iconify lucide--search size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditSearchButton, "Search")
+                </button>
+                <button type="button"
+                        class="btn btn-ghost btn-sm"
+                        disabled="@IsLoading"
+                        @onclick="() => OnRefresh.InvokeAsync()">
+                    <span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Refresh, "Refresh")
+                </button>
+            </div>
+        </div>
+    }
+    else if (IsLoading)
+    {
+        <div class="flex justify-end">
+            <span class="loading loading-dots loading-sm"></span>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <div role="alert" class="alert alert-error alert-soft">
+            <span class="iconify lucide--triangle-alert size-4.5"></span>
+            <span>@Error</span>
+        </div>
+    }
+
+    <div class="min-h-0 overflow-x-auto overflow-y-auto rounded-box border border-base-300">
+        <table class="table table-xs table-pin-rows">
+            <thead>
+                <tr>
+                    <th class="w-36"></th>
+                    <th class="w-44">@CommonLoc.GetOrDefault(CommonTextKeys.Time, "Time")</th>
+                    <th class="w-28">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditTypeColumn, "Type")</th>
+                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditDestinationColumn, "Destination")</th>
+                    <th class="w-36">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditSourceColumn, "Source")</th>
+                    <th class="w-44">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditAgentColumn, "Agent")</th>
+                    <th>@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditContextColumn, "Context")</th>
+                    @if (ShowUserColumn)
+                    {
+                        <th class="w-44">@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditUserColumn, "User")</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Entries.Count == 0)
+                {
+                    <tr>
+                        <td colspan="@ColumnCount" class="py-10 text-center text-sm text-base-content/60">
+                            @if (IsLoading)
+                            {
+                                <span>@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</span>
+                            }
+                            else
+                            {
+                                <span>@CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditNoEntries, "No audit entries match the current filters.")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var entry in Entries)
+                    {
+                        var entryKey = GetEntryKey(entry);
+                        var isExpanded = _expandedEntries.Contains(entryKey);
+                        var canInspect = CanInspectEntry(entry);
+
+                        <tr>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button type="button"
+                                            class="btn btn-ghost btn-xs btn-square"
+                                            title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogToggleDetailsTitle, "Toggle details")"
+                                            @onclick="() => ToggleExpanded(entryKey)">
+                                        <span class="iconify @(isExpanded ? "lucide--chevron-down" : "lucide--chevron-right") size-3.5"></span>
+                                    </button>
+                                    @if (canInspect)
+                                    {
+                                        var inspectLabel = CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditInspectAction, "Inspect session");
+                                        var inspectButtonLabel = CommonLoc.GetOrDefault(CommonTextKeys.TaskPageInspectButton, "Inspect");
+                                        <button type="button"
+                                                class="btn btn-ghost btn-xs gap-1.5 whitespace-nowrap"
+                                                title="@inspectLabel"
+                                                aria-label="@inspectLabel"
+                                                @onclick="() => OnInspectEntry.InvokeAsync(entry)">
+                                            <iconify-icon icon="lucide:scan-search" width="14" height="14" aria-hidden="true"></iconify-icon>
+                                            <span>@inspectButtonLabel</span>
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+                            <td class="whitespace-nowrap font-mono text-xs">@FormatTimestamp(entry.Record.Timestamp)</td>
+                            <td>
+                                <span class="@GetKindBadgeClass(entry.Record.Kind) whitespace-nowrap">@FormatKind(entry.Record.Kind)</span>
+                            </td>
+                            <td>
+                                <span class="block min-w-0 max-w-md truncate font-medium" title="@FormatDestination(entry)">@FormatDestination(entry)</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatSource(entry.Record.Source)</span>
+                            </td>
+                            <td>
+                                <span class="block min-w-0 max-w-44 truncate" title="@FormatLabel(entry.AgentLabel)">@FormatLabel(entry.AgentLabel)</span>
+                            </td>
+                            <td>
+                                <span class="block min-w-0 max-w-md truncate" title="@FormatContext(entry.Record)">@FormatContext(entry.Record)</span>
+                            </td>
+                            @if (ShowUserColumn)
+                            {
+                                <td>
+                                    <span class="block min-w-0 max-w-44 truncate" title="@FormatNullable(entry.OwnerDisplayName)">@FormatNullable(entry.OwnerDisplayName)</span>
+                                </td>
+                            }
+                        </tr>
+
+                        @if (isExpanded)
+                        {
+                            <tr>
+                                <td colspan="@ColumnCount" class="bg-base-200/70">
+                                    <div class="grid gap-2 p-3 text-xs md:grid-cols-2 xl:grid-cols-3">
+                                        @MetadataBadge(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditThreadMetadata, "Thread"), entry.Record.ThreadId)
+                                        @MetadataBadge(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditRunMetadata, "Run"), entry.Record.RunId)
+                                        @MetadataBadge(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditTaskMetadata, "Task"), entry.Record.TaskId)
+                                        @MetadataBadge(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditProviderIdMetadata, "Provider ID"), entry.Record.ProviderId)
+                                        @MetadataBadge(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditModelMetadata, "Model"), entry.Record.ModelId)
+                                        @MetadataBadge(CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditToolMetadata, "Tool"), entry.Record.ToolName)
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (TotalPages > 1)
+    {
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <span class="text-xs text-base-content/60">@FormatPageSummary()</span>
+            <div class="join">
+                <button type="button"
+                        class="join-item btn btn-sm"
+                        disabled="@(CurrentPage <= 1 || IsLoading)"
+                        aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.PreviousPage, "Previous page")"
+                        @onclick="() => OnPageChanged.InvokeAsync(CurrentPage - 1)">
+                    &lt;
+                </button>
+                @foreach (var pageNumber in GetVisiblePages())
+                {
+                    <button type="button"
+                            class="join-item btn btn-sm @(pageNumber == CurrentPage ? "btn-active" : string.Empty)"
+                            aria-current="@(pageNumber == CurrentPage ? "page" : null)"
+                            disabled="@IsLoading"
+                            @onclick="() => OnPageChanged.InvokeAsync(pageNumber)">
+                        @pageNumber
+                    </button>
+                }
+                <button type="button"
+                        class="join-item btn btn-sm"
+                        disabled="@(CurrentPage >= TotalPages || IsLoading)"
+                        aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.NextPage, "Next page")"
+                        @onclick="() => OnPageChanged.InvokeAsync(CurrentPage + 1)">
+                    &gt;
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <span class="text-xs text-base-content/60">@FormatCountSummary()</span>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<EgressAuditEntry> Entries { get; set; } = [];
+
+    [Parameter]
+    public EgressAuditSummary Summary { get; set; } = new(0, 0, 0, 0);
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string? Error { get; set; }
+
+    [Parameter]
+    public bool ShowUserColumn { get; set; }
+
+    [Parameter]
+    public bool ShowFilters { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    [Parameter]
+    public int TotalPages { get; set; } = 1;
+
+    [Parameter]
+    public int TotalCount { get; set; }
+
+    [Parameter]
+    public string SelectedRange { get; set; } = "last30";
+
+    [Parameter]
+    public string? SelectedKind { get; set; }
+
+    [Parameter]
+    public string? SelectedSource { get; set; }
+
+    [Parameter]
+    public string? SearchTerm { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefresh { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnRangeChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnKindChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnSourceChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnSearchTermChanged { get; set; }
+
+    [Parameter]
+    public EventCallback OnSearchSubmitted { get; set; }
+
+    [Parameter]
+    public EventCallback<EgressAuditEntry> OnInspectEntry { get; set; }
+
+    [Parameter]
+    public Func<EgressAuditEntry, bool>? IsEntryInspectable { get; set; }
+
+    private readonly HashSet<string> _expandedEntries = [];
+
+    private int ColumnCount => ShowUserColumn ? 8 : 7;
+
+    private RenderFragment SummaryTile(string label, int value, string icon, string statusClass) => @<div class="rounded-box border border-base-200 bg-base-100 p-3">
+        <div class="flex items-center justify-between gap-3">
+            <span class="text-sm text-base-content/70">@label</span>
+            <span class="iconify @icon text-base-content/70 size-4"></span>
+        </div>
+        <div class="mt-2 flex items-center gap-2">
+            <span class="status @statusClass"></span>
+            <span class="text-xl font-semibold">@value.ToString("N0", CultureInfo.CurrentCulture)</span>
+        </div>
+    </div>;
+
+    private RenderFragment MetadataBadge(string label, string? value) => @<div class="flex min-w-0 items-start gap-2">
+        <span class="badge badge-ghost badge-sm shrink-0 font-mono">@label</span>
+        <span class="min-w-0 break-all font-mono text-base-content/70">@FormatNullable(value)</span>
+    </div>;
+
+    private async Task OnRangeChangedAsync(ChangeEventArgs args)
+    {
+        await OnRangeChanged.InvokeAsync(args.Value?.ToString() ?? "last30");
+    }
+
+    private async Task OnKindChangedAsync(ChangeEventArgs args)
+    {
+        await OnKindChanged.InvokeAsync(EmptyToNull(args.Value?.ToString()));
+    }
+
+    private async Task OnSourceChangedAsync(ChangeEventArgs args)
+    {
+        await OnSourceChanged.InvokeAsync(EmptyToNull(args.Value?.ToString()));
+    }
+
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
+    {
+        await OnSearchTermChanged.InvokeAsync(args.Value?.ToString());
+    }
+
+    private async Task OnSearchKeyDownAsync(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await OnSearchSubmitted.InvokeAsync();
+        }
+    }
+
+    private void ToggleExpanded(string entryKey)
+    {
+        if (!_expandedEntries.Add(entryKey))
+        {
+            _expandedEntries.Remove(entryKey);
+        }
+    }
+
+    private bool CanInspectEntry(EgressAuditEntry entry)
+    {
+        if (!OnInspectEntry.HasDelegate || IsEntryInspectable is null)
+        {
+            return false;
+        }
+
+        var record = entry.Record;
+        var hasTaskRunEvidence =
+            !string.IsNullOrWhiteSpace(record.TaskId) &&
+            !string.IsNullOrWhiteSpace(record.RunId);
+        var hasChatThreadEvidence = !hasTaskRunEvidence && !string.IsNullOrWhiteSpace(record.ThreadId);
+
+        return (hasTaskRunEvidence || hasChatThreadEvidence) && IsEntryInspectable(entry);
+    }
+
+    private string FormatKind(string kind)
+    {
+        return kind switch
+        {
+            EgressAuditKinds.Provider => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressProviderKind, "Provider"),
+            EgressAuditKinds.Tool => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressToolKind, "Tool"),
+            EgressAuditKinds.Embedding => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressEmbeddingKind, "Embedding"),
+            _ => string.IsNullOrWhiteSpace(kind) ? CommonLoc.GetOrDefault(CommonTextKeys.Unknown, "Unknown") : kind
+        };
+    }
+
+    private string FormatSource(string? source)
+    {
+        return source switch
+        {
+            EgressAuditKinds.SourceChat => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressChatSource, "Chat"),
+            EgressAuditKinds.SourceTask => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressTaskSource, "Task"),
+            EgressAuditKinds.SourceEmbeddingIndexing => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressEmbeddingIndexingSource, "Memory indexing"),
+            EgressAuditKinds.SourceEmbeddingSearch => CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressEmbeddingSearchSource, "Memory search"),
+            _ => string.IsNullOrWhiteSpace(source) ? CommonLoc.GetOrDefault(CommonTextKeys.Unknown, "Unknown") : source
+        };
+    }
+
+    private string FormatDestination(EgressAuditEntry entry)
+    {
+        if (!string.IsNullOrWhiteSpace(entry.ToolLabel))
+        {
+            return CommonLoc.GetRecordLabel(entry.ToolLabel);
+        }
+
+        var provider = string.IsNullOrWhiteSpace(entry.ProviderLabel)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressUnknownDestination, "Unknown destination")
+            : CommonLoc.GetRecordLabel(entry.ProviderLabel);
+        return string.IsNullOrWhiteSpace(entry.Record.ModelId)
+            ? provider
+            : $"{provider} / {entry.Record.ModelId}";
+    }
+
+    private string FormatLabel(string? label) =>
+        string.IsNullOrWhiteSpace(label) ? FormatNullable(label) : CommonLoc.GetRecordLabel(label);
+
+    private string FormatContext(EgressAuditRecord entry)
+    {
+        if (!string.IsNullOrWhiteSpace(entry.ThreadId))
+        {
+            return entry.ThreadId;
+        }
+
+        return FormatNullable(entry.TaskId);
+    }
+
+    private string GetKindBadgeClass(string kind)
+    {
+        var color = kind switch
+        {
+            EgressAuditKinds.Provider => "badge-info",
+            EgressAuditKinds.Tool => "badge-success",
+            EgressAuditKinds.Embedding => "badge-secondary",
+            _ => "badge-ghost"
+        };
+        return $"badge badge-sm {color} h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]";
+    }
+
+    private string FormatPageSummary()
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditPageSummary, "{0} events - Page {1} of {2}"),
+            TotalCount,
+            CurrentPage,
+            TotalPages);
+    }
+
+    private string FormatCountSummary()
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditCountSummary, "{0} events"),
+            TotalCount);
+    }
+
+    private static string FormatTimestamp(DateTimeOffset timestamp) =>
+        timestamp.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
+
+    private string FormatNullable(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set")
+            : value;
+
+    private static string GetEntryKey(EgressAuditEntry entry)
+    {
+        var record = entry.Record;
+        return string.Join(
+            "|",
+            record.Timestamp.ToUnixTimeMilliseconds(),
+            record.Kind,
+            record.Source,
+            record.ThreadId,
+            record.RunId,
+            record.TaskId,
+            record.ProviderId,
+            record.ModelId,
+            record.ToolName,
+            entry.OwnerUserId);
+    }
+
+    private List<int> GetVisiblePages()
+    {
+        var total = Math.Max(1, TotalPages);
+        var current = Math.Clamp(CurrentPage, 1, total);
+        const int window = 2;
+        var start = Math.Max(1, current - window);
+        var end = Math.Min(total, current + window);
+        var pages = new List<int>();
+        for (var pageNumber = start; pageNumber <= end; pageNumber++)
+        {
+            pages.Add(pageNumber);
+        }
+
+        return pages;
+    }
+
+    private static string? EmptyToNull(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value;
+}

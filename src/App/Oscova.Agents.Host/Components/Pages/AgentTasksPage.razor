@@ -1,0 +1,391 @@
+@page "/tasks"
+@attribute [Authorize]
+
+<DashboardShell ActiveView="ActiveView.Tasks">
+<div class="min-sm:container mx-auto flex h-full min-h-0 w-full min-w-0 flex-col">
+<div class="flex h-full min-h-0 min-w-0 flex-col gap-4 overflow-hidden">
+    <header class="custom-settings-heading custom-management-heading">
+        <div>
+            <div class="custom-settings-title">
+                <h1>@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageTitle, "Agent Operations")</h1>
+                <HelpTriggerButton Topic="@HelpTopics.AgentTasks" />
+            </div>
+            <p>@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageDescription, "Schedule, observe, and manage autonomous agent work from one screen. Select a task to inspect its latest execution state and recent runs.")</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button class="btn btn-ghost btn-sm" @onclick="RefreshAsync" disabled="@_isLoading">
+                <span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
+                @CommonLoc.GetOrDefault(CommonTextKeys.Refresh, "Refresh")
+            </button>
+            <button class="btn btn-primary btn-sm" @onclick="OpenCreateDialog" disabled="@_isLoading">
+                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNewTaskButton, "New Task")
+            </button>
+
+        </div>
+    </header>
+
+    <div class="custom-management-body min-h-0 min-w-0 flex-1 overflow-y-auto xl:overflow-hidden">
+        @if (_isLoading)
+        {
+            <div class="flex h-full items-center justify-center">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+        }
+        else
+        {
+            <div class="flex min-h-full flex-col xl:h-full xl:min-h-0">
+                <div class="grid shrink-0 grid-cols-2 gap-3 lg:grid-cols-4">
+                    <div class="card custom-settings-catalog-card">
+                        <div class="card-body gap-1 p-4">
+                            <span class="text-xs uppercase tracking-wide text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageTotalTasksMetric, "Total Tasks")</span>
+                            <div class="flex flex-wrap items-end justify-between gap-3">
+                                <span class="text-3xl font-semibold">@_tasks.Count</span>
+                                <span class="badge badge-neutral badge-soft">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageConfiguredBadge, "Configured")</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card custom-settings-catalog-card">
+                        <div class="card-body gap-1 p-4">
+                            <span class="text-xs uppercase tracking-wide text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusRunning, "Running")</span>
+                            <div class="flex flex-wrap items-end justify-between gap-3">
+                                <span class="text-3xl font-semibold">@RunningTaskCount</span>
+                                <span class="badge badge-warning badge-soft">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageLiveBadge, "Live")</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card custom-settings-catalog-card">
+                        <div class="card-body gap-1 p-4">
+                            <span class="text-xs uppercase tracking-wide text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageCompletedMetric, "Completed")</span>
+                            <div class="flex flex-wrap items-end justify-between gap-3">
+                                <span class="text-3xl font-semibold">@CompletedTaskCount</span>
+                                <span class="badge badge-success badge-soft">@CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusHealthy, "Healthy")</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card custom-settings-catalog-card">
+                        <div class="card-body gap-1 p-4">
+                            <span class="text-xs uppercase tracking-wide text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusNeedsAttention, "Needs Attention")</span>
+                            <div class="flex flex-wrap items-end justify-between gap-3">
+                                <span class="text-3xl font-semibold">@NeedsAttentionTaskCount</span>
+                                <span class="badge badge-error badge-soft">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageFailedBadge, "Failed") / @CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusSkipped, "Skipped")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (_tasks.Count == 0)
+                {
+                    <div class="card custom-settings-catalog-card mt-5">
+                        <div class="card-body items-center py-16 text-center">
+                            <div class="bg-base-200 text-base-content/55 flex size-16 items-center justify-center rounded-full">
+                                <iconify-icon icon="lucide:calendar-clock" width="28" height="28"></iconify-icon>
+                            </div>
+                            <h3 class="mt-4 text-lg font-semibold">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageEmptyTitle, "No agent tasks yet")</h3>
+                            <p class="max-w-md text-sm text-base-content/60">
+                                @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageEmptyDescription, "Create your first autonomous workflow to see schedules, runs, and live execution history here.")
+                            </p>
+                            <button class="btn btn-primary btn-sm mt-3" @onclick="OpenCreateDialog">
+                                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                                @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageCreateTaskButton, "Create Task")
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card custom-settings-catalog-card mt-5 min-h-0 min-w-0 xl:flex-1">
+                        <div class="flex flex-col gap-4 border-b border-base-200 px-5 py-5 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-lg font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageDirectoryTitle, "Task Directory")</p>
+                                    <span class="badge badge-neutral badge-sm">@FilteredTasks.Count</span>
+                                </div>
+                                <p class="mt-1 text-sm text-base-content/60">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageDirectoryDescription, "Select a task to view details and recent executions.")</p>
+                            </div>
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                <label class="flex shrink-0 items-center gap-2 text-sm whitespace-nowrap">
+                                    <input id="show-task-instructions" type="checkbox" class="toggle toggle-sm" @bind="_showInstructions" />
+                                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskShowInstructions, "Show instructions")
+                                </label>
+                                <label class="input input-sm w-full sm:w-64">
+                                    <iconify-icon icon="lucide:search" width="14" height="14" class="text-base-content/60"></iconify-icon>
+                                    <input id="search-tasks" type="search" class="grow" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageSearchPlaceholder, "Search tasks or agents")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageSearchPlaceholder, "Search tasks or agents")" @bind="_searchText" @bind:event="oninput" />
+                                </label>
+                                <select class="select select-sm w-full sm:w-44" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")" @bind="_statusFilter">
+                                    <option value="@TaskStatusFilter.All">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageAllStatusesOption, "All statuses")</option>
+                                    <option value="@TaskStatusFilter.Running">@CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusRunning, "Running")</option>
+                                    <option value="@TaskStatusFilter.Completed">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageCompletedMetric, "Completed")</option>
+                                    <option value="@TaskStatusFilter.NeedsAttention">@CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusNeedsAttention, "Needs Attention")</option>
+                                    <option value="@TaskStatusFilter.Orphan">@CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusOrphan, "Orphan")</option>
+                                    <option value="@TaskStatusFilter.NeverRun">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNeverRunOption, "Never run")</option>
+                                    <option value="@TaskStatusFilter.Disabled">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageDisabledOption, "Disabled")</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 p-4 md:hidden">
+                            @foreach (var task in FilteredTasks)
+                            {
+                                var lastRun = GetLastRun(task.Id);
+                                var isSelected = string.Equals(_selectedTaskId, task.Id, StringComparison.Ordinal);
+                                <article class="rounded-box border border-base-200 p-4 transition-all hover:bg-base-200/40 @(isSelected ? "bg-base-200/50" : "")"
+                                         @onclick="() => OpenTaskDetailsAsync(task)">
+                                    <div class="flex min-w-0 items-start gap-3">
+                                        <div class="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-xl">
+                                            <iconify-icon icon="lucide:bot" width="18" height="18"></iconify-icon>
+                                        </div>
+                                        <div class="min-w-0 grow">
+                                            <div class="flex min-w-0 flex-wrap items-center gap-2">
+                                                <h3 class="min-w-0 truncate font-medium">@task.Name</h3>
+                                                @if (!string.IsNullOrWhiteSpace(task.CreatedByAgentId))
+                                                {
+                                                    <span class="badge badge-info badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]"
+                                                          title="@GetAgentName(task.CreatedByAgentId)">
+                                                        <iconify-icon icon="lucide:bot" width="12" height="12"></iconify-icon>
+                                                        @CommonLoc.GetOrDefault(CommonTextKeys.TaskAgentCreatedBadge, "Agent-created")
+                                                    </span>
+                                                }
+                                                @if (isSelected)
+                                                {
+                                                    <span class="badge badge-primary badge-soft badge-sm shrink-0">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageOpenBadge, "Open")</span>
+                                                }
+                                            </div>
+                                            @if (_showInstructions)
+                                            {
+                                                <p class="mt-1 line-clamp-2 text-xs text-base-content/55">@GetInstructionPreview(task)</p>
+                                            }
+                                        </div>
+                                        <label class="flex shrink-0 items-center"
+                                               title="@(task.IsEnabled ? CommonLoc.GetOrDefault(CommonTextKeys.TaskEnabled, "Enabled") : CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusPaused, "Paused"))"
+                                               @onclick:stopPropagation="true">
+                                            <input type="checkbox"
+                                                   class="toggle toggle-sm toggle-primary"
+                                                   aria-label="@(task.IsEnabled ? CommonLoc.GetOrDefault(CommonTextKeys.TaskEnabled, "Enabled") : CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusPaused, "Paused"))"
+                                                   checked="@task.IsEnabled"
+                                                   @onchange="e => ToggleEnabled(task, e)" />
+                                        </label>
+                                    </div>
+
+                                    <div class="mt-4 grid grid-cols-1 gap-3 text-sm">
+                                        <div class="rounded-box bg-base-200/40 p-3">
+                                            <div class="text-xs text-base-content/50">@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderAgent, "Agent")</div>
+                                            <div class="mt-1 truncate font-medium">@GetAgentName(task.AgentId)</div>
+                                            <div class="truncate text-xs text-base-content/50">@GetModelLabel(task)</div>
+                                        </div>
+                                        <div class="rounded-box bg-base-200/40 p-3">
+                                            <div class="text-xs text-base-content/50">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageScheduleHeader, "Schedule")</div>
+                                            <div class="mt-1 truncate font-medium">@FormatSchedule(task)</div>
+                                            <div class="line-clamp-2 text-xs text-base-content/50">@GetScheduleSupportText(task)</div>
+                                        </div>
+                                        <div class="rounded-box bg-base-200/40 p-3">
+                                            <div class="text-xs text-base-content/50">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageLatestRunHeader, "Latest Run")</div>
+                                            @if (IsTaskOrphan(task))
+                                            {
+                                                <div class="mt-1 flex flex-wrap items-center gap-2">
+                                                    <span class="badge badge-sm badge-soft badge-warning">
+                                                        <iconify-icon icon="lucide:unlink" width="12" height="12"></iconify-icon>
+                                                        @CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusOrphan, "Orphan")
+                                                    </span>
+                                                    <span class="text-xs text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.TaskOrphanRowHint, "Backing agent no longer exists")</span>
+                                                </div>
+                                            }
+                                            else if (lastRun is not null)
+                                            {
+                                                <div class="mt-1 flex flex-wrap items-center gap-2">
+                                                    <span class="badge badge-sm badge-soft @GetStatusBadgeClass(lastRun.Status)">
+                                                        @GetRunStatusText(lastRun.Status)
+                                                    </span>
+                                                    <span class="text-xs text-base-content/55">@FormatRunTimestamp(lastRun)</span>
+                                                </div>
+                                                @if (lastRun.Status == AgentTaskStatus.Skipped &&
+                                                     !string.IsNullOrWhiteSpace(lastRun.ResultSummary))
+                                                {
+                                                    <p class="mt-1 line-clamp-2 text-xs text-base-content/70" title="@lastRun.ResultSummary">@lastRun.ResultSummary</p>
+                                                }
+                                                else if (lastRun.Status == AgentTaskStatus.Failed &&
+                                                     !string.IsNullOrWhiteSpace(lastRun.Error))
+                                                {
+                                                    <p class="mt-1 line-clamp-2 text-xs text-error" title="@lastRun.Error">@lastRun.Error</p>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="mt-1 flex flex-wrap items-center gap-2">
+                                                    <span class="badge badge-sm badge-ghost">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNeverBadge, "Never")</span>
+                                                    <span class="text-xs text-base-content/45">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNoExecutionYet, "No execution yet")</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 flex items-center justify-end gap-1">
+                                        <button type="button"
+                                                class="btn btn-ghost btn-sm"
+                                                title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageRunNowButton, "Run now")"
+                                                disabled="@(!task.IsEnabled || IsTaskRunning(task.Id))"
+                                                @onclick:stopPropagation="true"
+                                                @onclick="() => RunTaskAsync(task)">
+                                            <iconify-icon icon="lucide:play" width="16" height="16"></iconify-icon>
+                                        </button>
+                                        <button type="button" class="btn btn-ghost btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageViewRunsButton, "View runs")" @onclick:stopPropagation="true" @onclick="() => ViewRuns(task)">
+                                            <iconify-icon icon="lucide:history" width="16" height="16"></iconify-icon>
+                                        </button>
+                                        <button type="button" class="btn btn-ghost btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")" @onclick:stopPropagation="true" @onclick="() => OpenEditDialog(task)">
+                                            <iconify-icon icon="lucide:pencil" width="16" height="16"></iconify-icon>
+                                        </button>
+                                        <button type="button" class="btn btn-ghost btn-sm text-error" title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")" @onclick:stopPropagation="true" @onclick="() => DeleteTask(task)">
+                                            <iconify-icon icon="lucide:trash-2" width="16" height="16"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+
+                        <div class="hidden min-h-0 overflow-auto md:block">
+                            <table class="table table-pin-rows w-full table-fixed custom-task-directory-table">
+                                <thead>
+                                    <tr>
+                                        <th class="custom-task-name-column">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageTaskHeader, "Task")</th>
+                                        <th class="custom-task-schedule-column">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageScheduleHeader, "Schedule")</th>
+                                        <th class="custom-task-run-column">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageLatestRunHeader, "Latest Run")</th>
+                                        <th class="custom-task-state-column">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageStateHeader, "State")</th>
+                                        <th class="custom-task-actions-column text-end">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (FilteredTasks.Count == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="text-center">
+                                                <div role="status" class="py-5">
+                                                    <p>@CommonLoc[CommonTextKeys.NoResults]</p>
+                                                    <button type="button" class="btn btn-ghost btn-sm mt-2"
+                                                            @onclick="() => { _searchText = string.Empty; _statusFilter = TaskStatusFilter.All; }">
+                                                        @CommonLoc[CommonTextKeys.Clear]
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    @foreach (var task in FilteredTasks)
+                                    {
+                                        var lastRun = GetLastRun(task.Id);
+                                        var isSelected = string.Equals(_selectedTaskId, task.Id, StringComparison.Ordinal);
+                                        <tr class="cursor-pointer hover:bg-base-200/40 @(isSelected ? "bg-base-200/50" : "")" @onclick="() => OpenTaskDetailsAsync(task)">
+                                            <td>
+                                                <div class="flex min-w-0 items-start gap-3">
+                                                    <div class="bg-primary/10 text-primary mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl">
+                                                        <iconify-icon icon="lucide:bot" width="18" height="18"></iconify-icon>
+                                                    </div>
+                                                    <div class="min-w-0">
+                                                        <div class="flex min-w-0 flex-wrap items-center gap-2">
+                                                            <button type="button" class="truncate text-start font-medium"
+                                                                    @onclick:stopPropagation="true" @onclick="() => OpenTaskDetailsAsync(task)">@task.Name</button>
+                                                            @if (!string.IsNullOrWhiteSpace(task.CreatedByAgentId))
+                                                            {
+                                                                <span class="badge badge-info badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]"
+                                                                      title="@GetAgentName(task.CreatedByAgentId)">
+                                                                    <iconify-icon icon="lucide:bot" width="12" height="12"></iconify-icon>
+                                                                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskAgentCreatedBadge, "Agent-created")
+                                                                </span>
+                                                            }
+                                                            @if (isSelected)
+                                                            {
+                                                                <span class="badge badge-primary badge-soft badge-sm shrink-0">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageOpenBadge, "Open")</span>
+                                                            }
+                                                        </div>
+                                                        @if (_showInstructions)
+                                                        {
+                                                            <p class="mt-1 line-clamp-2 text-xs text-base-content/55">@GetInstructionPreview(task)</p>
+                                                        }
+                                                        <p class="mt-1 text-xs text-base-content/60">@GetAgentName(task.AgentId) · @GetModelLabel(task)</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="text-sm">@FormatSchedule(task)</div>
+                                                <div class="line-clamp-2 text-xs text-base-content/50">@GetScheduleSupportText(task)</div>
+                                            </td>
+                                            <td>
+                                                @if (IsTaskOrphan(task))
+                                                {
+                                                    <div class="flex flex-col gap-1">
+                                                        <span class="badge badge-sm badge-soft badge-warning">
+                                                            <iconify-icon icon="lucide:unlink" width="12" height="12"></iconify-icon>
+                                                            @CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusOrphan, "Orphan")
+                                                        </span>
+                                                        <span class="line-clamp-2 text-xs text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.TaskOrphanRowHint, "Backing agent no longer exists")</span>
+                                                    </div>
+                                                }
+                                                else if (lastRun is not null)
+                                                {
+                                                    <div class="flex flex-col gap-1">
+                                                        <span class="badge badge-sm badge-soft @GetStatusBadgeClass(lastRun.Status)">
+                                                            @GetRunStatusText(lastRun.Status)
+                                                        </span>
+                                                        <span class="text-xs text-base-content/55">@FormatRunTimestamp(lastRun)</span>
+                                                        @if (lastRun.Status == AgentTaskStatus.Skipped &&
+                                                             !string.IsNullOrWhiteSpace(lastRun.ResultSummary))
+                                                        {
+                                                            <span class="line-clamp-2 text-xs text-base-content/70" title="@lastRun.ResultSummary">@lastRun.ResultSummary</span>
+                                                        }
+                                                        else if (lastRun.Status == AgentTaskStatus.Failed &&
+                                                             !string.IsNullOrWhiteSpace(lastRun.Error))
+                                                        {
+                                                            <span class="line-clamp-2 text-xs text-error" title="@lastRun.Error">@lastRun.Error</span>
+                                                        }
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="flex flex-col gap-1">
+                                                        <span class="badge badge-sm badge-ghost">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNeverBadge, "Never")</span>
+                                                        <span class="truncate text-xs text-base-content/45">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNoExecutionYet, "No execution yet")</span>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <label class="flex w-12 items-center"
+                                                       title="@(task.IsEnabled ? CommonLoc.GetOrDefault(CommonTextKeys.TaskEnabled, "Enabled") : CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusPaused, "Paused"))">
+                                                    <input type="checkbox"
+                                                           class="toggle toggle-sm toggle-primary"
+                                                           aria-label="@(task.IsEnabled ? CommonLoc.GetOrDefault(CommonTextKeys.TaskEnabled, "Enabled") : CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusPaused, "Paused"))"
+                                                           checked="@task.IsEnabled"
+                                                           @onclick:stopPropagation="true"
+                                                           @onchange="e => ToggleEnabled(task, e)" />
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="flex justify-end gap-1">
+                                                    <button class="btn btn-ghost btn-xs"
+                                                            title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageRunNowButton, "Run now")"
+                                                            disabled="@(!task.IsEnabled || IsTaskRunning(task.Id))"
+                                                            @onclick:stopPropagation="true"
+                                                            @onclick="() => RunTaskAsync(task)">
+                                                        <iconify-icon icon="lucide:play" width="14" height="14"></iconify-icon>
+                                                    </button>
+                                                    <button class="btn btn-ghost btn-xs" title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageViewRunsButton, "View runs")" @onclick:stopPropagation="true" @onclick="() => ViewRuns(task)">
+                                                        <iconify-icon icon="lucide:history" width="14" height="14"></iconify-icon>
+                                                    </button>
+                                                    <button class="btn btn-ghost btn-xs" title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")" @onclick:stopPropagation="true" @onclick="() => OpenEditDialog(task)">
+                                                        <iconify-icon icon="lucide:pencil" width="14" height="14"></iconify-icon>
+                                                    </button>
+                                                    <button class="btn btn-ghost btn-xs text-error" title="@CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")" @onclick:stopPropagation="true" @onclick="() => DeleteTask(task)">
+                                                        <iconify-icon icon="lucide:trash-2" width="14" height="14"></iconify-icon>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+</div>
+</DashboardShell>

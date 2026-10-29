@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.RetryServiceCheckTitle">
+		<value>सेवा जांच का पुनः प्रयास करें</value>
+
+	</data>
+	<data name="Chat.RetryNow">
+		<value>अभी पुनः प्रयास करें</value>
+
+	</data>
+	<data name="Chat.CheckingChatServiceStatus">
+		<value>चैट सेवा स्थिति की जांच की जा रही है...</value>
+
+	</data>
+	<data name="Chat.ServiceNotRunning">
+		<value>चैट सेवा नहीं चल रही है। इसे प्रारंभ करें और पुनः प्रयास करें।</value>
+
+	</data>
+	<data name="Chat.AgentSelectorPrefix">
+		<value>एजेंट:</value>
+
+	</data>
+	<data name="Chat.AgentConversation.ReadOnly">
+		<value>केवल पढ़ने के लिए</value>
+
+	</data>
+	<data name="Chat.AgentConversation.TabsLabel">
+		<value>एजेंट वार्तालाप</value>
+
+	</data>
+	<data name="Chat.AssistantFallbackName">
+		<value>सहायक</value>
+
+	</data>
+	<data name="Chat.AttachFileLabel">
+		<value>फ़ाइल संलग्न करें</value>
+
+	</data>
+	<data name="Chat.CheckingAvailability">
+		<value>उपलब्धता की जांच की जा रही है</value>
+
+	</data>
+	<data name="Chat.DefaultInputPlaceholder">
+		<value>अपना संदेश टाइप करें...</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmMessage">
+		<value>यह चैट हटाएँ? इसे वापस नहीं किया जा सकता। इसके अस्थायी अटैचमेंट और टूल आउटपुट फ़ाइलें भी हटेंगी, पहले बदलाव सहेजने पर भी। सामान्य कार्यक्षेत्र और परियोजना फ़ाइलें रहेंगी।</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmTitle">
+		<value>थ्रेड हटाने की पुष्टि करें</value>
+
+	</data>
+	<data name="Chat.FileSizeExceeded">
+		<value>'{0}' आकार सीमा {1} से अधिक है।</value>
+
+	</data>
+	<data name="Chat.GeneratingResponseStatus">
+		<value>प्रतिक्रिया उत्पन्न की जा रही है</value>
+
+	</data>
+	<data name="Chat.ResponseComplete">
+		<value>प्रतिक्रिया पूर्ण हुई।</value>
+
+	</data>
+	<data name="Chat.ResponseFailed">
+		<value>चैट प्रतिक्रिया पूरी नहीं की जा सकी।</value>
+
+	</data>
+	<data name="Chat.ImageAttachmentKind">
+		<value>छवि</value>
+
+	</data>
+	<data name="Chat.InspectSessionTitle">
+		<value>सत्र का निरीक्षण करें</value>
+
+	</data>
+	<data name="Chat.LiveAndReady">
+		<value>सक्रिय और तैयार</value>
+
+	</data>
+	<data name="Chat.ModelNotSetLabel">
+		<value>मॉडल सेट नहीं है</value>
+
+	</data>
+	<data name="Chat.MultipleFilesReadyLabel">
+		<value>{0} फ़ाइलें तैयार हैं</value>
+
+	</data>
+	<data name="Chat.NewChatLabel">
+		<value>नई चैट</value>
+
+	</data>
+	<data name="Chat.NoConversationsFound">
+		<value>कोई वार्तालाप नहीं मिला</value>
+
+	</data>
+	<data name="Chat.NoModelProviderConfigured">
+		<value>कोई मॉडल प्रदाता कॉन्फ़िगर नहीं है</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersConfigured">
+		<value>कोई मॉडल प्रदाता कॉन्फ़िगर नहीं हैं</value>
+
+	</data>
+	<data name="Chat.NoDefaultModelProviderSelected">
+		<value>कोई डिफ़ॉल्ट मॉडल प्रदाता नहीं चुना गया</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersPresence">
+		<value>मॉडल प्रदाता की आवश्यकता है</value>
+
+	</data>
+	<data name="Chat.ModelProviderSelectionRequiredPresence">
+		<value>एक मॉडल प्रदाता चुनें</value>
+
+	</data>
+	<data name="Chat.AddModelProviderToStartChatting">
+		<value>चैट शुरू करने के लिए एक मॉडल प्रदाता जोड़ें।</value>
+
+	</data>
+	<data name="Chat.SelectModelProviderToStartChatting">
+		<value>चैट शुरू करने के लिए नीचे दिए गए मॉडल प्रदाताओं में से चुनें।</value>
+
+	</data>
+	<data name="Chat.AddModelProviderAction">
+		<value>प्रदाता जोड़ें</value>
+
+	</data>
+	<data name="Chat.OneFileReadyLabel">
+		<value>1 फ़ाइल तैयार है</value>
+
+	</data>
+	<data name="Chat.ProcessingPlaceholder">
+		<value>संसाधित किया जा रहा है...</value>
+
+	</data>
+	<data name="Chat.ReadAloudLabel">
+		<value>ज़ोर से पढ़ें</value>
+
+	</data>
+	<data name="Chat.RemoveAttachmentLabel">
+		<value>अनुलग्नक हटाएं: {0}</value>
+
+	</data>
+	<data name="Chat.RenameThread">
+		<value>नाम बदलें</value>
+
+	</data>
+	<data name="Chat.RenameThreadBusy">
+		<value>प्रतिक्रिया समाप्त होने की प्रतीक्षा करें, फिर से नाम बदलने का प्रयास करें।</value>
+
+	</data>
+	<data name="Chat.RenameThreadDialogTitle">
+		<value>वार्तालाप का नाम बदलें</value>
+
+	</data>
+	<data name="Chat.RenameThreadFailed">
+		<value>वार्तालाप का नाम नहीं बदला जा सका।</value>
+
+	</data>
+	<data name="Chat.SearchChatsLabel">
+		<value>चैट खोजें</value>
+
+	</data>
+	<data name="Chat.SendLabel">
+		<value>भेजें</value>
+
+	</data>
+	<data name="Chat.ServiceOffline">
+		<value>सेवा ऑफ़लाइन है</value>
+
+	</data>
+	<data name="Chat.ShowChatsLabel">
+		<value>चैट दिखाएं</value>
+
+	</data>
+	<data name="Chat.SpeakingPlaceholder">
+		<value>बोल रहा है...</value>
+
+	</data>
+	<data name="Chat.StartListeningLabel">
+		<value>सुनना शुरू करें</value>
+
+	</data>
+	<data name="Chat.StartVoiceModeLabel">
+		<value>वॉयस मोड शुरू करें</value>
+
+	</data>
+	<data name="Chat.StopLabel">
+		<value>रोकें</value>
+
+	</data>
+	<data name="Chat.StopListeningLabel">
+		<value>सुनना बंद करें</value>
+
+	</data>
+	<data name="Chat.StopVoiceModeLabel">
+		<value>वॉयस मोड बंद करें</value>
+
+	</data>
+	<data name="Chat.Start.Card.Agenda.Action">
+		<value>एजेंडा बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Description">
+		<value>अपनी मीटिंग के लिए समय सहित एजेंडा पाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Prompt">
+		<value>मेरी मीटिंग के लिए एजेंडा तैयार करने में मदद करें, हर विषय के लिए समय के साथ।</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Title">
+		<value>मीटिंग एजेंडा तैयार करें</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Action">
+		<value>बजट शुरू करें</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Description">
+		<value>मासिक आय और खर्च एक ही जगह देखें।</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Prompt">
+		<value>मेरी आय और खर्चों से एक सरल मासिक बजट बनाने में मदद करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Title">
+		<value>सरल बजट बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Action">
+		<value>चार्ट बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Description">
+		<value>संख्याओं को ऐसे चार्ट में देखें जिसे एक नज़र में तुलना कर सकें।</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Prompt">
+		<value>मेरी दी गई कुछ संख्याओं से एक चार्ट बनाएँ ताकि मैं उनकी एक नज़र में तुलना कर सकूँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Title">
+		<value>संख्याओं का चार्ट बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Action">
+		<value>चेकलिस्ट बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Description">
+		<value>किसी काम को टिक करने लायक स्पष्ट चरणों में बाँटें।</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Prompt">
+		<value>मैं जो काम करने वाला हूँ उसके लिए चरण-दर-चरण चेकलिस्ट बनाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Title">
+		<value>चेकलिस्ट बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Action">
+		<value>कोड की समीक्षा करें</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Description">
+		<value>समझें कि कोड क्या करता है और संभावित बग पहचानें।</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Prompt">
+		<value>मेरे पेस्ट किए कोड का हिस्सा क्या करता है, चरण-दर-चरण समझाएँ, और संभावित बग बताएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Title">
+		<value>कोड समझाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Action">
+		<value>ऐप कनेक्ट करें</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Description">
+		<value>Oscova को उस ऐप के साथ काम करने दें जिसे आप पहले से इस्तेमाल करते हैं।</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Prompt">
+		<value>मैं चाहता हूँ कि आप मेरे इस्तेमाल किए जाने वाले एक ऐप के साथ काम करें। उसे कनेक्ट करने का तरीका खोजें और सेट करें।</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Title">
+		<value>कोई ऐप कनेक्ट करें</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Action">
+		<value>शोध शुरू करें</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Description">
+		<value>अपने बताए सवाल पर स्रोतों सहित एक छोटी रिपोर्ट पाएं।</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Prompt">
+		<value>मैं जो विषय बताऊं उस पर शोध करें और स्रोतों सहित एक छोटी रिपोर्ट दें।</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Title">
+		<value>किसी विषय पर शोध करें</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Action">
+		<value>डेटा विश्लेषण करें</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Description">
+		<value>CSV फ़ाइल में रुझान और असामान्य मान पहचानें।</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Prompt">
+		<value>मैं एक CSV फ़ाइल संलग्न करूँगा। बताएँ कि उसमें क्या है और कोई रुझान या असामान्य मान बताएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Title">
+		<value>स्प्रेडशीट देखें</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Action">
+		<value>विकल्पों की तुलना करें</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Description">
+		<value>फ़ायदे, नुकसान और सुझाव के साथ विकल्पों की तुलना करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Prompt">
+		<value>विकल्पों, उनके फ़ायदे और नुकसान, और आपके सुझाव को सूचीबद्ध करके किसी निर्णय पर विचार करने में मेरी मदद करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Title">
+		<value>किसी निर्णय पर विचार करें</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Action">
+		<value>जवाब तैयार करें</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Description">
+		<value>ईमेल पेस्ट करें और स्पष्ट, विनम्र जवाब पाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Prompt">
+		<value>एक ईमेल का जवाब देने में मेरी मदद करें। मैं उसे आगे पेस्ट करूँगा। जवाब स्पष्ट और विनम्र रखें।</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Title">
+		<value>ईमेल का जवाब दें</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Action">
+		<value>समझाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Description">
+		<value>किसी कठिन विषय को सरल उदाहरण से समझें।</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Prompt">
+		<value>जिस विषय में मेरी रुचि है उसे आसान भाषा में, एक सरल उदाहरण के साथ समझाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Title">
+		<value>कुछ आसान भाषा में समझाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Action">
+		<value>प्रैक्टिस शुरू करें</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Description">
+		<value>हर सवाल के बाद फ़ीडबैक के साथ जवाबों का अभ्यास करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Prompt">
+		<value>मैं जिस भूमिका का वर्णन करूँगा, उसके लिए मेरा मॉक जॉब इंटरव्यू लें। एक बार में एक सवाल पूछें और हर जवाब के बाद फ़ीडबैक दें।</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Title">
+		<value>इंटरव्यू की प्रैक्टिस करें</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Action">
+		<value>भोजन प्लान करें</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Description">
+		<value>सरल भोजन और एक संयुक्त खरीदारी सूची।</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Prompt">
+		<value>सप्ताह के लिए सरल भोजन की योजना बनाएँ और मुझे एक संयुक्त खरीदारी सूची दें।</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Title">
+		<value>सप्ताह का भोजन प्लान करें</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Action">
+		<value>नोट्स व्यवस्थित करें</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Description">
+		<value>कच्चे नोट्स को निर्णयों, ज़िम्मेदार लोगों और अगले कदमों में बदलें।</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Prompt">
+		<value>मैं अपनी मीटिंग के नोट्स पेस्ट करूँगा। उन्हें निर्णयों, ज़िम्मेदार लोगों और अगले कदमों के साथ एक छोटे सारांश में बदलें।</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Title">
+		<value>मीटिंग नोट्स व्यवस्थित करें</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Action">
+		<value>PDF खोजें</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Description">
+		<value>PDF के ज़रूरी हिस्से खोजें और उद्धृत करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Prompt">
+		<value>मैं एक PDF संलग्न करूँगा। मेरे बताए विषय से जुड़े हिस्से खोजें और उन्हें उद्धृत करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Title">
+		<value>PDF में खोजें</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Action">
+		<value>योजना का मसौदा तैयार करें</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Description">
+		<value>किसी प्राथमिक विचार को व्यावहारिक अगले कदम की योजना में बदलें।</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Prompt">
+		<value>परियोजना के एक प्राथमिक विचार को स्पष्ट अगले चरणों वाली व्यावहारिक योजना में बदलने में मेरी सहायता करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Title">
+		<value>परियोजना की योजना बनाएं</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Action">
+		<value>टेक्स्ट निखारें</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Description">
+		<value>स्पष्टता और लहजा सुधारें, मुख्य बदलावों की व्याख्या के साथ।</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Prompt">
+		<value>मेरे पेस्ट किए लेखन की स्पष्टता और लहजा सुधारें, और मुख्य बदलाव समझाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Title">
+		<value>मेरा लेखन निखारें</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Action">
+		<value>क्विज़ शुरू करें</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Description">
+		<value>एक-एक सवाल का जवाब देकर सीखें।</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Prompt">
+		<value>मैं जो विषय सीख रहा हूँ उस पर एक-एक सवाल पूछकर मेरी क्विज़ लें, और जो गलत हो उसे समझाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Title">
+		<value>किसी विषय पर मेरी क्विज़ लें</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Action">
+		<value>शेड्यूल करें</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Description">
+		<value>हर कार्यदिवस अपनी प्राथमिकताएँ देखने का रिमाइंडर पाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Prompt">
+		<value>मुझे हर कार्यदिवस सुबह 9 बजे दिन की प्राथमिकताएँ देखने की याद दिलाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Title">
+		<value>दैनिक रिमाइंडर सेट करें</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Action">
+		<value>कौशल खोजें</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Description">
+		<value>अक्सर किए जाने वाले काम के लिए कौशल खोजें और जोड़ें।</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Prompt">
+		<value>ऐसा कौशल खोजें जो मेरे अक्सर किए जाने वाले काम में मदद करे, और उसे मेरे लिए सेट करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Title">
+		<value>Oscova को कोई कौशल सिखाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Action">
+		<value>नोट्स का सारांश बनाएं</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Description">
+		<value>नोट्स, दस्तावेज़ों या फ़ाइलों से महत्वपूर्ण बिंदु निकालें।</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Prompt">
+		<value>इस दस्तावेज़ का सारांश बनाने और प्रमुख निर्णयों, जोखिमों और अगली कार्रवाइयों को सूचीबद्ध करने में मेरी सहायता करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Title">
+		<value>दस्तावेज़ का सारांश बनाएं</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Action">
+		<value>टूर शुरू करें</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Description">
+		<value>देखें कि Oscova क्या कर सकता है और पहले क्या सेट करना है।</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Prompt">
+		<value>मैं Oscova में नया हूँ। आप किन कामों में मेरी मदद कर सकते हैं, और मुझे पहले क्या सेट करना चाहिए?</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Title">
+		<value>Oscova को जानें</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Action">
+		<value>अनुवाद करें</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Description">
+		<value>स्वाभाविक लहजा बनाए रखते हुए अनुवाद करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Prompt">
+		<value>मेरे पेस्ट किए टेक्स्ट का अनुवाद करें और उसका लहजा स्वाभाविक रखें।</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Title">
+		<value>टेक्स्ट का अनुवाद करें</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Action">
+		<value>यात्रा प्लान करें</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Description">
+		<value>रोज़ का कार्यक्रम और सामान की सूची पाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Prompt">
+		<value>रोज़ के कार्यक्रम और सामान की सूची के साथ एक छोटी यात्रा की योजना बनाने में मदद करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Title">
+		<value>यात्रा की योजना बनाएँ</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Action">
+		<value>लिंक पढ़ें</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Description">
+		<value>किसी लिंक से मुख्य बिंदु पाएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Prompt">
+		<value>मेरे दिए लिंक वाला वेब पेज पढ़ें और उसके मुख्य बिंदु बताएँ।</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Title">
+		<value>वेब पेज का सारांश दें</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Action">
+		<value>सप्ताह प्लान करें</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Description">
+		<value>इस सप्ताह की प्रतिबद्धताओं को व्यावहारिक योजना में बदलें।</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Prompt">
+		<value>मेरा सप्ताह प्लान करने में मदद करें। मैं अपनी प्रतिबद्धताएँ बताऊँगा, और आप उन्हें रोज़ की व्यावहारिक योजना में बदल दें।</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Title">
+		<value>मेरा सप्ताह प्लान करें</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Action">
+		<value>सामग्री का मसौदा तैयार करें</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Description">
+		<value>ईमेल, उत्तर, घोषणा या संक्षिप्त अपडेट तैयार करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Prompt">
+		<value>इस स्थिति के लिए एक स्पष्ट, मित्रवत संदेश का मसौदा तैयार करने में मेरी सहायता करें।</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Title">
+		<value>संदेश लिखें</value>
+	</data>
+	<data name="Chat.Start.CheckingQuestion">
+		<value>आपका सहायक तैयार किया जा रहा है...</value>
+
+	</data>
+	<data name="Chat.Start.Greeting">
+		<value>नमस्ते, {0}</value>
+
+	</data>
+	<data name="Chat.Start.InputPlaceholder">
+		<value>हमें बताएं कि आपको क्या चाहिए...</value>
+
+	</data>
+	<data name="Chat.Start.Question">
+		<value>आज मैं आपकी क्या सहायता कर सकता हूँ?</value>
+
+	</data>
+	<data name="Chat.TextAttachmentKind">
+		<value>पाठ</value>
+
+	</data>
+	<data name="Chat.ThreadActionsLabel">
+		<value>थ्रेड कार्रवाइयां</value>
+
+	</data>
+	<data name="Chat.ThreadTitleHelp">
+		<value>1 से 120 वर्ण दर्ज करें।</value>
+
+	</data>
+	<data name="Chat.ThreadTitleLabel">
+		<value>वार्तालाप शीर्षक</value>
+
+	</data>
+	<data name="Chat.ThreadUnreadLabel">
+		<value>अपठित</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Empty">
+		<value>अभी कोई कार्य नहीं है।</value>
+
+	</data>
+	<data name="Chat.TodoPanel.ProgressFormat">
+		<value>{0} / {1} पूर्ण</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Title">
+		<value>कार्य</value>
+
+	</data>
+	<data name="Chat.TooManyFilesAttached">
+		<value>आप प्रति संदेश अधिकतम {0} फ़ाइलें संलग्न कर सकते हैं।</value>
+
+	</data>
+	<data name="Chat.TranscribingPlaceholder">
+		<value>ट्रांसक्राइब किया जा रहा है...</value>
+
+	</data>
+	<data name="Chat.TypeYourMessagePlaceholder">
+		<value>अपना संदेश टाइप करें...</value>
+
+	</data>
+	<data name="Chat.UnableToStartSpeechSynthesis">
+		<value>वाक् संश्लेषण प्रारंभ करने में असमर्थ।</value>
+
+	</data>
+	<data name="Chat.UnableToTranscribeAudio">
+		<value>ऑडियो ट्रांसक्राइब करने में असमर्थ।</value>
+
+	</data>
+	<data name="Chat.UnsupportedFileType">
+		<value>'{0}' अभी तक समर्थित फ़ाइल प्रकार नहीं है।</value>
+
+	</data>
+	<data name="Chat.UsingProviderPrefix">
+		<value>उपयोग कर रहे हैं</value>
+
+	</data>
+	<data name="Chat.VoiceModeListeningPlaceholder">
+		<value>सुन रहा है...</value>
+
+	</data>
+	<data name="Chat.VoiceModeMissingServices">
+		<value>वॉयस मोड के लिए वाक् पहचान और वाक् संश्लेषण दोनों सेवाओं की आवश्यकता होती है।</value>
+
+	</data>
+	<data name="Chat.VoiceModeStartFailed">
+		<value>वॉयस मोड शुरू करने में विफल।</value>
+
+	</data>
+	<data name="Chat.VoiceModeWaitingPlaceholder">
+		<value>बोलने की प्रतीक्षा की जा रही है...</value>
+
+	</data>
+	<data name="Chat.Yesterday">
+		<value>कल</value>
+
+	</data>
+	<data name="Chat.ThreadGroupToday"><value>आज</value></data>
+	<data name="Chat.ThreadGroupPreviousSevenDays"><value>पिछले 7 दिन</value></data>
+	<data name="Chat.ThreadGroupOlder"><value>पुराने</value></data>
+	<data name="Chat.NoConversationsMatchSearch"><value>आपकी खोज से मेल खाने वाला कोई वार्तालाप नहीं है।</value></data>
+	<data name="Chat.ThreadSearchFailed"><value>वार्तालाप खोज अनुपलब्ध है।</value></data>
+	<data name="Chat.ToolCallLabel"><value>टूल कॉल</value></data>
+	<data name="Chat.ToolCard.ArgumentsSummaryFormat"><value>{0} आर्ग्युमेंट दिए गए।</value></data>
+	<data name="Chat.ToolCard.Applying"><value>परिवर्तन लागू किया जा रहा है...</value></data>
+	<data name="Chat.ToolCard.AvatarTitle"><value>अवतार कार्रवाई</value></data>
+	<data name="Chat.ToolCard.CommunicationTitle"><value>संचार टूल</value></data>
+	<data name="Chat.ToolCard.DiagnosticsTitle"><value>निदान</value></data>
+	<data name="Chat.ToolCard.DirectoryTitle"><value>निर्देशिका की सूची बनाई जा रही है</value></data>
+	<data name="Chat.ToolCard.DocumentTitle"><value>दस्तावेज़ पढ़ा जा रहा है</value></data>
+	<data name="Chat.ToolCard.ExternalTitle"><value>ऑनलाइन खोज</value></data>
+	<data name="Chat.ToolCard.FileChangeTitle"><value>फ़ाइल बदली जा रही है</value></data>
+	<data name="Chat.ToolCard.FileLabel"><value>फ़ाइल</value></data>
+	<data name="Chat.ToolCard.FileReadTitle"><value>फ़ाइल पढ़ी जा रही है</value></data>
+	<data name="Chat.ToolCard.Installing"><value>इंस्टॉल किया जा रहा है...</value></data>
+	<data name="Chat.ToolCard.MemoryTitle"><value>मेमोरी का उपयोग कर रहे हैं</value></data>
+	<data name="Chat.ToolCard.NoArgumentsSummary"><value>कोई आर्ग्युमेंट नहीं दिया गया।</value></data>
+	<data name="Chat.ToolCard.NotificationTitle"><value>अधिसूचना</value></data>
+	<data name="Chat.ToolCard.Reading"><value>सामग्री पढ़ी जा रही है...</value></data>
+	<data name="Chat.ToolCard.ResultLabel"><value>परिणाम</value></data>
+	<data name="Chat.ToolCard.Running"><value>कार्य प्रगति पर है...</value></data>
+	<data name="Chat.ToolCard.Saving"><value>सहेजा जा रहा है...</value></data>
+	<data name="Chat.ToolCard.ScheduleTitle"><value>कैलेंडर टूल</value></data>
+	<data name="Chat.ToolCard.SearchTitle"><value>कार्यक्षेत्र में खोज रहे हैं</value></data>
+	<data name="Chat.ToolCard.Searching"><value>खोजा जा रहा है...</value></data>
+	<data name="Chat.ToolCard.ShellRunning"><value>कमांड चलाई जा रही है...</value></data>
+	<data name="Chat.ToolCard.ShellTitle"><value>शेल कमांड</value></data>
+	<data name="Chat.ToolCard.SkillAuthoringTitle"><value>स्किल सहेजी जा रही है</value></data>
+	<data name="Chat.ToolCard.SkillInspectTitle"><value>स्किल का निरीक्षण किया जा रहा है</value></data>
+	<data name="Chat.ToolCard.SkillInstallTitle"><value>स्किल इंस्टॉल की जा रही है</value></data>
+	<data name="Chat.ToolCard.SkillSearchTitle"><value>स्किल्स खोजी जा रही हैं</value></data>
+	<data name="Chat.ToolCard.Status.Completed"><value>पूर्ण</value></data>
+	<data name="Chat.ToolCard.Status.Failed"><value>विफल</value></data>
+	<data name="Chat.ToolCard.Status.Queued"><value>कतारबद्ध</value></data>
+	<data name="Chat.ToolCard.Status.Running"><value>चल रहा है</value></data>
+	<data name="Chat.NoParameters"><value>कोई पैरामीटर नहीं</value></data>
+	<data name="Chat.SpeechModelsUnavailableTooltip"><value>आवाज़ मॉडल उपलब्ध नहीं हैं। इसे सेटिंग्स → आवाज़ में सेट करें।</value></data>
+	<data name="Chat.ToolApprovalTitle"><value>टूल स्वीकृति आवश्यक है</value></data>
+	<data name="Chat.ToolApprovalArgumentsLabel"><value>आर्ग्युमेंट</value></data>
+	<data name="Chat.ToolApprovalApproveButton"><value>स्वीकृत करें</value></data>
+	<data name="Chat.ToolApprovalRejectButton"><value>अस्वीकार करें</value></data>
+	<data name="Chat.ToolApprovalSubmitFailed"><value>वह स्वीकृति सबमिट करने में असमर्थ।</value></data>
+	<data name="Chat.ToolApprovalSkillCreateMessage"><value>इस कौशल को बनाने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalSkillUpdateMessage"><value>इस कौशल को अपडेट करने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalSkillNameLabel"><value>कौशल</value></data>
+	<data name="Chat.ToolApprovalSkillDescriptionLabel"><value>विवरण</value></data>
+	<data name="Chat.ToolApprovalRegistrySkillMessage"><value>इस कौशल को इंस्टॉल करने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalRegistryServerMessage"><value>इस MCP सर्वर को इंस्टॉल करने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalServerLabel"><value>MCP सर्वर</value></data>
+	<data name="Chat.ToolApprovalPublisherLabel"><value>प्रकाशक</value></data>
+	<data name="Chat.ToolApprovalVersionLabel"><value>संस्करण</value></data>
+	<data name="Chat.ToolApprovalSourceLabel"><value>स्रोत</value></data>
+	<data name="Chat.ToolApprovalCommandLabel"><value>कमांड</value></data>
+	<data name="Chat.ToolApprovalConnectsToLabel"><value>इससे जुड़ता है</value></data>
+	<data name="Chat.ToolApprovalNetworkLabel"><value>नेटवर्क</value></data>
+	<data name="Chat.ToolApprovalNetworkNone"><value>नेटवर्क पहुँच नहीं</value></data>
+	<data name="Chat.ToolApprovalNetworkIncidental"><value>कभी-कभार नेटवर्क उपयोग</value></data>
+	<data name="Chat.ToolApprovalNetworkEgress"><value>बाहरी सेवाओं को डेटा भेजता है</value></data>
+	<data name="Chat.ToolApprovalTaskCreateMessage"><value>इस निर्धारित कार्य को बनाने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalTaskUpdateMessage"><value>इस निर्धारित कार्य को अपडेट करने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalTaskDeleteMessage"><value>इस निर्धारित कार्य को हटाने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalTaskRunMessage"><value>इस निर्धारित कार्य को अभी चलाने की स्वीकृति दें?</value></data>
+	<data name="Chat.ToolApprovalTaskNameLabel"><value>कार्य</value></data>
+	<data name="Chat.ToolApprovalTaskNewNameLabel"><value>नया नाम</value></data>
+	<data name="Chat.ToolApprovalTaskAgentLabel"><value>एजेंट</value></data>
+	<data name="Chat.ToolApprovalTaskScheduleLabel"><value>शेड्यूल</value></data>
+	<data name="Chat.ToolApprovalTaskRunModeLabel"><value>प्रतिबंधित टूल</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveValue"><value>रन के दौरान स्वतः स्वीकृत</value></data>
+	<data name="Chat.ToolApprovalTaskAutoRejectValue"><value>रन के दौरान स्वतः अस्वीकृत</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveWarning"><value>इस कार्य परिवर्तन को स्वीकृत करने से अनुमोदन-आवश्यक टूल बिना निगरानी चल सकते हैं। होस्ट शेल कमांड Oscova चलाने वाली मशीन को बदल सकते हैं।</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetLabel"><value>निष्पादन लक्ष्य</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetHost"><value>होस्ट</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetContainer"><value>Docker</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetDisabled"><value>शेल निष्पादन अक्षम</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetUnavailable"><value>निष्पादन लक्ष्य उपलब्ध नहीं</value></data>
+	<data name="Chat.ToolApprovalHostWarning"><value>Oscova चलाने वाली मशीन पर उसके ऑपरेटिंग-सिस्टम खाते की अनुमतियों के साथ चलता है।</value></data>
+	<data name="Chat.ToolApprovalContainerWarning"><value>दिए गए फ़ोल्डर माउंट करके Docker के अंदर चलता है।</value></data>
+	<data name="Chat.ToolApprovalScriptWarning"><value>अनुमोदन पूरी स्क्रिप्ट चलाता है। उसके अंदर के कमांड अलग से अनुमोदित नहीं किए जाते।</value></data>
+	<data name="Chat.ApprovalModeSelectorPrefix"><value>स्वीकृतियां:</value></data>
+	<data name="Chat.ApprovalModeUsePolicy"><value>एजेंट नीति का उपयोग करें</value></data>
+	<data name="Chat.ApprovalModeAutoApprove"><value>स्वतः स्वीकृत करें</value></data>
+	<data name="Chat.ApprovalModeAutoReject"><value>स्वतः अस्वीकार करें</value></data>
+	<data name="Chat.ThinkingLabel"><value>विचार कर रहा है</value></data>
+	<data name="Chat.ThoughtDurationManyFormat"><value>{0:F3} सेकंड तक विचार किया</value></data>
+	<data name="Chat.ThoughtDurationOneFormat"><value>{0:F3} सेकंड तक विचार किया</value></data>
+	<data name="Chat.ResponseCopyLabel"><value>कॉपी करें</value></data>
+	<data name="Chat.ResponseCopiedLabel"><value>कॉपी किया गया</value></data>
+	<data name="Chat.ResponseCopyFailed"><value>कॉपी करने में असमर्थ।</value></data>
+	<data name="Chat.RegenerateLabel"><value>पुनरुत्पन्न करें</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Attachments"><value>अटैचमेंट्स</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.ContextProviders"><value>संदर्भ प्रदाता</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.CurrentDraft"><value>वर्तमान ड्राफ्ट</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Instructions"><value>निर्देश</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.OutputReserve"><value>आउटपुट रिज़र्व</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.PriorHistory"><value>पूर्व इतिहास</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Title"><value>अनुमान विवरण</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Tools"><value>टूल</value></data>
+	<data name="Chat.ContextWindowWarning.ContextWindowLabel"><value>संदर्भ विंडो</value></data>
+	<data name="Chat.ContextWindowWarning.ContinueButton"><value>वैसे भी जारी रखें</value></data>
+	<data name="Chat.ContextWindowWarning.DialogBody"><value>आप इसे अभी भी भेज सकते हैं, लेकिन मॉडल विफल हो सकता है, संदर्भ को काट सकता है, या पिछले विवरणों को छोड़ सकता है।</value></data>
+	<data name="Chat.ContextWindowWarning.DialogLead"><value>यह ड्राफ्ट चयनित मॉडल के लिए बहुत बड़ा हो सकता है।</value></data>
+	<data name="Chat.ContextWindowWarning.DialogTitle"><value>संदर्भ विंडो चेतावनी</value></data>
+	<data name="Chat.ContextWindowWarning.EstimatedInputLabel"><value>अनुमानित इनपुट</value></data>
+	<data name="Chat.ContextWindowWarning.OutputReserveLabel"><value>आरक्षित आउटपुट</value></data>
+	<data name="Chat.ContextWindowWarning.OverageLabel"><value>अनुमानित अधिकता</value></data>
+	<data name="Chat.ContextWindowWarning.ProviderLabel"><value>प्रदाता</value></data>
+	<data name="Chat.ContextWindowWarning.SummaryFormat"><value>{0} का अनुमान है कि {3:N0} टोकन की विंडो में {1:N0} इनपुट टोकन और {2:N0} आरक्षित आउटपुट टोकन लगेंगे, जो सीमा से लगभग {4:N0} टोकन अधिक हैं।</value></data>
+	<data name="Chat.Activity.CommandRanTitle"><value>कमांड चलाई गई</value></data>
+	<data name="Chat.Activity.Collapse"><value>कार्यस्थान बंद करें</value></data>
+	<data name="Chat.Activity.DetailsTitle"><value>कार्यस्थान</value></data>
+	<data name="Chat.Activity.FileReadTitle"><value>फ़ाइल पढ़ी गई</value></data>
+	<data name="Chat.Activity.FileUpdatedTitle"><value>फ़ाइल अपडेट की गई</value></data>
+	<data name="Chat.Activity.InProgress"><value>प्रगति पर है</value></data>
+	<data name="Chat.Activity.JumpToLatest"><value>नवीनतम पर जाएं</value></data>
+	<data name="Chat.Activity.ManyActivitiesFormat"><value>{0} गतिविधियां</value></data>
+	<data name="Chat.Activity.MemoryReadTitle"><value>मेमोरी पढ़ी गई</value></data>
+	<data name="Chat.Activity.OneActivity"><value>1 गतिविधि</value></data>
+	<data name="Chat.Activity.Open"><value>कार्यस्थान खोलें</value></data>
+	<data name="Chat.Activity.SkillUsedTitle"><value>कौशल का उपयोग किया गया</value></data>
+	<data name="Chat.Activity.StatusSuccess"><value>सफल</value></data>
+	<data name="Chat.Activity.UseStandardView"><value>चैट पर लौटें</value></data>
+	<data name="Chat.Activity.UseWideView"><value>पूर्ण दृश्य खोलें</value></data>
+	<data name="Chat.Activity.WebSearchedTitle"><value>वेब पर खोजा गया</value></data>
+	<data name="Chat.Activity.WorkspaceSearchedTitle"><value>कार्यक्षेत्र में खोजा गया</value></data>
+	<data name="Chat.ResizeThreadListLabel"><value>बातचीत सूची का आकार बदलें</value></data>
+	<data name="Chat.ResizeDetailsPanelLabel"><value>कार्यस्थान पैनल का आकार बदलें</value></data>
+	<data name="Chat.Artifacts.Tab"><value>आर्टिफ़ैक्ट्स</value></data>
+	<data name="Chat.Artifacts.EmptyTitle"><value>अभी तक कोई आर्टिफ़ैक्ट नहीं</value></data>
+	<data name="Chat.Artifacts.EmptyDescription"><value>इस थ्रेड द्वारा बनाई या अपडेट की गई फ़ाइलें यहाँ दिखाई देंगी।</value></data>
+	<data name="Chat.Artifacts.Download"><value>आर्टिफ़ैक्ट डाउनलोड करें</value></data>
+	<data name="Chat.Artifacts.Loading"><value>आर्टिफ़ैक्ट पूर्वावलोकन लोड हो रहा है</value></data>
+	<data name="Chat.Artifacts.UpdatedFormat"><value>{0} को अपडेट किया गया</value></data>
+	<data name="Chat.Artifacts.PreviewTooLarge"><value>यह फ़ाइल यहाँ पूर्वावलोकन करने के लिए बहुत बड़ी है।</value></data>
+	<data name="Chat.Artifacts.PreviewUnavailable"><value>यह पूर्वावलोकन अब उपलब्ध नहीं है।</value></data>
+	<data name="Chat.Artifacts.DownloadOnly"><value>इस फ़ाइल प्रकार के लिए पूर्वावलोकन उपलब्ध नहीं है।</value></data>
+	<data name="Chat.Artifacts.FileType"><value>फ़ाइल</value></data>
+	<data name="Chat.IncognitoChatDisclosure"><value>यह चैट सहेजी नहीं जाती है और न ही मेमोरी में जोड़ी जाती है। जब आप साइन आउट करते हैं, लगभग 30 मिनट की निष्क्रियता के बाद, या जब Oscova पुनरारंभ होता है, तो इसे हटा दिया जाता है। अटैचमेंट्स भी इसके साथ हटा दिए जाते हैं। बाहरी मॉडल और टूल अभी भी आपके द्वारा भेजी गई सामग्री प्राप्त कर सकते हैं।</value></data>
+	<data name="Chat.IncognitoChatDisclosureSummary"><value>सहेजा नहीं गया · लगभग 30 मिनट बाद साफ़ हो जाता है</value></data>
+	<data name="Chat.IncognitoChatExpiredToast"><value>इनकॉग्निटो चैट समाप्त हो गई और हटा दी गई।</value></data>
+	<data name="Chat.IncognitoChatLabel"><value>इनकॉग्निटो</value></data>
+	<data name="Chat.IncognitoChatUnavailableTooltip"><value>चैट शुरू होने के बाद इनकॉग्निटो मोड स्थिर हो जाता है। इसे बदलने के लिए एक नई चैट शुरू करें।</value></data>
+	<data name="Chat.ContextUsage.AriaLabelFormat"><value>अनुमानित संदर्भ उपयोग: {0:N0}% प्रयुक्त, {1:N0}% शेष</value></data>
+	<data name="Chat.ContextUsage.DialogTitle"><value>संदर्भ उपयोग</value></data>
+	<data name="Chat.ContextUsage.UsedLabel"><value>प्रयुक्त</value></data>
+	<data name="Chat.ContextUsage.FreeInputLabel"><value>खाली स्थान</value></data>
+	<data name="Chat.ContextUsage.TotalLabel"><value>संदर्भ विंडो</value></data>
+	<data name="Chat.ContextUsage.ReservedOutputLabel"><value>आरक्षित आउटपुट</value></data>
+	<data name="Chat.ContextUsage.SummaryFormat"><value>अनुमानित: {0:N0} / {1:N0} टोकन प्रयुक्त ({2:N0}%)।</value></data>
+	<data name="Chat.ContextUsage.UnavailableLabel"><value>संदर्भ उपयोग अनुपलब्ध</value></data>
+	<data name="Chat.ContextUsage.UnavailableBody"><value>उपयोग देखने के लिए इस मॉडल प्रदाता के लिए संदर्भ-विंडो का आकार निर्धारित करें।</value></data>
+  <data name="Chat.EasterEgg.CozyMessage"><value>सुरक्षित, सकुशल और केवल आपका।</value></data>
+  <data name="Chat.Slash.CompactComplete"><value>संदर्भ संक्षिप्त किया गया।</value></data>
+  <data name="Chat.Slash.CompactDescription"><value>पुराने संदर्भ को अभी सारांशित करें</value></data>
+  <data name="Chat.Slash.CompactFailed"><value>संदर्भ को संक्षिप्त नहीं किया जा सका।</value></data>
+  <data name="Chat.Slash.CompactNoChange"><value>संक्षिप्त करने के लिए कोई पुराना संदर्भ नहीं है।</value></data>
+  <data name="Chat.HistorySummarizedNotice"><value>पिछले संदेशों का सारांश बनाया गया।</value></data>
+  <data name="Chat.Slash.ContextDescription"><value>अनुमानित संदर्भ उपयोग दिखाएं</value></data>
+  <data name="Chat.Slash.ContextFailed"><value>संदर्भ उपयोग लोड नहीं किया जा सका।</value></data>
+  <data name="Chat.Slash.MenuLabel"><value>बातचीत कमांड</value></data>
+  <data name="Chat.Slash.NewDescription"><value>एक नई चैट शुरू करें</value></data>
+  <data name="Chat.Slash.RenameDescription"><value>इस चैट का नाम बदलें</value></data>
+  <data name="Chat.Slash.ResearchDescription"><value>किसी विषय पर शोध करें और स्रोतों सहित रिपोर्ट सहेजें</value></data>
+  <data name="Chat.Slash.UnknownCommandFormat"><value>अज्ञात या अनुपलब्ध कमांड: {0}</value></data>
+  <data name="Chat.ToolActivity.GenericLabel" xml:space="preserve">
+    <value>टूल गतिविधि</value>
+  </data>
+  <data name="Chat.ToolActivity.ListSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="Chat.ToolActivity.CategoriesAndMoreFormat" xml:space="preserve">
+    <value>{0} और अन्य</value>
+  </data>
+  <data name="Chat.ToolActivity.RunningCountFormat" xml:space="preserve">
+    <value>{0} चल रहे हैं</value>
+  </data>
+  <data name="Chat.ToolActivity.FailedCountFormat" xml:space="preserve">
+    <value>{0} विफल। विवरण के लिए खोलें</value>
+  </data>
+  <data name="Chat.ToolActivity.TechnicalDetails" xml:space="preserve">
+    <value>तकनीकी विवरण</value>
+  </data>
+  <data name="Chat.ToolActivity.ResultTruncated" xml:space="preserve">
+    <value>पहले 1,600 अक्षर दिखाए जा रहे हैं</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowFullResult" xml:space="preserve">
+    <value>पूरा परिणाम दिखाएँ</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowLess" xml:space="preserve">
+    <value>कम दिखाएँ</value>
+  </data>
+  <data name="Chat.UserQuestion.CustomAnswer"><value>अपना उत्तर लिखें</value></data>
+  <data name="Chat.UserQuestion.Recommended"><value>अनुशंसित</value></data>
+  <data name="Chat.UserQuestion.SubmitAnswers"><value>उत्तर सबमिट करें</value></data>
+  <data name="Chat.UserQuestion.Position"><value>{1} में से {0}</value></data>
+  <data name="Chat.UserQuestion.Answered"><value>उत्तर दिया गया</value></data>
+  <data name="Chat.UserQuestion.Dismissed"><value>रद्द किया गया</value></data>
+  <data name="Chat.UserQuestion.Obsolete"><value>यह प्रश्न अब सक्रिय नहीं है।</value></data>
+  <data name="Chat.UserQuestion.Unfinished"><value>यह प्रश्न पूरा नहीं हो सका। जारी रखने के लिए नया संदेश भेजें।</value></data>
+  <data name="Chat.UserQuestion.AnswerRequired"><value>हर प्रश्न के लिए उत्तर चुनें या अपना उत्तर लिखें।</value></data>
+  <data name="Chat.UserQuestion.SubmitFailed"><value>आपके उत्तर सबमिट नहीं हो सके। फिर से प्रयास करें।</value></data>
+  <data name="Chat.UserQuestion.DismissFailed"><value>ये प्रश्न रद्द नहीं हो सके। फिर से प्रयास करें।</value></data>
+  <data name="Chat.Project.Add" xml:space="preserve"><value>प्रोजेक्ट जोड़ें</value></data>
+  <data name="Chat.Project.Name" xml:space="preserve"><value>प्रोजेक्ट का नाम</value></data>
+  <data name="Chat.Project.HostFolder" xml:space="preserve"><value>चुने गए डिवाइस पर प्रोजेक्ट फ़ोल्डर</value></data>
+  <data name="Chat.Project.AccessHelp" xml:space="preserve"><value>चुने गए डिवाइस पर कोई मौजूदा फ़ोल्डर चुनें। नेटिव शेल कमांड को डिवाइस खाते की ऑपरेटिंग सिस्टम अनुमतियाँ मिलती हैं।</value></data>
+  <data name="Chat.Project.General" xml:space="preserve"><value>सामान्य</value></data>
+  <data name="Chat.Project.Unavailable" xml:space="preserve"><value>प्रोजेक्ट उपलब्ध नहीं</value></data>
+  <data name="Chat.Project.Remove" xml:space="preserve"><value>प्रोजेक्ट हटाएँ</value></data>
+  <data name="Chat.Project.RemoveConfirm" xml:space="preserve"><value>प्रोजेक्ट का संदर्भ हटाएँ और उसके सक्रिय कार्य रोकें? चैट और फ़ाइलें बनी रहेंगी।</value></data>
+  <data name="Chat.Project.Files" xml:space="preserve"><value>फ़ाइलें</value></data>
+  <data name="Chat.Project.Changes" xml:space="preserve"><value>बदलाव</value></data>
+  <data name="Chat.Project.PrivateData" xml:space="preserve"><value>निजी डेटा</value></data>
+  <data name="Chat.Project.EmptyFolder" xml:space="preserve"><value>यह फ़ोल्डर खाली है।</value></data>
+  <data name="Chat.Project.ListLimit" xml:space="preserve"><value>अधिकतम 500 प्रविष्टियाँ दिखाई जाती हैं। अधिक विशिष्ट फ़ोल्डर खोलें।</value></data>
+  <data name="Chat.Project.ChangesLimit" xml:space="preserve"><value>अधिकतम 2,000 बदलाव दिखाई जाते हैं। Git क्लाइंट में बदलाव कम करें।</value></data>
+  <data name="Chat.Project.RepositoryScope" xml:space="preserve"><value>रिपॉज़िटरी के बदलावों में सभी चैट और अन्य टूल के संपादन शामिल हैं।</value></data>
+  <data name="Chat.Project.Choose" xml:space="preserve"><value>Git बदलाव देखने के लिए प्रोजेक्ट चुनें।</value></data>
+  <data name="Chat.Project.SendFirst" xml:space="preserve"><value>एजेंट के फ़ोल्डर देखने के लिए संदेश भेजें।</value></data>
+  <data name="Chat.Project.NoChanges" xml:space="preserve"><value>कोई बदलाव नहीं।</value></data>
+  <data name="Chat.Project.staged" xml:space="preserve"><value>स्टेज किए गए</value></data>
+  <data name="Chat.Project.unstaged" xml:space="preserve"><value>स्टेज नहीं किए गए</value></data>
+  <data name="Chat.Project.untracked" xml:space="preserve"><value>ट्रैक नहीं किए गए</value></data>
+  <data name="Chat.Project.Read.Ready" xml:space="preserve"><value>तैयार</value></data>
+  <data name="Chat.Project.Read.Binary" xml:space="preserve"><value>बाइनरी फ़ाइलों का पूर्वावलोकन नहीं हो सकता।</value></data>
+  <data name="Chat.Project.Read.TooLarge" xml:space="preserve"><value>हर तरफ़ पूर्वावलोकन की सीमा 256 KiB और 5,000 पंक्तियाँ है।</value></data>
+  <data name="Chat.Project.Read.Unavailable" xml:space="preserve"><value>फ़ाइल या रिपॉज़िटरी उपलब्ध नहीं है। रीफ़्रेश करें और अनुमति जाँचें।</value></data>
+  <data name="Chat.Project.Read.NotRepository" xml:space="preserve"><value>यह फ़ोल्डर Git रिपॉज़िटरी नहीं है।</value></data>
+  <data name="Chat.Project.Read.GitMissing" xml:space="preserve"><value>बदलाव देखने के लिए Oscova होस्ट पर Git स्थापित करें।</value></data>
+  <data name="Chat.Project.Read.Unsupported" xml:space="preserve"><value>यह Git संरचना, कॉन्फ़िगरेशन या फ़ाइल प्रकार समर्थित नहीं है।</value></data>
+  <data name="Chat.Project.Read.RefreshRequired" xml:space="preserve"><value>चुना गया बदलाव बदल गया है। सूची रीफ़्रेश करें।</value></data>
+  <data name="Chat.ToolCard.Status.Cancelled" xml:space="preserve"><value>रद्द</value></data>
+  <data name="Chat.FollowUps.Label" xml:space="preserve"><value>अगले संदेश</value></data>
+  <data name="Chat.FollowUps.SteeringBadge" xml:space="preserve"><value>निर्देश भेजे जा रहे हैं</value></data>
+  <data name="Chat.FollowUps.Steer" xml:space="preserve"><value>निर्देश दें</value></data>
+  <data name="Chat.FollowUps.Delete" xml:space="preserve"><value>हटाएँ</value></data>
+  <data name="Chat.FollowUps.More" xml:space="preserve"><value>और कार्रवाइयाँ</value></data>
+  <data name="Chat.FollowUps.Edit" xml:space="preserve"><value>संदेश संपादित करें</value></data>
+<data name="Chat.Branch.Label" xml:space="preserve"><value>नई चैट में शाखा बनाएँ</value></data>
+<data name="Chat.Branch.Failed" xml:space="preserve"><value>चैट की शाखा नहीं बन सकी। फिर से कोशिश करें।</value></data>
+<data name="Chat.Branch.ContinuedFrom" xml:space="preserve"><value>इस चैट से जारी</value></data>
+<data name="Chat.Branch.SourceUnavailable" xml:space="preserve"><value>मूल चैट उपलब्ध नहीं है</value></data>
+<data name="Chat.Project.Device" xml:space="preserve"><value>डिवाइस</value></data><data name="Chat.Project.ServerDevice" xml:space="preserve"><value>यह सर्वर</value></data><data name="Chat.Project.SelectDevice" xml:space="preserve"><value>डिवाइस चुनें</value></data><data name="Chat.Project.DeviceUnavailable" xml:space="preserve"><value>अनुपलब्ध</value></data><data name="Chat.Project.PermissionDisabled" xml:space="preserve"><value>अपने खाते के लिए प्रोजेक्ट चालू करने को ऑपरेटर से कहें।</value></data><data name="Chat.Project.NodeRequired" xml:space="preserve"><value>प्रोजेक्ट जोड़ने के लिए अपने कंप्यूटर पर Oscova node शुरू करें।</value></data><data name="Chat.Artifacts.NodeUnavailable" xml:space="preserve"><value>फ़ाइल उपलब्ध नहीं है। प्रोजेक्ट का डिवाइस शुरू करें, प्रोजेक्ट की पहुँच और फ़ाइल मौजूद होने की जाँच करें, फिर यह पूर्वावलोकन दोबारा खोलें।</value></data>
+  <data name="Chat.ToolApprovalProjectWarning" xml:space="preserve"><value>चुने गए प्रोजेक्ट के डिवाइस पर उस डिवाइस के खाते की ऑपरेटिंग सिस्टम अनुमतियों के साथ चलता है।</value></data>
+  <data name="Chat.Project.NodeOffline" xml:space="preserve"><value>चुना गया नोड ऑफ़लाइन है। उस डिवाइस पर Oscova node शुरू करें और फिर कोशिश करें।</value></data>
+  <data name="Chat.Project.FolderMissing" xml:space="preserve"><value>प्रोजेक्ट फ़ोल्डर मौजूद नहीं है। उसे वापस लाएँ, फिर कोशिश करें।</value></data>
+  <data name="Chat.Mcp.ConnectionFailed" xml:space="preserve"><value>MCP कनेक्शन '{0}' शुरू नहीं हो सका। MCP सर्वर की सेटिंग खोलें, निष्पादन डिवाइस पर उसका कॉन्फ़िगरेशन जाँचें और फिर से कनेक्ट करें।</value></data>
+  <data name="Chat.Mcp.DockerMissing" xml:space="preserve"><value>MCP कनेक्शन '{0}' शुरू नहीं हो सका। निष्पादन डिवाइस पर Docker इंस्टॉल करें या MCP का नेटिव निष्पादन चुनें।</value></data>
+  <data name="Chat.Workspace.Preview" xml:space="preserve">
+    <value>पूर्वावलोकन</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedTitle" xml:space="preserve">
+    <value>फ़ाइल के बदलाव सहेजे नहीं गए</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedMessage" xml:space="preserve">
+    <value>आगे बढ़ने से पहले बदलाव सहेजें या छोड़ दें। रद्द करने पर मौजूदा फ़ाइलें खुली रहेंगी।</value>
+  </data>
+  <data name="Chat.Workspace.Discard" xml:space="preserve">
+    <value>छोड़ें</value>
+  </data>
+  <data name="Chat.Workspace.ConflictTitle" xml:space="preserve">
+    <value>फ़ाइल बदल गई है</value>
+  </data>
+  <data name="Chat.Workspace.ConflictMessage" xml:space="preserve">
+    <value>फ़ाइल खोलने के बाद बदल गई है। आपके बदलाव सहेजे नहीं गए हैं।</value>
+  </data>
+  <data name="Chat.Workspace.ConflictActions" xml:space="preserve">
+    <value>अधिलेखन आपके बदलावों से नई फ़ाइल को बदल देता है। दोबारा लोड करने पर पुष्टि के बाद आपके बदलाव हट जाते हैं।</value>
+  </data>
+  <data name="Chat.Workspace.Overwrite" xml:space="preserve">
+    <value>मेरे बदलावों से अधिलेखित करें</value>
+  </data>
+  <data name="Chat.Workspace.ReloadLatest" xml:space="preserve">
+    <value>नवीनतम फ़ाइल लोड करें</value>
+  </data>
+  <data name="Chat.Workspace.LoadFailed" xml:space="preserve">
+    <value>फ़ाइल लोड नहीं हो सकी। पहुँच और डिवाइस कनेक्शन जाँचें, फिर प्रयास करें।</value>
+  </data>
+  <data name="Chat.Workspace.SaveFailed" xml:space="preserve">
+    <value>सहेजने की पुष्टि नहीं हो सकी। पहुँच, 512 KiB और 5,000 पंक्तियों की सीमा और डिवाइस कनेक्शन जाँचें। मसौदा सुरक्षित है। फिर सहेजें या लोड करें।</value>
+  </data>
+<data name="Chat.Workspace.ReloadConfirm" xml:space="preserve"><value>नवीनतम फ़ाइल लोड करें और अपने असहेजे बदलाव त्यागें?</value></data>
+  <data name="Chat.Workspace.TooLarge" xml:space="preserve"><value>पूर्वावलोकन और संपादन की सीमा 512 KiB और 5,000 पंक्तियाँ है।</value></data>
+  <data name="Chat.Browser.NewTab" xml:space="preserve"><value>नया ब्राउज़र टैब</value></data>
+  <data name="Chat.Browser.Address" xml:space="preserve"><value>खोजें या URL दर्ज करें</value></data>
+  <data name="Chat.Browser.Viewport" xml:space="preserve"><value>लाइव ब्राउज़र पृष्ठ</value></data>
+  <data name="Chat.Browser.PhoneView" xml:space="preserve"><value>टच डिवाइस पर केवल देख सकते हैं। इंटरैक्ट करने के लिए डेस्कटॉप का उपयोग करें।</value></data>
+  <data name="Chat.Browser.Failed" xml:space="preserve"><value>ब्राउज़र कार्रवाई विफल हुई।</value></data>
+  <data name="Chat.Browser.Disconnected" xml:space="preserve"><value>ब्राउज़र डिस्कनेक्ट हो गया। टैब फिर से खोलें।</value></data>
+  <data name="Chat.Browser.Clipboard" xml:space="preserve"><value>क्लिपबोर्ड का उपयोग नहीं हो सका। अनुमति दें या कीबोर्ड से पेस्ट करें।</value></data>
+  <data name="Chat.Browser.InvalidAddress" xml:space="preserve"><value>HTTP या HTTPS पता, होस्टनाम या खोज वाक्यांश दर्ज करें (अधिकतम 4096 अक्षर)।</value></data>
+  <data name="Chat.Browser.UploadLimit" xml:space="preserve"><value>कुल अधिकतम 32 MiB की 8 फ़ाइलें तक चुनें।</value></data>
+  <data name="Chat.Browser.Cut" xml:space="preserve"><value>कट</value></data>
+  <data name="Chat.Browser.Copy" xml:space="preserve"><value>कॉपी</value></data>
+  <data name="Chat.Browser.Paste" xml:space="preserve"><value>पेस्ट</value></data>
+  <data name="Chat.Browser.SelectAll" xml:space="preserve"><value>सभी चुनें</value></data>
+  <data name="Chat.Browser.ChooseFile" xml:space="preserve"><value>इस वेबसाइट के लिए अपने डिवाइस से फ़ाइल चुनें</value></data>
+  <data name="Chat.Browser.FileReady" xml:space="preserve"><value>फ़ाइल तैयार है</value></data>
+  <data name="Chat.Browser.SaveToDevice" xml:space="preserve"><value>डिवाइस पर सहेजें</value></data>
+  <data name="Chat.Permissions.AllowOnce" xml:space="preserve">
+    <value>एक बार अनुमति दें</value>
+  </data>
+  <data name="Chat.Permissions.AllowForSession" xml:space="preserve">
+    <value>इस सत्र के लिए अनुमति दें</value>
+  </data>
+  <data name="Chat.Permissions.SessionLifetime" xml:space="preserve">
+    <value>इस टूल, एजेंट और बातचीत पर अनुमति वापस लेने या सर्वर सत्र समाप्त होने तक लागू होता है। रिफ्रेश या चैट बदलने पर अनुमति बनी रहती है। Oscova पुनः शुरू करने पर यह हट जाती है।</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnavailable" xml:space="preserve">
+    <value>इस अनुरोध में विश्वसनीय टूल, एजेंट या निष्पादन लक्ष्य नहीं है, इसलिए सत्र की अनुमति उपलब्ध नहीं है।</value>
+  </data>
+  <data name="Chat.Permissions.AllowedOnce" xml:space="preserve">
+    <value>एक बार अनुमति दी गई</value>
+  </data>
+  <data name="Chat.Permissions.AllowedForSession" xml:space="preserve">
+    <value>इस सत्र के लिए अनुमति दी गई</value>
+  </data>
+  <data name="Chat.Permissions.Denied" xml:space="preserve">
+    <value>अस्वीकृत</value>
+  </data>
+  <data name="Chat.Permissions.SessionAutoApproved" xml:space="preserve">
+    <value>सत्र अनुमति से स्वतः स्वीकृत</value>
+  </data>
+  <data name="Chat.Permissions.AutoApproved" xml:space="preserve">
+    <value>स्वतः स्वीकृत</value>
+  </data>
+  <data name="Chat.Permissions.AutoRejected" xml:space="preserve">
+    <value>स्वतः अस्वीकृत</value>
+  </data>
+  <data name="Chat.Permissions.FullAccess" xml:space="preserve">
+    <value>पूर्ण पहुँच</value>
+  </data>
+  <data name="Chat.Permissions.ApprovalExpired" xml:space="preserve">
+    <value>यह अनुमति अनुरोध समाप्त हो गया है। टूल का फिर से अनुरोध करें।</value>
+  </data>
+  <data name="Chat.Permissions.SessionPermissions" xml:space="preserve">
+    <value>सत्र अनुमतियाँ</value>
+  </data>
+  <data name="Chat.Permissions.Revoke" xml:space="preserve">
+    <value>अनुमति वापस लें</value>
+  </data>
+  <data name="Chat.Permissions.RevokeAll" xml:space="preserve">
+    <value>सभी अनुमतियाँ वापस लें</value>
+  </data>
+  <data name="Chat.Permissions.NoSessionPermissions" xml:space="preserve">
+    <value>कोई सक्रिय सत्र अनुमति नहीं है।</value>
+  </data>
+  <data name="Chat.Permissions.RunningPermission" xml:space="preserve">
+    <value>चल रहा टर्न: {0}। चुना गया विकल्प अगले रन पर लागू होगा।</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningUsePolicy" xml:space="preserve">
+    <value>एजेंट की टूल नीतियों का पालन करें।</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoApprove" xml:space="preserve">
+    <value>अनुमोदन के संकेत छोड़ें। निष्पादन प्रतिबंध लागू रहेंगे।</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoReject" xml:space="preserve">
+    <value>अनुमोदन माँगने वाली कॉल अस्वीकार करें।</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningFullAccess" xml:space="preserve">
+    <value>अनुमोदन के संकेत छोड़ें। {0} पर Docker के बाहर बिना फ़िल्टर वाले शेल कमांड चलाएँ।</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedFullAccess" xml:space="preserve">
+    <value>पूर्ण पहुँच में उपयोग नहीं होता। निरस्त करने से पूर्ण पहुँच बंद नहीं होती।</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoApprove" xml:space="preserve">
+    <value>अनुमोदन के संकेत छोड़े जाने पर उपयोग नहीं होता।</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoReject" xml:space="preserve">
+    <value>अनुमोदन माँगने वाली कॉल अस्वीकार होने पर उपयोग नहीं होता।</value>
+  </data>
+  <data name="Chat.ToolApproval.ExecutionEnvironmentWarning" xml:space="preserve">
+    <value>चुने हुए निष्पादन परिवेश में चलता है।</value>
+  </data>
+  <data name="Chat.ToolCard.ToolSearchTitle" xml:space="preserve">
+    <value>टूल लोड करना</value>
+  </data>
+  <data name="VisualizationTitle" xml:space="preserve"><value>इंटरैक्टिव विज़ुअलाइज़ेशन</value></data>
+  <data name="VisualizationGenerating" xml:space="preserve"><value>विज़ुअलाइज़ेशन बनाया जा रहा है</value></data>
+  <data name="VisualizationUnavailable" xml:space="preserve"><value>विज़ुअलाइज़ेशन उपलब्ध नहीं है</value></data>
+  <data name="VisualizationLocalOnly" xml:space="preserve"><value>केवल स्थानीय मोड में विज़ुअलाइज़ेशन अक्षम हैं।</value></data>
+  <data name="Chat.ComposerOptions" xml:space="preserve"><value>चैट विकल्प</value></data>
+  <data name="Chat.History.LoadingConversation" xml:space="preserve"><value>बातचीत लोड हो रही है…</value></data>
+  <data name="Chat.History.LoadOlderMessages" xml:space="preserve"><value>पुराने संदेश लोड करें</value></data>
+  <data name="Chat.History.LoadingOlderMessages" xml:space="preserve"><value>पुराने संदेश लोड हो रहे हैं…</value></data>
+  <data name="Chat.History.StartOfConversation" xml:space="preserve"><value>बातचीत की शुरुआत</value></data>
+  <data name="Chat.History.LoadOlderMessagesFailed" xml:space="preserve"><value>पुराने संदेश लोड नहीं हो सके। फिर से प्रयास करें।</value></data>
+  <data name="RemoveRecipient" xml:space="preserve"><value>प्राप्तकर्ता हटाएँ</value></data>
+  <data name="ConsultAgent" xml:space="preserve"><value>एजेंट से सलाह लें</value></data>
+  <data name="NoMatchingAgents" xml:space="preserve"><value>कोई मेल खाने वाला एजेंट नहीं</value></data>
+  <data name="Chat.ExpandTable" xml:space="preserve"><value>तालिका विस्तृत करें</value></data>
+  <data name="Chat.ExpandedTable" xml:space="preserve"><value>तालिका</value></data>
+  <data name="Chat.Goal.Edit" xml:space="preserve"><value>लक्ष्य संपादित करें</value></data>
+  <data name="Chat.Goal.Title" xml:space="preserve">
+    <value>लक्ष्य</value>
+  </data>
+  <data name="Chat.Goal.Start" xml:space="preserve">
+    <value>लक्ष्य शुरू करें</value>
+  </data>
+  <data name="Chat.Goal.Save" xml:space="preserve">
+    <value>लक्ष्य सहेजें</value>
+  </data>
+  <data name="Chat.Goal.Pause" xml:space="preserve">
+    <value>विराम दें</value>
+  </data>
+  <data name="Chat.Goal.Running" xml:space="preserve">
+    <value>लक्ष्य पर काम जारी</value>
+  </data>
+  <data name="Chat.Goal.Paused" xml:space="preserve">
+    <value>लक्ष्य पर विराम</value>
+  </data>
+  <data name="Chat.Goal.Blocked" xml:space="preserve">
+    <value>लक्ष्य में बाधा</value>
+  </data>
+  <data name="Chat.Goal.Achieved" xml:space="preserve">
+    <value>लक्ष्य प्राप्त</value>
+  </data>
+  <data name="Chat.Goal.SaveFailed" xml:space="preserve">
+    <value>लक्ष्य सहेजा नहीं जा सका</value>
+  </data>
+  <data name="Chat.Goal.ActionFailed" xml:space="preserve">
+    <value>लक्ष्य अपडेट नहीं हो सका</value>
+  </data>
+  <data name="Chat.Slash.GoalDescription" xml:space="preserve">
+    <value>लक्ष्य की ओर काम जारी रखें</value>
+  </data>
+  <data name="Chat.Goal.ClearFirst" xml:space="preserve">
+    <value>नया लक्ष्य शुरू करने से पहले मौजूदा लक्ष्य साफ़ करें।</value>
+  </data>
+  <data name="Chat.Goal.AnswerOrDismiss" xml:space="preserve">
+    <value>पहले प्रश्न का उत्तर दें या बंद करें</value>
+  </data>
+  <data name="Chat.Goal.ReasonStopped" xml:space="preserve">
+    <value>रोक दिया गया</value>
+  </data>
+  <data name="Chat.Goal.ReasonRestarted" xml:space="preserve">
+    <value>ऐप फिर शुरू हुआ</value>
+  </data>
+  <data name="Chat.Goal.ReasonBudget" xml:space="preserve">
+    <value>बजट सीमा पूरी</value>
+  </data>
+  <data name="Chat.Goal.ReasonIterations" xml:space="preserve">
+    <value>पुनरावृत्ति सीमा</value>
+  </data>
+  <data name="Chat.Goal.ReasonProvider" xml:space="preserve">
+    <value>प्रदाता अनुपलब्ध</value>
+  </data>
+  <data name="Chat.Goal.ReasonJudge" xml:space="preserve">
+    <value>पूर्णता की जाँच नहीं हो सकी</value>
+  </data>
+  <data name="Chat.Goal.ReasonWorker" xml:space="preserve">
+    <value>जारी नहीं रखा जा सका</value>
+  </data>
+  <data name="Chat.Goal.ReasonQuestion" xml:space="preserve">
+    <value>आपके उत्तर की प्रतीक्षा</value>
+  </data>
+  <data name="Chat.Goal.ReasonDismissed" xml:space="preserve">
+    <value>प्रश्न बंद किया गया</value>
+  </data>
+  <data name="Chat.AttachmentReadFailed" xml:space="preserve">
+    <value>'{0}' संलग्न नहीं हो सका। इसे फिर से चुनें।</value>
+  </data>
+  <data name="Chat.RecipientOwnModelProvider" xml:space="preserve">
+    <value>{0} अपने मॉडल प्रदाता का उपयोग करता है।</value>
+  </data>
+  <data name="Chat.RecipientModelProviderUnavailable" xml:space="preserve">
+    <value>एजेंट का मॉडल प्रदाता उपलब्ध नहीं है</value>
+  </data>
+  <data name="Chat.Workspace.NewTab" xml:space="preserve"><value>नया टैब</value></data>
+  <data name="Chat.Workspace.ResizeFiles" xml:space="preserve"><value>फ़ाइल पैनल का आकार बदलें</value></data>
+  <data name="Chat.Workspace.SelectFile" xml:space="preserve"><value>कार्यस्थान की फ़ाइल सूची से एक फ़ाइल चुनें।</value></data>
+  <data name="Chat.Workspace.FileActions" xml:space="preserve"><value>फ़ाइल कार्रवाइयाँ</value></data>
+  <data name="Chat.Workspace.AddToChat" xml:space="preserve"><value>चैट में जोड़ें</value></data>
+  <data name="Chat.Workspace.RelativePath" xml:space="preserve"><value>सापेक्ष पथ</value></data>
+  <data name="Chat.Workspace.AbsolutePath" xml:space="preserve"><value>पूर्ण पथ</value></data>
+  <data name="Chat.Workspace.Filename" xml:space="preserve"><value>फ़ाइल का नाम</value></data>
+  <data name="Chat.WaitingForSubagentsStatus" xml:space="preserve"><value>सबएजेंट की प्रतीक्षा की जा रही है</value></data>
+  <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>आपके उत्तर और सबएजेंट की प्रतीक्षा की जा रही है</value></data>
+  <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>स्वीकृति की प्रतीक्षा</value></data>
+  <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>बाधित</value></data>
+</root>

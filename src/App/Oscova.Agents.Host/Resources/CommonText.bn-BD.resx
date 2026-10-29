@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Common.Cancel">
+		<value>বাতিল করুন</value>
+
+	</data>
+	<data name="Common.Actions">
+		<value>ক্রিয়াকলাপ</value>
+
+	</data>
+	<data name="Common.Close">
+		<value>বন্ধ করুন</value>
+
+	</data>
+	<data name="Common.Connected">
+		<value>সংযুক্ত</value>
+
+	</data>
+	<data name="Common.CopyName">
+		<value>অনুলিপি</value>
+
+	</data>
+	<data name="Common.Create">
+		<value>তৈরি করুন</value>
+
+	</data>
+	<data name="Common.Delete">
+		<value>মুছুন</value>
+
+	</data>
+	<data name="Common.Description">
+		<value>বিবরণ</value>
+
+	</data>
+	<data name="Common.Disconnected">
+		<value>বিচ্ছিন্ন</value>
+
+	</data>
+	<data name="Common.Download">
+		<value>ডাউনলোড করুন</value>
+
+	</data>
+	<data name="Common.Duplicate">
+		<value>অনুলিপি তৈরি করুন</value>
+
+	</data>
+	<data name="Common.Edit">
+		<value>সম্পাদনা করুন</value>
+
+	</data>
+	<data name="Common.FileTooLarge">
+		<value>ফাইলটি খুব বড়। সর্বাধিক আকার {0}।</value>
+
+	</data>
+	<data name="Common.Import">
+		<value>আমদানি করুন</value>
+
+	</data>
+	<data name="Common.ImportFailed">
+		<value>আমদানি ব্যর্থ হয়েছে: {0}</value>
+
+	</data>
+	<data name="Common.Key"><value>কী</value></data>
+	<data name="Common.Loading">
+		<value>লোড হচ্ছে...</value>
+
+	</data>
+	<data name="Common.Name">
+		<value>নাম</value>
+
+	</data>
+	<data name="Common.NoFileSelected">
+		<value>কোনো ফাইল নির্বাচন করা হয়নি</value>
+
+	</data>
+	<data name="Common.NoneOption">
+		<value>কোনটিই নয়</value>
+
+	</data>
+	<data name="Common.Password">
+		<value>পাসওয়ার্ড</value>
+
+	</data>
+	<data name="Common.Refresh">
+		<value>রিফ্রেশ করুন</value>
+
+	</data>
+	<data name="Common.Remove">
+		<value>সরান</value>
+
+	</data>
+	<data name="Common.Retry">
+		<value>আবার চেষ্টা করুন</value>
+
+	</data>
+	<data name="Common.NoResults"><value>কোনো ফলাফল নেই</value></data>
+	<data name="Common.Save">
+		<value>সংরক্ষণ করুন</value>
+
+	</data>
+	<data name="Common.Search"><value>অনুসন্ধান করুন...</value></data>
+	<data name="Common.Settings">
+		<value>সেটিংস</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Title">
+		<value>অসংরক্ষিত পরিবর্তনগুলি কি বাতিল করবেন?</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Message">
+		<value>এই পৃষ্ঠায় আপনার অসংরক্ষিত পরিবর্তন রয়েছে। এখন চলে গেলে সেগুলি বাতিল হয়ে যাবে।</value>
+
+	</data>
+	<data name="Common.SignOutConfirmTitle">
+		<value>সাইন আউট নিশ্চিত করুন</value>
+
+	</data>
+	<data name="Common.SignOutConfirmMessage">
+		<value>আপনি কি নিশ্চিত যে আপনি সাইন আউট করতে চান?</value>
+
+	</data>
+	<data name="Common.Upload">
+		<value>আপলোড করুন</value>
+
+	</data>
+	<data name="Common.Username">
+		<value>ব্যবহারকারীর নাম</value>
+
+	</data>
+	<data name="Common.Assistant"><value>সহকারী</value></data>
+	<data name="Common.Clear"><value>সাফ করুন</value></data>
+	<data name="Common.ConfirmPassword"><value>পাসওয়ার্ড নিশ্চিত করুন</value></data>
+	<data name="Common.Content"><value>বিষয়বস্তু</value></data>
+	<data name="Common.CurrentPassword"><value>বর্তমান পাসওয়ার্ড</value></data>
+	<data name="Common.Email"><value>ইমেল</value></data>
+	<data name="Common.FullName"><value>পুরো নাম</value></data>
+	<data name="Common.PreferredName"><value>পছন্দের নাম</value></data>
+	<data name="Common.PreferredNameHelp"><value>আপনার এজেন্টরা আপনাকে কী নামে ডাকবে?</value></data>
+	<data name="Common.NewPassword"><value>নতুন পাসওয়ার্ড</value></data>
+	<data name="Common.NotConfigured"><value>কনফিগার করা হয়নি</value></data>
+	<data name="Common.NotSet"><value>নির্ধারণ করা হয়নি</value></data>
+	<data name="Common.Page"><value>পৃষ্ঠা {0}</value></data>
+	<data name="Common.Roles"><value>ভূমিকা</value></data>
+	<data name="Common.System"><value>সিস্টেম</value></data>
+	<data name="Common.Time"><value>সময়</value></data>
+	<data name="Common.Tool"><value>টুল</value></data>
+	<data name="Common.Unknown"><value>অজানা</value></data>
+	<data name="Common.User"><value>ব্যবহারকারী</value></data>
+	<data name="Dialog.AccountDetailsTitle"><value>অ্যাকাউন্টের বিবরণ</value></data>
+	<data name="Dialog.AllAgentsOption"><value>সকল এজেন্ট</value></data>
+	<data name="Dialog.AllThreadsOption"><value>সকল থ্রেড</value></data>
+	<data name="Dialog.ApplicationLogsTitle"><value>অ্যাপ্লিকেশন লগ</value></data>
+	<data name="Dialog.ExportFilteredCsv"><value>ফিল্টার করা CSV</value></data>
+	<data name="Dialog.ExportFilteredText"><value>ফিল্টার করা টেক্সট</value></data>
+	<data name="Dialog.ExportLogsButton"><value>রপ্তানি করুন</value></data>
+	<data name="Dialog.ExportOriginalJsonLines"><value>মূল JSON লাইন</value></data>
+	<data name="Dialog.ChangePasswordTitle"><value>পাসওয়ার্ড পরিবর্তন করুন</value></data>
+	<data name="Dialog.ChatMemory.HeaderAgent"><value>এজেন্ট</value></data>
+	<data name="Dialog.ChatMemory.HeaderChunk"><value>খণ্ড</value></data>
+	<data name="Dialog.ChatMemory.HeaderContent"><value>বিষয়বস্তু</value></data>
+	<data name="Dialog.ChatMemory.HeaderThread"><value>থ্রেড</value></data>
+	<data name="Dialog.ChatMemoryStoreTitle"><value>চ্যাট মেমোরি স্টোর</value></data>
+	<data name="Dialog.ClearLogButton"><value>সাফ করুন</value></data>
+	<data name="Dialog.ClearLogConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি বর্তমান লগ ফাইলটি সাফ করতে চান? এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।</value></data>
+	<data name="Dialog.ClearLogConfirmTitle"><value>লগ সাফ করার বিষয়টি নিশ্চিত করুন</value></data>
+	<data name="Dialog.ClearLogTitleAttribute"><value>বর্তমান লগ ফাইল সাফ করুন</value></data>
+	<data name="Dialog.CloseChatMemoryLabel"><value>চ্যাট মেমোরি ডায়ালগ বন্ধ করুন</value></data>
+	<data name="Dialog.CloseLogsLabel"><value>লগ ডায়ালগ বন্ধ করুন</value></data>
+	<data name="Dialog.CloseProfileLabel"><value>প্রোফাইল ডায়ালগ বন্ধ করুন</value></data>
+	<data name="Dialog.ContentTypeCall"><value>কল</value></data>
+	<data name="Dialog.ContentTypeReasoning"><value>যুক্তি</value></data>
+	<data name="Dialog.ContentTypeResult"><value>ফলাফল</value></data>
+	<data name="Dialog.DataContentBytes"><value>{0} - {1} বাইট</value></data>
+	<data name="Dialog.EmailAddressLabel"><value>ইমেল ঠিকানা</value></data>
+	<data name="Dialog.FailedLoadChatMemoryError"><value>চ্যাট মেমোরি লোড করতে ব্যর্থ হয়েছে:</value></data>
+	<data name="Dialog.FailedLoadLogsError"><value>লগ লোড করতে ব্যর্থ হয়েছে:</value></data>
+	<data name="Dialog.InspectorJsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorVisualTab"><value>ভিজ্যুয়াল</value></data>
+	<data name="Dialog.LogDetailException"><value>ব্যতিক্রম</value></data>
+	<data name="Dialog.LogDetailMetadata"><value>মেটাডেটা</value></data>
+	<data name="Dialog.LogEntriesCount"><value>{0}টি এন্ট্রি</value></data>
+	<data name="Dialog.LogEntriesPage"><value>{0}টি এন্ট্রি - পৃষ্ঠা {1} / {2}</value></data>
+	<data name="Dialog.LogLevelAll"><value>সকল স্তর</value></data>
+	<data name="Dialog.LogLevelDebug"><value>Debug</value></data>
+	<data name="Dialog.LogLevelError"><value>Error</value></data>
+	<data name="Dialog.LogLevelFatal"><value>Fatal</value></data>
+	<data name="Dialog.LogLevelInfo"><value>Info</value></data>
+	<data name="Dialog.LogLevelTrace"><value>Trace</value></data>
+	<data name="Dialog.LogLevelWarn"><value>Warn</value></data>
+	<data name="Dialog.LogsHeaderLevel"><value>স্তর</value></data>
+	<data name="Dialog.LogsHeaderLogger"><value>লগার</value></data>
+	<data name="Dialog.LogsHeaderMessage"><value>বার্তা</value></data>
+	<data name="Dialog.LogsInvalidUserGuid"><value>একটি বৈধ ব্যবহারকারী GUID লিখুন।</value></data>
+	<data name="Dialog.LogsScope.Mine"><value>আমার</value></data>
+	<data name="Dialog.LogsScope.User"><value>ব্যবহারকারী...</value></data>
+	<data name="Dialog.Logs.UserIdPlaceholder"><value>ব্যবহারকারী আইডি (GUID)</value></data>
+	<data name="Dialog.NoChatMemoryEntries"><value>বর্তমান ফিল্টারের সাথে কোনো চ্যাট মেমোরি এন্ট্রি মিলছে না।</value></data>
+	<data name="Dialog.NoLogEntriesMatch"><value>বর্তমান ফিল্টারের সাথে কোনো লগ এন্ট্রি মিলছে না।</value></data>
+	<data name="Dialog.NoLogFilesOption"><value>কোনো লগ ফাইল নেই</value></data>
+	<data name="Dialog.NoMessagesInSession"><value>সেশনে কোনো বার্তা নেই।</value></data>
+	<data name="Dialog.NoStructuredLogsFound"><value>কোনো কাঠামোগত লগ ফাইল পাওয়া যায়নি। অ্যাপ্লিকেশন নতুন এন্ট্রি লেখার পরে লগগুলি এখানে প্রদর্শিত হবে।</value></data>
+	<data name="Notifications.AllTab"><value>সব</value></data>
+	<data name="Notifications.Clear"><value>বিজ্ঞপ্তি সাফ করুন</value></data>
+	<data name="Notifications.DetailKindLabel"><value>ধরন</value></data>
+	<data name="Notifications.DialogTitle"><value>বিজ্ঞপ্তি</value></data>
+	<data name="Notifications.EmptyState"><value>আপনার সব দেখা শেষ।</value></data>
+	<data name="Notifications.MarkAllRead"><value>সব পঠিত হিসেবে চিহ্নিত করুন</value></data>
+	<data name="Notifications.Muted"><value>বিজ্ঞপ্তি নিঃশব্দ করা হয়েছে</value></data>
+	<data name="Notifications.JustNow"><value>এইমাত্র</value></data>
+	<data name="Notifications.MinutesAgo"><value>{0} মিনিট আগে</value></data>
+	<data name="Notifications.HoursAgo"><value>{0} ঘণ্টা আগে</value></data>
+	<data name="Notifications.Task.CompletedTitle"><value>কাজ সম্পন্ন হয়েছে</value></data>
+	<data name="Notifications.Task.NeedsAttentionTitle"><value>কাজটির প্রতি মনোযোগ প্রয়োজন</value></data>
+	<data name="Notifications.Task.CompletedInSeconds"><value>{0} সেকেন্ডে সম্পন্ন হয়েছে।</value></data>
+	<data name="Notifications.Task.Skipped"><value>টাস্কটি এড়িয়ে যাওয়া হয়েছে।</value></data>
+	<data name="Notifications.Task.MissingChatProvider"><value>কোনো চ্যাট মডেল প্রদানকারী কনফিগার করা নেই। এই টাস্কটি চালাতে সেটিংস &gt; এজেন্টস এবং AI &gt; মডেল প্রদানকারী-এ একটি সেট আপ করুন।</value></data>
+	<data name="Notifications.Task.MissingEmbeddingProvider"><value>কোনো এম্বেডিং মডেল প্রদানকারী কনফিগার করা নেই। এই টাস্কটি চালাতে সেটিংস &gt; এজেন্টস এবং AI &gt; মডেল প্রদানকারী &gt; এমবেডিং প্রদানকারী-এ একটি সেট আপ করুন।</value></data>
+	<data name="Notifications.Task.HandlerUnavailable"><value>এই কাজের এক্সিকিউশন হ্যান্ডলার উপলভ্য নেই। কাজটি চালাতে এর প্লাগইন সক্রিয় করুন বা আবার ইনস্টল করুন এবং অ্যাপটি পুনরায় চালু করুন।</value></data>
+	<data name="Notifications.Task.StepLimitReached"><value>কাজটি শেষ হওয়ার আগেই {0}-ধাপের সীমায় থেমে গেছে।</value></data>
+	<data name="Notifications.Task.Finished"><value>টাস্ক রান সম্পন্ন হয়েছে।</value></data>
+	<data name="Notifications.Task.OutcomeHidden"><value>ফলাফল দেখতে টাস্কটি খুলুন।</value></data>
+	<data name="Notifications.Task.SkippedLocked"><value>এই টাস্কটি চলেনি কারণ আপনার ভল্ট পাসওয়ার্ড লক করা আছে। পুনরায় শুরু করতে এটি আনলক করুন।</value></data>
+	<data name="Notifications.Settings"><value>বিজ্ঞপ্তি সেটিংস</value></data>
+	<data name="Notifications.SystemTab"><value>সিস্টেম</value></data>
+	<data name="Notifications.TasksTab"><value>কাজসমূহ</value></data>
+	<data name="Notifications.Title"><value>বিজ্ঞপ্তি</value></data>
+	<data name="Notifications.ViewAll"><value>সব দেখুন</value></data>
+	<data name="Dialog.PasswordBlankHint"><value>আপনার বর্তমান পাসওয়ার্ড বজায় রাখতে ফাঁকা রাখুন।</value></data>
+	<data name="Dialog.ProfileDescription"><value>আপনার ইমেল ঠিকানা, পুরো নাম, পছন্দের নাম এবং পাসওয়ার্ড আপডেট করুন।</value></data>
+	<data name="Dialog.ProfilePictureUpdated"><value>প্রোফাইল ছবি আপডেট করা হয়েছে।</value></data>
+	<data name="Dialog.ProfilePictureUpdateFailed"><value>প্রোফাইল ছবি আপডেট করা যায়নি: {0}</value></data>
+	<data name="Dialog.WallpaperUpdated"><value>ওয়ালপেপার আপডেট করা হয়েছে।</value></data>
+	<data name="Dialog.WallpaperUpdateFailed"><value>ওয়ালপেপার আপডেট করা যায়নি: {0}</value></data>
+	<data name="Dialog.SaveChangesButton"><value>পরিবর্তনগুলি সংরক্ষণ করুন</value></data>
+	<data name="Dialog.SearchLogsPlaceholder"><value>লগ অনুসন্ধান করুন...</value></data>
+	<data name="Dialog.SessionInspectorTitle"><value>সেশন পরিদর্শক</value></data>
+	<data name="Dialog.SessionJsonCopied"><value>সেশন JSON ক্লিপবোর্ডে অনুলিপি করা হয়েছে।</value></data>
+	<data name="Dialog.SessionJsonDownloaded"><value>সেশন প্রমাণ ডাউনলোড করা হয়েছে।</value></data>
+	<data name="Dialog.InspectorConversationTab"><value>কথোপকথন</value></data>
+	<data name="Dialog.InspectorMessageSummary"><value>{0}টি বার্তা</value></data>
+	<data name="Dialog.MessageCountBadge"><value>{0}টি বার্তা</value></data>
+	<data name="Dialog.NoSystemInstruction"><value>কোনো সিস্টেম নির্দেশ ধারণ করা যায়নি।</value></data>
+	<data name="Dialog.Egress.CloudLabel"><value>ক্লাউড</value></data>
+	<data name="Dialog.Egress.LocalLabel"><value>স্থানীয়</value></data>
+	<data name="Dialog.Egress.IndeterminateDescription"><value>কিছু টুল কল টুল মেটাডেটার সাথে মেলানো যায়নি।</value></data>
+	<data name="Dialog.Egress.IndeterminateTitle"><value>বহির্গমন সম্পূর্ণরূপে যাচাই করা যায়নি</value></data>
+	<data name="Dialog.Egress.NoDataDescription"><value>পুরানো সেশনগুলোতে প্রদানকারী বহির্গমন রেকর্ড অন্তর্ভুক্ত নাও থাকতে পারে।</value></data>
+	<data name="Dialog.Egress.NoDataTitle"><value>কোনো বহির্গমন ডেটা রেকর্ড করা হয়নি</value></data>
+	<data name="Dialog.Egress.ReachedInternetDescription"><value>এই সেশনের সময় ক্লাউড প্রদানকারী বা ইন্টারনেট টুল ব্যবহার করা হয়েছিল।</value></data>
+	<data name="Dialog.Egress.ReachedInternetTitle"><value>এই সেশনটি ইন্টারনেটে সংযুক্ত হয়েছিল</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceDescription"><value>রেকর্ডকৃত প্রদানকারীরা স্থানীয় ছিল এবং কোনো ইন্টারনেট টুল শনাক্ত করা যায়নি।</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceTitle"><value>এই সেশনটি ডিভাইসের মধ্যেই সীমাবদ্ধ ছিল</value></data>
+	<data name="Dialog.Egress.ToolCallCount"><value>{0}টি ইন্টারনেট টুল কল</value></data>
+	<data name="Dialog.Egress.UnknownToolCallCount"><value>{0}টি অজানা টুল কল</value></data>
+	<data name="Dialog.Egress.EntryCount"><value>{0}টি অডিটকৃত বহির্গমন এন্ট্রি</value></data>
+	<data name="Dialog.Egress.ProviderKind"><value>প্রদানকারী</value></data>
+	<data name="Dialog.Egress.ToolKind"><value>টুল</value></data>
+	<data name="Dialog.Egress.EmbeddingKind"><value>এমবেডিং</value></data>
+	<data name="Dialog.Egress.ChatSource"><value>চ্যাট</value></data>
+	<data name="Dialog.Egress.TaskSource"><value>টাস্ক</value></data>
+	<data name="Dialog.Egress.EmbeddingIndexingSource"><value>মেমোরি ইন্ডেক্সিং</value></data>
+	<data name="Dialog.Egress.EmbeddingSearchSource"><value>মেমোরি অনুসন্ধান</value></data>
+	<data name="Dialog.Egress.UnknownDestination"><value>অজানা গন্তব্য</value></data>
+	<data name="Dialog.EgressAudit.AgentColumn"><value>এজেন্ট</value></data>
+	<data name="Dialog.EgressAudit.AllKinds"><value>সব ধরনের</value></data>
+	<data name="Dialog.EgressAudit.AllSources"><value>সকল উৎস</value></data>
+	<data name="Dialog.EgressAudit.ContextColumn"><value>প্রসঙ্গ</value></data>
+	<data name="Dialog.EgressAudit.CountSummary"><value>{0}টি ইভেন্ট</value></data>
+	<data name="Dialog.EgressAudit.DestinationColumn"><value>গন্তব্য</value></data>
+	<data name="Dialog.EgressAudit.Title"><value>বহির্গমন অডিট</value></data>
+	<data name="Dialog.EgressAudit.EmbeddingEvents"><value>এমবেডিং ইভেন্ট</value></data>
+	<data name="Dialog.EgressAudit.InspectAction"><value>সেশন পরিদর্শন করুন</value></data>
+	<data name="Dialog.EgressAudit.LoadFailed"><value>বহির্গামী ডেটা অডিট বিবরণ লোড করা যায়নি।</value></data>
+	<data name="Dialog.EgressAudit.ModelMetadata"><value>মডেল</value></data>
+	<data name="Dialog.EgressAudit.NoEntries"><value>কোনো অডিট এন্ট্রি বর্তমান ফিল্টারের সাথে মেলে না।</value></data>
+	<data name="Dialog.EgressAudit.PageSummary"><value>{0}টি ইভেন্ট - পৃষ্ঠা {1}/{2}</value></data>
+	<data name="Dialog.EgressAudit.ProviderEvents"><value>প্রদানকারী ইভেন্টসমূহ</value></data>
+	<data name="Dialog.EgressAudit.ProviderIdMetadata"><value>প্রদানকারী আইডি</value></data>
+	<data name="Dialog.EgressAudit.RangeAllTime"><value>সর্বকালের</value></data>
+	<data name="Dialog.EgressAudit.RangeLastThirtyDays"><value>গত ৩০ দিন</value></data>
+	<data name="Dialog.EgressAudit.RunMetadata"><value>রান</value></data>
+	<data name="Dialog.EgressAudit.SearchButton"><value>খুঁজুন</value></data>
+	<data name="Dialog.EgressAudit.SearchPlaceholder"><value>বহির্গামী ডেটা অনুসন্ধান করুন</value></data>
+	<data name="Dialog.EgressAudit.SessionUnavailable"><value>এই এন্ট্রির সেশনটি আর উপলব্ধ নেই।</value></data>
+	<data name="Dialog.EgressAudit.SourceColumn"><value>উৎস</value></data>
+	<data name="Dialog.EgressAudit.TaskMetadata"><value>টাস্ক</value></data>
+	<data name="Dialog.EgressAudit.ThreadMetadata"><value>থ্রেড</value></data>
+	<data name="Dialog.EgressAudit.ToolEvents"><value>টুল ইভেন্টসমূহ</value></data>
+	<data name="Dialog.EgressAudit.ToolMetadata"><value>টুল</value></data>
+	<data name="Dialog.EgressAudit.TotalEvents"><value>মোট ইভেন্ট</value></data>
+	<data name="Dialog.EgressAudit.TypeColumn"><value>ধরন</value></data>
+	<data name="Dialog.EgressAudit.UserColumn"><value>ব্যবহারকারী</value></data>
+	<data name="Dialog.SystemInstructionTitle"><value>সিস্টেম নির্দেশনা</value></data>
+	<data name="Dialog.TokenCountBadge"><value>{0}টি টোকেন</value></data>
+	<data name="Dialog.UsageInputTokens"><value>ইনপুট: {0}</value></data>
+	<data name="Dialog.UsageOutputTokens"><value>আউটপুট: {0}</value></data>
+	<data name="Dialog.UsageTotalTokens"><value>মোট: {0}</value></data>
+	<data name="Dialog.StoredContent"><value>সংরক্ষিত বিষয়বস্তু</value></data>
+	<data name="Dialog.ToggleDetailsTitle"><value>বিবরণ টগল করুন</value></data>
+	<data name="Dialog.UnableToSubmitChoice"><value>সেই পছন্দটি জমা দিতে অক্ষম।</value></data>
+	<data name="Dialog.YourProfileTitle"><value>আপনার প্রোফাইল</value></data>
+	<data name="Common.Validation.NameRequired"><value>নাম আবশ্যক।</value></data>
+	<data name="Common.Validation.InstructionRequired"><value>নির্দেশনা আবশ্যক।</value></data>
+	<data name="Common.Task.AgentUnavailable"><value>কমপক্ষে একটি এজেন্ট উপলব্ধ থাকলেই কেবল একটি টাস্ক তৈরি করা যেতে পারে।</value></data>
+	<data name="Common.Task.AgentCreatedBadge"><value>এজেন্ট দ্বারা তৈরি</value></data>
+	<data name="Common.Task.CreatedSuccessfully"><value>টাস্ক সফলভাবে তৈরি হয়েছে।</value></data>
+	<data name="Common.Task.CronExpression"><value>ক্রন: {0}</value></data>
+	<data name="Common.Task.CronExpressionLabel"><value>ক্রন এক্সপ্রেশন</value></data>
+	<data name="Common.Task.CronExpressionRequired"><value>ক্রন এক্সপ্রেশন আবশ্যক।</value></data>
+	<data name="Common.Task.CustomProvider"><value>কাস্টম প্রদানকারী</value></data>
+	<data name="Common.Task.DefaultModelProvider"><value>এজেন্ট ডিফল্ট ব্যবহার করুন</value></data>
+	<data name="Common.Task.DefaultModelProviderShort"><value>এজেন্ট ডিফল্ট ব্যবহার করুন</value></data>
+	<data name="Common.Task.DeleteAfterRun"><value>চলার পরে টাস্ক মুছুন</value></data>
+	<data name="Common.Task.DeleteConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি "{0}" মুছতে চান?</value></data>
+	<data name="Common.Task.DeleteConfirmTitle"><value>টাস্ক মুছুন</value></data>
+	<data name="Common.Task.DeletedSuccessfully"><value>টাস্ক মুছে ফেলা হয়েছে।</value></data>
+	<data name="Common.Task.RunsLoadFailed"><value>এই টাস্কের রানগুলো লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।</value></data>
+	<data name="Common.Task.DeletesAfterSuccessfulRun"><value>সফলভাবে চলার পরে নিজে থেকেই মুছে যায়</value></data>
+	<data name="Common.Task.DialogCreateTitle"><value>টাস্ক তৈরি করুন</value></data>
+	<data name="Common.Task.DialogEditTitle"><value>টাস্ক সম্পাদনা করুন</value></data>
+	<data name="Common.Task.DisablesAfterSuccessfulRun"><value>সফলভাবে চলার পরে নিজে থেকেই নিষ্ক্রিয় হয়ে যায়</value></data>
+	<data name="Common.Task.Enabled"><value>সক্রিয়</value></data>
+	<data name="Common.Task.ExternalTrigger.AddParameterButton"><value>প্যারামিটার যোগ করুন</value></data>
+	<data name="Common.Task.ExternalTrigger.CopyEndpointButton"><value>এন্ডপয়েন্ট কপি করুন</value></data>
+	<data name="Common.Task.ExternalTrigger.EnableLabel"><value>বাহ্যিক ওয়েবহুক ট্রিগারের অনুমতি দিন</value></data>
+	<data name="Common.Task.ExternalTrigger.Hint"><value>বাহ্যিক কলাররা একটি প্রমাণীকৃত হুক এন্ডপয়েন্টের মাধ্যমে এই কাজটি ট্রিগার করতে পারেন।</value></data>
+	<data name="Common.Task.ExternalTrigger.KindBoolean"><value>বুলিয়ান</value></data>
+	<data name="Common.Task.ExternalTrigger.KindJson"><value>JSON</value></data>
+	<data name="Common.Task.ExternalTrigger.KindNumber"><value>সংখ্যা</value></data>
+	<data name="Common.Task.ExternalTrigger.KindString"><value>স্ট্রিং</value></data>
+	<data name="Common.Task.ExternalTrigger.NoParameters"><value>এই ওয়েবহুকের জন্য কোনো প্যারামিটারের প্রয়োজন নেই।</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameDuplicate"><value>প্যারামিটারের নাম অবশ্যই অনন্য হতে হবে।</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameInvalid"><value>প্যারামিটারের নাম অবশ্যই একটি অক্ষর দিয়ে শুরু হতে হবে এবং এতে কেবল অক্ষর, সংখ্যা, আন্ডারস্কোর বা হাইফেন থাকতে পারবে।</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNamePlaceholder"><value>parameterName</value></data>
+	<data name="Common.Task.ExternalTrigger.ParametersLabel"><value>ওয়েবহুক প্যারামিটার</value></data>
+	<data name="Common.Task.ExternalTrigger.SlugLabel"><value>ওয়েবহুক স্লাগ</value></data>
+	<data name="Common.Task.AfterTaskSummary"><value>{0}-এর পরে</value></data>
+	<data name="Common.Task.AfterTaskSupport"><value>নির্বাচিত টাস্ক সফল হওয়ার পরে চলে</value></data>
+	<data name="Common.Task.RunScope.Label"><value>রান পরিধি</value></data>
+	<data name="Common.Task.RunScope.CustomTitle"><value>কাস্টম টাস্ক সেটিংস</value></data>
+	<data name="Common.Task.RunScope.InheritSummary"><value>এই কাজটি নির্বাচিত এজেন্টের টুল, মেমরি, দক্ষতা ও ওয়ার্কস্পেস ব্যবহার করে।</value></data>
+	<data name="Common.Task.RunScope.CustomSummary"><value>{0}টি টুল, {1}টি ওয়ার্কস্পেস</value></data>
+	<data name="Common.Task.RunScope.UseAgentSettingsButton"><value>এজেন্ট সেটিংস ব্যবহার করুন</value></data>
+	<data name="Common.Task.RunScope.DialogTitle"><value>টাস্ক রান পরিধি</value></data>
+	<data name="Common.Task.RunScope.DialogDescription"><value>কাস্টম রানটাইম সেটিংস কেবল এই টাস্কের জন্য নির্বাচিত এজেন্ট সেটিংস প্রতিস্থাপন করে।</value></data>
+	<data name="Common.Task.EvaluatedInTimeZone"><value>{0} অনুযায়ী সময় নির্ধারিত</value></data>
+	<data name="Common.Task.NextRun"><value>পরবর্তী রান {0}</value></data>
+	<data name="Common.Task.ShowInstructions"><value>নির্দেশনা দেখান</value></data>
+	<data name="Common.Task.EveryHoursMinutes"><value>প্রতি {0}ঘণ্টা {1}মিনিটে</value></data>
+	<data name="Common.Task.EveryMinutes"><value>প্রতি {0}মিনিটে</value></data>
+	<data name="Common.Task.FinishedAt"><value>{0} এ সমাপ্ত হয়েছে</value></data>
+	<data name="Common.Task.InstructionLabel"><value>নির্দেশনা</value></data>
+	<data name="Common.Task.InstructionPlaceholder"><value>এজেন্টের কী করা উচিত?</value></data>
+	<data name="Common.Task.IntervalInvalid"><value>ব্যবধান কমপক্ষে ১ মিনিট হতে হবে।</value></data>
+	<data name="Common.Task.IntervalLabel"><value>ব্যবধান (মিনিট)</value></data>
+	<data name="Common.Task.KeepLastRunsLabel"><value>শেষ রানগুলো রাখুন</value></data>
+	<data name="Common.Task.KeepLastRunsPlaceholder"><value>সব রাখুন</value></data>
+	<data name="Common.Task.KeepLastRunsHint"><value>পরের রান শেষ হলে পুরোনো রানগুলো মুছে ফেলা হয়। সব রান রাখতে খালি রাখুন।</value></data>
+	<data name="Common.Task.KeepLastRunsInvalid"><value>মান কমপক্ষে ১ হতে হবে, অথবা সব রান রাখতে খালি রাখুন।</value></data>
+	<data name="Common.Task.RunDeleteConfirmTitle"><value>রান মুছুন</value></data>
+	<data name="Common.Task.RunDeleteConfirmMessage"><value>{0} এ শুরু হওয়া রানটি মুছবেন? এর ট্রান্সক্রিপ্টও মুছে ফেলা হবে।</value></data>
+	<data name="Common.Task.RunDeletedSuccessfully"><value>রান মুছে ফেলা হয়েছে।</value></data>
+	<data name="Common.Task.MessagesCount"><value>{0}টি বার্তা</value></data>
+	<data name="Common.Task.ModelProviderLabel"><value>মডেল প্রদানকারী</value></data>
+	<data name="Common.Task.NamePlaceholder"><value>যেমন: দৈনিক সারাংশ</value></data>
+	<data name="Common.Task.NoOtherTasks"><value>চেইন করার মতো অন্য কোনো টাস্ক উপলব্ধ নেই।</value></data>
+	<data name="Common.Task.OnceAt"><value>{0} এ একবার</value></data>
+	<data name="Common.Task.OrphanRowHint"><value>সংশ্লিষ্ট এজেন্ট আর বিদ্যমান নেই</value></data>
+	<data name="Common.Task.PausedUntilEnabled"><value>পুনরায় সক্রিয় না হওয়া পর্যন্ত টাস্কটি স্থগিত থাকবে</value></data>
+	<data name="Common.Task.PredecessorLabel"><value>টাস্কের পরে চালান</value></data>
+	<data name="Common.Task.PredecessorMissing"><value>মুছে ফেলা টাস্ক</value></data>
+	<data name="Common.Task.PredecessorRequired"><value>এই কাজটি যার পরে চলা উচিত সেই টাস্কটি নির্বাচন করুন।</value></data>
+	<data name="Common.Task.PredecessorSelf"><value>একটি টাস্ক নিজের পরে চলতে পারে না।</value></data>
+	<data name="Common.Task.RunAtLabel"><value>নির্দিষ্ট সময়ে চালান</value></data>
+	<data name="Common.Task.RunAtTimeZoneHint"><value>এই টাস্কটি সংরক্ষণ এবং শিডিউল করার সময় আপনার বর্তমান ব্যবহারকারীর সময় অঞ্চল ব্যবহার করে।</value></data>
+	<data name="Common.Task.RunningNow"><value>এখন চলছে</value></data>
+	<data name="Common.Task.ScheduleAfterTask"><value>অন্য একটি কাজের পরে</value></data>
+	<data name="Common.Task.ScheduleCron"><value>ক্রন</value></data>
+	<data name="Common.Task.ScheduleExamples"><value>উদাহরণ: কর্মদিবসে ০৯:৩০ এর জন্য 30 9 * * 1-5, প্রতি ৬ ঘণ্টার জন্য 0 */6 * * *।</value></data>
+	<data name="Common.Task.ScheduleInterval"><value>ব্যবধান</value></data>
+	<data name="Common.Task.ScheduleOneShot"><value>এককালীন</value></data>
+	<data name="Common.Task.ScheduleTimeZoneHint"><value>এই টাস্কটি সংরক্ষণ করার সময় আপনার বর্তমান ব্যবহারকারীর সময় অঞ্চল ব্যবহার করে মূল্যায়ন করা হয়।</value></data>
+	<data name="Common.Task.ServerLocalTime"><value>সার্ভারের স্থানীয় সময়</value></data>
+	<data name="Common.Task.StartedAt"><value>{0} এ শুরু হয়েছে</value></data>
+	<data name="Common.Task.StatusHealthy"><value>স্বাভাবিক</value></data>
+	<data name="Common.Task.StatusIdle"><value>নিষ্ক্রিয়</value></data>
+	<data name="Common.Task.StatusNeedsAttention"><value>মনোযোগ প্রয়োজন</value></data>
+	<data name="Common.Task.StatusOrphan"><value>অভিভাবকহীন</value></data>
+	<data name="Common.Task.StatusPaused"><value>স্থগিত</value></data>
+	<data name="Common.Task.StatusPending"><value>অপেক্ষারত</value></data>
+	<data name="Common.Task.StatusSkipped"><value>এড়িয়ে যাওয়া হয়েছে</value></data>
+	<data name="Common.Task.StatusReady"><value>প্রস্তুত</value></data>
+	<data name="Common.Task.StatusRunning"><value>চলছে</value></data>
+	<data name="Common.Task.TokensUsed"><value>{0}টি টোকেন</value></data>
+	<data name="Common.Task.UpdatedSuccessfully"><value>টাস্ক সফলভাবে আপডেট হয়েছে।</value></data>
+	<data name="Common.Task.WatchingForNextWindow"><value>পরবর্তী নির্ধারিত উইন্ডোর জন্য অপেক্ষা করা হচ্ছে</value></data>
+	<data name="Common.Task.Page.AllStatusesOption"><value>সমস্ত স্ট্যাটাস</value></data>
+	<data name="Common.Task.Page.CategoryLabel"><value>অর্কেস্ট্রেশন</value></data>
+	<data name="Common.Task.Page.CompletedMetric"><value>সম্পন্ন</value></data>
+	<data name="Common.Task.Page.ConfiguredBadge"><value>কনফিগার করা হয়েছে</value></data>
+	<data name="Common.Task.Page.CreateTaskButton"><value>টাস্ক তৈরি করুন</value></data>
+	<data name="Common.Task.Page.Description"><value>একটি স্ক্রিন থেকে স্বায়ত্তশাসিত এজেন্ট কাজ শিডিউল করুন, পর্যবেক্ষণ করুন এবং পরিচালনা করুন। একটি টাস্কের সর্বশেষ সম্পাদনের অবস্থা এবং সাম্প্রতিক রানগুলো পরীক্ষা করতে এটি নির্বাচন করুন।</value></data>
+	<data name="Common.Task.Page.DetailsDialogTitle"><value>টাস্কের বিবরণ</value></data>
+	<data name="Common.Task.Page.DirectoryDescription"><value>বিবরণ এবং সাম্প্রতিক রান দেখতে একটি টাস্ক নির্বাচন করুন।</value></data>
+	<data name="Common.Task.Page.DirectoryTitle"><value>টাস্ক ডিরেক্টরি</value></data>
+	<data name="Common.Task.Page.DisabledOption"><value>নিষ্ক্রিয়</value></data>
+	<data name="Common.Task.Page.EmptyDescription"><value>এখানে শিডিউল, রান এবং লাইভ সম্পাদনের ইতিহাস দেখতে আপনার প্রথম স্বায়ত্তশাসিত ওয়ার্কফ্লো তৈরি করুন।</value></data>
+	<data name="Common.Task.Page.EmptyTitle"><value>এখনও কোনো এজেন্ট টাস্ক নেই</value></data>
+	<data name="Common.Task.Page.FailedBadge"><value>ব্যর্থ</value></data>
+	<data name="Common.Task.Page.InspectButton"><value>পরীক্ষা করুন</value></data>
+	<data name="Common.Task.Page.LatestRunHeader"><value>সর্বশেষ রান</value></data>
+	<data name="Common.Task.Page.LiveBadge"><value>লাইভ</value></data>
+	<data name="Common.Task.Page.NeverBadge"><value>কখনও নয়</value></data>
+	<data name="Common.Task.Page.NeverRunOption"><value>কখনও চালানো হয়নি</value></data>
+	<data name="Common.Task.Page.NewTaskButton"><value>নতুন টাস্ক</value></data>
+	<data name="Common.Task.Page.NoExecutionYet"><value>এখনও কোনো সম্পাদন হয়নি</value></data>
+	<data name="Common.Task.Page.NoRunsYet"><value>এই টাস্কের জন্য এখনও কোনো রান রেকর্ড করা হয়নি।</value></data>
+	<data name="Common.Task.Page.OpenBadge"><value>উন্মুক্ত</value></data>
+	<data name="Common.Task.Page.RecentExecutionsDescription"><value>এই টাস্কের সর্বশেষ রানসমূহ, যার মধ্যে বর্তমান লাইভ রানও অন্তর্ভুক্ত (যদি থাকে)।</value></data>
+	<data name="Common.Task.Page.RecentExecutionsTitle"><value>সাম্প্রতিক রানসমূহ</value></data>
+	<data name="Common.Task.Page.RunNowButton"><value>এখনই চালান</value></data>
+	<data name="Common.Task.Page.RunsButton"><value>রানসমূহ</value></data>
+	<data name="Common.Task.Page.ScheduleHeader"><value>শিডিউল</value></data>
+	<data name="Common.Task.Page.SearchPlaceholder"><value>টাস্ক বা এজেন্ট খুঁজুন</value></data>
+	<data name="Common.Task.Page.SelectTaskDescription"><value>এর সম্পাদনের সারাংশ, সর্বশেষ অবস্থা এবং সাম্প্রতিক রানগুলো দৃশ্যমান রাখতে তালিকা থেকে একটি টাস্ক বেছে নিন।</value></data>
+	<data name="Common.Task.Page.SelectTaskTitle"><value>একটি টাস্ক নির্বাচন করুন</value></data>
+	<data name="Common.Task.Page.StateHeader"><value>অবস্থা</value></data>
+	<data name="Common.Task.Page.TaskHeader"><value>টাস্ক</value></data>
+	<data name="Common.Task.Page.Title"><value>এজেন্ট অপারেশনস</value></data>
+	<data name="Common.Task.Page.TotalTasksMetric"><value>মোট কাজসমূহ</value></data>
+	<data name="Common.Task.Page.ViewAllButton"><value>সমস্ত দেখুন</value></data>
+	<data name="Common.Task.Page.ViewRunsButton"><value>রানগুলো দেখুন</value></data>
+	<data name="Admin.Title"><value>প্রশাসন</value></data>
+	<data name="Admin.Description"><value>ব্যবহারকারী তৈরি করুন এবং অ্যাক্সেস সুরক্ষিত রাখুন।</value></data>
+	<data name="Admin.AuthMode.Label"><value>প্রমাণীকরণ মোড</value></data>
+	<data name="Admin.AuthMode.Description"><value>স্ট্যান্ডার্ড পাসওয়ার্ড লগইন এবং সরলীকৃত Home প্রোফাইল-নির্বাচন প্রবাহের মধ্যে পরিবর্তন করুন।</value></data>
+	<data name="Admin.AuthMode.StandardLabel"><value>স্ট্যান্ডার্ড</value></data>
+	<data name="Admin.AuthMode.StandardDescription"><value>বিদ্যমান ব্যবহারকারীর নাম এবং পাসওয়ার্ড লগইন স্ক্রিন ব্যবহার করুন।</value></data>
+	<data name="Admin.AuthMode.HomeLabel"><value>Home</value></data>
+	<data name="Admin.AuthMode.HomeDescription"><value>একটি প্রোফাইল চয়নকারী দেখান, তারপর পিন দিয়ে সাইন ইন করুন।</value></data>
+	<data name="Admin.AuthMode.PinRequirementTitle"><value>পিনের প্রয়োজনীয়তা</value></data>
+	<data name="Admin.AuthMode.PinRequirementDescription"><value>Home মোডের মাধ্যমে সাইন ইন করার জন্য প্রোফাইলে একটি পিন থাকা আবশ্যক।</value></data>
+	<data name="Admin.AuthMode.HomeRequiresPin"><value>Home মোড সক্রিয় করার আগে অন্তত একটি অপারেটর পিন প্রয়োজন।</value></data>
+	<data name="Admin.AuthMode.PasswordFallbackHint"><value>লগইন স্ক্রিন থেকে পাসওয়ার্ড সাইন-ইন উপলব্ধ থাকবে।</value></data>
+	<data name="Admin.AuthMode.SaveButton"><value>প্রমাণীকরণ সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Admin.AuthSettings.Saved"><value>প্রমাণীকরণ সেটিংস সংরক্ষিত হয়েছে।</value></data>
+	<data name="Admin.User.CreateTitle"><value>ব্যবহারকারী তৈরি করুন</value></data>
+	<data name="Admin.User.CreateDescription"><value>নতুন ব্যবহারকারীর জন্য ব্যবহারকারীর নাম, ইমেল এবং পাসওয়ার্ড সেট করুন।</value></data>
+	<data name="Admin.User.CreateButton"><value>ব্যবহারকারী তৈরি করুন</value></data>
+	<data name="Admin.User.DirectoryTitle"><value>ব্যবহারকারী ডিরেক্টরি</value></data>
+	<data name="Admin.User.FullNamePlaceholder"><value>রহিম আহমেদ</value></data>
+	<data name="Admin.User.UsernamePlaceholder"><value>rahimahmed</value></data>
+	<data name="Admin.User.EmailPlaceholder"><value>rahim@example.com</value></data>
+	<data name="Admin.User.YouBadge"><value>আপনি</value></data>
+	<data name="Admin.User.EditTitleAttribute"><value>ব্যবহারকারী সম্পাদনা করুন</value></data>
+	<data name="Admin.User.DeleteTitleAttribute"><value>ব্যবহারকারী মুছে ফেলুন</value></data>
+	<data name="Admin.User.ProfileTitle"><value>প্রোফাইল</value></data>
+	<data name="Admin.User.SaveProfileButton"><value>প্রোফাইল সংরক্ষণ করুন</value></data>
+	<data name="Admin.User.SaveRolesButton"><value>ভূমিকা সংরক্ষণ করুন</value></data>
+	<data name="Admin.User.PasswordResetTitle"><value>পাসওয়ার্ড রিসেট</value></data>
+	<data name="Admin.User.ResetPasswordButton"><value>পাসওয়ার্ড রিসেট করুন</value></data>
+	<data name="Admin.User.ResetPasswordCurrentUserHint"><value>আপনার নিজের পাসওয়ার্ড পরিবর্তন করতে প্রোফাইল ডায়ালগ ব্যবহার করুন।</value></data>
+	<data name="Admin.User.PinLoginTitle"><value>পিন লগইন</value></data>
+	<data name="Admin.User.PinHeader"><value>পিন</value></data>
+	<data name="Admin.User.PinNewLabel"><value>নতুন পিন</value></data>
+	<data name="Admin.User.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Admin.User.PinConfirmLabel"><value>পিন নিশ্চিত করুন</value></data>
+	<data name="Admin.User.PinRepeatPlaceholder"><value>পিন পুনরায় লিখুন</value></data>
+	<data name="Admin.User.PinChangeButton"><value>পিন পরিবর্তন করুন</value></data>
+	<data name="Admin.User.PinSetButton"><value>পিন সেট করুন</value></data>
+	<data name="Admin.User.PinClearButton"><value>পিন মুছুন</value></data>
+	<data name="Admin.User.PinHashesHint"><value>সাধারণ সাইন-ইন পিন হ্যাশ হিসেবে সংরক্ষিত হয়।</value></data>
+	<data name="Admin.User.CannotDeleteOwnAccount"><value>আপনি আপনার নিজের অ্যাকাউন্ট মুছতে পারবেন না।</value></data>
+	<data name="Admin.User.DeleteConfirmTitle"><value>মুছে ফেলা নিশ্চিত করুন</value></data>
+	<data name="Admin.User.DeleteConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি ব্যবহারকারী '{0}'-কে মুছতে চান? এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না।</value></data>
+	<data name="Admin.GitHubSkills.ManageButton"><value>GitHub টোকেন পরিচালনা করুন</value></data>
+	<data name="Admin.OAuth.ManageButton"><value>প্রদানকারী পরিচালনা করুন</value></data>
+	<data name="Admin.OAuth.Title"><value>OAuth প্রদানকারী</value></data>
+	<data name="Admin.OAuth.Description"><value>সংযুক্ত অ্যাকাউন্ট এবং ভবিষ্যতের ইন্টিগ্রেশনের জন্য ব্যবহৃত শেয়ার্ড Google এবং Microsoft OAuth অ্যাপ কনফিগার করুন।</value></data>
+	<data name="Admin.OAuth.SecretHint"><value>বর্তমান সংরক্ষিত সিক্রেট রাখতে সিক্রেটটি ফাঁকা রাখুন। কোনো প্রদানকারী নিষ্ক্রিয় করতে ক্লায়েন্ট আইডি মুছে ফেলুন।</value></data>
+	<data name="Admin.OAuth.LoadingProviders"><value>প্রদানকারীর সেটিংস লোড হচ্ছে...</value></data>
+	<data name="Admin.OAuth.GoogleDescription"><value>Gmail, Calendar, YouTube</value></data>
+	<data name="Admin.OAuth.MicrosoftDescription"><value>Outlook, To-Do, Graph ইন্টিগ্রেশন</value></data>
+	<data name="Admin.OAuth.ConfiguredStatus"><value>কনফিগার করা হয়েছে</value></data>
+	<data name="Admin.OAuth.ClientIdLabel"><value>ক্লায়েন্ট আইডি</value></data>
+	<data name="Admin.OAuth.ClientIdPlaceholder"><value>{0} ক্লায়েন্ট আইডি</value></data>
+	<data name="Admin.OAuth.ClientSecretLabel"><value>ক্লায়েন্ট সিক্রেট</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderExists"><value>বর্তমান সিক্রেট রাখতে ফাঁকা রাখুন</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderNew"><value>ক্লায়েন্ট সিক্রেট পেস্ট করুন</value></data>
+	<data name="Admin.OAuth.SecretExists"><value>একটি সিক্রেট ইতিমধ্যে সংরক্ষিত আছে।</value></data>
+	<data name="Admin.OAuth.SecretNotStored"><value>এখনো কোনো সিক্রেট সংরক্ষিত নেই।</value></data>
+	<data name="Admin.OAuth.SaveButton"><value>{0} সংরক্ষণ করুন</value></data>
+	<data name="Admin.OAuth.ConfigurationSaved"><value>{0} কনফিগারেশন সংরক্ষিত হয়েছে।</value></data>
+	<data name="Common.Back"><value>পিছনে</value></data>
+	<data name="Common.Forward"><value>সামনে</value></data>
+	<data name="Common.Completed"><value>সম্পন্ন</value></data>
+	<data name="Common.No"><value>না</value></data>
+	<data name="Common.Ok"><value>ঠিক আছে</value></data>
+	<data name="Common.Parameter"><value>প্যারামিটার</value></data>
+	<data name="Common.ProfilePicture"><value>প্রোফাইল ছবি</value></data>
+	<data name="Common.ProfilePicture.AgentMissing"><value>ছবি পরিবর্তন করার আগে এজেন্ট সংরক্ষণ করুন।</value></data>
+	<data name="Common.ProfilePictureChange"><value>প্রোফাইল ছবি পরিবর্তন করুন</value></data>
+	<data name="Common.ProfilePicture.ChooseFromGallery"><value>অন্তর্নির্মিত ছবি</value></data>
+	<data name="Common.ProfilePicture.Current"><value>বর্তমান</value></data>
+	<data name="Common.ProfilePicture.GalleryDescription"><value>একটি অন্তর্নির্মিত প্রোফাইল ছবি বেছে নিন বা আপনার নিজের আপলোড করুন।</value></data>
+	<data name="Common.ProfilePicture.GalleryEmpty"><value>এই মুহূর্তে কোনো অন্তর্নির্মিত ছবি উপলব্ধ নেই।</value></data>
+	<data name="Common.ProfilePicture.GalleryLoadFailed"><value>ছবি গ্যালারি লোড করা যায়নি।</value></data>
+	<data name="Common.ProfilePicture.GalleryTitle"><value>একটি ছবি বেছে নিন</value></data>
+	<data name="Common.ProfilePictureRequirements"><value>PNG, JPEG, বা WebP। সর্বোচ্চ ২ MB।</value></data>
+	<data name="Common.ProfilePicture.SeedOptionLabel"><value>অন্তর্নির্মিত ছবি {0}</value></data>
+	<data name="Common.ProfilePicture.Selected"><value>নির্বাচিত</value></data>
+	<data name="Common.ProfilePicture.UnsupportedType"><value>ফাইলটি অবশ্যই PNG, JPEG, বা WebP ছবি হতে হবে।</value></data>
+	<data name="Common.ProfilePicture.UploadOwn"><value>আপনার নিজের আপলোড করুন</value></data>
+	<data name="Common.ProfilePicture.UseSelected"><value>এই ছবিটি ব্যবহার করুন</value></data>
+	<data name="Common.Wallpaper"><value>ওয়ালপেপার</value></data>
+	<data name="Common.Wallpaper.Change"><value>ওয়ালপেপার পরিবর্তন করুন</value></data>
+	<data name="Common.Wallpaper.ChooseFromGallery"><value>অন্তর্নির্মিত ওয়ালপেপার</value></data>
+	<data name="Common.Wallpaper.Current"><value>বর্তমান</value></data>
+	<data name="Common.Wallpaper.Effects"><value>ওয়ালপেপার এবং গ্লাস প্রভাব</value></data>
+	<data name="Common.Wallpaper.EffectsDescription"><value>ওয়ালপেপার সরাতে এবং নিরেট, অস্বচ্ছ পৃষ্ঠ ব্যবহার করতে বন্ধ করুন।</value></data>
+	<data name="Common.Wallpaper.GalleryDescription"><value>একটি অন্তর্নির্মিত ওয়ালপেপার বেছে নিন বা আপনার নিজের আপলোড করুন।</value></data>
+	<data name="Common.Wallpaper.GalleryEmpty"><value>এই মুহূর্তে কোনো অন্তর্নির্মিত ওয়ালপেপার উপলব্ধ নেই।</value></data>
+	<data name="Common.Wallpaper.GalleryLoadFailed"><value>ওয়ালপেপার গ্যালারি লোড করা যায়নি।</value></data>
+	<data name="Common.Wallpaper.GalleryTitle"><value>একটি ওয়ালপেপার বেছে নিন</value></data>
+	<data name="Common.Wallpaper.Requirements"><value>PNG, JPEG, বা WebP। সর্বোচ্চ 10 MB। 1920 × 1080 প্রস্তাবিত।</value></data>
+	<data name="Common.Wallpaper.SeedOptionLabel"><value>অন্তর্নির্মিত ওয়ালপেপার {0}</value></data>
+	<data name="Common.Wallpaper.Selected"><value>নির্বাচিত</value></data>
+	<data name="Common.Wallpaper.UnsupportedType"><value>ফাইলটি অবশ্যই PNG, JPEG, বা WebP ছবি হতে হবে।</value></data>
+	<data name="Common.Wallpaper.UploadOwn"><value>আপনার নিজের আপলোড করুন</value></data>
+	<data name="Common.Wallpaper.UseSelected"><value>এই ওয়ালপেপারটি ব্যবহার করুন</value></data>
+	<data name="Common.Required"><value>প্রয়োজনীয়</value></data>
+	<data name="Common.Started"><value>শুরু হয়েছে</value></data>
+	<data name="Common.Status"><value>স্থিতি</value></data>
+	<data name="Common.Summary"><value>সারাংশ</value></data>
+	<data name="Common.Value"><value>মান</value></data>
+	<data name="Common.Yes"><value>হ্যাঁ</value></data>
+	<data name="Common.Download.Complete"><value>ডাউনলোড সম্পন্ন হয়েছে!</value></data>
+	<data name="Common.Download.Failed"><value>ডাউনলোড ব্যর্থ হয়েছে।</value></data>
+	<data name="Common.Download.DownloadingModel"><value>মডেল ডাউনলোড হচ্ছে</value></data>
+	<data name="Common.Download.UrlInvalid"><value>ডাউনলোড URL অবশ্যই একটি বৈধ http বা https ঠিকানা হতে হবে।</value></data>
+	<data name="Common.ErrorPage.Title"><value>ত্রুটি</value></data>
+	<data name="Common.ErrorPage.Heading"><value>ত্রুটি।</value></data>
+	<data name="Common.ErrorPage.Message"><value>আপনার অনুরোধ প্রক্রিয়া করার সময় একটি ত্রুটি ঘটেছে।</value></data>
+	<data name="Common.ErrorPage.RequestId"><value>অনুরোধ আইডি:</value></data>
+	<data name="Common.ErrorPage.DevelopmentMode"><value>ডেভেলপমেন্ট মোড</value></data>
+	<data name="Common.ErrorPage.DevelopmentModeDetails"><value>Development পরিবেশে স্যুইচ করলে যে ত্রুটি ঘটেছে সে সম্পর্কে আরও বিস্তারিত তথ্য প্রদর্শিত হবে।</value></data>
+	<data name="Common.ErrorPage.DevelopmentWarning"><value>স্থাপিত অ্যাপ্লিকেশনের জন্য Development পরিবেশ সক্রিয় করা উচিত নয়। এর ফলে শেষ ব্যবহারকারীদের কাছে ব্যতিক্রম থেকে সংবেদনশীল তথ্য প্রদর্শিত হতে পারে। স্থানীয় ডিবাগিংয়ের জন্য, ASPNETCORE_ENVIRONMENT এনভায়রনমেন্ট ভেরিয়েবলটিকে Development-এ সেট করে এবং অ্যাপটি পুনরায় চালু করে Development পরিবেশ সক্রিয় করুন।</value></data>
+	<data name="Common.Route.NotAuthorized"><value>আপনি এই পৃষ্ঠাটি দেখার জন্য অনুমোদিত নন।</value></data>
+	<data name="Common.Route.NotFound"><value>দুঃখিত, আপনার অনুরোধ করা পৃষ্ঠাটি পাওয়া যায়নি।</value></data>
+	<data name="Common.Validation.AllowedRange"><value>অনুমোদিত সীমা: {0} - {1}</value></data>
+	<data name="Common.Validation.EnterValidNumber"><value>একটি বৈধ সংখ্যা লিখুন।</value></data>
+	<data name="Common.Validation.EnterWholeNumber"><value>একটি পূর্ণসংখ্যা লিখুন।</value></data>
+	<data name="Common.Validation.MaximumLength"><value>সর্বোচ্চ দৈর্ঘ্য {0}।</value></data>
+	<data name="Common.Validation.MaximumValue"><value>সর্বোচ্চ মান: {0}</value></data>
+	<data name="Common.Validation.MinimumLength"><value>সর্বনিম্ন দৈর্ঘ্য {0}।</value></data>
+	<data name="Common.Validation.MinimumValue"><value>সর্বনিম্ন মান: {0}</value></data>
+	<data name="Common.Validation.SelectOption"><value>একটি বিকল্প নির্বাচন করুন</value></data>
+	<data name="Common.Validation.SelectValidOption"><value>একটি বৈধ বিকল্প নির্বাচন করুন।</value></data>
+	<data name="Common.Validation.Submit"><value>জমা দিন</value></data>
+	<data name="Common.Validation.ThisFieldRequired"><value>এই ক্ষেত্রটি পূরণ করা বাধ্যতামূলক।</value></data>
+	<data name="Common.Task.RunsTitle"><value>রান - {0}</value></data>
+	<data name="Admin.User.DeleteTitle"><value>ব্যবহারকারী মুছে ফেলুন</value></data>
+	<data name="Dialog.ConfirmNewPasswordLabel"><value>নতুন পাসওয়ার্ড নিশ্চিত করুন</value></data>
+	<data name="Dialog.ContentTypeException"><value>ব্যতিক্রম</value></data>
+	<data name="Dialog.CurrentPasswordLabel"><value>বর্তমান পাসওয়ার্ড</value></data>
+	<data name="Dialog.JsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorEgressTab"><value>বহির্গামী ডেটা</value></data>
+	<data name="Dialog.NewPasswordLabel"><value>নতুন পাসওয়ার্ড</value></data>
+	<data name="Dialog.PasswordLeaveBlankHelper"><value>আপনার বর্তমান পাসওয়ার্ড রাখতে ফাঁকা রাখুন।</value></data>
+	<data name="Dialog.ReasoningTitle"><value>যুক্তি</value></data>
+	<data name="Dialog.VisualTab"><value>ভিজ্যুয়াল</value></data>
+	<data name="Common.Task.ScheduleKindLabel"><value>সময়সূচীর ধরন</value></data>
+  <data name="Common.SignOut"><value>সাইন আউট</value></data>
+  <data name="Common.Unlock"><value>আনলক করুন</value></data>
+  <data name="Dialog.VaultPassword.Title"><value>ভল্ট পাসওয়ার্ড</value></data>
+  <data name="Dialog.VaultPassword.Description"><value>আপনার সংরক্ষিত ক্রেডেনশিয়াল এবং সুরক্ষিত ডেটা আনলক করার পাসওয়ার্ড পরিবর্তন করুন।</value></data>
+  <data name="Dialog.VaultPassword.Current"><value>বর্তমান ভল্ট পাসওয়ার্ড</value></data>
+  <data name="Dialog.VaultPassword.New"><value>নতুন ভল্ট পাসওয়ার্ড</value></data>
+  <data name="Dialog.VaultPassword.Confirm"><value>ভল্ট পাসওয়ার্ড নিশ্চিত করুন</value></data>
+  <data name="Dialog.VaultPassword.RecoveryWarning"><value>এই পাসওয়ার্ডটি নিরাপদে সংরক্ষণ করুন। Oscova এটি পুনরুদ্ধার করতে পারবে না, এবং এটি ছাড়া সুরক্ষিত ডেটা খোলা যাবে না।</value></data>
+  <data name="Dialog.VaultPassword.ChangeButton"><value>পাসওয়ার্ড পরিবর্তন করুন</value></data>
+  <data name="Dialog.VaultPassword.ChangeSuccess"><value>আপনার ভল্ট পাসওয়ার্ড পরিবর্তিত হয়েছে।</value></data>
+  <data name="Dialog.VaultPassword.LengthError"><value>ভল্ট পাসওয়ার্ড অবশ্যই ১২ থেকে ২৫৬ অক্ষরের মধ্যে হতে হবে।</value></data>
+  <data name="Dialog.VaultPassword.ManageButton"><value>ভল্ট পাসওয়ার্ড পরিবর্তন করুন</value></data>
+  <data name="Dialog.VaultPassword.ConfirmationError"><value>ভল্ট পাসওয়ার্ড নিশ্চিতকরণ মিলছে না।</value></data>
+  <data name="Dialog.VaultPassword.SetupTitle"><value>আপনার ভল্ট পাসওয়ার্ড তৈরি করুন</value></data>
+  <data name="Dialog.VaultPassword.SetupDescription"><value>এই পাসওয়ার্ড শুধু আপনার কাছেই থাকে।</value></data>
+  <data name="Dialog.VaultPassword.SetupEncrypts"><value>এটি এই ডিভাইসে আপনার চ্যাট, মেমরি, সেটিংস এবং সংরক্ষিত কী এনক্রিপ্ট করে।</value></data>
+  <data name="Dialog.VaultPassword.SetupSeparate"><value>এটি আপনার সাইন-ইন পাসওয়ার্ড থেকে আলাদা।</value></data>
+  <data name="Dialog.VaultPassword.CreateButton"><value>ভল্ট তৈরি করুন</value></data>
+  <data name="Dialog.VaultPassword.UnlockTitle"><value>আপনার ভল্ট আনলক করুন</value></data>
+  <data name="Dialog.VaultPassword.UnlockDescription"><value>সংরক্ষিত ক্রেডেনশিয়াল এবং সুরক্ষিত ডেটা আনলক করতে আপনার ভল্ট পাসওয়ার্ড লিখুন।</value></data>
+  <data name="Dialog.VaultPassword.Incorrect"><value>ভল্ট পাসওয়ার্ডটি ভুল।</value></data>
+  <data name="Dialog.VaultPassword.StateLoadFailed"><value>ভল্ট স্থিতি লোড করা যায়নি।</value></data>
+  <data name="Dialog.DuressCredentials.AccountPassword"><value>অ্যাকাউন্ট পাসওয়ার্ড</value></data>
+  <data name="Dialog.DuressCredentials.AccountPasswordError"><value>আপনার অ্যাকাউন্ট পাসওয়ার্ডটি ভুল।</value></data>
+  <data name="Dialog.DuressCredentials.Agents"><value>মুছে ফেলার জন্য এজেন্ট</value></data>
+  <data name="Dialog.DuressCredentials.Confirmation"><value>জবরদস্তির পাসওয়ার্ড নিশ্চিত করুন</value></data>
+  <data name="Dialog.DuressCredentials.ConfirmationError"><value>জবরদস্তির পাসওয়ার্ড নিশ্চিতকরণ মিলছে না।</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspace"><value>ডিফল্ট ওয়ার্কস্পেস সর্বদা রাখা হয়।</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspaceError"><value>ডিফল্ট ওয়ার্কস্পেস নির্বাচন করা যাবে না।</value></data>
+  <data name="Dialog.DuressCredentials.DeleteThreads"><value>সমস্ত কথোপকথন মুছুন</value></data>
+  <data name="Dialog.DuressCredentials.ClearSharedFolder"><value>সব ব্যবহারকারীর জন্য শেয়ার করা ফোল্ডার খালি করুন</value></data>
+  <data name="Dialog.DuressCredentials.Description"><value>আপনার নির্বাচিত ব্যক্তিগত ডেটা স্থায়ীভাবে ধ্বংস করার সাথে সাথে স্বাভাবিকভাবে সাইন ইন করতে দ্বিতীয় পাসওয়ার্ড ব্যবহার করুন।</value></data>
+  <data name="Dialog.DuressCredentials.DifferentError"><value>জবরদস্তির পাসওয়ার্ডটি অবশ্যই আপনার অ্যাকাউন্ট পাসওয়ার্ডের চেয়ে আলাদা হতে হবে।</value></data>
+  <data name="Dialog.DuressCredentials.LengthError"><value>জবরদস্তির পাসওয়ার্ডটি অবশ্যই ১২ থেকে ২৫৬ অক্ষরের মধ্যে হতে হবে।</value></data>
+  <data name="Dialog.DuressCredentials.LoadFailed"><value>জবরদস্তির পছন্দ লোড করা যায়নি।</value></data>
+  <data name="Dialog.DuressCredentials.NoTargets"><value>কোনো নির্বাচনযোগ্য এজেন্ট, কাজ বা ওয়ার্কস্পেস উপলব্ধ নেই।</value></data>
+  <data name="Dialog.DuressCredentials.OpenButton"><value>জবরদস্তির পরিচয়পত্র সেট করুন</value></data>
+  <data name="Dialog.DuressCredentials.Password"><value>জবরদস্তির পাসওয়ার্ড</value></data>
+  <data name="Dialog.DuressCredentials.PriorSelections"><value>সংরক্ষিত পছন্দগুলি দেখানো যাবে না। এই ফর্মটি খালি শুরু হয় এবং সংরক্ষণ করলে সম্পূর্ণ নীতিটি প্রতিস্থাপিত হয়।</value></data>
+  <data name="Dialog.DuressCredentials.Save"><value>জবরদস্তির পরিচয়পত্র সংরক্ষণ করুন</value></data>
+  <data name="Dialog.DuressCredentials.SaveSuccess"><value>আপনার জবরদস্তির পরিচয়পত্র সংরক্ষিত হয়েছে।</value></data>
+  <data name="Dialog.DuressCredentials.SelectionTooLarge"><value>আপনার নির্বাচনটি অনেক বড়। কিছু আইটেম সরান এবং আবার চেষ্টা করুন।</value></data>
+  <data name="Dialog.DuressCredentials.SharedAgentError"><value>একটি শেয়ার্ড এজেন্ট নির্বাচন করা যাবে না।</value></data>
+  <data name="Dialog.DuressCredentials.TargetNameTooLong"><value>নির্বাচিত একটি নাম অনেক দীর্ঘ।</value></data>
+  <data name="Dialog.DuressCredentials.Tasks"><value>যেসব টাস্ক মুছে ফেলা হবে</value></data>
+  <data name="Dialog.DuressCredentials.Title"><value>জবরদস্তির পরিচয়পত্র</value></data>
+  <data name="Dialog.DuressCredentials.TwoFactorError"><value>দ্বি-ধাপ যাচাইকরণ চালু থাকলে জবরদস্তির পরিচয়পত্র সেট করা যায় না।</value></data>
+  <data name="Dialog.DuressCredentials.Unavailable"><value>নির্বাচিত আইটেমগুলির মধ্যে একটি আর উপলব্ধ নেই। ফর্মটি পুনরায় খুলুন এবং আবার বেছে নিন।</value></data>
+  <data name="Dialog.DuressCredentials.Workspaces"><value>খালি করার জন্য ওয়ার্কস্পেস</value></data>
+  <data name="Dialog.DuressCredentials.WorkspaceClearing"><value>ওয়ার্কস্পেসের বিষয়বস্তু মুছে ফেলা হয়, কিন্তু ওয়ার্কস্পেস নিজেই থেকে যায়।</value></data>
+  <data name="Dialog.Security.Title"><value>নিরাপত্তা</value></data>
+  <data name="Dialog.DuressCredentials.Pin"><value>জবরদস্তির পিন (ঐচ্ছিক)</value></data>
+  <data name="Dialog.DuressCredentials.PinConfirmation"><value>জবরদস্তির পিন নিশ্চিত করুন</value></data>
+  <data name="Dialog.DuressCredentials.PinHelp"><value>দুটি জবরদস্তির পরিচয়পত্রই একই নির্বাচিত ডেটা স্থায়ীভাবে মুছে দেয়। সংরক্ষণ করলে সব পছন্দ বদলে যায়। জবরদস্তির পিন সরাতে দুটি পিন ঘর খালি রাখুন। আগে সাইন-ইন পিন নির্ধারিত থাকতে হবে।</value></data>
+  <data name="Dialog.DuressCredentials.PinError"><value>6–64 অঙ্কের (0–9) একই পিন দিন, অথবা দুটিই খালি রাখুন।</value></data>
+  <data name="Dialog.DuressCredentials.PinRequired"><value>জবরদস্তির পিনের আগে সাইন-ইন পিন সেট করুন।</value></data>
+  <data name="Dialog.DuressCredentials.PinDifferent"><value>সাইন-ইন পিন থেকে আলাদা পিন বেছে নিন।</value></data>
+  <data name="Admin.User.PinNotAllowedError"><value>এই পিন ব্যবহার করা যাবে না। অন্য পিন বেছে নিন।</value></data>
+  <data name="Admin.User.PinLengthError"><value>পিনে 6–64টি অঙ্ক (0–9) থাকতে হবে।</value></data>
+  <data name="Common.Reconnect.Title" xml:space="preserve"><value>Oscova-তে সংযোগ</value></data>
+  <data name="Common.Reconnect.Connecting" xml:space="preserve"><value>পুনরায় সংযোগ করা হচ্ছে…</value></data>
+  <data name="Common.Reconnect.Countdown" xml:space="preserve"><value>{0} সেকেন্ড পর আবার চেষ্টা করা হবে।</value></data>
+  <data name="Common.Reconnect.Failed" xml:space="preserve"><value>পুনরায় সংযোগ করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</value></data>
+  <data name="Common.Reconnect.Expired" xml:space="preserve"><value>আপনার সেশন শেষ হয়েছে। চালিয়ে যেতে পৃষ্ঠাটি পুনরায় লোড করুন। সংরক্ষণ না করা পরিবর্তন হারিয়ে যেতে পারে।</value></data>
+  <data name="Common.Reconnect.Paused" xml:space="preserve"><value>আপনার সেশন বিরতিতে আছে। চালিয়ে যেতে পুনরায় শুরু করুন।</value></data>
+  <data name="Common.Reconnect.Resuming" xml:space="preserve"><value>আপনার সেশন পুনরায় শুরু হচ্ছে…</value></data>
+  <data name="Common.Reconnect.ResumeFailed" xml:space="preserve"><value>আপনার সেশন পুনরায় শুরু করা যায়নি। আবার চেষ্টা করুন।</value></data>
+  <data name="Common.Reconnect.Updating" xml:space="preserve"><value>Oscova পুনরায় চালু হলে এই পৃষ্ঠাটি আবার লোড হবে। আপনাকে আবার সাইন ইন করতে হতে পারে।</value></data>
+  <data name="Common.Reload" xml:space="preserve"><value>পুনরায় লোড করুন</value></data>
+  <data name="Common.Resume" xml:space="preserve"><value>পুনরায় শুরু করুন</value></data>
+	<data name="Common.Task.NotifyOnCompletion"><value>সম্পন্ন হলে জানান</value></data>
+	<data name="Common.Task.NotifyOnCompletionHint"><value>সফলভাবে চলার পরে অ্যাপের ইনবক্সে একটি অতিরিক্ত বিজ্ঞপ্তি পাঠান। ব্যর্থতার বিজ্ঞপ্তি সবসময় অ্যাপের ইনবক্সে দেখা যায়।</value></data>
+<data name="Notifications.Task.SkippedLowBattery" xml:space="preserve"><value>কম্পিউটার ব্যাটারিতে চলছে এবং চার্জ আপনার নির্ধারিত সীমার নিচে থাকায় এই কাজটি এড়িয়ে যাওয়া হয়েছে। প্রস্তুত হলে নিজে চালান।</value></data>
+<data name="Notifications.Task.BatteryInformationUnavailable" xml:space="preserve"><value>Oscova চালানো কম্পিউটারের ব্যাটারি বা বিদ্যুৎ সংযোগের তথ্য পাওয়া যাচ্ছে না।</value></data>
+<data name="Admin.ExecutionPermissionsTitle" xml:space="preserve"><value>কার্যকর করার অনুমতি</value></data><data name="Admin.PermissionProjects" xml:space="preserve"><value>প্রকল্প</value></data><data name="Admin.PermissionWorkspaceShell" xml:space="preserve"><value>ওয়ার্কস্পেস শেল</value></data><data name="Admin.PermissionProjectShell" xml:space="preserve"><value>প্রকল্প শেল</value></data><data name="Admin.ExecutionPermissionsHint" xml:space="preserve"><value>অনুমতি বন্ধ করলে নতুন কাজ বন্ধ হয় এবং প্রভাবিত চলমান কাজ বাতিলের অনুরোধ করা হয়।</value></data><data name="Admin.ExecutionPermissionsSaved" xml:space="preserve"><value>কার্যকর করার অনুমতি সংরক্ষিত হয়েছে।</value></data>  <data name="Common.DialogOperatorVaultTitle" xml:space="preserve">
+    <value>অপারেটরের জন্য অপেক্ষা করা হচ্ছে</value>
+  </data>
+  <data name="Common.DialogOperatorVaultDescription" xml:space="preserve">
+    <value>অপারেটরকে তাঁর ভল্ট আনলক করতে হবে। তারপর চালিয়ে যেতে আবার চেষ্টা করুন নির্বাচন করুন।</value>
+  </data>
+  <data name="Common.AdminPermissionApprovedSkills" xml:space="preserve">
+    <value>অনুমোদিত সংগ্রহস্থল থেকে দক্ষতা ইনস্টল করুন</value>
+  </data>
+  <data name="Common.AdminPermissionCustomSkills" xml:space="preserve">
+    <value>নিজস্ব দক্ষতা আপলোড, তৈরি ও সম্পাদনা করুন</value>
+  </data>
+  <data name="Common.AdminPermissionPersonalMcp" xml:space="preserve">
+    <value>ব্যক্তিগত MCP সংযোগ পরিচালনা করুন</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedTitle" xml:space="preserve">
+    <value>কাজ বাধাগ্রস্ত হয়েছে</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedBody" xml:space="preserve">
+    <value>সেটিংস পরিবর্তনের কারণে প্রভাবিত কাজ বন্ধ হচ্ছে। নতুন করে চালানোর আগে সেটিংস পর্যালোচনা করুন।</value>
+  </data>
+  <data name="Governance.Applying" xml:space="preserve"><value>প্রভাবিত কাজ বন্ধ করে পরিবর্তন প্রয়োগ করা হচ্ছে…</value></data>
+  <data name="Governance.SharedProviders" xml:space="preserve"><value>আপনার অপারেটর প্রদানকারী ঠিক করেন। অপারেটরের ডিফল্ট রাখুন বা অন্য উপলব্ধ প্রদানকারী বেছে নিন।</value></data>
+  <data name="Governance.OperatorDefault" xml:space="preserve"><value>অপারেটরের ডিফল্ট: {0}</value></data>
+  <data name="Governance.ProviderUnavailable" xml:space="preserve"><value>নির্বাচিত প্রদানকারী অনুপলব্ধ। অন্য প্রদানকারী বেছে নিন।</value></data>
+  <data name="Governance.ConfirmInterruption" xml:space="preserve"><value>এই পরিবর্তনটি এই রিসোর্স ব্যবহার করা কাজ বন্ধ করবে। এখনই প্রয়োগ করবেন?</value></data>
+  <data name="Governance.ChangesSaved" xml:space="preserve"><value>পরিবর্তন সংরক্ষিত হয়েছে।</value></data>
+  <data name="Notifications.Providers.AttentionTitle" xml:space="preserve"><value>একটি উপলব্ধ মডেল প্রদানকারী বেছে নিন</value></data>
+  <data name="Notifications.Providers.AttentionBody" xml:space="preserve"><value>একটি সংরক্ষিত মডেল প্রদানকারী অনুপলব্ধ। সেটিংসে উপলব্ধ প্রদানকারী বেছে নিন এবং আপনার এজেন্ট ও কাজের প্রদানকারী নির্বাচন পর্যালোচনা করুন।</value></data>
+  <data name="Notifications.Plugins.SetupTitle" xml:space="preserve"><value>প্লাগইন সেটআপে মনোযোগ প্রয়োজন</value></data>
+  <data name="Notifications.Plugins.SetupBody" xml:space="preserve"><value>{1}-এ {0} প্রস্তুত করা যায়নি। {2} সেটআপ ঠিক করে আবার চেষ্টা করুন।</value></data>
+  <data name="Notifications.Plugins.DeviceUnavailable" xml:space="preserve"><value>{0}-এ সাময়িকভাবে অনুপলব্ধ। অপারেটরকে জানানো হয়েছে।</value></data>
+  <data name="Common.AdminPermissionPersonalModels" xml:space="preserve"><value>ব্যক্তিগত মডেল প্রদানকারী পরিচালনা করুন</value></data>
+  <data name="Common.AdminPermissionSharedFolder" xml:space="preserve"><value>শেয়ার করা ফোল্ডার</value></data>
+  <data name="ModelBudgetTitle" xml:space="preserve"><value>মডেলের বাজেট</value></data>
+  <data name="ModelBudgetDaily" xml:space="preserve"><value>দৈনিক সীমা (USD)</value></data>
+  <data name="ModelBudgetMonthly" xml:space="preserve"><value>মাসিক সীমা (USD)</value></data>
+  <data name="ModelBudgetAlerts" xml:space="preserve"><value>সীমার ৮০% হলে আমাকে জানান</value></data>
+  <data name="ModelBudgetBlank" xml:space="preserve"><value>USD-তে আনুমানিক খরচ। সীমা না রাখতে ঘর খালি রাখুন। ভাগ করা প্রদানকারীর সব ব্যবহারকারীর জন্য একটি বাজেট থাকে।</value></data>
+  <data name="ModelBudgetIncomplete" xml:space="preserve"><value>হিসাব অসম্পূর্ণ। কিছু ব্যবহারের মূল্য নির্ধারণ বা তথ্য পড়া যায়নি।</value></data>
+  <data name="ModelBudgetLocal" xml:space="preserve"><value>স্থানীয় ইনফারেন্স: আনুমানিক চার্জ নেই।</value></data>
+  <data name="ModelBudgetOwnerExceeded" xml:space="preserve"><value>{0}-এর বাজেট শেষ হয়েছে। আপনি তবুও এই কাজটি চালিয়ে যেতে পারেন।</value></data>
+  <data name="ModelBudgetSharedExceeded" xml:space="preserve"><value>{0}-এর বাজেট শেষ হয়েছে। আপনার অপারেটরের সঙ্গে যোগাযোগ করুন অথবা অন্য মডেল প্রদানকারী বেছে নিন।</value></data>
+  <data name="ModelBudgetContinue" xml:space="preserve"><value>তবুও চালিয়ে যান</value></data>
+  <data name="ModelBudgetTaskSkipped" xml:space="preserve"><value>মডেলের বাজেট শেষ হয়েছে। এই প্রচেষ্টা বাদ দেওয়া হয়েছে। কাজটি নির্ধারিতই থাকছে।</value></data>
+  <data name="ModelBudgetSearchPaused" xml:space="preserve"><value>এম্বেডিং বাজেট শেষ হওয়ায় অর্থভিত্তিক অনুসন্ধান ও সূচিকরণ স্থগিত আছে। বাজেট রিসেট হলে অথবা মালিক সীমা বদলালে আবার চেষ্টা করুন।</value></data>
+  <data name="ModelBudgetThreshold" xml:space="preserve"><value>{0} খরচের সীমার অন্তত ৮০%-এ পৌঁছেছে। বাজেট দেখতে মডেল ও প্রদানকারী খুলুন।</value></data>
+  <data name="ModelBudgetSet" xml:space="preserve"><value>বাজেট নির্ধারণ করুন</value></data>
+  <data name="ModelBudgetEdit" xml:space="preserve"><value>বাজেট সম্পাদনা করুন</value></data>
+  <data name="ModelBudgetDailyUsage" xml:space="preserve"><value>আজ ${1:0.##} এর মধ্যে ${0:0.##}</value></data>
+  <data name="ModelBudgetMonthlyUsage" xml:space="preserve"><value>মাস ${1:0.##} এর মধ্যে ${0:0.##}</value></data>
+  <data name="ModelBudgetReset" xml:space="preserve"><value>বাজেট শেষ। পুনরায় শুরু: {0:g}।</value></data>
+  <data name="ModelBudgetSharedReset" xml:space="preserve"><value>বাজেট শেষ। পুনরায় শুরু: {0:g}। অন্য প্রদানকারী বেছে নিন বা আপনার অপারেটরের সাথে যোগাযোগ করুন।</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdle" xml:space="preserve"><value>আমি প্রদানকারী ব্যবহার করার সময় অপেক্ষা করুন</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdleHint" xml:space="preserve"><value>নির্ধারিত কাজ শুরু হওয়ার আগে কাজের প্রদানকারীর কাছে আপনার সক্রিয় অনুরোধ শেষ হওয়ার অপেক্ষা করে। এখন চালান, ওয়েবহুক এবং সংযুক্ত কাজ সঙ্গে সঙ্গে শুরু হয়।</value></data>
+  <data name="Common.Task.InstructionDefaultUnavailable" xml:space="preserve"><value>টাস্কের ডিফল্ট নির্দেশনা পাওয়া যাচ্ছে না। এর প্লাগইন চালু করে পুনরায় শুরু করুন।</value></data>
+  <data name="Notifications.Channels.SavedNotApplied" xml:space="preserve"><value>সেটিংস সংরক্ষিত হয়েছে, কিন্তু প্রয়োগ করা যায়নি। বিদ্যমান সংযোগ এখনও চলছে। সেটিংস পরীক্ষা করে আবার চেষ্টা করুন।</value></data>
+  <data name="Common.ReleaseNotes" xml:space="preserve"><value>রিলিজ নোট</value></data>
+  <data name="Common.RecordLabel.DeletedAgent" xml:space="preserve"><value>মুছে ফেলা এজেন্ট</value></data>
+  <data name="Common.RecordLabel.DeletedProvider" xml:space="preserve"><value>মুছে ফেলা প্রদানকারী</value></data>
+  <data name="Common.RecordLabel.DeletedMcpServer" xml:space="preserve"><value>মুছে ফেলা MCP সার্ভার</value></data>
+  <data name="Common.RecordLabel.OwnDestination" xml:space="preserve"><value>নিজস্ব গন্তব্য</value></data>
+  <data name="Common.RecordLabel.OtherUsersAgents" xml:space="preserve"><value>অন্য ব্যবহারকারীদের এজেন্ট</value></data>
+  <data name="Common.RecordLabel.UsersOwnProviders" xml:space="preserve"><value>ব্যবহারকারীদের নিজস্ব প্রদানকারী</value></data>
+  <data name="Common.RecordLabel.UsersOwnModels" xml:space="preserve"><value>ব্যবহারকারীদের নিজস্ব মডেল</value></data>
+  <data name="Common.RecordLabel.UsersOwnTools" xml:space="preserve"><value>ব্যবহারকারীদের নিজস্ব টুল</value></data>
+  <data name="Dialog.LogsScope.Label" xml:space="preserve"><value>লগের পরিসর</value></data>
+  <data name="Dialog.LogsFile.Label" xml:space="preserve"><value>লগ ফাইল</value></data>
+  <data name="Common.PreviousPage" xml:space="preserve"><value>আগের পৃষ্ঠা</value></data>
+  <data name="Common.NextPage" xml:space="preserve"><value>পরের পৃষ্ঠা</value></data>
+  <data name="Common.TimeRange" xml:space="preserve"><value>সময়সীমা</value></data>
+  <data name="Common.Validation.EnterValidEmail" xml:space="preserve"><value>একটি বৈধ ইমেইল ঠিকানা লিখুন।</value></data>
+	<data name="Common.Task.ApprovalModeLabel"><value>অনুমোদন মোড</value></data>
+	<data name="Common.Task.ApprovalModeAutoReject"><value>অনুমোদন প্রয়োজন এমন টুল স্বয়ংক্রিয়ভাবে প্রত্যাখ্যান</value></data>
+	<data name="Common.Task.ApprovalModeAutoApprove"><value>অনুমোদন প্রয়োজন এমন টুল স্বয়ংক্রিয়ভাবে গ্রহণ</value></data>
+	<data name="Common.Task.ApprovalModeHint"><value>পটভূমির কাজে সরাসরি সাড়া দেওয়ার মতো ব্যবহারকারী নেই। টুলের অনুমোদনের সিদ্ধান্ত স্বয়ংক্রিয়ভাবে নিতে হবে।</value></data>
+  <data name="Common.Task.ExternalTrigger.EndpointLabel" xml:space="preserve"><value>ওয়েবহুক এন্ডপয়েন্ট</value></data>
+  <data name="Common.Task.ExternalTrigger.ParameterKindLabel" xml:space="preserve"><value>প্যারামিটারের ধরন</value></data>
+</root>

@@ -1,0 +1,28 @@
+@inherits SettingsConnectedAccountsSectionBase
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="space-y-6">
+    @if (_status.Providers.Count == 0)
+    {
+        <div class="alert custom-settings-group custom-settings-form">
+            <span class="iconify lucide--info size-5 shrink-0" aria-hidden="true"></span>
+            <span>@Loc.GetOrDefault(SettingsTextKeys.ConnectedAccountsNoProvidersMessage, "No account connections are available from the enabled plugins.")</span>
+        </div>
+    }
+    else
+    {
+        <div class="grid gap-6 xl:grid-cols-2">
+            @foreach (var provider in _status.Providers)
+            {
+                <ConnectedAccountProviderCard @key="provider.Id"
+                                              Name="@provider.DisplayName"
+                                              Services="@provider.Services"
+                                              Status="@provider"
+                                              IsAdmin="@_isAdmin"
+                                              IsDisconnecting="@IsDisconnecting(provider.Id)"
+                                              OnConnect="@(() => Connect(provider.Id))"
+                                              OnDisconnect="@(() => DisconnectAsync(provider.Id))" />
+            }
+        </div>
+    }
+</div>

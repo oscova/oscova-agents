@@ -1,0 +1,32 @@
+@if (Items.Any())
+{
+	<fieldset class="w-64 min-w-0 grow space-y-2">
+		<legend class="text-xs font-medium">@Title</legend>
+		<div class="max-h-40 space-y-1 overflow-y-auto rounded-box border border-base-300 p-2">
+			@foreach (var item in Items)
+			{
+				<label class="label cursor-pointer justify-start gap-2 py-1">
+					<input type="checkbox"
+						   class="checkbox checkbox-xs"
+						   checked="@SelectedIds.Contains(item.Id)"
+						   @onchange="@(() => OnToggle.InvokeAsync(item.Id))" />
+					<span class="min-w-0 break-words text-xs">@item.Name</span>
+				</label>
+			}
+		</div>
+	</fieldset>
+}
+
+@code {
+	[Parameter, EditorRequired]
+	public string Title { get; set; } = string.Empty;
+
+	[Parameter, EditorRequired]
+	public IEnumerable<(string Id, string Name)> Items { get; set; } = [];
+
+	[Parameter, EditorRequired]
+	public IReadOnlySet<string> SelectedIds { get; set; } = new HashSet<string>();
+
+	[Parameter, EditorRequired]
+	public EventCallback<string> OnToggle { get; set; }
+}

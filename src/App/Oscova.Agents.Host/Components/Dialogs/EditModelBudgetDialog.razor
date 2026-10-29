@@ -1,0 +1,47 @@
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@inject IStringLocalizer<CommonText> Loc
+
+@* Edits one owned provider's limits through the shared settings save path. *@
+<AppDialogShell Title="@Loc.GetOrDefault(CommonTextKeys.ModelBudgetTitle, "Model budget")" HelpTopic="@HelpTopics.EditModelBudget" CloseResult="@DialogResult.Cancel" MaxWidthClass="max-w-md">
+    <ChildContent>
+        <p class="font-medium break-words">@(DialogInstance.Get<string>("ProviderName"))</p>
+        <p class="text-sm text-base-content/70">@Loc.GetOrDefault(CommonTextKeys.ModelBudgetBlank, "USD estimates. Leave a limit blank for no limit. Shared providers have one budget across all consumers.")</p>
+        <div class="grid gap-3 sm:grid-cols-2 mt-4">
+            <label class="form-control" for="budget-daily">
+                <span class="label-text">@Loc.GetOrDefault(CommonTextKeys.ModelBudgetDaily, "Daily limit (USD)")</span>
+                <input id="budget-daily" type="number" class="input input-bordered w-full" min="0" step="any" @bind="_daily" />
+            </label>
+            <label class="form-control" for="budget-monthly">
+                <span class="label-text">@Loc.GetOrDefault(CommonTextKeys.ModelBudgetMonthly, "Monthly limit (USD)")</span>
+                <input id="budget-monthly" type="number" class="input input-bordered w-full" min="0" step="any" @bind="_monthly" />
+            </label>
+        </div>
+        <label class="flex items-center gap-2 text-sm mt-4">
+            <input type="checkbox" class="checkbox checkbox-sm" @bind="_alerts" />
+            @Loc.GetOrDefault(CommonTextKeys.ModelBudgetAlerts, "Notify me at 80% of a limit")
+        </label>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="() => DialogInstance.Close(DialogResult.Cancel)">@Loc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(!CanSave)" @onclick="Save">@Loc.GetOrDefault(CommonTextKeys.Save, "Save")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    private decimal? _daily;
+    private decimal? _monthly;
+    private bool _alerts;
+    private bool CanSave => (_daily is null or > 0) && (_monthly is null or > 0);
+
+    protected override void OnInitialized()
+    {
+        var policy = DialogInstance.Get("Policy", new ModelBudgetPolicy());
+        (_daily, _monthly, _alerts) = (policy.DailyLimitUsd, policy.MonthlyLimitUsd, policy.AlertsEnabled);
+    }
+
+    private void Save()
+    {
+        if (CanSave) { DialogInstance.Close(DialogResult.Ok, new ModelBudgetPolicy(_daily, _monthly, _alerts)); }
+    }
+}

@@ -1,0 +1,16 @@
+@page "/not-found"
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<PageTitle>@CommonLoc.GetOrDefault(CommonTextKeys.RouteNotFound, "Sorry, the page you requested could not be found.")</PageTitle>
+
+@* Unknown app URLs re-execute here so a stale bookmark or typo shows a message inside the app shell instead of a blank page. *@
+<DashboardShell ActiveView="ActiveView.None">
+    <div class="flex min-h-0 flex-1 items-center justify-center p-6">
+        <div class="alert alert-error shadow-lg max-w-lg">
+            <div>
+                <iconify-icon icon="lucide:search"></iconify-icon>
+                <span>@CommonLoc.GetOrDefault(CommonTextKeys.RouteNotFound, "Sorry, the page you requested could not be found.")</span>
+            </div>
+        </div>
+    </div>
+</DashboardShell>

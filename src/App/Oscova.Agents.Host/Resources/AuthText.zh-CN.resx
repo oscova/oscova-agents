@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+	<resheader name="version"><value>1.3</value></resheader>
+	<resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<data name="Auth.Login.Title"><value>登录</value></data>
+	<data name="Auth.Login.Subtitle"><value>顺畅接入，安全连接：开启专属于你的个性化体验。</value></data>
+	<data name="Auth.ShowPasswordLabel"><value>显示密码</value></data>
+	<data name="Auth.LoggingInButton"><value>正在登录...</value></data>
+	<data name="Auth.LoginButton"><value>登录</value></data>
+	<data name="Auth.InvalidCredentialsError"><value>用户名或密码无效。</value></data>
+	<data name="Auth.InvalidLoginTicketError"><value>登录会话已过期。请重试。</value></data>
+	<data name="Auth.InvalidProfileError"><value>该个人资料已不可用。</value></data>
+	<data name="Auth.LoginFailedError"><value>登录失败。请重试。</value></data>
+	<data name="Auth.Home.Title"><value>谁在使用 Oscova Agents？</value></data>
+	<data name="Auth.Home.Subtitle"><value>选择个人资料以继续，或使用密码登录。</value></data>
+	<data name="Auth.Home.NoProfilesMessage"><value>暂无可用的个人资料。</value></data>
+	<data name="Auth.Home.ProfileFallbackName"><value>用户</value></data>
+	<data name="Auth.Home.ProfilesLabel"><value>个人资料</value></data>
+	<data name="Auth.Home.PinHelp"><value>输入 PIN 码以登录。</value></data>
+	<data name="Auth.Home.SwitchProfileButton"><value>切换</value></data>
+	<data name="Auth.Home.PinLabel"><value>PIN 码</value></data>
+	<data name="Auth.Home.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Auth.Home.ShowPinLabel"><value>显示 PIN 码</value></data>
+	<data name="Auth.Home.SigningInButton"><value>正在登录...</value></data>
+	<data name="Auth.Home.ContinueButton"><value>继续</value></data>
+	<data name="Auth.Home.AdminPasswordSignInButton"><value>密码登录</value></data>
+	<data name="Auth.Home.PinSessionExpiredError"><value>登录会话已过期。请重试。</value></data>
+	<data name="Auth.Home.ChooseProfileFirstError"><value>请先选择个人资料。</value></data>
+	<data name="Auth.Home.MissingPinError"><value>此个人资料尚未设置 PIN 码。请联系操作员进行配置。</value></data>
+	<data name="Auth.Home.InvalidPinError"><value>PIN 码无效。</value></data>
+	<data name="Auth.Home.PinValidationError"><value>PIN 必须为 6–64 位数字（0–9）。</value></data>
+	<data name="Auth.AdminLogin.BackButton"><value>返回个人资料登录</value></data>
+	<data name="Auth.AdminSetup.Title"><value>创建首位操作员</value></data>
+	<data name="Auth.AdminSetup.Subtitle"><value>配置操作员账户以开始使用 Oscova Agents。</value></data>
+	<data name="Auth.AdminSetup.FullNameLabel"><value>姓名</value></data>
+	<data name="Auth.AdminSetup.FullNamePlaceholder"><value>张三</value></data>
+	<data name="Auth.AdminSetup.FullNameHelp"><value>输入你的完整姓名。</value></data>
+	<data name="Auth.AdminSetup.EmailLabel"><value>电子邮箱</value></data>
+	<data name="Auth.AdminSetup.EmailPlaceholder"><value>name@company.com</value></data>
+	<data name="Auth.AdminSetup.EmailHelp"><value>请使用有效的电子邮箱地址。</value></data>
+	<data name="Auth.AdminSetup.UsernamePlaceholder"><value>operator</value></data>
+	<data name="Auth.AdminSetup.UsernameHelp"><value>3 个或更多字符。必须全局唯一。</value></data>
+	<data name="Auth.AdminSetup.NewPasswordPlaceholder"><value>至少 6 个字符</value></data>
+	<data name="Auth.AdminSetup.PasswordHelp"><value>使用至少 6 个字符，包含字母、数字和符号的组合。</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordLabel"><value>确认密码</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordPlaceholder"><value>重新输入你的密码</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordHelp"><value>必须与密码完全一致。</value></data>
+	<data name="Auth.AdminSetup.CreateAdminButton"><value>创建操作员</value></data>
+	<data name="Auth.AdminSetup.RestoreTitle"><value>从备份中恢复</value></data>
+	<data name="Auth.AdminSetup.RestoreDescription"><value>仅在全新安装时使用。选择加密的 .oscb 备份文件并输入其密码短语。</value></data>
+	<data name="Auth.AdminSetup.RestoreFileLabel"><value>备份文件</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseLabel"><value>备份密码短语</value></data>
+	<data name="Auth.AdminSetup.RestorePassphrasePlaceholder"><value>输入备份密码短语</value></data>
+	<data name="Auth.AdminSetup.RestoreButton"><value>恢复备份</value></data>
+	<data name="Auth.AdminSetup.RestoreChooseFileButton"><value>选择备份文件</value></data>
+	<data name="Auth.AdminSetup.RestoreFileRequired"><value>请选择备份文件。</value></data>
+	<data name="Auth.AdminSetup.RestoreUnsupportedFile"><value>仅支持 .oscb 备份文件。</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseRequired"><value>请输入备份密码短语。</value></data>
+	<data name="Auth.AdminSetup.RestoreFreshInstallOnly"><value>仅全新安装时可执行恢复。</value></data>
+	<data name="Auth.AdminSetup.RestorePending"><value>环境恢复正在等待处理。请等待 Oscova 重启后再创建账户。</value></data>
+	<data name="Auth.AdminSetup.Created"><value>已创建操作员。请使用新账户登录。</value></data>
+	<data name="Auth.AdminSetup.RestoreFailed"><value>无法恢复该备份。</value></data>
+	<data name="Auth.AdminSetup.RestoreInProgress"><value>恢复备份可能需要一分钟。Oscova 准备重启期间请保持此窗口开启。</value></data>
+	<data name="Auth.AdminSetup.RestoreRestarting"><value>备份已恢复。Oscova 正在重启...</value></data>
+	<data name="Auth.AdminSetup.PasswordsDoNotMatchError"><value>两次输入的密码不一致。</value></data>
+	<data name="Auth.AdminSetup.UsernameExistsError"><value>该用户名的用户已存在。</value></data>
+	<data name="Auth.AdminSetup.EmailExistsError"><value>该电子邮箱的用户已存在。</value></data>
+	<data name="Auth.CliAuth.Title"><value>批准 CLI 访问权限</value></data>
+	<data name="Auth.CliAuth.Subtitle"><value>授权此终端使用你的 Oscova 账户。</value></data>
+	<data name="Auth.CliAuth.CodeLabel"><value>验证码</value></data>
+	<data name="Auth.CliAuth.ClientLabel"><value>客户端</value></data>
+	<data name="Auth.CliAuth.MachineLabel"><value>主机设备</value></data>
+	<data name="Auth.CliAuth.ApproveButton"><value>批准</value></data>
+	<data name="Auth.CliAuth.DenyButton"><value>拒绝</value></data>
+	<data name="Auth.CliAuth.ApprovedMessage"><value>CLI 访问已批准。你可以返回终端继续操作。</value></data>
+	<data name="Auth.CliAuth.DeniedMessage"><value>CLI 访问已拒绝。</value></data>
+	<data name="Auth.CliAuth.InvalidCodeMessage"><value>此 CLI 批准验证码无效。</value></data>
+	<data name="Auth.CliAuth.ExpiredCodeMessage"><value>此 CLI 批准验证码已过期。</value></data>
+	<data name="Auth.ToggleThemeLabel"><value>切换主题</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Title"><value>你的专属智能体，随时待命。</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Description"><value>面向家庭与办公环境的智能体操作系统，运行于你自己的私有硬件之上。</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Title"><value>拥有运行环境，掌握控制权。</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Description"><value>持久运行的智能体、本地数据，以及数据何时进入云端的明确选择权。</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Title"><value>可检查的隐私保护。</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Description"><value>不收集遥测信息，云端选择明确，数据离开设备时有清晰证据。</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Title"><value>不只是一扇聊天窗口。</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Description"><value>在两次对话之间，智能体仍会备妥工具、记忆、计划和渠道。</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Title"><value>小模型，也能胜任重要工作。</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Description"><value>精简上下文和本地优先工作流，让你自己的硬件发挥更大作用。</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Title"><value>没有网络，依然有用。</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Description"><value>核心智能体运行和语音功能可保留在你自己的硬件上。</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Title"><value>私密工作始终受到保护。</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Description"><value>所有智能体都会加密存储聊天和任务运行，包括主智能体和子智能体。</value></data>
+  <data name="Auth.SignIn.Mismatch"><value>不匹配。请重试。</value></data>
+  <data name="Auth.SignIn.RetryCountdown"><value>不匹配。请在 {0} 秒后重试。</value></data>
+  <data name="Auth.SignIn.WaitCountdown"><value>请在 {0} 秒后重试。</value></data>
+  <data name="Auth.SignIn.TryAgain"><value>重试</value></data>
+</root>

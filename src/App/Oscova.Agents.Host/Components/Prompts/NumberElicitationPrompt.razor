@@ -1,0 +1,265 @@
+@using System.Numerics
+@using System.Text.Json
+@using System
+@using System.Collections.Generic
+@using System.Globalization
+@using Microsoft.AspNetCore.Components
+@using Oscova.Agents.Core.Conversation
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="chat chat-start">
+    <div class="chat-image avatar avatar-placeholder">
+        <div class="bg-neutral text-neutral-content w-8 rounded-full">
+            @if (!string.IsNullOrWhiteSpace(AssistantPictureUrl))
+            {
+                <img src="@AssistantPictureUrl" alt="" />
+            }
+            else
+            {
+                <span class="text-xs">@(!string.IsNullOrWhiteSpace(AssistantInitials) ? AssistantInitials : "AI")</span>
+            }
+        </div>
+    </div>
+    <div class="chat-bubble custom-chat-prompt custom-chat-prompt-padded w-full max-w-md">
+        <div class="flex flex-col gap-3">
+            <p class="font-medium" dir="auto">@Request.Message</p>
+
+            @if (Request.NumberFields.Count > 0)
+            {
+                <div class="space-y-4 text-sm">
+                    @foreach (var field in Request.NumberFields)
+                    {
+                        // Field names come from schema property keys, so they are escaped before use as an id.
+                        var inputId = $"prompt-{Request.RequestId:N}-{Uri.EscapeDataString(field.Name)}";
+                        var errorId = $"{inputId}-error";
+                        var hasError = TryGetError(field.Name, out var error) && !string.IsNullOrEmpty(error);
+                        <div class="form-control w-full">
+                            <label class="label justify-between px-0" for="@inputId">
+                                <span class="label-text font-medium" dir="auto">@field.Label</span>
+                                @if (Request.IsFieldRequired(field.Name))
+                                {
+                                    <span class="label-text-alt text-error text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.Required, "Required")</span>
+                                }
+                            </label>
+                            @if (!string.IsNullOrWhiteSpace(field.Description))
+                            {
+                                <p class="mb-1 text-xs opacity-80" dir="auto">@field.Description</p>
+                            }
+                            @if (field.Minimum.HasValue || field.Maximum.HasValue)
+                            {
+                                <p class="mb-1 text-xs opacity-70">
+                                    @if (field.Minimum.HasValue && field.Maximum.HasValue)
+                                    {
+                                        <span>@FormatCommonText(CommonTextKeys.ValidationAllowedRange, "Allowed range: {0} - {1}", FormatDouble(field.Minimum), FormatDouble(field.Maximum))</span>
+                                    }
+                                    else if (field.Minimum.HasValue)
+                                    {
+                                        <span>@FormatCommonText(CommonTextKeys.ValidationMinimumValue, "Minimum value: {0}", FormatDouble(field.Minimum))</span>
+                                    }
+                                    else if (field.Maximum.HasValue)
+                                    {
+                                        <span>@FormatCommonText(CommonTextKeys.ValidationMaximumValue, "Maximum value: {0}", FormatDouble(field.Maximum))</span>
+                                    }
+                                </p>
+                            }
+                            <label class="input input-sm w-full">
+                                <span class="iconify lucide--hash text-base-content/60 size-4"></span>
+                                <input type="number"
+                                       id="@inputId"
+                                       class="grow focus:outline-0"
+                                       value="@GetValue(field.Name)"
+                                       min="@FormatDouble(field.Minimum)"
+                                       max="@FormatDouble(field.Maximum)"
+                                       step="@(field.IsInteger ? "1" : "any")"
+                                       @oninput="eventArgs => SetValue(field.Name, eventArgs.Value?.ToString())"
+                                       disabled="@_isSubmitting"
+                                       aria-invalid="@(hasError ? "true" : null)"
+                                       aria-describedby="@(hasError ? errorId : null)" />
+                            </label>
+                            @if (hasError)
+                            {
+                                <span id="@errorId" role="alert" class="mt-1 text-xs text-error">@error</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-primary"
+                        disabled="@_isSubmitting"
+                        @onclick="SubmitAsync">
+                    <span class="iconify lucide--send size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.ValidationSubmit, "Submit")
+                </button>
+                <button class="btn btn-sm btn-ghost"
+                        disabled="@_isSubmitting"
+                        @onclick="CancelAsync">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ElicitationRequest Request { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public EventCallback<NumberElicitationChoice> OnRespond { get; set; }
+
+    [Parameter]
+    public string? AssistantInitials { get; set; }
+
+    [Parameter]
+    public string? AssistantPictureUrl { get; set; }
+
+    private readonly Dictionary<string, string> _values = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _errors = new(StringComparer.OrdinalIgnoreCase);
+    private Guid _lastRequestId;
+    private bool _isSubmitting;
+
+    protected override void OnParametersSet()
+    {
+        if (_lastRequestId == Request.RequestId)
+        {
+            return;
+        }
+
+        _lastRequestId = Request.RequestId;
+        _values.Clear();
+        _errors.Clear();
+
+        foreach (var field in Request.NumberFields)
+        {
+            _values[field.Name] = field.Default.HasValue
+                ? field.Default.Value.ToString("G", CultureInfo.InvariantCulture)
+                : string.Empty;
+        }
+    }
+
+    private string GetValue(string fieldName) => _values.TryGetValue(fieldName, out var value) ? value : string.Empty;
+
+    private void SetValue(string fieldName, string? value)
+    {
+        _values[fieldName] = value ?? string.Empty;
+        _errors.Remove(fieldName);
+    }
+
+    private bool TryGetError(string fieldName, out string? error) => _errors.TryGetValue(fieldName, out error);
+
+    private async Task SubmitAsync()
+    {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        _errors.Clear();
+        var payload = new Dictionary<string, NumberElicitationValue>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var field in Request.NumberFields)
+        {
+            var raw = GetValue(field.Name);
+
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                if (Request.IsFieldRequired(field.Name))
+                {
+                    _errors[field.Name] = CommonLoc.GetOrDefault(CommonTextKeys.ValidationThisFieldRequired, "This field is required.");
+                }
+
+                continue;
+            }
+
+            if (field.IsInteger)
+            {
+                if (!long.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerValue))
+                {
+                    _errors[field.Name] = CommonLoc.GetOrDefault(CommonTextKeys.ValidationEnterWholeNumber, "Enter a whole number.");
+                    continue;
+                }
+
+                if (field.Minimum.HasValue && integerValue < new BigInteger(Math.Ceiling(field.Minimum.Value)))
+                {
+                    _errors[field.Name] = FormatCommonText(CommonTextKeys.ValidationMinimumValue, "Minimum value: {0}", FormatDouble(field.Minimum));
+                    continue;
+                }
+
+                if (field.Maximum.HasValue && integerValue > new BigInteger(Math.Floor(field.Maximum.Value)))
+                {
+                    _errors[field.Name] = FormatCommonText(CommonTextKeys.ValidationMaximumValue, "Maximum value: {0}", FormatDouble(field.Maximum));
+                    continue;
+                }
+
+                // Preserve every Int64 digit through the API response.
+                payload[field.Name] = new NumberElicitationValue(JsonSerializer.SerializeToElement(integerValue), true);
+            }
+            else
+            {
+                if (!double.TryParse(raw, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var doubleValue))
+                {
+                    _errors[field.Name] = CommonLoc.GetOrDefault(CommonTextKeys.ValidationEnterValidNumber, "Enter a valid number.");
+                    continue;
+                }
+
+                if (field.Minimum.HasValue && doubleValue < field.Minimum.Value)
+                {
+                    _errors[field.Name] = FormatCommonText(CommonTextKeys.ValidationMinimumValue, "Minimum value: {0}", FormatDouble(field.Minimum));
+                    continue;
+                }
+
+                if (field.Maximum.HasValue && doubleValue > field.Maximum.Value)
+                {
+                    _errors[field.Name] = FormatCommonText(CommonTextKeys.ValidationMaximumValue, "Maximum value: {0}", FormatDouble(field.Maximum));
+                    continue;
+                }
+
+                payload[field.Name] = new NumberElicitationValue(JsonSerializer.SerializeToElement(doubleValue), false);
+            }
+        }
+
+        if (_errors.Count > 0)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        try
+        {
+            await OnRespond.InvokeAsync(new NumberElicitationChoice(Request.RequestId, payload, false));
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private async Task CancelAsync()
+    {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        try
+        {
+            await OnRespond.InvokeAsync(new NumberElicitationChoice(Request.RequestId, new Dictionary<string, NumberElicitationValue>(StringComparer.OrdinalIgnoreCase), true));
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private static string? FormatDouble(double? value) => value?.ToString("G", CultureInfo.InvariantCulture);
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+    }
+}

@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Common.Cancel">
+		<value>إلغاء</value>
+
+	</data>
+	<data name="Common.Actions">
+		<value>الإجراءات</value>
+
+	</data>
+	<data name="Common.Close">
+		<value>إغلاق</value>
+
+	</data>
+	<data name="Common.Connected">
+		<value>متصل</value>
+
+	</data>
+	<data name="Common.CopyName">
+		<value>نسخة</value>
+
+	</data>
+	<data name="Common.Create">
+		<value>إنشاء</value>
+
+	</data>
+	<data name="Common.Delete">
+		<value>حذف</value>
+
+	</data>
+	<data name="Common.Description">
+		<value>الوصف</value>
+
+	</data>
+	<data name="Common.Disconnected">
+		<value>غير متصل</value>
+
+	</data>
+	<data name="Common.Download">
+		<value>تنزيل</value>
+
+	</data>
+	<data name="Common.Duplicate">
+		<value>تكرار</value>
+
+	</data>
+	<data name="Common.Edit">
+		<value>تعديل</value>
+
+	</data>
+	<data name="Common.FileTooLarge">
+		<value>الملف كبير جداً. الحد الأقصى للحجم هو {0}.</value>
+
+	</data>
+	<data name="Common.Import">
+		<value>استيراد</value>
+
+	</data>
+	<data name="Common.ImportFailed">
+		<value>فشل الاستيراد: {0}</value>
+
+	</data>
+	<data name="Common.Key"><value>المفتاح</value></data>
+	<data name="Common.Loading">
+		<value>جارٍ التحميل...</value>
+
+	</data>
+	<data name="Common.Name">
+		<value>الاسم</value>
+
+	</data>
+	<data name="Common.NoFileSelected">
+		<value>لم يتم تحديد أي ملف</value>
+
+	</data>
+	<data name="Common.NoneOption">
+		<value>لا شيء</value>
+
+	</data>
+	<data name="Common.Password">
+		<value>كلمة المرور</value>
+
+	</data>
+	<data name="Common.Refresh">
+		<value>تحديث</value>
+
+	</data>
+	<data name="Common.Remove">
+		<value>إزالة</value>
+
+	</data>
+	<data name="Common.Retry">
+		<value>إعادة المحاولة</value>
+
+	</data>
+	<data name="Common.NoResults"><value>لا توجد نتائج</value></data>
+	<data name="Common.Save">
+		<value>حفظ</value>
+
+	</data>
+	<data name="Common.Search"><value>بحث...</value></data>
+	<data name="Common.Settings">
+		<value>الإعدادات</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Title">
+		<value>تجاهل التغييرات غير المحفوظة؟</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Message">
+		<value>لديك تغييرات غير محفوظة في هذه الصفحة. المغادرة الآن ستتجاهلها.</value>
+
+	</data>
+	<data name="Common.SignOutConfirmTitle">
+		<value>تأكيد تسجيل الخروج</value>
+
+	</data>
+	<data name="Common.SignOutConfirmMessage">
+		<value>هل أنت متأكد من رغبتك في تسجيل الخروج؟</value>
+
+	</data>
+	<data name="Common.Upload">
+		<value>رفع</value>
+
+	</data>
+	<data name="Common.Username">
+		<value>اسم المستخدم</value>
+
+	</data>
+	<data name="Common.Assistant"><value>المساعد</value></data>
+	<data name="Common.Clear"><value>مسح</value></data>
+	<data name="Common.ConfirmPassword"><value>تأكيد كلمة المرور</value></data>
+	<data name="Common.Content"><value>المحتوى</value></data>
+	<data name="Common.CurrentPassword"><value>كلمة المرور الحالية</value></data>
+	<data name="Common.Email"><value>البريد الإلكتروني</value></data>
+	<data name="Common.FullName"><value>الاسم الكامل</value></data>
+	<data name="Common.PreferredName"><value>الاسم المفضل</value></data>
+	<data name="Common.PreferredNameHelp"><value>ماذا تريد أن يناديك وكلاؤك؟</value></data>
+	<data name="Common.NewPassword"><value>كلمة المرور الجديدة</value></data>
+	<data name="Common.NotConfigured"><value>غير مهيأ</value></data>
+	<data name="Common.NotSet"><value>لم يتم التعيين</value></data>
+	<data name="Common.Page"><value>الصفحة {0}</value></data>
+	<data name="Common.Roles"><value>الأدوار</value></data>
+	<data name="Common.System"><value>النظام</value></data>
+	<data name="Common.Time"><value>الوقت</value></data>
+	<data name="Common.Tool"><value>أداة</value></data>
+	<data name="Common.Unknown"><value>غير معروف</value></data>
+	<data name="Common.User"><value>المستخدم</value></data>
+	<data name="Dialog.AccountDetailsTitle"><value>تفاصيل الحساب</value></data>
+	<data name="Dialog.AllAgentsOption"><value>جميع الوكلاء</value></data>
+	<data name="Dialog.AllThreadsOption"><value>جميع المحادثات</value></data>
+	<data name="Dialog.ApplicationLogsTitle"><value>سجلات التطبيق</value></data>
+	<data name="Dialog.ExportFilteredCsv"><value>CSV مصفى</value></data>
+	<data name="Dialog.ExportFilteredText"><value>نص مصفى</value></data>
+	<data name="Dialog.ExportLogsButton"><value>تصدير</value></data>
+	<data name="Dialog.ExportOriginalJsonLines"><value>الأصل بتنسيق JSON Lines</value></data>
+	<data name="Dialog.ChangePasswordTitle"><value>تغيير كلمة المرور</value></data>
+	<data name="Dialog.ChatMemory.HeaderAgent"><value>الوكيل</value></data>
+	<data name="Dialog.ChatMemory.HeaderChunk"><value>القطعة</value></data>
+	<data name="Dialog.ChatMemory.HeaderContent"><value>المحتوى</value></data>
+	<data name="Dialog.ChatMemory.HeaderThread"><value>المحادثة</value></data>
+	<data name="Dialog.ChatMemoryStoreTitle"><value>مخزن ذاكرة المحادثة</value></data>
+	<data name="Dialog.ClearLogButton"><value>مسح</value></data>
+	<data name="Dialog.ClearLogConfirmMessage"><value>هل أنت متأكد من رغبتك في مسح ملف السجل الحالي؟ لا يمكن التراجع عن هذا الإجراء.</value></data>
+	<data name="Dialog.ClearLogConfirmTitle"><value>تأكيد مسح السجل</value></data>
+	<data name="Dialog.ClearLogTitleAttribute"><value>مسح ملف السجل الحالي</value></data>
+	<data name="Dialog.CloseChatMemoryLabel"><value>إغلاق مربع حوار ذاكرة المحادثة</value></data>
+	<data name="Dialog.CloseLogsLabel"><value>إغلاق مربع حوار السجلات</value></data>
+	<data name="Dialog.CloseProfileLabel"><value>إغلاق مربع حوار الملف الشخصي</value></data>
+	<data name="Dialog.ContentTypeCall"><value>استدعاء</value></data>
+	<data name="Dialog.ContentTypeReasoning"><value>الاستدلال</value></data>
+	<data name="Dialog.ContentTypeResult"><value>نتيجة</value></data>
+	<data name="Dialog.DataContentBytes"><value>{0} - {1} بايت</value></data>
+	<data name="Dialog.EmailAddressLabel"><value>عنوان البريد الإلكتروني</value></data>
+	<data name="Dialog.FailedLoadChatMemoryError"><value>فشل تحميل ذاكرة المحادثة:</value></data>
+	<data name="Dialog.FailedLoadLogsError"><value>فشل تحميل السجلات:</value></data>
+	<data name="Dialog.InspectorJsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorVisualTab"><value>مرئي</value></data>
+	<data name="Dialog.LogDetailException"><value>استثناء</value></data>
+	<data name="Dialog.LogDetailMetadata"><value>بيانات التعريف</value></data>
+	<data name="Dialog.LogEntriesCount"><value>عدد إدخالات السجل: {0}</value></data>
+	<data name="Dialog.LogEntriesPage"><value>إدخالات السجل: {0} - الصفحة {1} من {2}</value></data>
+	<data name="Dialog.LogLevelAll"><value>جميع المستويات</value></data>
+	<data name="Dialog.LogLevelDebug"><value>Debug</value></data>
+	<data name="Dialog.LogLevelError"><value>Error</value></data>
+	<data name="Dialog.LogLevelFatal"><value>Fatal</value></data>
+	<data name="Dialog.LogLevelInfo"><value>Info</value></data>
+	<data name="Dialog.LogLevelTrace"><value>Trace</value></data>
+	<data name="Dialog.LogLevelWarn"><value>Warn</value></data>
+	<data name="Dialog.LogsHeaderLevel"><value>المستوى</value></data>
+	<data name="Dialog.LogsHeaderLogger"><value>المسجل</value></data>
+	<data name="Dialog.LogsHeaderMessage"><value>الرسالة</value></data>
+	<data name="Dialog.LogsInvalidUserGuid"><value>أدخل معرّف مستخدم (GUID) صالحاً.</value></data>
+	<data name="Dialog.LogsScope.Mine"><value>الخاصة بي</value></data>
+	<data name="Dialog.LogsScope.User"><value>المستخدم...</value></data>
+	<data name="Dialog.Logs.UserIdPlaceholder"><value>معرّف المستخدم (GUID)</value></data>
+	<data name="Dialog.NoChatMemoryEntries"><value>لا توجد إدخالات في ذاكرة المحادثة تطابق عوامل التصفية الحالية.</value></data>
+	<data name="Dialog.NoLogEntriesMatch"><value>لا توجد إدخالات سجل تطابق عوامل التصفية الحالية.</value></data>
+	<data name="Dialog.NoLogFilesOption"><value>لا توجد ملفات سجل</value></data>
+	<data name="Dialog.NoMessagesInSession"><value>لا توجد رسائل في الجلسة.</value></data>
+	<data name="Dialog.NoStructuredLogsFound"><value>لم يتم العثور على ملفات سجل منظمة. ستظهر السجلات هنا بعد أن يكتب التطبيق إدخالات جديدة.</value></data>
+	<data name="Notifications.AllTab"><value>الكل</value></data>
+	<data name="Notifications.Clear"><value>مسح الإشعارات</value></data>
+	<data name="Notifications.DetailKindLabel"><value>النوع</value></data>
+	<data name="Notifications.DialogTitle"><value>الإشعارات</value></data>
+	<data name="Notifications.EmptyState"><value>أنت على اطلاع بكل جديد.</value></data>
+	<data name="Notifications.MarkAllRead"><value>تحديد الكل كمقروء</value></data>
+	<data name="Notifications.Muted"><value>تم كتم الإشعارات</value></data>
+	<data name="Notifications.JustNow"><value>الآن</value></data>
+	<data name="Notifications.MinutesAgo"><value>منذ {0} د</value></data>
+	<data name="Notifications.HoursAgo"><value>منذ {0} س</value></data>
+	<data name="Notifications.Task.CompletedTitle"><value>اكتملت المهمة</value></data>
+	<data name="Notifications.Task.NeedsAttentionTitle"><value>المهمة تحتاج إلى انتباه</value></data>
+	<data name="Notifications.Task.CompletedInSeconds"><value>اكتملت في {0} ثانية.</value></data>
+	<data name="Notifications.Task.Skipped"><value>تم تخطي المهمة.</value></data>
+	<data name="Notifications.Task.MissingChatProvider"><value>لم يتم تكوين موفر نموذج دردشة. قم بإعداد واحد في الإعدادات &gt; الوكلاء والذكاء الاصطناعي &gt; مزودو النماذج لتشغيل هذه المهمة.</value></data>
+	<data name="Notifications.Task.MissingEmbeddingProvider"><value>لم يتم تكوين موفر نموذج تضمين. قم بإعداد واحد في الإعدادات &gt; الوكلاء والذكاء الاصطناعي &gt; مزودو النماذج &gt; مزود التضمين لتشغيل هذه المهمة.</value></data>
+	<data name="Notifications.Task.HandlerUnavailable"><value>معالج تنفيذ هذه المهمة غير متاح. فعّل الإضافة الخاصة بها أو أعد تثبيتها، ثم أعد تشغيل التطبيق لتشغيل المهمة.</value></data>
+	<data name="Notifications.Task.StepLimitReached"><value>توقفت المهمة عند حد {0} خطوة قبل أن تنتهي.</value></data>
+	<data name="Notifications.Task.Finished"><value>انتهى تشغيل المهمة.</value></data>
+	<data name="Notifications.Task.OutcomeHidden"><value>افتح المهمة لعرض النتيجة.</value></data>
+	<data name="Notifications.Task.SkippedLocked"><value>لم يتم تشغيل هذه المهمة لأن كلمة مرور الخزنة مقفلة. افتح قفلها للمتابعة.</value></data>
+	<data name="Notifications.Settings"><value>إعدادات الإشعارات</value></data>
+	<data name="Notifications.SystemTab"><value>النظام</value></data>
+	<data name="Notifications.TasksTab"><value>المهام</value></data>
+	<data name="Notifications.Title"><value>الإشعارات</value></data>
+	<data name="Notifications.ViewAll"><value>عرض الكل</value></data>
+	<data name="Dialog.PasswordBlankHint"><value>اتركه فارغاً للاحتفاظ بكلمة المرور الحالية.</value></data>
+	<data name="Dialog.ProfileDescription"><value>تحديث عنوان بريدك الإلكتروني واسمك الكامل واسمك المفضل وكلمة المرور.</value></data>
+	<data name="Dialog.ProfilePictureUpdated"><value>تم تحديث صورة الملف الشخصي.</value></data>
+	<data name="Dialog.ProfilePictureUpdateFailed"><value>تعذر تحديث صورة الملف الشخصي: {0}</value></data>
+	<data name="Dialog.WallpaperUpdated"><value>تم تحديث خلفية الشاشة.</value></data>
+	<data name="Dialog.WallpaperUpdateFailed"><value>تعذر تحديث خلفية الشاشة: {0}</value></data>
+	<data name="Dialog.SaveChangesButton"><value>حفظ التغييرات</value></data>
+	<data name="Dialog.SearchLogsPlaceholder"><value>البحث في السجلات...</value></data>
+	<data name="Dialog.SessionInspectorTitle"><value>فاحص الجلسة</value></data>
+	<data name="Dialog.SessionJsonCopied"><value>تم نسخ JSON الخاص بالجلسة إلى الحافظة.</value></data>
+	<data name="Dialog.SessionJsonDownloaded"><value>تم تنزيل أدلة الجلسة.</value></data>
+	<data name="Dialog.InspectorConversationTab"><value>المحادثة</value></data>
+	<data name="Dialog.InspectorMessageSummary"><value>{0} من الرسائل</value></data>
+	<data name="Dialog.MessageCountBadge"><value>{0} من الرسائل</value></data>
+	<data name="Dialog.NoSystemInstruction"><value>لم يتم التقاط أي تعليمات للنظام.</value></data>
+	<data name="Dialog.Egress.CloudLabel"><value>سحابي</value></data>
+	<data name="Dialog.Egress.LocalLabel"><value>محلي</value></data>
+	<data name="Dialog.Egress.IndeterminateDescription"><value>تعذر مطابقة بعض استدعاءات الأدوات مع بيانات التعريف الخاصة بها.</value></data>
+	<data name="Dialog.Egress.IndeterminateTitle"><value>تعذر التحقق من خروج البيانات بالكامل</value></data>
+	<data name="Dialog.Egress.NoDataDescription"><value>قد لا تتضمن الجلسات القديمة سجلات خروج بيانات المزود.</value></data>
+	<data name="Dialog.Egress.NoDataTitle"><value>لم يتم تسجيل أي بيانات صادرة</value></data>
+	<data name="Dialog.Egress.ReachedInternetDescription"><value>تم استخدام مزودي خدمات سحابية أو أدوات إنترنت خلال هذه الجلسة.</value></data>
+	<data name="Dialog.Egress.ReachedInternetTitle"><value>وصلت هذه الجلسة إلى الإنترنت</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceDescription"><value>كان المزودون المسجلون محليين ولم يتم اكتشاف أي أدوات إنترنت.</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceTitle"><value>بقيت هذه الجلسة على الجهاز</value></data>
+	<data name="Dialog.Egress.ToolCallCount"><value>{0} من استدعاءات أدوات الإنترنت</value></data>
+	<data name="Dialog.Egress.UnknownToolCallCount"><value>{0} من استدعاءات الأدوات غير المعروفة</value></data>
+	<data name="Dialog.Egress.EntryCount"><value>إدخالات خروج البيانات المدققة: {0}</value></data>
+	<data name="Dialog.Egress.ProviderKind"><value>المزود</value></data>
+	<data name="Dialog.Egress.ToolKind"><value>أداة</value></data>
+	<data name="Dialog.Egress.EmbeddingKind"><value>التضمين</value></data>
+	<data name="Dialog.Egress.ChatSource"><value>المحادثة</value></data>
+	<data name="Dialog.Egress.TaskSource"><value>مهمة</value></data>
+	<data name="Dialog.Egress.EmbeddingIndexingSource"><value>فهرسة الذاكرة</value></data>
+	<data name="Dialog.Egress.EmbeddingSearchSource"><value>البحث في الذاكرة</value></data>
+	<data name="Dialog.Egress.UnknownDestination"><value>وجهة غير معروفة</value></data>
+	<data name="Dialog.EgressAudit.AgentColumn"><value>الوكيل</value></data>
+	<data name="Dialog.EgressAudit.AllKinds"><value>جميع الأنواع</value></data>
+	<data name="Dialog.EgressAudit.AllSources"><value>جميع المصادر</value></data>
+	<data name="Dialog.EgressAudit.ContextColumn"><value>السياق</value></data>
+	<data name="Dialog.EgressAudit.CountSummary"><value>{0} من الأحداث</value></data>
+	<data name="Dialog.EgressAudit.DestinationColumn"><value>الوجهة</value></data>
+	<data name="Dialog.EgressAudit.Title"><value>تدقيق خروج البيانات</value></data>
+	<data name="Dialog.EgressAudit.EmbeddingEvents"><value>أحداث التضمين</value></data>
+	<data name="Dialog.EgressAudit.InspectAction"><value>فحص الجلسة</value></data>
+	<data name="Dialog.EgressAudit.LoadFailed"><value>تعذر تحميل تفاصيل تدقيق خروج البيانات.</value></data>
+	<data name="Dialog.EgressAudit.ModelMetadata"><value>النموذج</value></data>
+	<data name="Dialog.EgressAudit.NoEntries"><value>لا توجد إدخالات تدقيق تطابق عوامل التصفية الحالية.</value></data>
+	<data name="Dialog.EgressAudit.PageSummary"><value>{0} من الأحداث - الصفحة {1} من {2}</value></data>
+	<data name="Dialog.EgressAudit.ProviderEvents"><value>أحداث المزود</value></data>
+	<data name="Dialog.EgressAudit.ProviderIdMetadata"><value>معرّف المزود</value></data>
+	<data name="Dialog.EgressAudit.RangeAllTime"><value>كل الأوقات</value></data>
+	<data name="Dialog.EgressAudit.RangeLastThirtyDays"><value>آخر 30 يوماً</value></data>
+	<data name="Dialog.EgressAudit.RunMetadata"><value>التشغيل</value></data>
+	<data name="Dialog.EgressAudit.SearchButton"><value>بحث</value></data>
+	<data name="Dialog.EgressAudit.SearchPlaceholder"><value>البحث في البيانات الصادرة</value></data>
+	<data name="Dialog.EgressAudit.SessionUnavailable"><value>الجلسة الخاصة بهذا الإدخال لم تعد متاحة.</value></data>
+	<data name="Dialog.EgressAudit.SourceColumn"><value>المصدر</value></data>
+	<data name="Dialog.EgressAudit.TaskMetadata"><value>المهمة</value></data>
+	<data name="Dialog.EgressAudit.ThreadMetadata"><value>سلسلة المحادثة</value></data>
+	<data name="Dialog.EgressAudit.ToolEvents"><value>أحداث الأداة</value></data>
+	<data name="Dialog.EgressAudit.ToolMetadata"><value>الأداة</value></data>
+	<data name="Dialog.EgressAudit.TotalEvents"><value>إجمالي الأحداث</value></data>
+	<data name="Dialog.EgressAudit.TypeColumn"><value>النوع</value></data>
+	<data name="Dialog.EgressAudit.UserColumn"><value>المستخدم</value></data>
+	<data name="Dialog.SystemInstructionTitle"><value>تعليمات النظام</value></data>
+	<data name="Dialog.TokenCountBadge"><value>{0} من الرموز</value></data>
+	<data name="Dialog.UsageInputTokens"><value>الإدخال: {0}</value></data>
+	<data name="Dialog.UsageOutputTokens"><value>الإخراج: {0}</value></data>
+	<data name="Dialog.UsageTotalTokens"><value>الإجمالي: {0}</value></data>
+	<data name="Dialog.StoredContent"><value>المحتوى المخزن</value></data>
+	<data name="Dialog.ToggleDetailsTitle"><value>تبديل التفاصيل</value></data>
+	<data name="Dialog.UnableToSubmitChoice"><value>تعذر إرسال هذا الخيار.</value></data>
+	<data name="Dialog.YourProfileTitle"><value>ملفك الشخصي</value></data>
+	<data name="Common.Validation.NameRequired"><value>الاسم مطلوب.</value></data>
+	<data name="Common.Validation.InstructionRequired"><value>التعليمات مطلوبة.</value></data>
+	<data name="Common.Task.AgentUnavailable"><value>لا يمكن إنشاء مهمة إلا عند توفر وكيل واحد على الأقل.</value></data>
+	<data name="Common.Task.AgentCreatedBadge"><value>تم إنشاؤها بواسطة وكيل</value></data>
+	<data name="Common.Task.CreatedSuccessfully"><value>تم إنشاء المهمة بنجاح.</value></data>
+	<data name="Common.Task.CronExpression"><value>Cron: {0}</value></data>
+	<data name="Common.Task.CronExpressionLabel"><value>تعبير Cron</value></data>
+	<data name="Common.Task.CronExpressionRequired"><value>تعبير Cron مطلوب.</value></data>
+	<data name="Common.Task.CustomProvider"><value>مزود مخصص</value></data>
+	<data name="Common.Task.DefaultModelProvider"><value>استخدام الافتراضي للوكيل</value></data>
+	<data name="Common.Task.DefaultModelProviderShort"><value>استخدام الافتراضي للوكيل</value></data>
+	<data name="Common.Task.DeleteAfterRun"><value>حذف المهمة بعد التشغيل</value></data>
+	<data name="Common.Task.DeleteConfirmMessage"><value>هل أنت متأكد من رغبتك في حذف "{0}"؟</value></data>
+	<data name="Common.Task.DeleteConfirmTitle"><value>حذف المهمة</value></data>
+	<data name="Common.Task.DeletedSuccessfully"><value>تم حذف المهمة.</value></data>
+	<data name="Common.Task.RunsLoadFailed"><value>تعذر تحميل تشغيلات هذه المهمة. يرجى المحاولة مرة أخرى.</value></data>
+	<data name="Common.Task.DeletesAfterSuccessfulRun"><value>تحذف نفسها بعد تشغيل ناجح</value></data>
+	<data name="Common.Task.DialogCreateTitle"><value>إنشاء مهمة</value></data>
+	<data name="Common.Task.DialogEditTitle"><value>تعديل المهمة</value></data>
+	<data name="Common.Task.DisablesAfterSuccessfulRun"><value>تعطل نفسها بعد تشغيل ناجح</value></data>
+	<data name="Common.Task.Enabled"><value>مُمكّنة</value></data>
+	<data name="Common.Task.ExternalTrigger.AddParameterButton"><value>إضافة معلمة</value></data>
+	<data name="Common.Task.ExternalTrigger.CopyEndpointButton"><value>نسخ نقطة النهاية</value></data>
+	<data name="Common.Task.ExternalTrigger.EnableLabel"><value>السماح بمشغل webhook خارجي</value></data>
+	<data name="Common.Task.ExternalTrigger.Hint"><value>يمكن للمتصلين الخارجيين تشغيل هذه المهمة من خلال نقطة نهاية خطاف مصادق عليها.</value></data>
+	<data name="Common.Task.ExternalTrigger.KindBoolean"><value>منطقي</value></data>
+	<data name="Common.Task.ExternalTrigger.KindJson"><value>JSON</value></data>
+	<data name="Common.Task.ExternalTrigger.KindNumber"><value>رقم</value></data>
+	<data name="Common.Task.ExternalTrigger.KindString"><value>نص</value></data>
+	<data name="Common.Task.ExternalTrigger.NoParameters"><value>لا توجد معلمات مطلوبة لـ webhook هذا.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameDuplicate"><value>يجب أن تكون أسماء المعلمات فريدة.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameInvalid"><value>يجب أن تبدأ أسماء المعلمات بحرف وأن تحتوي فقط على أحرف أو أرقام أو شرطات سفلية أو شرطات.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNamePlaceholder"><value>parameterName</value></data>
+	<data name="Common.Task.ExternalTrigger.ParametersLabel"><value>معلمات Webhook</value></data>
+	<data name="Common.Task.ExternalTrigger.SlugLabel"><value>معرّف Webhook</value></data>
+	<data name="Common.Task.AfterTaskSummary"><value>بعد: {0}</value></data>
+	<data name="Common.Task.AfterTaskSupport"><value>يتم التشغيل بعد نجاح المهمة المحددة</value></data>
+	<data name="Common.Task.RunScope.Label"><value>نطاق التشغيل</value></data>
+	<data name="Common.Task.RunScope.CustomTitle"><value>إعدادات المهمة المخصصة</value></data>
+	<data name="Common.Task.RunScope.InheritSummary"><value>ترث هذه المهمة أدوات الوكيل المحدد وذاكرته ومهاراته ومساحات عمله.</value></data>
+	<data name="Common.Task.RunScope.CustomSummary"><value>{0} أدوات، {1} مساحات عمل</value></data>
+	<data name="Common.Task.RunScope.UseAgentSettingsButton"><value>استخدام إعدادات الوكيل</value></data>
+	<data name="Common.Task.RunScope.DialogTitle"><value>نطاق تشغيل المهمة</value></data>
+	<data name="Common.Task.RunScope.DialogDescription"><value>تستبدل إعدادات وقت التشغيل المخصصة إعدادات الوكيل المحددة لهذه المهمة فقط.</value></data>
+	<data name="Common.Task.EvaluatedInTimeZone"><value>تم التقييم في {0}</value></data>
+	<data name="Common.Task.NextRun"><value>التشغيل التالي {0}</value></data>
+	<data name="Common.Task.ShowInstructions"><value>إظهار التعليمات</value></data>
+	<data name="Common.Task.EveryHoursMinutes"><value>كل {0} س {1} د</value></data>
+	<data name="Common.Task.EveryMinutes"><value>كل {0} د</value></data>
+	<data name="Common.Task.FinishedAt"><value>انتهى في {0}</value></data>
+	<data name="Common.Task.InstructionLabel"><value>التعليمات</value></data>
+	<data name="Common.Task.InstructionPlaceholder"><value>ماذا يجب أن يفعل الوكيل؟</value></data>
+	<data name="Common.Task.IntervalInvalid"><value>يجب أن يكون الفاصل الزمني دقيقة واحدة على الأقل.</value></data>
+	<data name="Common.Task.IntervalLabel"><value>الفاصل الزمني (بالدقائق)</value></data>
+	<data name="Common.Task.KeepLastRunsLabel"><value>الاحتفاظ بآخر التشغيلات</value></data>
+	<data name="Common.Task.KeepLastRunsPlaceholder"><value>الاحتفاظ بالكل</value></data>
+	<data name="Common.Task.KeepLastRunsHint"><value>تُحذف التشغيلات الأقدم بعد انتهاء التشغيل التالي. اتركه فارغًا للاحتفاظ بكل التشغيلات.</value></data>
+	<data name="Common.Task.KeepLastRunsInvalid"><value>يجب أن تكون القيمة 1 على الأقل، أو فارغة للاحتفاظ بكل التشغيلات.</value></data>
+	<data name="Common.Task.RunDeleteConfirmTitle"><value>حذف التشغيل</value></data>
+	<data name="Common.Task.RunDeleteConfirmMessage"><value>حذف التشغيل الذي بدأ في {0}؟ يُحذف نصه الكامل أيضًا.</value></data>
+	<data name="Common.Task.RunDeletedSuccessfully"><value>تم حذف التشغيل.</value></data>
+	<data name="Common.Task.MessagesCount"><value>{0} من الرسائل</value></data>
+	<data name="Common.Task.ModelProviderLabel"><value>مزود النموذج</value></data>
+	<data name="Common.Task.NamePlaceholder"><value>مثال: ملخص يومي</value></data>
+	<data name="Common.Task.NoOtherTasks"><value>لا تتوفر مهام أخرى للربط منها.</value></data>
+	<data name="Common.Task.OnceAt"><value>مرة واحدة في {0}</value></data>
+	<data name="Common.Task.OrphanRowHint"><value>الوكيل الداعم لم يعد موجوداً</value></data>
+	<data name="Common.Task.PausedUntilEnabled"><value>تم إيقاف المهمة مؤقتاً حتى يتم تمكينها مرة أخرى</value></data>
+	<data name="Common.Task.PredecessorLabel"><value>التشغيل بعد المهمة</value></data>
+	<data name="Common.Task.PredecessorMissing"><value>مهمة محذوفة</value></data>
+	<data name="Common.Task.PredecessorRequired"><value>حدد المهمة التي يجب تشغيل هذه المهمة بعدها.</value></data>
+	<data name="Common.Task.PredecessorSelf"><value>لا يمكن لمهمة أن تعمل بعد نفسها.</value></data>
+	<data name="Common.Task.RunAtLabel"><value>التشغيل في</value></data>
+	<data name="Common.Task.RunAtTimeZoneHint"><value>يستخدم منطقتك الزمنية الحالية كمستخدم عند حفظ هذه المهمة وجدولتها.</value></data>
+	<data name="Common.Task.RunningNow"><value>قيد التشغيل الآن</value></data>
+	<data name="Common.Task.ScheduleAfterTask"><value>بعد مهمة أخرى</value></data>
+	<data name="Common.Task.ScheduleCron"><value>Cron</value></data>
+	<data name="Common.Task.ScheduleExamples"><value>أمثلة: &#x2066;30 9 * * 1-5&#x2069; من الاثنين إلى الجمعة في الساعة 09:30، و &#x2066;0 */6 * * *&#x2069; لكل 6 ساعات.</value></data>
+	<data name="Common.Task.ScheduleInterval"><value>الفاصل الزمني</value></data>
+	<data name="Common.Task.ScheduleOneShot"><value>مرة واحدة</value></data>
+	<data name="Common.Task.ScheduleTimeZoneHint"><value>يتم التقييم باستخدام منطقتك الزمنية الحالية كمستخدم عند حفظ هذه المهمة.</value></data>
+	<data name="Common.Task.ServerLocalTime"><value>التوقيت المحلي للخادم</value></data>
+	<data name="Common.Task.StartedAt"><value>بدأ في {0}</value></data>
+	<data name="Common.Task.StatusHealthy"><value>سليمة</value></data>
+	<data name="Common.Task.StatusIdle"><value>خاملة</value></data>
+	<data name="Common.Task.StatusNeedsAttention"><value>تحتاج إلى انتباه</value></data>
+	<data name="Common.Task.StatusOrphan"><value>يتيمة</value></data>
+	<data name="Common.Task.StatusPaused"><value>متوقفة مؤقتاً</value></data>
+	<data name="Common.Task.StatusPending"><value>معلقة</value></data>
+	<data name="Common.Task.StatusSkipped"><value>تم التخطي</value></data>
+	<data name="Common.Task.StatusReady"><value>جاهزة</value></data>
+	<data name="Common.Task.StatusRunning"><value>قيد التشغيل</value></data>
+	<data name="Common.Task.TokensUsed"><value>{0} من الرموز</value></data>
+	<data name="Common.Task.UpdatedSuccessfully"><value>تم تحديث المهمة بنجاح.</value></data>
+	<data name="Common.Task.WatchingForNextWindow"><value>في انتظار النافذة المجدولة التالية</value></data>
+	<data name="Common.Task.Page.AllStatusesOption"><value>جميع الحالات</value></data>
+	<data name="Common.Task.Page.CategoryLabel"><value>التنسيق</value></data>
+	<data name="Common.Task.Page.CompletedMetric"><value>مكتملة</value></data>
+	<data name="Common.Task.Page.ConfiguredBadge"><value>تم التكوين</value></data>
+	<data name="Common.Task.Page.CreateTaskButton"><value>إنشاء مهمة</value></data>
+	<data name="Common.Task.Page.Description"><value>جدولة أعمال الوكيل الذاتية ومراقبتها وإدارتها من شاشة واحدة. حدد مهمة لفحص أحدث حالة تنفيذ لها وتشغيلاتها الأخيرة.</value></data>
+	<data name="Common.Task.Page.DetailsDialogTitle"><value>تفاصيل المهمة</value></data>
+	<data name="Common.Task.Page.DirectoryDescription"><value>حدد مهمة لعرض التفاصيل والتنفيذات الأخيرة.</value></data>
+	<data name="Common.Task.Page.DirectoryTitle"><value>دليل المهام</value></data>
+	<data name="Common.Task.Page.DisabledOption"><value>معطلة</value></data>
+	<data name="Common.Task.Page.EmptyDescription"><value>أنشئ أول سير عمل ذاتي لرؤية الجداول الزمنية والتشغيلات وسجل التنفيذ المباشر هنا.</value></data>
+	<data name="Common.Task.Page.EmptyTitle"><value>لا توجد مهام وكيل بعد</value></data>
+	<data name="Common.Task.Page.FailedBadge"><value>فاشلة</value></data>
+	<data name="Common.Task.Page.InspectButton"><value>فحص</value></data>
+	<data name="Common.Task.Page.LatestRunHeader"><value>آخر تشغيل</value></data>
+	<data name="Common.Task.Page.LiveBadge"><value>مباشر</value></data>
+	<data name="Common.Task.Page.NeverBadge"><value>أبداً</value></data>
+	<data name="Common.Task.Page.NeverRunOption"><value>لم يتم تشغيلها مطلقاً</value></data>
+	<data name="Common.Task.Page.NewTaskButton"><value>مهمة جديدة</value></data>
+	<data name="Common.Task.Page.NoExecutionYet"><value>لا يوجد تنفيذ بعد</value></data>
+	<data name="Common.Task.Page.NoRunsYet"><value>لم يتم تسجيل أي تشغيلات لهذه المهمة بعد.</value></data>
+	<data name="Common.Task.Page.OpenBadge"><value>مفتوحة</value></data>
+	<data name="Common.Task.Page.RecentExecutionsDescription"><value>أحدث عمليات التشغيل لهذه المهمة، بما في ذلك التشغيل المباشر الحالي إن وجد.</value></data>
+	<data name="Common.Task.Page.RecentExecutionsTitle"><value>التنفيذات الأخيرة</value></data>
+	<data name="Common.Task.Page.RunNowButton"><value>تشغيل الآن</value></data>
+	<data name="Common.Task.Page.RunsButton"><value>التشغيلات</value></data>
+	<data name="Common.Task.Page.ScheduleHeader"><value>الجدول</value></data>
+	<data name="Common.Task.Page.SearchPlaceholder"><value>البحث في المهام أو الوكلاء</value></data>
+	<data name="Common.Task.Page.SelectTaskDescription"><value>اختر مهمة من القائمة للاحتفاظ بملخص تنفيذها وأحدث حالتها وتشغيلاتها الأخيرة مرئية.</value></data>
+	<data name="Common.Task.Page.SelectTaskTitle"><value>تحديد مهمة</value></data>
+	<data name="Common.Task.Page.StateHeader"><value>الحالة</value></data>
+	<data name="Common.Task.Page.TaskHeader"><value>المهمة</value></data>
+	<data name="Common.Task.Page.Title"><value>عمليات الوكيل</value></data>
+	<data name="Common.Task.Page.TotalTasksMetric"><value>إجمالي المهام</value></data>
+	<data name="Common.Task.Page.ViewAllButton"><value>عرض الكل</value></data>
+	<data name="Common.Task.Page.ViewRunsButton"><value>عرض التشغيلات</value></data>
+	<data name="Admin.Title"><value>الإدارة</value></data>
+	<data name="Admin.Description"><value>إنشاء المستخدمين والحفاظ على أمان الوصول.</value></data>
+	<data name="Admin.AuthMode.Label"><value>وضع المصادقة</value></data>
+	<data name="Admin.AuthMode.Description"><value>التبديل بين تسجيل الدخول القياسي بكلمة المرور وسير عمل تحديد الملف الشخصي المبسط في Home.</value></data>
+	<data name="Admin.AuthMode.StandardLabel"><value>قياسي</value></data>
+	<data name="Admin.AuthMode.StandardDescription"><value>استخدام شاشة تسجيل الدخول الحالية باسم المستخدم وكلمة المرور.</value></data>
+	<data name="Admin.AuthMode.HomeLabel"><value>Home</value></data>
+	<data name="Admin.AuthMode.HomeDescription"><value>إظهار منتقي الملفات الشخصية، ثم تسجيل الدخول باستخدام رمز PIN.</value></data>
+	<data name="Admin.AuthMode.PinRequirementTitle"><value>متطلبات رمز PIN</value></data>
+	<data name="Admin.AuthMode.PinRequirementDescription"><value>تحتاج الملفات الشخصية إلى رمز PIN قبل أن تتمكن من تسجيل الدخول عبر وضع Home.</value></data>
+	<data name="Admin.AuthMode.HomeRequiresPin"><value>يلزم وجود رمز PIN واحد على الأقل للمشغّل قبل تمكين وضع Home.</value></data>
+	<data name="Admin.AuthMode.PasswordFallbackHint"><value>يظل تسجيل الدخول بكلمة المرور متاحاً من شاشة تسجيل الدخول.</value></data>
+	<data name="Admin.AuthMode.SaveButton"><value>حفظ إعدادات المصادقة</value></data>
+	<data name="Admin.AuthSettings.Saved"><value>تم حفظ إعدادات المصادقة.</value></data>
+	<data name="Admin.User.CreateTitle"><value>إنشاء مستخدم</value></data>
+	<data name="Admin.User.CreateDescription"><value>قم بتعيين اسم المستخدم والبريد الإلكتروني وكلمة المرور للمستخدم الجديد.</value></data>
+	<data name="Admin.User.CreateButton"><value>إنشاء مستخدم</value></data>
+	<data name="Admin.User.DirectoryTitle"><value>دليل المستخدمين</value></data>
+	<data name="Admin.User.FullNamePlaceholder"><value>أحمد محمد</value></data>
+	<data name="Admin.User.UsernamePlaceholder"><value>ahmedmohamed</value></data>
+	<data name="Admin.User.EmailPlaceholder"><value>ahmed@example.com</value></data>
+	<data name="Admin.User.YouBadge"><value>أنت</value></data>
+	<data name="Admin.User.EditTitleAttribute"><value>تعديل المستخدم</value></data>
+	<data name="Admin.User.DeleteTitleAttribute"><value>حذف المستخدم</value></data>
+	<data name="Admin.User.ProfileTitle"><value>الملف الشخصي</value></data>
+	<data name="Admin.User.SaveProfileButton"><value>حفظ الملف الشخصي</value></data>
+	<data name="Admin.User.SaveRolesButton"><value>حفظ الأدوار</value></data>
+	<data name="Admin.User.PasswordResetTitle"><value>إعادة تعيين كلمة المرور</value></data>
+	<data name="Admin.User.ResetPasswordButton"><value>إعادة تعيين كلمة المرور</value></data>
+	<data name="Admin.User.ResetPasswordCurrentUserHint"><value>استخدم مربع حوار الملف الشخصي لتغيير كلمة المرور الخاصة بك.</value></data>
+	<data name="Admin.User.PinLoginTitle"><value>تسجيل الدخول برمز PIN</value></data>
+	<data name="Admin.User.PinHeader"><value>رمز PIN</value></data>
+	<data name="Admin.User.PinNewLabel"><value>رمز PIN جديد</value></data>
+	<data name="Admin.User.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Admin.User.PinConfirmLabel"><value>تأكيد رمز PIN</value></data>
+	<data name="Admin.User.PinRepeatPlaceholder"><value>تكرار رمز PIN</value></data>
+	<data name="Admin.User.PinChangeButton"><value>تغيير رمز PIN</value></data>
+	<data name="Admin.User.PinSetButton"><value>تعيين رمز PIN</value></data>
+	<data name="Admin.User.PinClearButton"><value>مسح رمز PIN</value></data>
+	<data name="Admin.User.PinHashesHint"><value>تُخزن رموز PIN العادية لتسجيل الدخول كتجزئات.</value></data>
+	<data name="Admin.User.CannotDeleteOwnAccount"><value>لا يمكنك حذف حسابك الخاص.</value></data>
+	<data name="Admin.User.DeleteConfirmTitle"><value>تأكيد الحذف</value></data>
+	<data name="Admin.User.DeleteConfirmMessage"><value>هل أنت متأكد من رغبتك في حذف المستخدم '{0}'؟ لا يمكن التراجع عن هذا الإجراء.</value></data>
+	<data name="Admin.GitHubSkills.ManageButton"><value>إدارة رمز GitHub</value></data>
+	<data name="Admin.OAuth.ManageButton"><value>إدارة موفري الخدمة</value></data>
+	<data name="Admin.OAuth.Title"><value>موفرو OAuth</value></data>
+	<data name="Admin.OAuth.Description"><value>تكوين تطبيقات Google و Microsoft OAuth المشتركة المستخدمة للحسابات المتصلة وعمليات التكامل المستقبلية.</value></data>
+	<data name="Admin.OAuth.SecretHint"><value>اترك السر فارغًا للاحتفاظ بالسر المخزن الحالي. امسح معرف العميل لتعطيل الموفر.</value></data>
+	<data name="Admin.OAuth.LoadingProviders"><value>جارٍ تحميل إعدادات الموفر...</value></data>
+	<data name="Admin.OAuth.GoogleDescription"><value>Gmail و Calendar و YouTube</value></data>
+	<data name="Admin.OAuth.MicrosoftDescription"><value>تكاملات Outlook و To-Do و Graph</value></data>
+	<data name="Admin.OAuth.ConfiguredStatus"><value>تم التكوين</value></data>
+	<data name="Admin.OAuth.ClientIdLabel"><value>معرّف العميل</value></data>
+	<data name="Admin.OAuth.ClientIdPlaceholder"><value>معرّف عميل {0}</value></data>
+	<data name="Admin.OAuth.ClientSecretLabel"><value>سر العميل</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderExists"><value>اتركه فارغًا للاحتفاظ بالسر الحالي</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderNew"><value>لصق سر العميل</value></data>
+	<data name="Admin.OAuth.SecretExists"><value>تم تخزين سر بالفعل.</value></data>
+	<data name="Admin.OAuth.SecretNotStored"><value>لم يتم تخزين أي سر بعد.</value></data>
+	<data name="Admin.OAuth.SaveButton"><value>حفظ {0}</value></data>
+	<data name="Admin.OAuth.ConfigurationSaved"><value>تم حفظ تكوين {0}.</value></data>
+	<data name="Common.Back"><value>رجوع</value></data>
+	<data name="Common.Forward"><value>إلى الأمام</value></data>
+	<data name="Common.Completed"><value>مكتمل</value></data>
+	<data name="Common.No"><value>لا</value></data>
+	<data name="Common.Ok"><value>موافق</value></data>
+	<data name="Common.Parameter"><value>المعلمة</value></data>
+	<data name="Common.ProfilePicture"><value>صورة الملف الشخصي</value></data>
+	<data name="Common.ProfilePicture.AgentMissing"><value>احفظ الوكيل قبل تغيير صورته.</value></data>
+	<data name="Common.ProfilePictureChange"><value>تغيير صورة الملف الشخصي</value></data>
+	<data name="Common.ProfilePicture.ChooseFromGallery"><value>الصور المضمنة</value></data>
+	<data name="Common.ProfilePicture.Current"><value>الحالي</value></data>
+	<data name="Common.ProfilePicture.GalleryDescription"><value>اختر صورة ملف شخصي مضمنة أو قم برفع صورتك الخاصة.</value></data>
+	<data name="Common.ProfilePicture.GalleryEmpty"><value>لا تتوفر صور مضمنة في الوقت الحالي.</value></data>
+	<data name="Common.ProfilePicture.GalleryLoadFailed"><value>تعذر تحميل معرض الصور.</value></data>
+	<data name="Common.ProfilePicture.GalleryTitle"><value>اختر صورة</value></data>
+	<data name="Common.ProfilePictureRequirements"><value>PNG أو JPEG أو WebP. الحد الأقصى 2 ميغابايت.</value></data>
+	<data name="Common.ProfilePicture.SeedOptionLabel"><value>الصورة المضمنة {0}</value></data>
+	<data name="Common.ProfilePicture.Selected"><value>تم التحديد</value></data>
+	<data name="Common.ProfilePicture.UnsupportedType"><value>يجب أن يكون الملف صورة بتنسيق PNG أو JPEG أو WebP.</value></data>
+	<data name="Common.ProfilePicture.UploadOwn"><value>رفع صورتك الخاصة</value></data>
+	<data name="Common.ProfilePicture.UseSelected"><value>استخدام هذه الصورة</value></data>
+	<data name="Common.Wallpaper"><value>خلفية الشاشة</value></data>
+	<data name="Common.Wallpaper.Change"><value>تغيير خلفية الشاشة</value></data>
+	<data name="Common.Wallpaper.ChooseFromGallery"><value>خلفيات الشاشة المضمنة</value></data>
+	<data name="Common.Wallpaper.Current"><value>الحالي</value></data>
+	<data name="Common.Wallpaper.Effects"><value>تأثيرات الخلفية والزجاج</value></data>
+	<data name="Common.Wallpaper.EffectsDescription"><value>قم بإيقاف التشغيل لإزالة خلفية الشاشة واستخدام أسطح صلبة غير شفافة.</value></data>
+	<data name="Common.Wallpaper.GalleryDescription"><value>اختر خلفية شاشة مضمنة أو قم برفع خلفيتك الخاصة.</value></data>
+	<data name="Common.Wallpaper.GalleryEmpty"><value>لا تتوفر خلفيات شاشة مضمنة في الوقت الحالي.</value></data>
+	<data name="Common.Wallpaper.GalleryLoadFailed"><value>تعذر تحميل معرض خلفيات الشاشة.</value></data>
+	<data name="Common.Wallpaper.GalleryTitle"><value>اختر خلفية شاشة</value></data>
+	<data name="Common.Wallpaper.Requirements"><value>PNG أو JPEG أو WebP. الحد الأقصى 10 ميغابايت. يوصى بـ 1920 × 1080.</value></data>
+	<data name="Common.Wallpaper.SeedOptionLabel"><value>خلفية الشاشة المضمنة {0}</value></data>
+	<data name="Common.Wallpaper.Selected"><value>تم التحديد</value></data>
+	<data name="Common.Wallpaper.UnsupportedType"><value>يجب أن يكون الملف صورة بتنسيق PNG أو JPEG أو WebP.</value></data>
+	<data name="Common.Wallpaper.UploadOwn"><value>رفع خلفيتك الخاصة</value></data>
+	<data name="Common.Wallpaper.UseSelected"><value>استخدام هذه الخلفية</value></data>
+	<data name="Common.Required"><value>مطلوب</value></data>
+	<data name="Common.Started"><value>بدأ</value></data>
+	<data name="Common.Status"><value>الحالة</value></data>
+	<data name="Common.Summary"><value>ملخص</value></data>
+	<data name="Common.Value"><value>القيمة</value></data>
+	<data name="Common.Yes"><value>نعم</value></data>
+	<data name="Common.Download.Complete"><value>اكتمل التنزيل!</value></data>
+	<data name="Common.Download.Failed"><value>فشل التنزيل.</value></data>
+	<data name="Common.Download.DownloadingModel"><value>جارٍ تنزيل النموذج</value></data>
+	<data name="Common.Download.UrlInvalid"><value>يجب أن يكون عنوان URL للتنزيل عنوان http أو https صالحًا.</value></data>
+	<data name="Common.ErrorPage.Title"><value>خطأ</value></data>
+	<data name="Common.ErrorPage.Heading"><value>خطأ.</value></data>
+	<data name="Common.ErrorPage.Message"><value>حدث خطأ أثناء معالجة طلبك.</value></data>
+	<data name="Common.ErrorPage.RequestId"><value>معرّف الطلب:</value></data>
+	<data name="Common.ErrorPage.DevelopmentMode"><value>وضع التطوير</value></data>
+	<data name="Common.ErrorPage.DevelopmentModeDetails"><value>التبديل إلى بيئة Development سيعرض معلومات أكثر تفصيلاً حول الخطأ الذي حدث.</value></data>
+	<data name="Common.ErrorPage.DevelopmentWarning"><value>يجب عدم تمكين بيئة Development للتطبيقات المنشورة. فقد يؤدي ذلك إلى عرض معلومات حساسة من الاستثناءات للمستخدمين النهائيين. لتصحيح الأخطاء محليًا، قم بتمكين بيئة Development عن طريق تعيين متغير البيئة ASPNETCORE_ENVIRONMENT إلى Development وإعادة تشغيل التطبيق.</value></data>
+	<data name="Common.Route.NotAuthorized"><value>ليس لديك الصلاحية لعرض هذه الصفحة.</value></data>
+	<data name="Common.Route.NotFound"><value>عذرًا، تعذر العثور على الصفحة التي طلبتها.</value></data>
+	<data name="Common.Validation.AllowedRange"><value>النطاق المسموح به: {0} - {1}</value></data>
+	<data name="Common.Validation.EnterValidNumber"><value>أدخل رقمًا صالحًا.</value></data>
+	<data name="Common.Validation.EnterWholeNumber"><value>أدخل عددًا صحيحًا.</value></data>
+	<data name="Common.Validation.MaximumLength"><value>الحد الأقصى للطول هو {0}.</value></data>
+	<data name="Common.Validation.MaximumValue"><value>الحد الأقصى للقيمة: {0}</value></data>
+	<data name="Common.Validation.MinimumLength"><value>الحد الأدنى للطول هو {0}.</value></data>
+	<data name="Common.Validation.MinimumValue"><value>الحد الأدنى للقيمة: {0}</value></data>
+	<data name="Common.Validation.SelectOption"><value>حدد خيارًا</value></data>
+	<data name="Common.Validation.SelectValidOption"><value>حدد خيارًا صالحًا.</value></data>
+	<data name="Common.Validation.Submit"><value>إرسال</value></data>
+	<data name="Common.Validation.ThisFieldRequired"><value>هذا الحقل مطلوب.</value></data>
+	<data name="Common.Task.RunsTitle"><value>التشغيلات - {0}</value></data>
+	<data name="Admin.User.DeleteTitle"><value>حذف المستخدم</value></data>
+	<data name="Dialog.ConfirmNewPasswordLabel"><value>تأكيد كلمة المرور الجديدة</value></data>
+	<data name="Dialog.ContentTypeException"><value>استثناء</value></data>
+	<data name="Dialog.CurrentPasswordLabel"><value>كلمة المرور الحالية</value></data>
+	<data name="Dialog.JsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorEgressTab"><value>البيانات الصادرة</value></data>
+	<data name="Dialog.NewPasswordLabel"><value>كلمة المرور الجديدة</value></data>
+	<data name="Dialog.PasswordLeaveBlankHelper"><value>اتركه فارغًا للاحتفاظ بكلمة المرور الحالية.</value></data>
+	<data name="Dialog.ReasoningTitle"><value>الاستدلال</value></data>
+	<data name="Dialog.VisualTab"><value>مرئي</value></data>
+	<data name="Common.Task.ScheduleKindLabel"><value>نوع الجدول الزمني</value></data>
+  <data name="Common.SignOut"><value>تسجيل الخروج</value></data>
+  <data name="Common.Unlock"><value>إلغاء القفل</value></data>
+  <data name="Dialog.VaultPassword.Title"><value>كلمة مرور الخزينة</value></data>
+  <data name="Dialog.VaultPassword.Description"><value>قم بتغيير كلمة المرور التي تفتح قفل بيانات اعتمادك المحفوظة والبيانات المحمية.</value></data>
+  <data name="Dialog.VaultPassword.Current"><value>كلمة مرور الخزينة الحالية</value></data>
+  <data name="Dialog.VaultPassword.New"><value>كلمة مرور الخزينة الجديدة</value></data>
+  <data name="Dialog.VaultPassword.Confirm"><value>تأكيد كلمة مرور الخزينة</value></data>
+  <data name="Dialog.VaultPassword.RecoveryWarning"><value>احفظ كلمة المرور هذه بأمان. لا يمكن لـ Oscova استردادها، ولا يمكن فتح البيانات المحمية بدونها.</value></data>
+  <data name="Dialog.VaultPassword.ChangeButton"><value>تغيير كلمة المرور</value></data>
+  <data name="Dialog.VaultPassword.ChangeSuccess"><value>تم تغيير كلمة مرور الخزينة الخاصة بك.</value></data>
+  <data name="Dialog.VaultPassword.LengthError"><value>يجب أن تتراوح كلمة مرور الخزينة بين 12 و256 حرفًا.</value></data>
+  <data name="Dialog.VaultPassword.ManageButton"><value>تغيير كلمة مرور الخزينة</value></data>
+  <data name="Dialog.VaultPassword.ConfirmationError"><value>تأكيد كلمة مرور الخزينة غير متطابق.</value></data>
+  <data name="Dialog.VaultPassword.SetupTitle"><value>إنشاء كلمة مرور الخزينة الخاصة بك</value></data>
+  <data name="Dialog.VaultPassword.SetupDescription"><value>أنت وحدك من يملك كلمة المرور هذه.</value></data>
+  <data name="Dialog.VaultPassword.SetupEncrypts"><value>تشفّر محادثاتك وذاكرتك وإعداداتك ومفاتيحك المحفوظة على هذا الجهاز.</value></data>
+  <data name="Dialog.VaultPassword.SetupSeparate"><value>وهي منفصلة عن كلمة مرور تسجيل الدخول.</value></data>
+  <data name="Dialog.VaultPassword.CreateButton"><value>إنشاء الخزينة</value></data>
+  <data name="Dialog.VaultPassword.UnlockTitle"><value>فتح قفل الخزينة الخاصة بك</value></data>
+  <data name="Dialog.VaultPassword.UnlockDescription"><value>أدخل كلمة مرور الخزينة لإلغاء قفل بيانات الاعتماد المحفوظة والبيانات المحمية.</value></data>
+  <data name="Dialog.VaultPassword.Incorrect"><value>كلمة مرور الخزينة غير صحيحة.</value></data>
+  <data name="Dialog.VaultPassword.StateLoadFailed"><value>تعذر تحميل حالة الخزينة.</value></data>
+  <data name="Dialog.DuressCredentials.AccountPassword"><value>كلمة مرور الحساب</value></data>
+  <data name="Dialog.DuressCredentials.AccountPasswordError"><value>كلمة مرور حسابك غير صحيحة.</value></data>
+  <data name="Dialog.DuressCredentials.Agents"><value>الوكلاء المطلوب حذفهم</value></data>
+  <data name="Dialog.DuressCredentials.Confirmation"><value>تأكيد كلمة مرور الإكراه</value></data>
+  <data name="Dialog.DuressCredentials.ConfirmationError"><value>تأكيد كلمة مرور الإكراه غير متطابق.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspace"><value>يتم الاحتفاظ بمساحة العمل الافتراضية دائمًا.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspaceError"><value>لا يمكن تحديد مساحة العمل الافتراضية.</value></data>
+  <data name="Dialog.DuressCredentials.DeleteThreads"><value>حذف جميع المحادثات</value></data>
+  <data name="Dialog.DuressCredentials.ClearSharedFolder"><value>إفراغ المجلد المشترك لجميع المستخدمين</value></data>
+  <data name="Dialog.DuressCredentials.Description"><value>استخدم كلمة مرور ثانية لتسجيل الدخول بشكل طبيعي مع تدمير بياناتك الخاصة المحددة نهائيًا.</value></data>
+  <data name="Dialog.DuressCredentials.DifferentError"><value>يجب أن تكون كلمة مرور الإكراه مختلفة عن كلمة مرور حسابك.</value></data>
+  <data name="Dialog.DuressCredentials.LengthError"><value>يجب أن تتراوح كلمة مرور الإكراه بين 12 و256 حرفًا.</value></data>
+  <data name="Dialog.DuressCredentials.LoadFailed"><value>تعذر تحميل خيارات الإكراه.</value></data>
+  <data name="Dialog.DuressCredentials.NoTargets"><value>لا يتوفر أي وكلاء أو مهام أو مساحات عمل قابلة للتحديد.</value></data>
+  <data name="Dialog.DuressCredentials.OpenButton"><value>تعيين بيانات اعتماد الإكراه</value></data>
+  <data name="Dialog.DuressCredentials.Password"><value>كلمة مرور الإكراه</value></data>
+  <data name="Dialog.DuressCredentials.PriorSelections"><value>لا يمكن عرض الخيارات المحفوظة. يبدأ هذا النموذج فارغًا، ويؤدي الحفظ إلى استبدال السياسة بأكملها.</value></data>
+  <data name="Dialog.DuressCredentials.Save"><value>حفظ بيانات اعتماد الإكراه</value></data>
+  <data name="Dialog.DuressCredentials.SaveSuccess"><value>تم حفظ بيانات اعتماد الإكراه.</value></data>
+  <data name="Dialog.DuressCredentials.SelectionTooLarge"><value>تحديدك كبير جدًا. قم بإزالة بعض العناصر وحاول مرة أخرى.</value></data>
+  <data name="Dialog.DuressCredentials.SharedAgentError"><value>لا يمكن تحديد وكيل مشترك.</value></data>
+  <data name="Dialog.DuressCredentials.TargetNameTooLong"><value>أحد الأسماء المحددة طويل جدًا.</value></data>
+  <data name="Dialog.DuressCredentials.Tasks"><value>المهام المطلوب حذفها</value></data>
+  <data name="Dialog.DuressCredentials.Title"><value>بيانات اعتماد الإكراه</value></data>
+  <data name="Dialog.DuressCredentials.TwoFactorError"><value>لا يمكن تعيين بيانات اعتماد الإكراه أثناء تفعيل المصادقة الثنائية.</value></data>
+  <data name="Dialog.DuressCredentials.Unavailable"><value>أحد العناصر المحددة لم يعد متوفرًا. أعد فتح النموذج واختر مرة أخرى.</value></data>
+  <data name="Dialog.DuressCredentials.Workspaces"><value>مساحات العمل المطلوب مسحها</value></data>
+  <data name="Dialog.DuressCredentials.WorkspaceClearing"><value>يتم حذف محتويات مساحة العمل، ولكن مساحة العمل نفسها تبقى.</value></data>
+  <data name="Dialog.Security.Title"><value>الأمان</value></data>
+  <data name="Dialog.DuressCredentials.Pin"><value>رمز PIN للإكراه (اختياري)</value></data>
+  <data name="Dialog.DuressCredentials.PinConfirmation"><value>تأكيد رمز PIN للإكراه</value></data>
+  <data name="Dialog.DuressCredentials.PinHelp"><value>تحذف بيانات اعتماد الإكراه البيانات المحددة نفسها نهائيًا. يؤدي الحفظ إلى استبدال جميع الخيارات. اترك حقلي PIN فارغين لإزالة رمز الإكراه. يجب تعيين رمز PIN لتسجيل الدخول أولًا.</value></data>
+  <data name="Dialog.DuressCredentials.PinError"><value>أدخل رمزين متطابقين من 6–64 رقمًا (0–9)، أو اترك الحقلين فارغين.</value></data>
+  <data name="Dialog.DuressCredentials.PinRequired"><value>عيّن رمز PIN لتسجيل الدخول قبل رمز الإكراه.</value></data>
+  <data name="Dialog.DuressCredentials.PinDifferent"><value>اختر رمزًا مختلفًا عن رمز تسجيل الدخول.</value></data>
+  <data name="Admin.User.PinNotAllowedError"><value>لا يمكن استخدام هذا الرمز. اختر رمزًا آخر.</value></data>
+  <data name="Admin.User.PinLengthError"><value>يجب أن يتكون الرمز من 6–64 رقمًا (0–9).</value></data>
+  <data name="Common.Reconnect.Title" xml:space="preserve"><value>الاتصال بـ Oscova</value></data>
+  <data name="Common.Reconnect.Connecting" xml:space="preserve"><value>جارٍ إعادة الاتصال…</value></data>
+  <data name="Common.Reconnect.Countdown" xml:space="preserve"><value>ستتم المحاولة مجددًا خلال {0} ثانية.</value></data>
+  <data name="Common.Reconnect.Failed" xml:space="preserve"><value>تعذرت إعادة الاتصال. تحقق من اتصالك وحاول مرة أخرى.</value></data>
+  <data name="Common.Reconnect.Expired" xml:space="preserve"><value>انتهت جلستك. أعد تحميل الصفحة للمتابعة. قد تفقد التغييرات غير المحفوظة.</value></data>
+  <data name="Common.Reconnect.Paused" xml:space="preserve"><value>جلستك متوقفة مؤقتًا. استأنف للمتابعة.</value></data>
+  <data name="Common.Reconnect.Resuming" xml:space="preserve"><value>جارٍ استئناف جلستك…</value></data>
+  <data name="Common.Reconnect.ResumeFailed" xml:space="preserve"><value>تعذر استئناف جلستك. حاول مرة أخرى.</value></data>
+  <data name="Common.Reconnect.Updating" xml:space="preserve"><value>ستُعاد تحميل هذه الصفحة عند إعادة تشغيل Oscova. قد تحتاج إلى تسجيل الدخول مرة أخرى.</value></data>
+  <data name="Common.Reload" xml:space="preserve"><value>إعادة التحميل</value></data>
+  <data name="Common.Resume" xml:space="preserve"><value>استئناف</value></data>
+	<data name="Common.Task.NotifyOnCompletion"><value>الإشعار عند الاكتمال</value></data>
+	<data name="Common.Task.NotifyOnCompletionHint"><value>أرسل إشعارًا إضافيًا إلى صندوق الوارد في التطبيق بعد نجاح التشغيل. تظهر إشعارات الفشل دائمًا في صندوق الوارد في التطبيق.</value></data>
+<data name="Notifications.Task.SkippedLowBattery" xml:space="preserve"><value>تم تخطي هذه المهمة لأن الحاسوب يعمل بالبطارية وشحنها أقل من الحد المحدد. شغّلها يدويًا عندما تكون مستعدًا.</value></data>
+<data name="Notifications.Task.BatteryInformationUnavailable" xml:space="preserve"><value>معلومات البطارية أو اتصال الكهرباء غير متاحة على الحاسوب الذي يشغّل Oscova.</value></data>
+<data name="Admin.ExecutionPermissionsTitle" xml:space="preserve"><value>أذونات التنفيذ</value></data><data name="Admin.PermissionProjects" xml:space="preserve"><value>المشاريع</value></data><data name="Admin.PermissionWorkspaceShell" xml:space="preserve"><value>صدفة مساحة العمل</value></data><data name="Admin.PermissionProjectShell" xml:space="preserve"><value>صدفة المشروع</value></data><data name="Admin.ExecutionPermissionsHint" xml:space="preserve"><value>يمنع تعطيل الإذن العمل الجديد ويطلب إلغاء العمل الجاري المتأثر.</value></data><data name="Admin.ExecutionPermissionsSaved" xml:space="preserve"><value>تم حفظ أذونات التنفيذ.</value></data>  <data name="Common.DialogOperatorVaultTitle" xml:space="preserve">
+    <value>في انتظار المشغّل</value>
+  </data>
+  <data name="Common.DialogOperatorVaultDescription" xml:space="preserve">
+    <value>يجب على المشغّل فتح خزنته. ثم اختر إعادة المحاولة للمتابعة.</value>
+  </data>
+  <data name="Common.AdminPermissionApprovedSkills" xml:space="preserve">
+    <value>تثبيت المهارات من المستودعات المعتمدة</value>
+  </data>
+  <data name="Common.AdminPermissionCustomSkills" xml:space="preserve">
+    <value>رفع المهارات المخصصة وإنشاؤها وتحريرها</value>
+  </data>
+  <data name="Common.AdminPermissionPersonalMcp" xml:space="preserve">
+    <value>إدارة اتصالات MCP الشخصية</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedTitle" xml:space="preserve">
+    <value>تمت مقاطعة العمل</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedBody" xml:space="preserve">
+    <value>جارٍ إيقاف العمل المتأثر بسبب تغيير إعداداته. راجع الإعدادات قبل بدء تشغيل جديد.</value>
+  </data>
+  <data name="Governance.Applying" xml:space="preserve"><value>جارٍ إيقاف العمل المتأثر وتطبيق التغييرات…</value></data>
+  <data name="Governance.SharedProviders" xml:space="preserve"><value>يوفر المشغّل المزوّدين. احتفظ باختياره الافتراضي أو اختر مزوّدًا آخر متاحًا.</value></data>
+  <data name="Governance.OperatorDefault" xml:space="preserve"><value>اختيار المشغّل الافتراضي: {0}</value></data>
+  <data name="Governance.ProviderUnavailable" xml:space="preserve"><value>المزوّد المحدد غير متاح. اختر مزوّدًا آخر.</value></data>
+  <data name="Governance.ConfirmInterruption" xml:space="preserve"><value>سيوقف هذا التغيير العمل الذي يستخدم هذا المورد. هل تريد تطبيقه الآن؟</value></data>
+  <data name="Governance.ChangesSaved" xml:space="preserve"><value>تم حفظ التغييرات.</value></data>
+  <data name="Notifications.Providers.AttentionTitle" xml:space="preserve"><value>اختر مزوّد نموذج متاحًا</value></data>
+  <data name="Notifications.Providers.AttentionBody" xml:space="preserve"><value>أحد مزوّدي النماذج المحفوظين غير متاح. اختر مزوّدًا متاحًا في الإعدادات وراجع اختيارات المزوّد في وكلائك ومهامك.</value></data>
+  <data name="Notifications.Plugins.SetupTitle" xml:space="preserve"><value>إعداد الإضافة يحتاج إلى انتباه</value></data>
+  <data name="Notifications.Plugins.SetupBody" xml:space="preserve"><value>تعذر تجهيز {0} على {1}. {2} استخدم إعادة المحاولة بعد تصحيح الإعداد.</value></data>
+  <data name="Notifications.Plugins.DeviceUnavailable" xml:space="preserve"><value>غير متاح مؤقتًا على {0}. تم إخطار المشغّل.</value></data>
+  <data name="Common.AdminPermissionPersonalModels" xml:space="preserve"><value>إدارة موفري النماذج الشخصية</value></data>
+  <data name="Common.AdminPermissionSharedFolder" xml:space="preserve"><value>المجلد المشترك</value></data>
+  <data name="ModelBudgetTitle" xml:space="preserve"><value>ميزانية النموذج</value></data>
+  <data name="ModelBudgetDaily" xml:space="preserve"><value>الحد اليومي (دولار أمريكي)</value></data>
+  <data name="ModelBudgetMonthly" xml:space="preserve"><value>الحد الشهري (دولار أمريكي)</value></data>
+  <data name="ModelBudgetAlerts" xml:space="preserve"><value>إشعاري عند بلوغ 80% من الحد</value></data>
+  <data name="ModelBudgetBlank" xml:space="preserve"><value>تقديرات بالدولار الأمريكي. اترك الحد فارغًا لعدم تقييده. للموفرين المشتركين ميزانية واحدة لجميع المستخدمين.</value></data>
+  <data name="ModelBudgetIncomplete" xml:space="preserve"><value>التقدير غير مكتمل. تعذّر تسعير بعض الاستخدام أو قراءته.</value></data>
+  <data name="ModelBudgetLocal" xml:space="preserve"><value>الاستدلال المحلي: لا توجد تكلفة مقدّرة.</value></data>
+  <data name="ModelBudgetOwnerExceeded" xml:space="preserve"><value>تم بلوغ ميزانية {0}. يمكنك متابعة هذه العملية على أي حال.</value></data>
+  <data name="ModelBudgetSharedExceeded" xml:space="preserve"><value>تم بلوغ ميزانية {0}. تواصل مع المشغّل أو اختر موفر نماذج آخر.</value></data>
+  <data name="ModelBudgetContinue" xml:space="preserve"><value>المتابعة على أي حال</value></data>
+  <data name="ModelBudgetTaskSkipped" xml:space="preserve"><value>تم بلوغ ميزانية النموذج. تم تخطي هذه المحاولة. تبقى المهمة مجدولة.</value></data>
+  <data name="ModelBudgetSearchPaused" xml:space="preserve"><value>تم إيقاف البحث الدلالي والفهرسة مؤقتًا لبلوغ ميزانية التضمين. أعد المحاولة بعد إعادة تعيين الميزانية أو تعديل المالك للحد.</value></data>
+  <data name="ModelBudgetThreshold" xml:space="preserve"><value>بلغ {0} ما لا يقل عن 80% من حد الإنفاق. افتح النماذج والموفرين لمراجعة الميزانية.</value></data>
+  <data name="ModelBudgetSet" xml:space="preserve"><value>تعيين الميزانية</value></data>
+  <data name="ModelBudgetEdit" xml:space="preserve"><value>تعديل الميزانية</value></data>
+  <data name="ModelBudgetDailyUsage" xml:space="preserve"><value>اليوم ${0:0.##} من ${1:0.##}</value></data>
+  <data name="ModelBudgetMonthlyUsage" xml:space="preserve"><value>الشهر ${0:0.##} من ${1:0.##}</value></data>
+  <data name="ModelBudgetReset" xml:space="preserve"><value>تم بلوغ الميزانية. إعادة التعيين {0:g}.</value></data>
+  <data name="ModelBudgetSharedReset" xml:space="preserve"><value>تم بلوغ الميزانية. إعادة التعيين {0:g}. اختر مزودًا آخر أو تواصل مع المشغّل.</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdle" xml:space="preserve"><value>الانتظار أثناء استخدامي للمزوّد</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdleHint" xml:space="preserve"><value>تنتظر عمليات البدء المجدولة انتهاء طلباتك النشطة لدى مزوّد المهمة. يبدأ التشغيل الآن والويب هوك والمهام المتسلسلة فورًا.</value></data>
+  <data name="Common.Task.InstructionDefaultUnavailable" xml:space="preserve"><value>تعليمات المهمة الافتراضية غير متاحة. فعّل إضافتها وأعد التشغيل.</value></data>
+  <data name="Notifications.Channels.SavedNotApplied" xml:space="preserve"><value>تم حفظ الإعدادات، لكن تعذر تطبيقها. لا يزال الاتصال الحالي يعمل. تحقق من الإعدادات وحاول مرة أخرى.</value></data>
+  <data name="Common.ReleaseNotes" xml:space="preserve"><value>ملاحظات الإصدار</value></data>
+  <data name="Common.RecordLabel.DeletedAgent" xml:space="preserve"><value>وكيل محذوف</value></data>
+  <data name="Common.RecordLabel.DeletedProvider" xml:space="preserve"><value>مزود محذوف</value></data>
+  <data name="Common.RecordLabel.DeletedMcpServer" xml:space="preserve"><value>خادم MCP محذوف</value></data>
+  <data name="Common.RecordLabel.OwnDestination" xml:space="preserve"><value>وجهة خاصة</value></data>
+  <data name="Common.RecordLabel.OtherUsersAgents" xml:space="preserve"><value>وكلاء المستخدمين الآخرين</value></data>
+  <data name="Common.RecordLabel.UsersOwnProviders" xml:space="preserve"><value>مزودو المستخدمين الخاصون</value></data>
+  <data name="Common.RecordLabel.UsersOwnModels" xml:space="preserve"><value>نماذج المستخدمين الخاصة</value></data>
+  <data name="Common.RecordLabel.UsersOwnTools" xml:space="preserve"><value>أدوات المستخدمين الخاصة</value></data>
+  <data name="Dialog.LogsScope.Label" xml:space="preserve"><value>نطاق السجلات</value></data>
+  <data name="Dialog.LogsFile.Label" xml:space="preserve"><value>ملف السجل</value></data>
+  <data name="Common.PreviousPage" xml:space="preserve"><value>الصفحة السابقة</value></data>
+  <data name="Common.NextPage" xml:space="preserve"><value>الصفحة التالية</value></data>
+  <data name="Common.TimeRange" xml:space="preserve"><value>النطاق الزمني</value></data>
+  <data name="Common.Validation.EnterValidEmail" xml:space="preserve"><value>أدخل عنوان بريد إلكتروني صالحًا.</value></data>
+	<data name="Common.Task.ApprovalModeLabel"><value>وضع الموافقة</value></data>
+	<data name="Common.Task.ApprovalModeAutoReject"><value>رفض تلقائي للأدوات التي تتطلب موافقة</value></data>
+	<data name="Common.Task.ApprovalModeAutoApprove"><value>موافقة تلقائية للأدوات التي تتطلب موافقة</value></data>
+	<data name="Common.Task.ApprovalModeHint"><value>لا يوجد مستخدم تفاعلي للمهام الخلفية. يجب اتخاذ قرار الموافقة على الأدوات تلقائيًا.</value></data>
+  <data name="Common.Task.ExternalTrigger.EndpointLabel" xml:space="preserve"><value>نقطة نهاية webhook</value></data>
+  <data name="Common.Task.ExternalTrigger.ParameterKindLabel" xml:space="preserve"><value>نوع المعلمة</value></data>
+</root>

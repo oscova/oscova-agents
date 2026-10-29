@@ -1,0 +1,56 @@
+@using Oscova.Agents.Definitions
+@using Oscova.Agents.Core.ApiContracts.Agents
+@inject ManagementApiClient ManagementApiClient
+@inject SettingsApiClient SettingsApiClient
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@if (_configuration is null)
+{
+    <p class="text-sm opacity-70" role="status">@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</p>
+}
+else
+{
+    <AgentEditorForm Definition="@_configuration.MainAgent"
+                     GoalMaxIterations="@(_configuration.GoalIterationLimits.TryGetValue(_configuration.MainAgent.Id, out var goalLimit) ? (int?)goalLimit : null)"
+                     ToolGroups="@_configuration.ToolGroups"
+                     ExposableAgents="@_configuration.ExposableAgents"
+                     AvailableSkills="@_configuration.AvailableSkills"
+                     AvailableModelProviders="@_configuration.AvailableModelProviders"
+                     AvailableWorkspaces="@_configuration.AvailableWorkspaces"
+                     AvailableUsers="@_configuration.AvailableUsers"
+                     CanManageSharedAgents="@_configuration.CanManageSharedAgents"
+                     CanUseSharedFolder="@_configuration.CanUseSharedFolder"
+                     IsEgressDisabled="@_isEgressDisabled"
+                     OnSaveRequested="SaveAsync" />
+}
+
+@code {
+    private AgentConfiguration? _configuration;
+    private bool _isEgressDisabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task SaveAsync(AgentDefinition draft)
+    {
+        if (_configuration is null)
+        {
+            return;
+        }
+
+        await ManagementApiClient.SaveMainAgentAsync(draft);
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var configurationTask = ManagementApiClient.GetAgentConfigurationAsync();
+        var privacyTask = SettingsApiClient.GetPrivacySettingsAsync();
+        await Task.WhenAll(configurationTask, privacyTask);
+
+        _configuration = await configurationTask;
+        _isEgressDisabled = (await privacyTask).IsLocalOnly;
+    }
+}

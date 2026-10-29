@@ -1,0 +1,30 @@
+@inject SettingsPageRegistry SettingsRegistry
+@inject IStringLocalizer<SettingsText> Loc
+
+@{
+    var sectionInfo = SettingsRegistry.GetSectionInfo(ActiveSection) ?? SettingsRegistry.Sections[0];
+}
+
+<PageTitle>@SettingsRegistry.GetSectionLabel(sectionInfo.Key, Loc)</PageTitle>
+
+<div @key="ActiveSection" class="custom-settings-page custom-scrollbar @(ActiveSection is "general" or "notifications" or "speech" ? "custom-settings-preferences" : string.Empty)">
+    <div class="custom-settings-content">
+        <header class="custom-settings-heading">
+            <div class="custom-settings-title">
+                <h1>@SettingsRegistry.GetSectionLabel(sectionInfo.Key, Loc)</h1>
+                @if ((sectionInfo.HelpTopic ?? HelpTopicRegistry.ResolveForSection(ActiveSection)) is { } helpTopic)
+                {
+                    <HelpTriggerButton Topic="@helpTopic" />
+                }
+            </div>
+            <p>@SettingsRegistry.GetSectionDescription(sectionInfo.Key, Loc)</p>
+        </header>
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string ActiveSection { get; set; } = "general";
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+}
+

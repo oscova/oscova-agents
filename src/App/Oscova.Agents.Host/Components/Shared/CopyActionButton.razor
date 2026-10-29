@@ -1,0 +1,99 @@
+@* Copies text and provides the shared clipboard feedback state. *@
+@implements IDisposable
+@inject IStringLocalizer<ChatText> Loc
+@inject IJSRuntime JS
+@inject IToastService ToastService
+@inject ILogger<CopyActionButton> Logger
+
+<button type="button"
+        class="@(Class ?? $"btn btn-ghost btn-square {SizeClass}") @(_isCopied ? "text-success" : null)"
+        title="@ActionLabel"
+        aria-label="@ActionLabel"
+        aria-live="polite"
+        @onclick="HandleCopyAsync">
+    <iconify-icon icon="@(_isCopied ? "lucide:check" : "lucide:copy")"
+                  width="@IconSize"
+                  height="@IconSize"></iconify-icon>
+    @if (Label is not null) { <span>@ActionLabel</span> }
+</button>
+
+@code {
+    private static readonly TimeSpan CopiedStateDuration = TimeSpan.FromSeconds(2);
+
+    private bool _isCopied;
+    private bool _isDisposed;
+    private int _copyAttempt;
+
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    [Parameter]
+    public Func<Task<string>>? TextProvider { get; set; }
+
+    [Parameter]
+    public string SizeClass { get; set; } = "btn-sm";
+
+    [Parameter]
+    public int IconSize { get; set; } = 16;
+
+    private string ActionLabel => _isCopied
+        ? Loc.GetOrDefault(ChatTextKeys.ResponseCopiedLabel, "Copied")
+        : Label ?? Loc.GetOrDefault(ChatTextKeys.ResponseCopyLabel, "Copy");
+
+    private async Task HandleCopyAsync()
+    {
+        var attempt = ++_copyAttempt;
+        _isCopied = false;
+
+        try
+        {
+            var text = TextProvider is null ? Text : await TextProvider();
+            await using var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/utils.js");
+            if (!await utilsModule.InvokeAsync<bool>("copyToClipboard", text))
+            {
+                ShowFailure(attempt);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to copy content to the clipboard.");
+            ShowFailure(attempt);
+            return;
+        }
+
+        if (_isDisposed || attempt != _copyAttempt)
+        {
+            return;
+        }
+
+        _isCopied = true;
+        StateHasChanged();
+        await Task.Delay(CopiedStateDuration);
+
+        if (_isDisposed || attempt != _copyAttempt)
+        {
+            return;
+        }
+
+        _isCopied = false;
+    }
+
+    private void ShowFailure(int attempt)
+    {
+        if (!_isDisposed && attempt == _copyAttempt)
+        {
+            ToastService.Show(
+                Loc.GetOrDefault(ChatTextKeys.ResponseCopyFailed, "Unable to copy."),
+                ToastType.Error);
+        }
+    }
+
+    public void Dispose()
+    {
+        _isDisposed = true;
+    }
+}

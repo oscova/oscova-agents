@@ -1,0 +1,67 @@
+@* Reusable chat bubble with custom-theme-styled profile picture and message layout *@
+
+<div class="chat @(IsUser ? "chat-end" : "chat-start") @(!IsUser && !string.IsNullOrWhiteSpace(AssistantName) ? "custom-chat-speaker" : null)">
+    <div class="chat-image avatar">
+        <div class="w-10">
+            @if (IsUser && !string.IsNullOrWhiteSpace(UserPictureUrl))
+            {
+                <div class="bg-base-200 mask mask-squircle flex size-10 items-center justify-center overflow-hidden">
+                    <img src="@UserPictureUrl" alt="" />
+                </div>
+            }
+            else if (IsUser)
+            {
+                <div class="bg-primary text-primary-content mask mask-squircle flex size-10 items-center justify-center">
+                    <iconify-icon icon="lucide:user" width="20" height="20"></iconify-icon>
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(AssistantPictureUrl))
+            {
+                <div class="bg-base-200 mask mask-squircle flex size-10 items-center justify-center overflow-hidden">
+                    <img src="@AssistantPictureUrl" alt="" />
+                </div>
+            }
+            else
+            {
+                <div class="bg-neutral text-neutral-content mask mask-squircle flex size-10 items-center justify-center">
+                    <span class="text-xs font-medium">@AssistantInitials</span>
+                </div>
+            }
+        </div>
+    </div>
+    @if (!IsUser && !string.IsNullOrWhiteSpace(AssistantName))
+    {
+        <div class="chat-header text-xs font-medium text-base-content/70">@AssistantName</div>
+    }
+    <div class="chat-bubble @BubbleClass text-sm">
+        @ChildContent
+    </div>
+    @if (FooterContent is not null || Timestamp.HasValue)
+    {
+        <div class="chat-footer text-base-content/60 flex items-center gap-1 @ExtraFooterClass">
+            @FooterContent
+            @if (Timestamp.HasValue)
+            {
+                <span>@Timestamp.Value.ToUserTime(UserTimeZone).ToString("t", CultureInfo.CurrentCulture)</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter(Name = "UserTimeZone")] public TimeZoneInfo UserTimeZone { get; set; } = TimeZoneInfo.Local;
+    [Parameter] public bool IsUser { get; set; }
+    [Parameter] public string? AssistantName { get; set; }
+    [Parameter] public string AssistantInitials { get; set; } = "AI";
+    [Parameter] public string? AssistantPictureUrl { get; set; }
+    [Parameter] public string? UserPictureUrl { get; set; }
+    [Parameter] public string? ExtraBubbleClass { get; set; }
+    [Parameter] public string? ExtraFooterClass { get; set; }
+    [Parameter] public DateTimeOffset? Timestamp { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    private string BubbleClass => IsUser
+        ? "chat-bubble-primary"
+        : $"bg-base-200 text-base-content {ExtraBubbleClass}";
+}

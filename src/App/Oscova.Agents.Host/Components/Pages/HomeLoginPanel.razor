@@ -1,0 +1,277 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.WebUtilities
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Core
+@using Oscova.Agents.Infrastructure.Auth
+@using Oscova.Agents.Host.Server.Services
+@inject UserManager<ApplicationUser> UserManager
+@inject ILogger<HomeLoginPanel> Logger
+@inject LoginTicketService LoginTickets
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<AuthText> Loc
+
+<SplitAuthLayout Title="@(Loc.GetOrDefault(AuthTextKeys.HomeTitle, "Who's using Oscova?"))" Subtitle="@(Loc.GetOrDefault(AuthTextKeys.HomeSubtitle, "Choose a profile to continue, or use password sign-in instead."))">
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="alert alert-error mb-4" role="alert" aria-live="assertive">
+            <span>@_error</span>
+        </div>
+    }
+
+    <SignInRetryNotice RetryUntil="@_retryUntil" WasBlocked="@_wasBlocked" OnExpired="@ClearDisplayedWait" />
+    @if (_profiles.Count == 0)
+    {
+        <div class="alert alert-warning">
+            <span>@Loc.GetOrDefault(AuthTextKeys.NoProfilesMessage, "No profiles are available yet.")</span>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-6">
+            <div>
+                <p class="fieldset-label mb-2 text-sm font-medium">@Loc.GetOrDefault(AuthTextKeys.ProfilesLabel, "Profiles")</p>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    @foreach (var profile in _profiles)
+                    {
+                        var isSelected = string.Equals(_selectedUser?.Id, profile.Id, StringComparison.Ordinal);
+
+                        <button type="button"
+                                class="hover:bg-base-200 rounded-box cursor-pointer border border-transparent p-1 text-start transition-all @(isSelected ? "!border-primary/20 !bg-primary/10 text-primary" : string.Empty)"
+                                @onclick="() => SelectProfileAsync(profile)">
+                            <div class="bg-neutral text-neutral-content rounded-box flex aspect-square w-full items-center justify-center" aria-hidden="true">
+                                <span class="text-2xl font-medium">@StringUtils.GetInitials(profile.FullName)</span>
+                            </div>
+                            <div class="mt-2 px-1 pb-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <p class="truncate text-sm font-medium">@profile.FullName</p>
+                                </div>
+                                <p class="text-base-content/60 truncate text-xs">@($"@{profile.UserName}")</p>
+                            </div>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            @if (_selectedUser is not null)
+            {
+                <EditForm Model="_pinModel" OnValidSubmit="SubmitPinAsync" class="space-y-4">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-sm text-error" />
+
+                    <div class="rounded-box bg-base-200/50 border-base-300 space-y-4 border p-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-medium">@_selectedUser.FullName</p>
+                                <p class="text-base-content/60 text-xs">@Loc.GetOrDefault(AuthTextKeys.PinHelp, "Enter PIN to sign in.")</p>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm" @onclick="ClearSelection">
+                                @Loc.GetOrDefault(AuthTextKeys.SwitchProfileButton, "Switch")
+                            </button>
+                        </div>
+
+                        <fieldset class="fieldset" disabled="@_isBusy">
+                            <legend class="fieldset-legend">@Loc.GetOrDefault(AuthTextKeys.PinLabel, "PIN")</legend>
+                            <label class="input w-full focus:outline-0">
+                                <iconify-icon icon="lucide:key-round" class="text-base-content/80 size-5"></iconify-icon>
+                                <InputText class="grow focus:outline-0"
+                                           placeholder="@(Loc.GetOrDefault(AuthTextKeys.PinPlaceholder, "6–64 digit PIN"))"
+                                           type="@(_showPin ? "text" : "password")"
+                                           @bind-Value="_pinModel.Pin"
+                                           inputmode="numeric" minlength="@PinPolicy.MinimumLength" maxlength="@PinPolicy.MaximumLength" aria-label="@Loc.GetOrDefault(AuthTextKeys.PinLabel, "PIN")" autocomplete="one-time-code" />
+                                <label class="swap btn btn-xs btn-ghost btn-circle text-base-content/60">
+                                    <input type="checkbox" @bind="_showPin" aria-label="@(Loc.GetOrDefault(AuthTextKeys.ShowPinLabel, "Show PIN"))" />
+                                    <iconify-icon icon="lucide:eye" class="swap-off size-4"></iconify-icon>
+                                    <iconify-icon icon="lucide:eye-off" class="swap-on size-4"></iconify-icon>
+                                </label>
+                            </label>
+                        </fieldset>
+
+                        <button class="btn btn-primary btn-block gap-3" type="submit" disabled="@(_isBusy || _retryUntil is not null)" aria-busy="@_isBusy">
+                            @if (_isBusy)
+                            {
+                                <span class="loading loading-dots loading-sm"></span>
+                                <span>@Loc.GetOrDefault(AuthTextKeys.SigningInButton, "Signing in...")</span>
+                            }
+                            else
+                            {
+                                <span class="iconify lucide--log-in size-4" aria-hidden="true"></span>
+                                <span>@(_isRetry ? Loc.GetOrDefault(AuthTextKeys.TryAgainButton, "Try again") : Loc.GetOrDefault(AuthTextKeys.ContinueButton, "Continue"))</span>
+                            }
+                        </button>
+                    </div>
+                </EditForm>
+            }
+
+            <div class="text-center text-sm">
+                <button type="button" class="btn btn-ghost btn-sm text-base-content/70" @onclick="OpenAdminLogin">
+                    @Loc.GetOrDefault(AuthTextKeys.AdminPasswordSignInButton, "Password sign-in")
+                </button>
+            </div>
+        </div>
+    }
+</SplitAuthLayout>
+
+@code {
+    private DateTimeOffset? _retryUntil;
+    private bool _wasBlocked;
+    private bool _isRetry;
+
+    private void ClearDisplayedWait()
+    {
+        _retryUntil = null;
+        _error = null;
+    }
+
+    private readonly PinLoginModel _pinModel = new();
+    private readonly List<LoginProfile> _profiles = [];
+    private LoginProfile? _selectedUser;
+    private bool _isBusy;
+    private bool _showPin;
+    private string? _error;
+    private string? _pendingNavUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _pinModel.PinValidationErrorProvider = () => Loc.GetOrDefault(AuthTextKeys.PinValidationError, "PIN must be 6–64 digits.");
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+        if (query.TryGetValue("e", out var e) && !string.IsNullOrWhiteSpace(e))
+        {
+            _error = e.ToString() switch
+            {
+                "invalid_ticket" => Loc.GetOrDefault(AuthTextKeys.PinSessionExpiredError, "Your sign-in session expired. Please try again."),
+                "invalid_credentials" => Loc.GetOrDefault(AuthTextKeys.SignInMismatch, "That didn't match. Try again."),
+                "invalid_profile" => Loc.GetOrDefault(AuthTextKeys.InvalidProfileError, "That profile is no longer available."),
+                _ => null
+            };
+
+            var clean = NavigationManager.GetUriWithQueryParameter("e", (string?)null);
+            NavigationManager.NavigateTo(clean, replace: true);
+        }
+
+        // The internal credential owner is never a selectable sign-in profile.
+        var users = await UserManager.Users.AsNoTracking()
+            .Where(user => user.Id != WellKnownUsers.SystemId).OrderBy(user => user.UserName)
+            .Select(user => new { user.Id, user.UserName, user.FullName }).ToListAsync();
+        foreach (var user in users)
+        {
+            _profiles.Add(new LoginProfile
+            {
+                Id = user.Id,
+                UserName = user.UserName ?? string.Empty,
+                FullName = string.IsNullOrWhiteSpace(user.FullName)
+                    ? (user.UserName ?? Loc.GetOrDefault(AuthTextKeys.ProfileFallbackName, "User"))
+                    : user.FullName
+            });
+        }
+        if (query.TryGetValue("failure", out var failureToken) && LoginTickets.TryConsumeFailure(failureToken.ToString(), out var failure) && failure is not null)
+        {
+            _selectedUser = _profiles.FirstOrDefault(profile => string.Equals(profile.Id, failure.UserId, StringComparison.Ordinal));
+            _retryUntil = failure.RetryUntil;
+            _wasBlocked = failure.WasBlocked;
+            _isRetry = true;
+            if (_retryUntil is not null) { _error = null; }
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("failure", (string?)null), replace: true);
+        }
+    }
+
+    private Task SelectProfileAsync(LoginProfile profile)
+    {
+        _error = null;
+        _retryUntil = null;
+        _isRetry = false;
+        _selectedUser = profile;
+        _pinModel.Pin = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    private void ClearSelection()
+    {
+        _selectedUser = null;
+        _retryUntil = null;
+        _isRetry = false;
+        _pinModel.Pin = string.Empty;
+        _error = null;
+    }
+
+    private async Task SubmitPinAsync()
+    {
+        if (_isBusy || _retryUntil is not null) { return; }
+        _error = null;
+
+        if (_selectedUser is null)
+        {
+            _error = Loc.GetOrDefault(AuthTextKeys.ChooseProfileFirstError, "Choose a profile first.");
+            return;
+        }
+
+        _isBusy = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var profile = _profiles.First(profile => string.Equals(profile.Id, _selectedUser.Id, StringComparison.Ordinal));
+            await StartPinLoginAsync(profile);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Could not start PIN sign-in.");
+            _error = Loc.GetOrDefault(AuthTextKeys.LoginFailedError, "Login failed. Please try again.");
+            _isBusy = false;
+        }
+    }
+
+    private async Task StartPinLoginAsync(LoginProfile profile)
+    {
+        var token = LoginTickets.CreatePin(profile.Id, profile.UserName, _pinModel.Pin);
+        _pinModel.Pin = string.Empty;
+        var returnUrl = LoginNavigation.GetReturnUrl(NavigationManager);
+        _pendingNavUrl = $"/auth/login-pin-ticket?token={Uri.EscapeDataString(token)}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+        _isBusy = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OpenAdminLogin()
+    {
+        var url = QueryHelpers.AddQueryString("/login/admin", "returnUrl", LoginNavigation.GetReturnUrl(NavigationManager));
+        NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pendingNavUrl is not null)
+        {
+            var url = _pendingNavUrl;
+            _pendingNavUrl = null;
+            NavigationManager.NavigateTo(url, forceLoad: true);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private sealed class PinLoginModel : IValidatableObject
+    {
+        public string Pin { get; set; } = string.Empty;
+
+        public Func<string>? PinValidationErrorProvider { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!PinPolicy.IsValid(Pin))
+            {
+                yield return new ValidationResult(
+                    PinValidationErrorProvider?.Invoke() ?? string.Empty,
+                    [nameof(Pin)]);
+            }
+        }
+    }
+
+    private sealed class LoginProfile
+    {
+        public required string Id { get; init; }
+        public required string UserName { get; init; }
+        public required string FullName { get; init; }
+    }
+}

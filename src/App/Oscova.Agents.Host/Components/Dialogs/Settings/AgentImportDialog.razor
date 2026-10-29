@@ -1,0 +1,161 @@
+@using Oscova.Agents.Core.ApiContracts.Agents
+@inject ManagementApiClient ManagementApiClient
+@inject IToastService ToastService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.AgentsImportDialogTitle, "Import Agent"))"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.AgentsImportDialogDescription, "Import an agent from an .oscagent file. The agent is always added as a new agent and never replaces an existing one."))"
+                Icon="lucide:file-up"
+                HelpTopic="@HelpTopics.AgentImport"
+                TitleClass="truncate text-lg font-bold"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_isImporting)"
+                OnClose="@CancelAsync"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <label for="agent-import-file"
+                       class="btn btn-outline btn-sm cursor-pointer"
+                       aria-disabled="@(_isImporting ? "true" : "false")">
+                    <span class="iconify lucide--file-up size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.AgentsChooseFileButton, "Choose Agent File")
+                    <InputFile id="agent-import-file"
+                               class="sr-only"
+                               OnChange="SelectFileAsync"
+                               accept="@AgentPackageService.FileExtension"
+                               disabled="@_isImporting" />
+                </label>
+                <span class="text-sm @(_file is null ? "opacity-60" : "font-medium")">
+                    @(_file is null ? CommonLoc.GetOrDefault(CommonTextKeys.NoFileSelected, "No file selected") : _file.Name)
+                </span>
+            </div>
+
+            <div class="form-control">
+                <label for="agent-import-name" class="label block mb-1 pl-0">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AgentsImportNameLabel, "Name (optional)")</span>
+                </label>
+                <input id="agent-import-name"
+                       class="input input-bordered w-full"
+                       disabled="@_isImporting"
+                       @bind="_name" />
+                <p class="mt-2 text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AgentsImportNameHint, "Leave this blank to keep the name stored in the file. If that name is already in use, a number is added.")</p>
+            </div>
+
+            <div role="alert" class="alert alert-info alert-soft">
+                <iconify-icon icon="lucide:info"></iconify-icon>
+                <span class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.AgentsImporterLimitInfo, "The importer accepts one .oscagent package up to 5 MB. Chats, memory, and private agent notes are not included.")</span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <div role="alert" class="alert alert-error alert-soft">
+                    <iconify-icon icon="lucide:circle-alert"></iconify-icon>
+                    <span class="min-w-0 break-words whitespace-normal text-sm">@_error</span>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button class="btn btn-ghost btn-sm" disabled="@_isImporting" @onclick="CancelAsync">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button class="btn btn-primary btn-sm"
+                disabled="@(_file is null || _isImporting)"
+                @onclick="ImportAsync">
+            @if (_isImporting)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+            }
+            @CommonLoc.GetOrDefault(CommonTextKeys.Import, "Import")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private IBrowserFile? _file;
+    private string? _name;
+    private string? _error;
+    private bool _isImporting;
+
+    private Task SelectFileAsync(InputFileChangeEventArgs args)
+    {
+        _error = null;
+        _file = null;
+        var file = args.File;
+        if (!file.Name.EndsWith(AgentPackageService.FileExtension, StringComparison.OrdinalIgnoreCase))
+        {
+            _error = Loc.GetOrDefault(
+                SettingsTextKeys.AgentsUnsupportedImportFileError,
+                "Only .oscagent files are supported.");
+            return Task.CompletedTask;
+        }
+
+        if (file.Size > AgentPackageService.MaxUploadSizeBytes)
+        {
+            _error = FormatCommonText(
+                CommonTextKeys.FileTooLarge,
+                "File is too large. Maximum size is {0}.",
+                ByteSize.Format(AgentPackageService.MaxUploadSizeBytes));
+            return Task.CompletedTask;
+        }
+
+        _file = file;
+        return Task.CompletedTask;
+    }
+
+    private async Task ImportAsync()
+    {
+        if (_file is null || _isImporting)
+        {
+            return;
+        }
+
+        _error = null;
+        _isImporting = true;
+        try
+        {
+            await using var stream = _file.OpenReadStream(AgentPackageService.MaxUploadSizeBytes);
+            var result = await ManagementApiClient.ImportCustomAgentAsync(_file.Name, stream, _name);
+            var toast = result.RemovedReferenceCount == 0
+                ? FormatSettingsText(SettingsTextKeys.AgentsImportedToast, "Agent '{0}' imported.", result.Name)
+                : FormatSettingsText(
+                    SettingsTextKeys.AgentsImportedWithRemovedToast,
+                    "Agent '{0}' imported. {1} reference(s) not available on this machine were removed.",
+                    result.Name,
+                    result.RemovedReferenceCount);
+            ToastService.Show(toast, ToastType.Success);
+            DialogInstance.Close(DialogResult.Ok, result);
+        }
+        catch (Exception ex)
+        {
+            _error = string.IsNullOrWhiteSpace(ex.Message)
+                ? Loc.GetOrDefault(SettingsTextKeys.AgentsInvalidImportFileError, "The agent file could not be imported.")
+                : ex.Message;
+        }
+        finally
+        {
+            _isImporting = false;
+        }
+    }
+
+    private Task CancelAsync()
+    {
+        DialogInstance.Close<ImportedAgentResult>(DialogResult.Cancel, null);
+        return Task.CompletedTask;
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+    }
+}

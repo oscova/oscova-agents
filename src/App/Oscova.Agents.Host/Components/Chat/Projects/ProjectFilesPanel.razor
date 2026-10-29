@@ -1,0 +1,292 @@
+@implements IDisposable
+@inject ProjectsApiClient Api
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<ProjectFilesPanel> Logger
+@inject IDialogService Dialogs
+
+@* Browses authorized roots and keeps file drafts in the current Workspace. *@
+<div class="custom-workspace-browser">
+    <div class="custom-workspace-content @(_selectedPath is not null ? "custom-workspace-has-preview" : null)">
+        <nav class="custom-workspace-tree" aria-label="@Loc[ChatTextKeys.ProjectFiles]">
+            <div class="custom-workspace-tree-resizer" role="separator" tabindex="0" aria-orientation="vertical"
+                 aria-label="@Loc[ChatTextKeys.WorkspaceResizeFiles]" aria-valuemax="60" data-dashboard-resizer="tree"></div>
+            <div class="custom-workspace-toolbar custom-workspace-tree-toolbar">
+                <DropdownMenu RootClass="custom-workspace-root" TriggerClass="custom-workspace-root-select btn btn-ghost btn-sm" Placement="dropdown-bottom"
+                              Title="@Loc[ChatTextKeys.ProjectFiles]" Disabled="@(_roots.Count == 0)" ContentClass="w-64 max-w-[calc(100vw-1.5rem)] p-1" CloseOnContentClick="@true">
+                    <TriggerContent>
+                        <span class="iconify lucide--folder-open size-4" aria-hidden="true"></span>
+                        @if (_roots.FirstOrDefault(root => root.Id == _rootId) is { } selectedRoot)
+                        {
+                            <span class="truncate">@(selectedRoot.IsProject ? Project?.Name ?? selectedRoot.Name : selectedRoot.Name)</span>
+                            @if (selectedRoot.IsPrivate || selectedRoot.IsReadOnly)
+                            {
+                                <span class="custom-workspace-root-state">@Loc[selectedRoot.IsPrivate ? ChatTextKeys.ProjectPrivateData : ChatTextKeys.AgentConversationReadOnly]</span>
+                            }
+                        }
+                        <span class="iconify lucide--chevron-down size-3" aria-hidden="true"></span>
+                    </TriggerContent>
+                    <ChildContent>
+                        <ul class="menu max-h-80 overflow-y-auto p-0">
+                            @foreach (var root in _roots)
+                            {
+                                <li><button type="button" aria-pressed="@(root.Id == _rootId ? "true" : "false")" @onclick="() => ChangeRootAsync(root.Id)">
+                                    <span class="truncate">@(root.IsProject ? Project?.Name ?? root.Name : root.Name)</span>
+                                    @if (root.IsPrivate || root.IsReadOnly)
+                                    {
+                                        <span class="text-xs">@Loc[root.IsPrivate ? ChatTextKeys.ProjectPrivateData : ChatTextKeys.AgentConversationReadOnly]</span>
+                                    }
+                                </button></li>
+                            }
+                        </ul>
+                    </ChildContent>
+                </DropdownMenu>
+                <button type="button" class="btn btn-ghost btn-sm btn-square shrink-0" title="@CommonLoc[CommonTextKeys.Refresh]" aria-label="@CommonLoc[CommonTextKeys.Refresh]" @onclick="RefreshAsync" disabled="@_loading">
+                    <span class="@(_loading ? "loading loading-spinner loading-xs" : "iconify lucide--refresh-cw size-4")" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="custom-workspace-tree-scroll custom-scrollbar">
+                @if (_error is not null) { <p class="text-error wrap-anywhere text-sm" role="alert">@_error</p> }
+                @Tree(string.Empty)
+            </div>
+        </nav>
+        @if (_selectedPath is not null)
+        {
+            <section class="custom-workspace-preview">
+                <div class="custom-workspace-path">
+                    <button type="button" class="custom-workspace-back btn btn-ghost btn-sm btn-square" title="@CommonLoc[CommonTextKeys.Back]" aria-label="@CommonLoc[CommonTextKeys.Back]" @onclick="BrowseAsync">
+                        <span class="iconify lucide--arrow-left size-4" aria-hidden="true"></span>
+                    </button>
+                    <p class="truncate text-xs" title="@_selectedPath">@_selectedPath</p>
+                </div>
+                @if (_selectedFile is not null)
+                {
+                    <WorkspaceTextEditor File="@_selectedFile" RefreshVersion="@(RefreshVersion + _refreshVersion)" />
+                }
+            </section>
+        }
+        else
+        {
+            <div class="custom-workspace-preview custom-workspace-placeholder">
+                <span class="iconify lucide--folder-open size-7" aria-hidden="true"></span>
+                <p>@Loc[ChatTextKeys.WorkspaceSelectFile]</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? ThreadId { get; set; }
+    [Parameter] public string? AgentId { get; set; }
+    [Parameter] public string? ProjectId { get; set; }
+    [Parameter] public ProjectDefinition? Project { get; set; }
+    [Parameter] public long RefreshVersion { get; set; }
+    [Parameter] public EventCallback OnDocumentOpened { get; set; }
+    [Parameter] public EventCallback OnBrowse { get; set; }
+    [Parameter] public EventCallback<WorkspaceFileReference> OnAddToChat { get; set; }
+    [CascadingParameter] public WorkspaceEditingState EditingState { get; set; } = default!;
+    private (WorkspaceEditingState, string?, string?, long, string?)? _scope;
+    private IReadOnlyList<ProjectFileRoot> _roots = [];
+    private readonly Dictionary<string, ProjectFileListing> _folders = new(StringComparer.Ordinal);
+    private readonly List<ProjectFileEntry> _openFiles = [];
+    private long _refreshVersion;
+    private string _rootId = string.Empty;
+    private string? _selectedPath;
+    private WorkspaceFileDraft? _selectedFile;
+    private string? _error;
+    private bool _loading;
+    private CancellationTokenSource? _request;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var scope = (EditingState, ProjectId, ThreadId, RefreshVersion, AgentId);
+        if (_scope == scope) { return; }
+        if (_scope?.Item1 != EditingState || _scope?.Item2 != ProjectId || _scope?.Item5 != AgentId)
+        {
+            ClearOpenFiles(_scope?.Item2);
+            _selectedPath = null;
+            _selectedFile = null;
+        }
+        _scope = scope;
+        await RefreshAsync();
+    }
+
+    private RenderFragment Tree(string path) => @<ul class="custom-workspace-tree-list">
+        @if (_folders.TryGetValue(path, out var listing))
+        {
+            @foreach (var entry in listing.Entries)
+            {
+                <li @key="entry.Path">
+                    <WorkspaceFileMenu File="@entry" DownloadUrl="@ApiRoutes.Projects.Download(ProjectId, ThreadId, _rootId, entry.Path, AgentId)"
+                                       OnAddToChat="@(file => OnAddToChat.InvokeAsync(new WorkspaceFileReference(file.Name, file.AgentPath, Project?.Name ?? _roots.First(root => root.Id == _rootId).Name)))">
+                    <button type="button" class="custom-workspace-tree-entry" title="@entry.Path" aria-current="@(!entry.IsDirectory && entry.Path == _selectedPath ? "page" : null)" aria-expanded="@(entry.IsDirectory ? (_folders.ContainsKey(entry.Path) ? "true" : "false") : null)" @onclick="() => SelectAsync(entry)">
+                        <span class="custom-workspace-disclosure" aria-hidden="true">
+                            @if (entry.IsDirectory) { <span class="iconify lucide--chevron-right size-3"></span> }
+                        </span>
+                        <iconify-icon icon="@(entry.IsDirectory ? (_folders.ContainsKey(entry.Path) ? "lucide:folder-open" : "lucide:folder") : FileIconResolver.Resolve(entry.Name))" width="14" height="14" aria-hidden="true"></iconify-icon>
+                        <span class="truncate">@entry.Name</span>
+                    </button>
+                    </WorkspaceFileMenu>
+                    @if (entry.IsDirectory && _folders.ContainsKey(entry.Path)) { @Tree(entry.Path) }
+                </li>
+            }
+            @if (listing.Entries.Count == 0) { <li class="p-2 text-sm opacity-60">@Loc[ChatTextKeys.ProjectEmptyFolder]</li> }
+            @if (listing.Truncated) { <li class="p-2 text-sm text-warning">@Loc[ChatTextKeys.ProjectListLimit]</li> }
+        }
+    </ul>;
+
+    private async Task RefreshAsync()
+    {
+        _folders.Clear();
+        _refreshVersion++;
+        await RequestAsync(async ct =>
+        {
+            var roots = ThreadId is not null || ProjectId is null
+                ? await Api.GetRootsAsync(ProjectId, ThreadId, ct, AgentId)
+                : new ProjectFileRoot[] { new(string.Empty, Project?.Name ?? Loc[ChatTextKeys.ProjectUnavailable], true, false, false) };
+            ct.ThrowIfCancellationRequested();
+            _roots = roots;
+            if (!roots.Any(root => root.Id == _rootId)) { _rootId = roots.FirstOrDefault()?.Id ?? string.Empty; }
+            if (roots.Count > 0) { await LoadFolderAsync(string.Empty, ct); }
+        });
+    }
+
+    private async Task ChangeRootAsync(string rootId)
+    {
+        if (rootId == _rootId) { return; }
+        if (!await EditingState.ConfirmAsync(Dialogs)) { return; }
+        ClearOpenFiles(ProjectId);
+        _rootId = rootId;
+        _folders.Clear();
+        _selectedPath = null;
+        _selectedFile = null;
+        await EditingState.Changed.InvokeAsync();
+        await OnBrowse.InvokeAsync();
+        await RequestAsync(ct => LoadFolderAsync(string.Empty, ct));
+    }
+
+    private async Task SelectAsync(ProjectFileEntry entry)
+    {
+        if (EditingState.IsBusy) { return; }
+        await EditingState.CaptureAsync();
+        if (entry.IsDirectory)
+        {
+            if (_folders.Remove(entry.Path)) { return; }
+            await RequestAsync(ct => LoadFolderAsync(entry.Path, ct));
+            return;
+        }
+        if (!_openFiles.Any(file => string.Equals(file.Path, entry.Path, StringComparison.Ordinal)))
+        {
+            _openFiles.Add(entry);
+        }
+        _selectedPath = entry.Path;
+        var projectId = ProjectId;
+        var threadId = ThreadId;
+        var agentId = AgentId;
+        var rootId = _rootId;
+        var path = entry.Path;
+        var key = FileKey(path, ProjectId);
+        // The shared header routes back through this file's existing selection and close guards.
+        if (!EditingState.Documents.Any(document => document.Key == key))
+        {
+            EditingState.Documents.Add(new(key, entry.Name, path, FileIconResolver.Resolve(entry.Name),
+                () => SelectAsync(entry), () => CloseFileAsync(entry)));
+        }
+        EditingState.SelectedDocumentKey = key;
+        if (!EditingState.Files.TryGetValue(key, out _selectedFile))
+        {
+            _selectedFile = new(key, entry.Name,
+                ct => Api.ReadFileAsync(projectId, threadId, rootId, path, ct, agentId),
+                (request, ct) => Api.SaveFileAsync(projectId, threadId, rootId, path, request, ct, agentId));
+            EditingState.Files.Add(key, _selectedFile);
+        }
+        await OnDocumentOpened.InvokeAsync();
+    }
+
+    // A project root receives its API ID after chat persistence, retain the same draft and original destination.
+    private string FileKey(string path, string? projectId) =>
+        $"file:{projectId}:{(_roots.Any(root => root.Id == _rootId && root.IsProject) ? string.Empty : _rootId)}:{path}";
+
+    // Remove shared tabs with their original root identity before changing the file-browser scope.
+    private void ClearOpenFiles(string? projectId)
+    {
+        foreach (var file in _openFiles)
+        {
+            var document = EditingState.Documents.FirstOrDefault(tab => tab.Key == FileKey(file.Path, projectId));
+            if (document is null) { continue; }
+            EditingState.Documents.Remove(document);
+            EditingState.Files.Remove(document.Key);
+            if (EditingState.SelectedDocumentKey == document.Key) { EditingState.SelectedDocumentKey = null; }
+        }
+        _openFiles.Clear();
+    }
+
+    private async Task LoadFolderAsync(string path, CancellationToken ct)
+    {
+        var listing = await Api.ListFilesAsync(ProjectId, ThreadId, _rootId, path, ct, AgentId);
+        ct.ThrowIfCancellationRequested();
+        _folders[path] = listing;
+    }
+
+    private async Task RequestAsync(Func<CancellationToken, Task> load)
+    {
+        _request?.Cancel();
+        using var request = new CancellationTokenSource();
+        _request = request;
+        _loading = true;
+        _error = null;
+        try { await load(request.Token); }
+        catch (OperationCanceledException) when (request.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            if (!request.IsCancellationRequested)
+            {
+                Logger.LogWarning(ex, "Project file read failed for thread {ThreadId}.", ThreadId);
+                _error = ex.Message;
+            }
+        }
+        finally
+        {
+            if (ReferenceEquals(_request, request)) { _request = null; _loading = false; }
+        }
+    }
+
+    /// <summary>Shows file discovery while retaining open documents and their captured drafts.</summary>
+    public async Task BrowseAsync()
+    {
+        await EditingState.CaptureAsync();
+        _selectedPath = null;
+        _selectedFile = null;
+        EditingState.SelectedDocumentKey = null;
+        await EditingState.Changed.InvokeAsync();
+        await OnBrowse.InvokeAsync();
+    }
+
+    // Closing the current file selects its neighbor without changing files on disk.
+    private async Task CloseFileAsync(ProjectFileEntry file)
+    {
+        var key = FileKey(file.Path, ProjectId);
+        if (EditingState.Files.TryGetValue(key, out var draft) && !await EditingState.ConfirmAsync(Dialogs, [draft])) { return; }
+        var wasSelected = EditingState.SelectedDocumentKey == key;
+        EditingState.Files.Remove(key);
+        var document = EditingState.Documents.FirstOrDefault(tab => tab.Key == key);
+        var index = document is null ? -1 : EditingState.Documents.IndexOf(document);
+        if (document is not null) { EditingState.Documents.Remove(document); }
+        _openFiles.Remove(file);
+        if (_selectedPath != file.Path) { return; }
+        // Closing an inactive file must not replace the artifact or Changes view currently on screen.
+        if (!wasSelected)
+        {
+            _selectedPath = null;
+            _selectedFile = null;
+            return;
+        }
+        await BrowseAsync();
+        if (EditingState.Documents.Count > 0)
+        {
+            await EditingState.Documents[Math.Clamp(index, 0, EditingState.Documents.Count - 1)].Select();
+        }
+    }
+
+    public void Dispose() { _request?.Cancel(); }
+}

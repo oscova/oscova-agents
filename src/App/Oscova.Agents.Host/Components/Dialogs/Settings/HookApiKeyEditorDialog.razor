@@ -1,0 +1,67 @@
+@using Oscova.Agents.Core.ApiContracts.Hooks
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Collects task webhook API-key details before the Hooks settings page creates the key. *@
+<AppDialogShell Title="@Loc.GetOrDefault(SettingsTextKeys.HooksCreateApiKeyDialogTitle, "Create task webhook API key")"
+                Icon="lucide:key-round"
+                MaxWidthClass="max-w-xl"
+                HelpTopic="@HelpTopics.HookApiKeyEditor"
+                CloseResult="@DialogResult.Cancel"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-3">
+            <fieldset class="fieldset p-0">
+                <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.HooksNewApiKeyNameLabel, "API key name")</legend>
+                <label class="input w-full">
+                    <iconify-icon icon="lucide:key-round" class="text-base-content/60"></iconify-icon>
+                    <input id="api-key-name" class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksNewApiKeyNameLabel, "API key name")" @bind="_name" @bind:event="oninput" />
+                </label>
+            </fieldset>
+            <fieldset class="fieldset p-0">
+                <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.HooksAllowedTaskSlugsLabel, "Allowed task slugs, comma separated")</legend>
+                <label class="input w-full">
+                    <iconify-icon icon="lucide:list-filter" class="text-base-content/60"></iconify-icon>
+                    <input id="allowed-task-slugs" class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(SettingsTextKeys.HooksAllowedTaskSlugsLabel, "Allowed task slugs, comma separated")" @bind="_allowedTaskSlugs" @bind:event="oninput" />
+                </label>
+            </fieldset>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary btn-sm" @onclick="Create">
+            <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+            @Loc.GetOrDefault(SettingsTextKeys.HooksCreateApiKeyButton, "Create API key")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _name = string.Empty;
+    private string _allowedTaskSlugs = string.Empty;
+
+    private void Create()
+    {
+        DialogInstance.Close(DialogResult.Ok, new CreateHookApiKeyRequest
+        {
+            Name = _name,
+            AllowedTaskSlugs = ParseCsv(_allowedTaskSlugs)
+        });
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close<CreateHookApiKeyRequest>(DialogResult.Cancel, null);
+    }
+
+    private static List<string> ParseCsv(string value)
+    {
+        return value
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(item => !string.IsNullOrWhiteSpace(item))
+            .ToList();
+    }
+}

@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Common.Cancel">
+		<value>Annuler</value>
+
+	</data>
+	<data name="Common.Actions">
+		<value>Actions</value>
+
+	</data>
+	<data name="Common.Close">
+		<value>Fermer</value>
+
+	</data>
+	<data name="Common.Connected">
+		<value>Connecté</value>
+
+	</data>
+	<data name="Common.CopyName">
+		<value>Copie</value>
+
+	</data>
+	<data name="Common.Create">
+		<value>Créer</value>
+
+	</data>
+	<data name="Common.Delete">
+		<value>Supprimer</value>
+
+	</data>
+	<data name="Common.Description">
+		<value>Description</value>
+
+	</data>
+	<data name="Common.Disconnected">
+		<value>Déconnecté</value>
+
+	</data>
+	<data name="Common.Download">
+		<value>Télécharger</value>
+
+	</data>
+	<data name="Common.Duplicate">
+		<value>Dupliquer</value>
+
+	</data>
+	<data name="Common.Edit">
+		<value>Modifier</value>
+
+	</data>
+	<data name="Common.FileTooLarge">
+		<value>Le fichier est trop volumineux. La taille maximale est de {0}.</value>
+
+	</data>
+	<data name="Common.Import">
+		<value>Importer</value>
+
+	</data>
+	<data name="Common.ImportFailed">
+		<value>Échec de l'importation : {0}</value>
+
+	</data>
+	<data name="Common.Key"><value>Clé</value></data>
+	<data name="Common.Loading">
+		<value>Chargement...</value>
+
+	</data>
+	<data name="Common.Name">
+		<value>Nom</value>
+
+	</data>
+	<data name="Common.NoFileSelected">
+		<value>Aucun fichier sélectionné</value>
+
+	</data>
+	<data name="Common.NoneOption">
+		<value>Aucun</value>
+
+	</data>
+	<data name="Common.Password">
+		<value>Mot de passe</value>
+
+	</data>
+	<data name="Common.Refresh">
+		<value>Actualiser</value>
+
+	</data>
+	<data name="Common.Remove">
+		<value>Supprimer</value>
+
+	</data>
+	<data name="Common.Retry">
+		<value>Réessayer</value>
+
+	</data>
+	<data name="Common.NoResults"><value>Aucun résultat</value></data>
+	<data name="Common.Save">
+		<value>Enregistrer</value>
+
+	</data>
+	<data name="Common.Search"><value>Rechercher...</value></data>
+	<data name="Common.Settings">
+		<value>Paramètres</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Title">
+		<value>Ignorer les modifications non enregistrées ?</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Message">
+		<value>Vous avez des modifications non enregistrées sur cette page. Quitter maintenant les annulera.</value>
+
+	</data>
+	<data name="Common.SignOutConfirmTitle">
+		<value>Confirmer la déconnexion</value>
+
+	</data>
+	<data name="Common.SignOutConfirmMessage">
+		<value>Voulez-vous vraiment vous déconnecter ?</value>
+
+	</data>
+	<data name="Common.Upload">
+		<value>Téléverser</value>
+
+	</data>
+	<data name="Common.Username">
+		<value>Nom d'utilisateur</value>
+
+	</data>
+	<data name="Common.Assistant"><value>Assistant</value></data>
+	<data name="Common.Clear"><value>Effacer</value></data>
+	<data name="Common.ConfirmPassword"><value>Confirmer le mot de passe</value></data>
+	<data name="Common.Content"><value>Contenu</value></data>
+	<data name="Common.CurrentPassword"><value>Mot de passe actuel</value></data>
+	<data name="Common.Email"><value>E-mail</value></data>
+	<data name="Common.FullName"><value>Nom complet</value></data>
+	<data name="Common.PreferredName"><value>Nom préféré</value></data>
+	<data name="Common.PreferredNameHelp"><value>Comment vos agents doivent-ils vous appeler ?</value></data>
+	<data name="Common.NewPassword"><value>Nouveau mot de passe</value></data>
+	<data name="Common.NotConfigured"><value>Non configuré</value></data>
+	<data name="Common.NotSet"><value>Non défini</value></data>
+	<data name="Common.Page"><value>Page {0}</value></data>
+	<data name="Common.Roles"><value>Rôles</value></data>
+	<data name="Common.System"><value>Système</value></data>
+	<data name="Common.Time"><value>Heure</value></data>
+	<data name="Common.Tool"><value>Outil</value></data>
+	<data name="Common.Unknown"><value>Inconnu</value></data>
+	<data name="Common.User"><value>Utilisateur</value></data>
+	<data name="Dialog.AccountDetailsTitle"><value>Détails du compte</value></data>
+	<data name="Dialog.AllAgentsOption"><value>Tous les agents</value></data>
+	<data name="Dialog.AllThreadsOption"><value>Tous les fils</value></data>
+	<data name="Dialog.ApplicationLogsTitle"><value>Journaux de l'application</value></data>
+	<data name="Dialog.ExportFilteredCsv"><value>CSV filtré</value></data>
+	<data name="Dialog.ExportFilteredText"><value>Texte filtré</value></data>
+	<data name="Dialog.ExportLogsButton"><value>Exporter</value></data>
+	<data name="Dialog.ExportOriginalJsonLines"><value>Lignes JSON d'origine</value></data>
+	<data name="Dialog.ChangePasswordTitle"><value>Changer le mot de passe</value></data>
+	<data name="Dialog.ChatMemory.HeaderAgent"><value>Agent</value></data>
+	<data name="Dialog.ChatMemory.HeaderChunk"><value>Segment</value></data>
+	<data name="Dialog.ChatMemory.HeaderContent"><value>Contenu</value></data>
+	<data name="Dialog.ChatMemory.HeaderThread"><value>Fil</value></data>
+	<data name="Dialog.ChatMemoryStoreTitle"><value>Magasin de mémoire du chat</value></data>
+	<data name="Dialog.ClearLogButton"><value>Effacer</value></data>
+	<data name="Dialog.ClearLogConfirmMessage"><value>Voulez-vous vraiment effacer le fichier journal actuel ? Cette action est irréversible.</value></data>
+	<data name="Dialog.ClearLogConfirmTitle"><value>Confirmer l'effacement du journal</value></data>
+	<data name="Dialog.ClearLogTitleAttribute"><value>Effacer le fichier journal actuel</value></data>
+	<data name="Dialog.CloseChatMemoryLabel"><value>Fermer la boîte de dialogue de mémoire du chat</value></data>
+	<data name="Dialog.CloseLogsLabel"><value>Fermer la boîte de dialogue des journaux</value></data>
+	<data name="Dialog.CloseProfileLabel"><value>Fermer la boîte de dialogue du profil</value></data>
+	<data name="Dialog.ContentTypeCall"><value>appel</value></data>
+	<data name="Dialog.ContentTypeReasoning"><value>Raisonnement</value></data>
+	<data name="Dialog.ContentTypeResult"><value>résultat</value></data>
+	<data name="Dialog.DataContentBytes"><value>{0} - {1} octets</value></data>
+	<data name="Dialog.EmailAddressLabel"><value>Adresse e-mail</value></data>
+	<data name="Dialog.FailedLoadChatMemoryError"><value>Impossible de charger la mémoire du chat :</value></data>
+	<data name="Dialog.FailedLoadLogsError"><value>Impossible de charger les journaux :</value></data>
+	<data name="Dialog.InspectorJsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorVisualTab"><value>Visuel</value></data>
+	<data name="Dialog.LogDetailException"><value>Exception</value></data>
+	<data name="Dialog.LogDetailMetadata"><value>Métadonnées</value></data>
+	<data name="Dialog.LogEntriesCount"><value>{0} entrées</value></data>
+	<data name="Dialog.LogEntriesPage"><value>{0} entrées - Page {1} sur {2}</value></data>
+	<data name="Dialog.LogLevelAll"><value>Tous les niveaux</value></data>
+	<data name="Dialog.LogLevelDebug"><value>Debug</value></data>
+	<data name="Dialog.LogLevelError"><value>Error</value></data>
+	<data name="Dialog.LogLevelFatal"><value>Fatal</value></data>
+	<data name="Dialog.LogLevelInfo"><value>Info</value></data>
+	<data name="Dialog.LogLevelTrace"><value>Trace</value></data>
+	<data name="Dialog.LogLevelWarn"><value>Warn</value></data>
+	<data name="Dialog.LogsHeaderLevel"><value>Niveau</value></data>
+	<data name="Dialog.LogsHeaderLogger"><value>Journaliseur</value></data>
+	<data name="Dialog.LogsHeaderMessage"><value>Message</value></data>
+	<data name="Dialog.LogsInvalidUserGuid"><value>Entrez un GUID utilisateur valide.</value></data>
+	<data name="Dialog.LogsScope.Mine"><value>Les miens</value></data>
+	<data name="Dialog.LogsScope.User"><value>Utilisateur...</value></data>
+	<data name="Dialog.Logs.UserIdPlaceholder"><value>ID utilisateur (GUID)</value></data>
+	<data name="Dialog.NoChatMemoryEntries"><value>Aucune entrée de mémoire de chat ne correspond aux filtres actuels.</value></data>
+	<data name="Dialog.NoLogEntriesMatch"><value>Aucune entrée de journal ne correspond aux filtres actuels.</value></data>
+	<data name="Dialog.NoLogFilesOption"><value>Aucun fichier journal</value></data>
+	<data name="Dialog.NoMessagesInSession"><value>Aucun message dans la session.</value></data>
+	<data name="Dialog.NoStructuredLogsFound"><value>Aucun fichier journal structuré trouvé. Les journaux apparaîtront ici dès que l'application écrira de nouvelles entrées.</value></data>
+	<data name="Notifications.AllTab"><value>Tous</value></data>
+	<data name="Notifications.Clear"><value>Effacer les notifications</value></data>
+	<data name="Notifications.DetailKindLabel"><value>Type</value></data>
+	<data name="Notifications.DialogTitle"><value>Notifications</value></data>
+	<data name="Notifications.EmptyState"><value>Vous êtes à jour.</value></data>
+	<data name="Notifications.MarkAllRead"><value>Tout marquer comme lu</value></data>
+	<data name="Notifications.Muted"><value>Notifications désactivées</value></data>
+	<data name="Notifications.JustNow"><value>À l'instant</value></data>
+	<data name="Notifications.MinutesAgo"><value>Il y a {0} min</value></data>
+	<data name="Notifications.HoursAgo"><value>Il y a {0} h</value></data>
+	<data name="Notifications.Task.CompletedTitle"><value>Tâche terminée</value></data>
+	<data name="Notifications.Task.NeedsAttentionTitle"><value>La tâche nécessite votre attention</value></data>
+	<data name="Notifications.Task.CompletedInSeconds"><value>Terminé en {0} secondes.</value></data>
+	<data name="Notifications.Task.Skipped"><value>La tâche a été ignorée.</value></data>
+	<data name="Notifications.Task.MissingChatProvider"><value>Aucun fournisseur de modèle de chat n’est configuré. Configurez-en un dans Paramètres &gt; Agents et IA &gt; Fournisseurs de modèles pour exécuter cette tâche.</value></data>
+	<data name="Notifications.Task.MissingEmbeddingProvider"><value>Aucun fournisseur de modèle d’embeddings n’est configuré. Configurez-en un dans Paramètres &gt; Agents et IA &gt; Fournisseurs de modèles &gt; Fournisseur d'embeddings pour exécuter cette tâche.</value></data>
+	<data name="Notifications.Task.HandlerUnavailable"><value>Le gestionnaire d’exécution de cette tâche n’est pas disponible. Activez ou réinstallez son extension, puis redémarrez l’application pour l’exécuter.</value></data>
+	<data name="Notifications.Task.StepLimitReached"><value>La tâche s’est arrêtée à la limite de {0} étapes avant de se terminer.</value></data>
+	<data name="Notifications.Task.Finished"><value>L'exécution de la tâche est terminée.</value></data>
+	<data name="Notifications.Task.OutcomeHidden"><value>Ouvrez la tâche pour voir le résultat.</value></data>
+	<data name="Notifications.Task.SkippedLocked"><value>Cette tâche ne s'est pas exécutée car le mot de passe de votre coffre-fort est verrouillé. Déverrouillez-le pour reprendre.</value></data>
+	<data name="Notifications.Settings"><value>Paramètres de notification</value></data>
+	<data name="Notifications.SystemTab"><value>Système</value></data>
+	<data name="Notifications.TasksTab"><value>Tâches</value></data>
+	<data name="Notifications.Title"><value>Notifications</value></data>
+	<data name="Notifications.ViewAll"><value>Tout afficher</value></data>
+	<data name="Dialog.PasswordBlankHint"><value>Laissez vide pour conserver votre mot de passe actuel.</value></data>
+	<data name="Dialog.ProfileDescription"><value>Mettez à jour votre adresse e-mail, nom complet, nom préféré et mot de passe.</value></data>
+	<data name="Dialog.ProfilePictureUpdated"><value>Photo de profil mise à jour.</value></data>
+	<data name="Dialog.ProfilePictureUpdateFailed"><value>Impossible de mettre à jour la photo de profil : {0}</value></data>
+	<data name="Dialog.WallpaperUpdated"><value>Fond d'écran mis à jour.</value></data>
+	<data name="Dialog.WallpaperUpdateFailed"><value>Impossible de mettre à jour le fond d'écran : {0}</value></data>
+	<data name="Dialog.SaveChangesButton"><value>Enregistrer les modifications</value></data>
+	<data name="Dialog.SearchLogsPlaceholder"><value>Rechercher dans les journaux...</value></data>
+	<data name="Dialog.SessionInspectorTitle"><value>Inspecteur de session</value></data>
+	<data name="Dialog.SessionJsonCopied"><value>JSON de session copié dans le presse-papiers.</value></data>
+	<data name="Dialog.SessionJsonDownloaded"><value>Preuve de session téléchargée.</value></data>
+	<data name="Dialog.InspectorConversationTab"><value>Conversation</value></data>
+	<data name="Dialog.InspectorMessageSummary"><value>{0} messages</value></data>
+	<data name="Dialog.MessageCountBadge"><value>{0} messages</value></data>
+	<data name="Dialog.NoSystemInstruction"><value>Aucune instruction système n'a été capturée.</value></data>
+	<data name="Dialog.Egress.CloudLabel"><value>Cloud</value></data>
+	<data name="Dialog.Egress.LocalLabel"><value>Local</value></data>
+	<data name="Dialog.Egress.IndeterminateDescription"><value>Certains appels d'outils n'ont pas pu être associés aux métadonnées d'outils.</value></data>
+	<data name="Dialog.Egress.IndeterminateTitle"><value>La sortie de données n'a pas pu être totalement vérifiée</value></data>
+	<data name="Dialog.Egress.NoDataDescription"><value>Les sessions plus anciennes peuvent ne pas inclure d'enregistrements de sortie de fournisseur.</value></data>
+	<data name="Dialog.Egress.NoDataTitle"><value>Aucun relevé de sortie de données enregistré</value></data>
+	<data name="Dialog.Egress.ReachedInternetDescription"><value>Des fournisseurs cloud ou des outils internet ont été utilisés au cours de cette session.</value></data>
+	<data name="Dialog.Egress.ReachedInternetTitle"><value>Cette session a accédé à internet</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceDescription"><value>Les fournisseurs enregistrés étaient locaux et aucun outil internet n'a été détecté.</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceTitle"><value>Cette session est restée sur l'appareil</value></data>
+	<data name="Dialog.Egress.ToolCallCount"><value>{0} appels d'outils internet</value></data>
+	<data name="Dialog.Egress.UnknownToolCallCount"><value>{0} appels d'outils inconnus</value></data>
+	<data name="Dialog.Egress.EntryCount"><value>{0} entrées de sortie auditées</value></data>
+	<data name="Dialog.Egress.ProviderKind"><value>Fournisseur</value></data>
+	<data name="Dialog.Egress.ToolKind"><value>Outil</value></data>
+	<data name="Dialog.Egress.EmbeddingKind"><value>Embedding</value></data>
+	<data name="Dialog.Egress.ChatSource"><value>Chat</value></data>
+	<data name="Dialog.Egress.TaskSource"><value>Tâche</value></data>
+	<data name="Dialog.Egress.EmbeddingIndexingSource"><value>Indexation de la mémoire</value></data>
+	<data name="Dialog.Egress.EmbeddingSearchSource"><value>Recherche dans la mémoire</value></data>
+	<data name="Dialog.Egress.UnknownDestination"><value>Destination inconnue</value></data>
+	<data name="Dialog.EgressAudit.AgentColumn"><value>Agent</value></data>
+	<data name="Dialog.EgressAudit.AllKinds"><value>Tous les types</value></data>
+	<data name="Dialog.EgressAudit.AllSources"><value>Toutes les sources</value></data>
+	<data name="Dialog.EgressAudit.ContextColumn"><value>Contexte</value></data>
+	<data name="Dialog.EgressAudit.CountSummary"><value>{0} événements</value></data>
+	<data name="Dialog.EgressAudit.DestinationColumn"><value>Destination</value></data>
+	<data name="Dialog.EgressAudit.Title"><value>Audit de sortie</value></data>
+	<data name="Dialog.EgressAudit.EmbeddingEvents"><value>Événements d'embedding</value></data>
+	<data name="Dialog.EgressAudit.InspectAction"><value>Inspecter la session</value></data>
+	<data name="Dialog.EgressAudit.LoadFailed"><value>Impossible de charger les détails de l'audit des données sortantes.</value></data>
+	<data name="Dialog.EgressAudit.ModelMetadata"><value>Modèle</value></data>
+	<data name="Dialog.EgressAudit.NoEntries"><value>Aucune entrée d'audit ne correspond aux filtres actuels.</value></data>
+	<data name="Dialog.EgressAudit.PageSummary"><value>{0} événements - Page {1} sur {2}</value></data>
+	<data name="Dialog.EgressAudit.ProviderEvents"><value>Événements du fournisseur</value></data>
+	<data name="Dialog.EgressAudit.ProviderIdMetadata"><value>ID du fournisseur</value></data>
+	<data name="Dialog.EgressAudit.RangeAllTime"><value>Tout le temps</value></data>
+	<data name="Dialog.EgressAudit.RangeLastThirtyDays"><value>30 derniers jours</value></data>
+	<data name="Dialog.EgressAudit.RunMetadata"><value>Exécution</value></data>
+	<data name="Dialog.EgressAudit.SearchButton"><value>Rechercher</value></data>
+	<data name="Dialog.EgressAudit.SearchPlaceholder"><value>Rechercher dans les données sortantes</value></data>
+	<data name="Dialog.EgressAudit.SessionUnavailable"><value>La session pour cette entrée n'est plus disponible.</value></data>
+	<data name="Dialog.EgressAudit.SourceColumn"><value>Source</value></data>
+	<data name="Dialog.EgressAudit.TaskMetadata"><value>Tâche</value></data>
+	<data name="Dialog.EgressAudit.ThreadMetadata"><value>Fil</value></data>
+	<data name="Dialog.EgressAudit.ToolEvents"><value>Événements d'outil</value></data>
+	<data name="Dialog.EgressAudit.ToolMetadata"><value>Outil</value></data>
+	<data name="Dialog.EgressAudit.TotalEvents"><value>Total des événements</value></data>
+	<data name="Dialog.EgressAudit.TypeColumn"><value>Type</value></data>
+	<data name="Dialog.EgressAudit.UserColumn"><value>Utilisateur</value></data>
+	<data name="Dialog.SystemInstructionTitle"><value>Instruction système</value></data>
+	<data name="Dialog.TokenCountBadge"><value>{0} tokens</value></data>
+	<data name="Dialog.UsageInputTokens"><value>Entrée : {0}</value></data>
+	<data name="Dialog.UsageOutputTokens"><value>Sortie : {0}</value></data>
+	<data name="Dialog.UsageTotalTokens"><value>Total : {0}</value></data>
+	<data name="Dialog.StoredContent"><value>Contenu stocké</value></data>
+	<data name="Dialog.ToggleDetailsTitle"><value>Afficher/masquer les détails</value></data>
+	<data name="Dialog.UnableToSubmitChoice"><value>Impossible d'envoyer ce choix.</value></data>
+	<data name="Dialog.YourProfileTitle"><value>Votre profil</value></data>
+	<data name="Common.Validation.NameRequired"><value>Le nom est requis.</value></data>
+	<data name="Common.Validation.InstructionRequired"><value>L'instruction est requise.</value></data>
+	<data name="Common.Task.AgentUnavailable"><value>Une tâche ne peut être créée que si au moins un agent est disponible.</value></data>
+	<data name="Common.Task.AgentCreatedBadge"><value>Créée par un agent</value></data>
+	<data name="Common.Task.CreatedSuccessfully"><value>Tâche créée avec succès.</value></data>
+	<data name="Common.Task.CronExpression"><value>Cron : {0}</value></data>
+	<data name="Common.Task.CronExpressionLabel"><value>Expression Cron</value></data>
+	<data name="Common.Task.CronExpressionRequired"><value>L'expression Cron est requise.</value></data>
+	<data name="Common.Task.CustomProvider"><value>Fournisseur personnalisé</value></data>
+	<data name="Common.Task.DefaultModelProvider"><value>Utiliser la valeur par défaut de l'agent</value></data>
+	<data name="Common.Task.DefaultModelProviderShort"><value>Utiliser la valeur par défaut de l'agent</value></data>
+	<data name="Common.Task.DeleteAfterRun"><value>Supprimer la tâche après l'exécution</value></data>
+	<data name="Common.Task.DeleteConfirmMessage"><value>Voulez-vous vraiment supprimer « {0} » ?</value></data>
+	<data name="Common.Task.DeleteConfirmTitle"><value>Supprimer la tâche</value></data>
+	<data name="Common.Task.DeletedSuccessfully"><value>Tâche supprimée.</value></data>
+	<data name="Common.Task.RunsLoadFailed"><value>Impossible de charger les exécutions de cette tâche. Veuillez réessayer.</value></data>
+	<data name="Common.Task.DeletesAfterSuccessfulRun"><value>Se supprime automatiquement après une exécution réussie</value></data>
+	<data name="Common.Task.DialogCreateTitle"><value>Créer une tâche</value></data>
+	<data name="Common.Task.DialogEditTitle"><value>Modifier la tâche</value></data>
+	<data name="Common.Task.DisablesAfterSuccessfulRun"><value>Se désactive automatiquement après une exécution réussie</value></data>
+	<data name="Common.Task.Enabled"><value>Activée</value></data>
+	<data name="Common.Task.ExternalTrigger.AddParameterButton"><value>Ajouter un paramètre</value></data>
+	<data name="Common.Task.ExternalTrigger.CopyEndpointButton"><value>Copier le point de terminaison</value></data>
+	<data name="Common.Task.ExternalTrigger.EnableLabel"><value>Autoriser le déclencheur webhook externe</value></data>
+	<data name="Common.Task.ExternalTrigger.Hint"><value>Les appelants externes peuvent déclencher cette tâche via un point de terminaison hook authentifié.</value></data>
+	<data name="Common.Task.ExternalTrigger.KindBoolean"><value>Booléen</value></data>
+	<data name="Common.Task.ExternalTrigger.KindJson"><value>JSON</value></data>
+	<data name="Common.Task.ExternalTrigger.KindNumber"><value>Nombre</value></data>
+	<data name="Common.Task.ExternalTrigger.KindString"><value>Chaîne</value></data>
+	<data name="Common.Task.ExternalTrigger.NoParameters"><value>Aucun paramètre n'est requis pour ce webhook.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameDuplicate"><value>Les noms de paramètres doivent être uniques.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameInvalid"><value>Les noms de paramètres doivent commencer par une lettre et ne contenir que des lettres, des chiffres, des traits de soulignement ou des traits d'union.</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNamePlaceholder"><value>nomParametre</value></data>
+	<data name="Common.Task.ExternalTrigger.ParametersLabel"><value>Paramètres du webhook</value></data>
+	<data name="Common.Task.ExternalTrigger.SlugLabel"><value>Slug du webhook</value></data>
+	<data name="Common.Task.AfterTaskSummary"><value>Après : {0}</value></data>
+	<data name="Common.Task.AfterTaskSupport"><value>S'exécute après la réussite de la tâche sélectionnée</value></data>
+	<data name="Common.Task.RunScope.Label"><value>Périmètre d'exécution</value></data>
+	<data name="Common.Task.RunScope.CustomTitle"><value>Paramètres personnalisés de la tâche</value></data>
+	<data name="Common.Task.RunScope.InheritSummary"><value>Cette tâche hérite des outils, de la mémoire, des compétences et des espaces de travail de l'agent sélectionné.</value></data>
+	<data name="Common.Task.RunScope.CustomSummary"><value>{0} outils, {1} espaces de travail</value></data>
+	<data name="Common.Task.RunScope.UseAgentSettingsButton"><value>Utiliser les paramètres de l'agent</value></data>
+	<data name="Common.Task.RunScope.DialogTitle"><value>Périmètre d'exécution de la tâche</value></data>
+	<data name="Common.Task.RunScope.DialogDescription"><value>Les paramètres d'exécution personnalisés remplacent les paramètres de l'agent sélectionné pour cette tâche uniquement.</value></data>
+	<data name="Common.Task.EvaluatedInTimeZone"><value>Évalué dans {0}</value></data>
+	<data name="Common.Task.NextRun"><value>Prochaine exécution {0}</value></data>
+	<data name="Common.Task.ShowInstructions"><value>Afficher les instructions</value></data>
+	<data name="Common.Task.EveryHoursMinutes"><value>Toutes les {0} h {1} min</value></data>
+	<data name="Common.Task.EveryMinutes"><value>Toutes les {0} min</value></data>
+	<data name="Common.Task.FinishedAt"><value>Terminé à {0}</value></data>
+	<data name="Common.Task.InstructionLabel"><value>Instruction</value></data>
+	<data name="Common.Task.InstructionPlaceholder"><value>Que doit faire l'agent ?</value></data>
+	<data name="Common.Task.IntervalInvalid"><value>L'intervalle doit être d'au moins 1 minute.</value></data>
+	<data name="Common.Task.IntervalLabel"><value>Intervalle (minutes)</value></data>
+	<data name="Common.Task.KeepLastRunsLabel"><value>Conserver les dernières exécutions</value></data>
+	<data name="Common.Task.KeepLastRunsPlaceholder"><value>Tout conserver</value></data>
+	<data name="Common.Task.KeepLastRunsHint"><value>Les anciennes exécutions sont supprimées à la fin de la suivante. Laissez vide pour toutes les conserver.</value></data>
+	<data name="Common.Task.KeepLastRunsInvalid"><value>La valeur doit être au moins 1, ou vide pour conserver toutes les exécutions.</value></data>
+	<data name="Common.Task.RunDeleteConfirmTitle"><value>Supprimer l'exécution</value></data>
+	<data name="Common.Task.RunDeleteConfirmMessage"><value>Supprimer l'exécution démarrée le {0} ? Sa transcription est également supprimée.</value></data>
+	<data name="Common.Task.RunDeletedSuccessfully"><value>Exécution supprimée.</value></data>
+	<data name="Common.Task.MessagesCount"><value>{0} messages</value></data>
+	<data name="Common.Task.ModelProviderLabel"><value>Fournisseur de modèle</value></data>
+	<data name="Common.Task.NamePlaceholder"><value>par ex. Résumé quotidien</value></data>
+	<data name="Common.Task.NoOtherTasks"><value>Aucune autre tâche n'est disponible pour le chaînage.</value></data>
+	<data name="Common.Task.OnceAt"><value>Une fois à {0}</value></data>
+	<data name="Common.Task.OrphanRowHint"><value>L'agent associé n'existe plus</value></data>
+	<data name="Common.Task.PausedUntilEnabled"><value>La tâche est suspendue jusqu'à sa réactivation</value></data>
+	<data name="Common.Task.PredecessorLabel"><value>Exécuter après la tâche</value></data>
+	<data name="Common.Task.PredecessorMissing"><value>Tâche supprimée</value></data>
+	<data name="Common.Task.PredecessorRequired"><value>Sélectionnez la tâche après laquelle celle-ci doit s'exécuter.</value></data>
+	<data name="Common.Task.PredecessorSelf"><value>Une tâche ne peut pas s'exécuter après elle-même.</value></data>
+	<data name="Common.Task.RunAtLabel"><value>Exécuter à</value></data>
+	<data name="Common.Task.RunAtTimeZoneHint"><value>Utilise votre fuseau horaire d'utilisateur actuel lors de l'enregistrement et de la planification de cette tâche.</value></data>
+	<data name="Common.Task.RunningNow"><value>En cours d'exécution</value></data>
+	<data name="Common.Task.ScheduleAfterTask"><value>Après une autre tâche</value></data>
+	<data name="Common.Task.ScheduleCron"><value>Cron</value></data>
+	<data name="Common.Task.ScheduleExamples"><value>Exemples : 30 9 * * 1-5 pour les jours ouvrés à 09:30, 0 */6 * * * pour toutes les 6 heures.</value></data>
+	<data name="Common.Task.ScheduleInterval"><value>Intervalle</value></data>
+	<data name="Common.Task.ScheduleOneShot"><value>Ponctuelle</value></data>
+	<data name="Common.Task.ScheduleTimeZoneHint"><value>Évalué en utilisant votre fuseau horaire d'utilisateur actuel lors de l'enregistrement de cette tâche.</value></data>
+	<data name="Common.Task.ServerLocalTime"><value>heure locale du serveur</value></data>
+	<data name="Common.Task.StartedAt"><value>Démarré à {0}</value></data>
+	<data name="Common.Task.StatusHealthy"><value>En bon état</value></data>
+	<data name="Common.Task.StatusIdle"><value>Inactive</value></data>
+	<data name="Common.Task.StatusNeedsAttention"><value>Nécessite votre attention</value></data>
+	<data name="Common.Task.StatusOrphan"><value>Orpheline</value></data>
+	<data name="Common.Task.StatusPaused"><value>En pause</value></data>
+	<data name="Common.Task.StatusPending"><value>En attente</value></data>
+	<data name="Common.Task.StatusSkipped"><value>Ignorée</value></data>
+	<data name="Common.Task.StatusReady"><value>Prête</value></data>
+	<data name="Common.Task.StatusRunning"><value>En cours d'exécution</value></data>
+	<data name="Common.Task.TokensUsed"><value>{0} tokens</value></data>
+	<data name="Common.Task.UpdatedSuccessfully"><value>Tâche mise à jour avec succès.</value></data>
+	<data name="Common.Task.WatchingForNextWindow"><value>En attente de la prochaine fenêtre planifiée</value></data>
+	<data name="Common.Task.Page.AllStatusesOption"><value>Tous les statuts</value></data>
+	<data name="Common.Task.Page.CategoryLabel"><value>Orchestration</value></data>
+	<data name="Common.Task.Page.CompletedMetric"><value>Terminées</value></data>
+	<data name="Common.Task.Page.ConfiguredBadge"><value>Configuré</value></data>
+	<data name="Common.Task.Page.CreateTaskButton"><value>Créer une tâche</value></data>
+	<data name="Common.Task.Page.Description"><value>Planifiez, observez et gérez le travail des agents autonomes à partir d'un seul écran. Sélectionnez une tâche pour inspecter son dernier état d'exécution et ses exécutions récentes.</value></data>
+	<data name="Common.Task.Page.DetailsDialogTitle"><value>Détails de la tâche</value></data>
+	<data name="Common.Task.Page.DirectoryDescription"><value>Sélectionnez une tâche pour afficher les détails et les exécutions récentes.</value></data>
+	<data name="Common.Task.Page.DirectoryTitle"><value>Répertoire des tâches</value></data>
+	<data name="Common.Task.Page.DisabledOption"><value>Désactivée</value></data>
+	<data name="Common.Task.Page.EmptyDescription"><value>Créez votre premier flux de travail autonome pour voir ici les planifications, les exécutions et l'historique d'exécution en direct.</value></data>
+	<data name="Common.Task.Page.EmptyTitle"><value>Aucune tâche d'agent pour le moment</value></data>
+	<data name="Common.Task.Page.FailedBadge"><value>Échec</value></data>
+	<data name="Common.Task.Page.InspectButton"><value>Inspecter</value></data>
+	<data name="Common.Task.Page.LatestRunHeader"><value>Dernière exécution</value></data>
+	<data name="Common.Task.Page.LiveBadge"><value>En direct</value></data>
+	<data name="Common.Task.Page.NeverBadge"><value>Jamais</value></data>
+	<data name="Common.Task.Page.NeverRunOption"><value>Jamais exécutée</value></data>
+	<data name="Common.Task.Page.NewTaskButton"><value>Nouvelle tâche</value></data>
+	<data name="Common.Task.Page.NoExecutionYet"><value>Aucune exécution pour le moment</value></data>
+	<data name="Common.Task.Page.NoRunsYet"><value>Aucune exécution enregistrée pour cette tâche pour le moment.</value></data>
+	<data name="Common.Task.Page.OpenBadge"><value>Ouvert</value></data>
+	<data name="Common.Task.Page.RecentExecutionsDescription"><value>Dernières exécutions de cette tâche, y compris l'exécution en direct actuelle le cas échéant.</value></data>
+	<data name="Common.Task.Page.RecentExecutionsTitle"><value>Exécutions récentes</value></data>
+	<data name="Common.Task.Page.RunNowButton"><value>Exécuter maintenant</value></data>
+	<data name="Common.Task.Page.RunsButton"><value>Exécutions</value></data>
+	<data name="Common.Task.Page.ScheduleHeader"><value>Planification</value></data>
+	<data name="Common.Task.Page.SearchPlaceholder"><value>Rechercher des tâches ou des agents</value></data>
+	<data name="Common.Task.Page.SelectTaskDescription"><value>Choisissez une tâche dans la liste pour conserver son résumé d'exécution, son dernier état et ses exécutions récentes visibles.</value></data>
+	<data name="Common.Task.Page.SelectTaskTitle"><value>Sélectionner une tâche</value></data>
+	<data name="Common.Task.Page.StateHeader"><value>État</value></data>
+	<data name="Common.Task.Page.TaskHeader"><value>Tâche</value></data>
+	<data name="Common.Task.Page.Title"><value>Opérations des agents</value></data>
+	<data name="Common.Task.Page.TotalTasksMetric"><value>Total des tâches</value></data>
+	<data name="Common.Task.Page.ViewAllButton"><value>Tout afficher</value></data>
+	<data name="Common.Task.Page.ViewRunsButton"><value>Afficher les exécutions</value></data>
+	<data name="Admin.Title"><value>Administration</value></data>
+	<data name="Admin.Description"><value>Créer des utilisateurs et sécuriser l'accès.</value></data>
+	<data name="Admin.AuthMode.Label"><value>Mode d'authentification</value></data>
+	<data name="Admin.AuthMode.Description"><value>Basculer entre la connexion standard par mot de passe et le flux simplifié de sélection de profil Home.</value></data>
+	<data name="Admin.AuthMode.StandardLabel"><value>Standard</value></data>
+	<data name="Admin.AuthMode.StandardDescription"><value>Utiliser l'écran existant de connexion par nom d'utilisateur et mot de passe.</value></data>
+	<data name="Admin.AuthMode.HomeLabel"><value>Home</value></data>
+	<data name="Admin.AuthMode.HomeDescription"><value>Afficher un sélecteur de profil, puis se connecter avec un code PIN.</value></data>
+	<data name="Admin.AuthMode.PinRequirementTitle"><value>Exigence de code PIN</value></data>
+	<data name="Admin.AuthMode.PinRequirementDescription"><value>Les profils doivent disposer d'un code PIN avant de pouvoir se connecter via le mode Home.</value></data>
+	<data name="Admin.AuthMode.HomeRequiresPin"><value>Au moins un code PIN d'opérateur est requis avant d'activer le mode Home.</value></data>
+	<data name="Admin.AuthMode.PasswordFallbackHint"><value>La connexion par mot de passe reste disponible depuis l'écran de connexion.</value></data>
+	<data name="Admin.AuthMode.SaveButton"><value>Enregistrer les paramètres d'authentification</value></data>
+	<data name="Admin.AuthSettings.Saved"><value>Paramètres d'authentification enregistrés.</value></data>
+	<data name="Admin.User.CreateTitle"><value>Créer un utilisateur</value></data>
+	<data name="Admin.User.CreateDescription"><value>Définissez le nom d'utilisateur, l'adresse e-mail et le mot de passe du nouvel utilisateur.</value></data>
+	<data name="Admin.User.CreateButton"><value>Créer l'utilisateur</value></data>
+	<data name="Admin.User.DirectoryTitle"><value>Répertoire des utilisateurs</value></data>
+	<data name="Admin.User.FullNamePlaceholder"><value>Jean Dupont</value></data>
+	<data name="Admin.User.UsernamePlaceholder"><value>jeandupont</value></data>
+	<data name="Admin.User.EmailPlaceholder"><value>jean@example.com</value></data>
+	<data name="Admin.User.YouBadge"><value>Vous</value></data>
+	<data name="Admin.User.EditTitleAttribute"><value>Modifier l'utilisateur</value></data>
+	<data name="Admin.User.DeleteTitleAttribute"><value>Supprimer l'utilisateur</value></data>
+	<data name="Admin.User.ProfileTitle"><value>Profil</value></data>
+	<data name="Admin.User.SaveProfileButton"><value>Enregistrer le profil</value></data>
+	<data name="Admin.User.SaveRolesButton"><value>Enregistrer les rôles</value></data>
+	<data name="Admin.User.PasswordResetTitle"><value>Réinitialisation du mot de passe</value></data>
+	<data name="Admin.User.ResetPasswordButton"><value>Réinitialiser le mot de passe</value></data>
+	<data name="Admin.User.ResetPasswordCurrentUserHint"><value>Utilisez la boîte de dialogue de profil pour modifier votre propre mot de passe.</value></data>
+	<data name="Admin.User.PinLoginTitle"><value>Connexion par code PIN</value></data>
+	<data name="Admin.User.PinHeader"><value>Code PIN</value></data>
+	<data name="Admin.User.PinNewLabel"><value>Nouveau code PIN</value></data>
+	<data name="Admin.User.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Admin.User.PinConfirmLabel"><value>Confirmer le code PIN</value></data>
+	<data name="Admin.User.PinRepeatPlaceholder"><value>Répéter le code PIN</value></data>
+	<data name="Admin.User.PinChangeButton"><value>Modifier le code PIN</value></data>
+	<data name="Admin.User.PinSetButton"><value>Définir le code PIN</value></data>
+	<data name="Admin.User.PinClearButton"><value>Effacer le code PIN</value></data>
+	<data name="Admin.User.PinHashesHint"><value>Les codes PIN de connexion ordinaires sont stockés sous forme de hachages.</value></data>
+	<data name="Admin.User.CannotDeleteOwnAccount"><value>Vous ne pouvez pas supprimer votre propre compte.</value></data>
+	<data name="Admin.User.DeleteConfirmTitle"><value>Confirmer la suppression</value></data>
+	<data name="Admin.User.DeleteConfirmMessage"><value>Voulez-vous vraiment supprimer l'utilisateur '{0}' ? Cette action est irréversible.</value></data>
+	<data name="Admin.GitHubSkills.ManageButton"><value>Gérer le jeton GitHub</value></data>
+	<data name="Admin.OAuth.ManageButton"><value>Gérer les fournisseurs</value></data>
+	<data name="Admin.OAuth.Title"><value>Fournisseurs OAuth</value></data>
+	<data name="Admin.OAuth.Description"><value>Configurez les applications OAuth Google et Microsoft partagées utilisées pour les comptes connectés et les futures intégrations.</value></data>
+	<data name="Admin.OAuth.SecretHint"><value>Laissez le secret vide pour conserver le secret actuellement enregistré. Effacez l'ID client pour désactiver un fournisseur.</value></data>
+	<data name="Admin.OAuth.LoadingProviders"><value>Chargement des paramètres du fournisseur...</value></data>
+	<data name="Admin.OAuth.GoogleDescription"><value>Gmail, Calendar, YouTube</value></data>
+	<data name="Admin.OAuth.MicrosoftDescription"><value>Intégrations Outlook, To-Do, Graph</value></data>
+	<data name="Admin.OAuth.ConfiguredStatus"><value>Configuré</value></data>
+	<data name="Admin.OAuth.ClientIdLabel"><value>ID client</value></data>
+	<data name="Admin.OAuth.ClientIdPlaceholder"><value>ID client {0}</value></data>
+	<data name="Admin.OAuth.ClientSecretLabel"><value>Secret client</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderExists"><value>Laisser vide pour conserver le secret actuel</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderNew"><value>Coller le secret client</value></data>
+	<data name="Admin.OAuth.SecretExists"><value>Un secret est déjà enregistré.</value></data>
+	<data name="Admin.OAuth.SecretNotStored"><value>Aucun secret n'est encore enregistré.</value></data>
+	<data name="Admin.OAuth.SaveButton"><value>Enregistrer {0}</value></data>
+	<data name="Admin.OAuth.ConfigurationSaved"><value>Configuration {0} enregistrée.</value></data>
+	<data name="Common.Back"><value>Retour</value></data>
+	<data name="Common.Forward"><value>Avancer</value></data>
+	<data name="Common.Completed"><value>Terminé</value></data>
+	<data name="Common.No"><value>Non</value></data>
+	<data name="Common.Ok"><value>OK</value></data>
+	<data name="Common.Parameter"><value>Paramètre</value></data>
+	<data name="Common.ProfilePicture"><value>Photo de profil</value></data>
+	<data name="Common.ProfilePicture.AgentMissing"><value>Enregistrez l'agent avant de modifier sa photo.</value></data>
+	<data name="Common.ProfilePictureChange"><value>Modifier la photo de profil</value></data>
+	<data name="Common.ProfilePicture.ChooseFromGallery"><value>Images intégrées</value></data>
+	<data name="Common.ProfilePicture.Current"><value>Actuel</value></data>
+	<data name="Common.ProfilePicture.GalleryDescription"><value>Choisissez une photo de profil intégrée ou importez la vôtre.</value></data>
+	<data name="Common.ProfilePicture.GalleryEmpty"><value>Aucune image intégrée n'est disponible pour le moment.</value></data>
+	<data name="Common.ProfilePicture.GalleryLoadFailed"><value>Impossible de charger la galerie d'images.</value></data>
+	<data name="Common.ProfilePicture.GalleryTitle"><value>Choisir une image</value></data>
+	<data name="Common.ProfilePictureRequirements"><value>PNG, JPEG ou WebP. 2 Mo max.</value></data>
+	<data name="Common.ProfilePicture.SeedOptionLabel"><value>Image intégrée {0}</value></data>
+	<data name="Common.ProfilePicture.Selected"><value>Sélectionnée</value></data>
+	<data name="Common.ProfilePicture.UnsupportedType"><value>Le fichier doit être une image PNG, JPEG ou WebP.</value></data>
+	<data name="Common.ProfilePicture.UploadOwn"><value>Importer la vôtre</value></data>
+	<data name="Common.ProfilePicture.UseSelected"><value>Utiliser cette image</value></data>
+	<data name="Common.Wallpaper"><value>Fond d'écran</value></data>
+	<data name="Common.Wallpaper.Change"><value>Changer de fond d'écran</value></data>
+	<data name="Common.Wallpaper.ChooseFromGallery"><value>Fonds d'écran intégrés</value></data>
+	<data name="Common.Wallpaper.Current"><value>Actuel</value></data>
+	<data name="Common.Wallpaper.Effects"><value>Effets de fond d'écran et de verre</value></data>
+	<data name="Common.Wallpaper.EffectsDescription"><value>Désactivez cette option pour supprimer le fond d'écran et utiliser des surfaces pleines et non transparentes.</value></data>
+	<data name="Common.Wallpaper.GalleryDescription"><value>Choisissez un fond d'écran intégré ou importez le vôtre.</value></data>
+	<data name="Common.Wallpaper.GalleryEmpty"><value>Aucun fond d'écran intégré n'est disponible pour le moment.</value></data>
+	<data name="Common.Wallpaper.GalleryLoadFailed"><value>Impossible de charger la galerie de fonds d'écran.</value></data>
+	<data name="Common.Wallpaper.GalleryTitle"><value>Choisir un fond d'écran</value></data>
+	<data name="Common.Wallpaper.Requirements"><value>PNG, JPEG ou WebP. 10 Mo max. 1920 × 1080 recommandé.</value></data>
+	<data name="Common.Wallpaper.SeedOptionLabel"><value>Fond d'écran intégré {0}</value></data>
+	<data name="Common.Wallpaper.Selected"><value>Sélectionné</value></data>
+	<data name="Common.Wallpaper.UnsupportedType"><value>Le fichier doit être une image PNG, JPEG ou WebP.</value></data>
+	<data name="Common.Wallpaper.UploadOwn"><value>Importer le vôtre</value></data>
+	<data name="Common.Wallpaper.UseSelected"><value>Utiliser ce fond d'écran</value></data>
+	<data name="Common.Required"><value>Requis</value></data>
+	<data name="Common.Started"><value>Démarré</value></data>
+	<data name="Common.Status"><value>État</value></data>
+	<data name="Common.Summary"><value>Résumé</value></data>
+	<data name="Common.Value"><value>Valeur</value></data>
+	<data name="Common.Yes"><value>Oui</value></data>
+	<data name="Common.Download.Complete"><value>Téléchargement terminé !</value></data>
+	<data name="Common.Download.Failed"><value>Échec du téléchargement.</value></data>
+	<data name="Common.Download.DownloadingModel"><value>Téléchargement du modèle</value></data>
+	<data name="Common.Download.UrlInvalid"><value>L'URL de téléchargement doit être une adresse http ou https valide.</value></data>
+	<data name="Common.ErrorPage.Title"><value>Erreur</value></data>
+	<data name="Common.ErrorPage.Heading"><value>Erreur.</value></data>
+	<data name="Common.ErrorPage.Message"><value>Une erreur s'est produite lors du traitement de votre demande.</value></data>
+	<data name="Common.ErrorPage.RequestId"><value>ID de requête :</value></data>
+	<data name="Common.ErrorPage.DevelopmentMode"><value>Mode développement</value></data>
+	<data name="Common.ErrorPage.DevelopmentModeDetails"><value>Passer à l'environnement Development affichera des informations plus détaillées sur l'erreur survenue.</value></data>
+	<data name="Common.ErrorPage.DevelopmentWarning"><value>L'environnement Development ne doit pas être activé pour les applications déployées. Cela peut entraîner l'affichage d'informations sensibles issues des exceptions aux utilisateurs finaux. Pour le débogage local, activez l'environnement Development en définissant la variable d'environnement ASPNETCORE_ENVIRONMENT sur Development et en redémarrant l'application.</value></data>
+	<data name="Common.Route.NotAuthorized"><value>Vous n'êtes pas autorisé à afficher cette page.</value></data>
+	<data name="Common.Route.NotFound"><value>Désolé, la page demandée est introuvable.</value></data>
+	<data name="Common.Validation.AllowedRange"><value>Plage autorisée : {0} - {1}</value></data>
+	<data name="Common.Validation.EnterValidNumber"><value>Entrez un nombre valide.</value></data>
+	<data name="Common.Validation.EnterWholeNumber"><value>Entrez un nombre entier.</value></data>
+	<data name="Common.Validation.MaximumLength"><value>La longueur maximale est de {0}.</value></data>
+	<data name="Common.Validation.MaximumValue"><value>Valeur maximale : {0}</value></data>
+	<data name="Common.Validation.MinimumLength"><value>La longueur minimale est de {0}.</value></data>
+	<data name="Common.Validation.MinimumValue"><value>Valeur minimale : {0}</value></data>
+	<data name="Common.Validation.SelectOption"><value>Sélectionnez une option</value></data>
+	<data name="Common.Validation.SelectValidOption"><value>Sélectionnez une option valide.</value></data>
+	<data name="Common.Validation.Submit"><value>Envoyer</value></data>
+	<data name="Common.Validation.ThisFieldRequired"><value>Ce champ est obligatoire.</value></data>
+	<data name="Common.Task.RunsTitle"><value>Exécutions - {0}</value></data>
+	<data name="Admin.User.DeleteTitle"><value>Supprimer l'utilisateur</value></data>
+	<data name="Dialog.ConfirmNewPasswordLabel"><value>Confirmer le nouveau mot de passe</value></data>
+	<data name="Dialog.ContentTypeException"><value>Exception</value></data>
+	<data name="Dialog.CurrentPasswordLabel"><value>Mot de passe actuel</value></data>
+	<data name="Dialog.JsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorEgressTab"><value>Données sortantes</value></data>
+	<data name="Dialog.NewPasswordLabel"><value>Nouveau mot de passe</value></data>
+	<data name="Dialog.PasswordLeaveBlankHelper"><value>Laissez vide pour conserver votre mot de passe actuel.</value></data>
+	<data name="Dialog.ReasoningTitle"><value>Raisonnement</value></data>
+	<data name="Dialog.VisualTab"><value>Visuel</value></data>
+	<data name="Common.Task.ScheduleKindLabel"><value>Type de planification</value></data>
+  <data name="Common.SignOut"><value>Se déconnecter</value></data>
+  <data name="Common.Unlock"><value>Déverrouiller</value></data>
+  <data name="Dialog.VaultPassword.Title"><value>Mot de passe du coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.Description"><value>Modifiez le mot de passe qui déverrouille vos identifiants enregistrés et vos données protégées.</value></data>
+  <data name="Dialog.VaultPassword.Current"><value>Mot de passe actuel du coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.New"><value>Nouveau mot de passe du coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.Confirm"><value>Confirmer le mot de passe du coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.RecoveryWarning"><value>Conservez ce mot de passe en lieu sûr. Oscova ne peut pas le récupérer, et les données protégées ne pourront pas être ouvertes sans lui.</value></data>
+  <data name="Dialog.VaultPassword.ChangeButton"><value>Modifier le mot de passe</value></data>
+  <data name="Dialog.VaultPassword.ChangeSuccess"><value>Votre mot de passe du coffre-fort a été modifié.</value></data>
+  <data name="Dialog.VaultPassword.LengthError"><value>Le mot de passe du coffre-fort doit comporter entre 12 et 256 caractères.</value></data>
+  <data name="Dialog.VaultPassword.ManageButton"><value>Modifier le mot de passe du coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.ConfirmationError"><value>La confirmation du mot de passe du coffre-fort ne correspond pas.</value></data>
+  <data name="Dialog.VaultPassword.SetupTitle"><value>Créer votre mot de passe de coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.SetupDescription"><value>Vous seul connaissez ce mot de passe.</value></data>
+  <data name="Dialog.VaultPassword.SetupEncrypts"><value>Il chiffre vos discussions, votre mémoire, vos paramètres et vos clés enregistrées sur cet appareil.</value></data>
+  <data name="Dialog.VaultPassword.SetupSeparate"><value>Il est distinct de votre mot de passe de connexion.</value></data>
+  <data name="Dialog.VaultPassword.CreateButton"><value>Créer le coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.UnlockTitle"><value>Déverrouiller votre coffre-fort</value></data>
+  <data name="Dialog.VaultPassword.UnlockDescription"><value>Entrez votre mot de passe du coffre-fort pour déverrouiller les identifiants enregistrés et les données protégées.</value></data>
+  <data name="Dialog.VaultPassword.Incorrect"><value>Le mot de passe du coffre-fort est incorrect.</value></data>
+  <data name="Dialog.VaultPassword.StateLoadFailed"><value>Impossible de charger l'état du coffre-fort.</value></data>
+  <data name="Dialog.DuressCredentials.AccountPassword"><value>Mot de passe du compte</value></data>
+  <data name="Dialog.DuressCredentials.AccountPasswordError"><value>Le mot de passe de votre compte est incorrect.</value></data>
+  <data name="Dialog.DuressCredentials.Agents"><value>Agents à supprimer</value></data>
+  <data name="Dialog.DuressCredentials.Confirmation"><value>Confirmer le mot de passe sous contrainte</value></data>
+  <data name="Dialog.DuressCredentials.ConfirmationError"><value>La confirmation du mot de passe sous contrainte ne correspond pas.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspace"><value>L'espace de travail par défaut est toujours conservé.</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspaceError"><value>L'espace de travail par défaut ne peut pas être sélectionné.</value></data>
+  <data name="Dialog.DuressCredentials.DeleteThreads"><value>Supprimer toutes les conversations</value></data>
+  <data name="Dialog.DuressCredentials.ClearSharedFolder"><value>Vider le dossier partagé pour tous les utilisateurs</value></data>
+  <data name="Dialog.DuressCredentials.Description"><value>Utilisez un second mot de passe pour vous connecter normalement tout en détruisant définitivement les données privées de votre choix.</value></data>
+  <data name="Dialog.DuressCredentials.DifferentError"><value>Le mot de passe sous contrainte doit être différent du mot de passe de votre compte.</value></data>
+  <data name="Dialog.DuressCredentials.LengthError"><value>Le mot de passe sous contrainte doit comporter entre 12 et 256 caractères.</value></data>
+  <data name="Dialog.DuressCredentials.LoadFailed"><value>Impossible de charger les choix sous contrainte.</value></data>
+  <data name="Dialog.DuressCredentials.NoTargets"><value>Aucun agent, tâche ou espace de travail sélectionnable n'est disponible.</value></data>
+  <data name="Dialog.DuressCredentials.OpenButton"><value>Définir les identifiants sous contrainte</value></data>
+  <data name="Dialog.DuressCredentials.Password"><value>Mot de passe sous contrainte</value></data>
+  <data name="Dialog.DuressCredentials.PriorSelections"><value>Les choix enregistrés ne peuvent pas être affichés. Ce formulaire démarre vide, et l'enregistrement remplace l'intégralité de la politique.</value></data>
+  <data name="Dialog.DuressCredentials.Save"><value>Enregistrer les identifiants sous contrainte</value></data>
+  <data name="Dialog.DuressCredentials.SaveSuccess"><value>Vos identifiants sous contrainte ont été enregistrés.</value></data>
+  <data name="Dialog.DuressCredentials.SelectionTooLarge"><value>Votre sélection est trop volumineuse. Supprimez certains éléments et réessayez.</value></data>
+  <data name="Dialog.DuressCredentials.SharedAgentError"><value>Un agent partagé ne peut pas être sélectionné.</value></data>
+  <data name="Dialog.DuressCredentials.TargetNameTooLong"><value>Un nom sélectionné est trop long.</value></data>
+  <data name="Dialog.DuressCredentials.Tasks"><value>Tâches à supprimer</value></data>
+  <data name="Dialog.DuressCredentials.Title"><value>Identifiants sous contrainte</value></data>
+  <data name="Dialog.DuressCredentials.TwoFactorError"><value>Les identifiants sous contrainte ne peuvent pas être définis lorsque la double authentification est activée.</value></data>
+  <data name="Dialog.DuressCredentials.Unavailable"><value>L'un des éléments sélectionnés n'est plus disponible. Rouvrez le formulaire et choisissez à nouveau.</value></data>
+  <data name="Dialog.DuressCredentials.Workspaces"><value>Espaces de travail à effacer</value></data>
+  <data name="Dialog.DuressCredentials.WorkspaceClearing"><value>Le contenu de l'espace de travail est supprimé, mais l'espace de travail lui-même demeure.</value></data>
+  <data name="Dialog.Security.Title"><value>Sécurité</value></data>
+  <data name="Dialog.DuressCredentials.Pin"><value>Code PIN sous contrainte (facultatif)</value></data>
+  <data name="Dialog.DuressCredentials.PinConfirmation"><value>Confirmer le code PIN sous contrainte</value></data>
+  <data name="Dialog.DuressCredentials.PinHelp"><value>Les deux identifiants sous contrainte suppriment définitivement les mêmes données sélectionnées. Enregistrer remplace tous les choix. Laissez les deux champs PIN vides pour retirer le code PIN sous contrainte. Un code PIN de connexion doit déjà être attribué.</value></data>
+  <data name="Dialog.DuressCredentials.PinError"><value>Saisissez des codes PIN identiques de 6–64 chiffres (0–9), ou laissez les deux champs vides.</value></data>
+  <data name="Dialog.DuressCredentials.PinRequired"><value>Définissez un code PIN de connexion avant le code PIN sous contrainte.</value></data>
+  <data name="Dialog.DuressCredentials.PinDifferent"><value>Choisissez un code PIN différent du code de connexion.</value></data>
+  <data name="Admin.User.PinNotAllowedError"><value>Ce code PIN ne peut pas être utilisé. Choisissez-en un autre.</value></data>
+  <data name="Admin.User.PinLengthError"><value>Le code PIN doit contenir 6–64 chiffres (0–9).</value></data>
+  <data name="Common.Reconnect.Title" xml:space="preserve"><value>Connexion à Oscova</value></data>
+  <data name="Common.Reconnect.Connecting" xml:space="preserve"><value>Reconnexion…</value></data>
+  <data name="Common.Reconnect.Countdown" xml:space="preserve"><value>Nouvelle tentative dans {0} secondes.</value></data>
+  <data name="Common.Reconnect.Failed" xml:space="preserve"><value>Impossible de se reconnecter. Vérifiez votre connexion et réessayez.</value></data>
+  <data name="Common.Reconnect.Expired" xml:space="preserve"><value>Votre session est terminée. Rechargez la page pour continuer. Les modifications non enregistrées peuvent être perdues.</value></data>
+  <data name="Common.Reconnect.Paused" xml:space="preserve"><value>Votre session est en pause. Reprenez-la pour continuer.</value></data>
+  <data name="Common.Reconnect.Resuming" xml:space="preserve"><value>Reprise de votre session…</value></data>
+  <data name="Common.Reconnect.ResumeFailed" xml:space="preserve"><value>Impossible de reprendre votre session. Réessayez.</value></data>
+  <data name="Common.Reconnect.Updating" xml:space="preserve"><value>Cette page se recharge au redémarrage d’Oscova. Vous devrez peut-être vous reconnecter.</value></data>
+  <data name="Common.Reload" xml:space="preserve"><value>Recharger</value></data>
+  <data name="Common.Resume" xml:space="preserve"><value>Reprendre</value></data>
+	<data name="Common.Task.NotifyOnCompletion"><value>Notifier à la fin</value></data>
+	<data name="Common.Task.NotifyOnCompletionHint"><value>Envoie un avis supplémentaire dans la boîte de réception de l’application après une exécution réussie. Les échecs y apparaissent toujours.</value></data>
+<data name="Notifications.Task.SkippedLowBattery" xml:space="preserve"><value>Cette tâche a été ignorée car l’ordinateur fonctionne sur batterie avec une charge inférieure au seuil configuré. Lancez-la manuellement quand vous le souhaitez.</value></data>
+<data name="Notifications.Task.BatteryInformationUnavailable" xml:space="preserve"><value>Les informations de batterie ou de connexion électrique sont indisponibles sur l’ordinateur qui exécute Oscova.</value></data>
+<data name="Admin.ExecutionPermissionsTitle" xml:space="preserve"><value>Autorisations d'exécution</value></data><data name="Admin.PermissionProjects" xml:space="preserve"><value>Projets</value></data><data name="Admin.PermissionWorkspaceShell" xml:space="preserve"><value>Shell de l'espace de travail</value></data><data name="Admin.PermissionProjectShell" xml:space="preserve"><value>Shell du projet</value></data><data name="Admin.ExecutionPermissionsHint" xml:space="preserve"><value>Désactiver une autorisation bloque les nouvelles opérations et demande l'annulation des opérations en cours concernées.</value></data><data name="Admin.ExecutionPermissionsSaved" xml:space="preserve"><value>Autorisations d'exécution enregistrées.</value></data>  <data name="Common.DialogOperatorVaultTitle" xml:space="preserve">
+    <value>En attente de l’opérateur</value>
+  </data>
+  <data name="Common.DialogOperatorVaultDescription" xml:space="preserve">
+    <value>L’opérateur doit déverrouiller son coffre. Sélectionnez ensuite Réessayer pour continuer.</value>
+  </data>
+  <data name="Common.AdminPermissionApprovedSkills" xml:space="preserve">
+    <value>Installer des compétences depuis les dépôts approuvés</value>
+  </data>
+  <data name="Common.AdminPermissionCustomSkills" xml:space="preserve">
+    <value>Importer, créer et modifier des compétences personnalisées</value>
+  </data>
+  <data name="Common.AdminPermissionPersonalMcp" xml:space="preserve">
+    <value>Gérer les connexions MCP personnelles</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedTitle" xml:space="preserve">
+    <value>Travail interrompu</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedBody" xml:space="preserve">
+    <value>Le travail concerné est en cours d’arrêt car ses paramètres ont changé. Vérifiez-les avant de lancer une nouvelle exécution.</value>
+  </data>
+  <data name="Governance.Applying" xml:space="preserve"><value>Arrêt du travail concerné et application des modifications…</value></data>
+  <data name="Governance.SharedProviders" xml:space="preserve"><value>Votre opérateur configure les fournisseurs. Conservez son choix par défaut ou sélectionnez un autre fournisseur disponible.</value></data>
+  <data name="Governance.OperatorDefault" xml:space="preserve"><value>Choix par défaut de l’opérateur : {0}</value></data>
+  <data name="Governance.ProviderUnavailable" xml:space="preserve"><value>Le fournisseur sélectionné est indisponible. Choisissez-en un autre.</value></data>
+  <data name="Governance.ConfirmInterruption" xml:space="preserve"><value>Cette modification arrêtera le travail utilisant cette ressource. L’appliquer maintenant ?</value></data>
+  <data name="Governance.ChangesSaved" xml:space="preserve"><value>Modifications enregistrées.</value></data>
+  <data name="Notifications.Providers.AttentionTitle" xml:space="preserve"><value>Choisissez un fournisseur de modèles disponible</value></data>
+  <data name="Notifications.Providers.AttentionBody" xml:space="preserve"><value>Un fournisseur de modèles enregistré est indisponible. Choisissez un fournisseur disponible dans les paramètres et vérifiez les choix de vos agents et tâches.</value></data>
+  <data name="Notifications.Plugins.SetupTitle" xml:space="preserve"><value>La configuration du plugin nécessite votre attention</value></data>
+  <data name="Notifications.Plugins.SetupBody" xml:space="preserve"><value>Impossible de préparer {0} sur {1}. {2} Réessayez après avoir corrigé la configuration.</value></data>
+  <data name="Notifications.Plugins.DeviceUnavailable" xml:space="preserve"><value>Temporairement indisponible sur {0}. L’opérateur a été informé.</value></data>
+  <data name="Common.AdminPermissionPersonalModels" xml:space="preserve"><value>Gérer les fournisseurs de modèles personnels</value></data>
+  <data name="Common.AdminPermissionSharedFolder" xml:space="preserve"><value>Dossier partagé</value></data>
+  <data name="ModelBudgetTitle" xml:space="preserve"><value>Budget du modèle</value></data>
+  <data name="ModelBudgetDaily" xml:space="preserve"><value>Limite quotidienne (USD)</value></data>
+  <data name="ModelBudgetMonthly" xml:space="preserve"><value>Limite mensuelle (USD)</value></data>
+  <data name="ModelBudgetAlerts" xml:space="preserve"><value>Me prévenir à 80 % d’une limite</value></data>
+  <data name="ModelBudgetBlank" xml:space="preserve"><value>Estimations en USD. Laissez une limite vide pour ne pas la définir. Les fournisseurs partagés ont un budget commun à tous leurs utilisateurs.</value></data>
+  <data name="ModelBudgetIncomplete" xml:space="preserve"><value>Estimation incomplète. Une partie de l’utilisation n’a pas pu être chiffrée ou lue.</value></data>
+  <data name="ModelBudgetLocal" xml:space="preserve"><value>Inférence locale : aucun coût estimé.</value></data>
+  <data name="ModelBudgetOwnerExceeded" xml:space="preserve"><value>Le budget de {0} est atteint. Vous pouvez poursuivre cette opération.</value></data>
+  <data name="ModelBudgetSharedExceeded" xml:space="preserve"><value>Le budget de {0} est atteint. Contactez votre opérateur ou choisissez un autre fournisseur de modèles.</value></data>
+  <data name="ModelBudgetContinue" xml:space="preserve"><value>Continuer quand même</value></data>
+  <data name="ModelBudgetTaskSkipped" xml:space="preserve"><value>Le budget du modèle est atteint. Cette tentative a été ignorée. La tâche reste planifiée.</value></data>
+  <data name="ModelBudgetSearchPaused" xml:space="preserve"><value>La recherche sémantique et l’indexation sont suspendues car le budget des embeddings est atteint. Réessayez après sa réinitialisation ou la modification de la limite par son propriétaire.</value></data>
+  <data name="ModelBudgetThreshold" xml:space="preserve"><value>{0} a atteint au moins 80 % d’une limite de dépenses. Ouvrez Modèles et fournisseurs pour vérifier son budget.</value></data>
+  <data name="ModelBudgetSet" xml:space="preserve"><value>Définir le budget</value></data>
+  <data name="ModelBudgetEdit" xml:space="preserve"><value>Modifier le budget</value></data>
+  <data name="ModelBudgetDailyUsage" xml:space="preserve"><value>Aujourd’hui ${0:0.##} sur ${1:0.##}</value></data>
+  <data name="ModelBudgetMonthlyUsage" xml:space="preserve"><value>Mois ${0:0.##} sur ${1:0.##}</value></data>
+  <data name="ModelBudgetReset" xml:space="preserve"><value>Budget atteint. Réinitialisation le {0:g}.</value></data>
+  <data name="ModelBudgetSharedReset" xml:space="preserve"><value>Budget atteint. Réinitialisation le {0:g}. Choisissez un autre fournisseur ou contactez votre opérateur.</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdle" xml:space="preserve"><value>Attendre pendant que j&apos;utilise le fournisseur</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdleHint" xml:space="preserve"><value>Les démarrages planifiés attendent la fin de vos requêtes actives auprès du fournisseur de la tâche. Exécuter maintenant, les webhooks et les tâches en chaîne démarrent immédiatement.</value></data>
+  <data name="Common.Task.InstructionDefaultUnavailable" xml:space="preserve"><value>L’instruction par défaut de la tâche est indisponible. Activez son extension et redémarrez.</value></data>
+  <data name="Notifications.Channels.SavedNotApplied" xml:space="preserve"><value>Les paramètres ont été enregistrés, mais n’ont pas pu être appliqués. La connexion existante fonctionne toujours. Vérifiez les paramètres et réessayez.</value></data>
+  <data name="Common.ReleaseNotes" xml:space="preserve"><value>Notes de version</value></data>
+  <data name="Common.RecordLabel.DeletedAgent" xml:space="preserve"><value>Agent supprimé</value></data>
+  <data name="Common.RecordLabel.DeletedProvider" xml:space="preserve"><value>Fournisseur supprimé</value></data>
+  <data name="Common.RecordLabel.DeletedMcpServer" xml:space="preserve"><value>Serveur MCP supprimé</value></data>
+  <data name="Common.RecordLabel.OwnDestination" xml:space="preserve"><value>Destination propre</value></data>
+  <data name="Common.RecordLabel.OtherUsersAgents" xml:space="preserve"><value>Agents d'autres utilisateurs</value></data>
+  <data name="Common.RecordLabel.UsersOwnProviders" xml:space="preserve"><value>Fournisseurs propres aux utilisateurs</value></data>
+  <data name="Common.RecordLabel.UsersOwnModels" xml:space="preserve"><value>Modèles propres aux utilisateurs</value></data>
+  <data name="Common.RecordLabel.UsersOwnTools" xml:space="preserve"><value>Outils propres aux utilisateurs</value></data>
+  <data name="Dialog.LogsScope.Label" xml:space="preserve"><value>Portée des journaux</value></data>
+  <data name="Dialog.LogsFile.Label" xml:space="preserve"><value>Fichier journal</value></data>
+  <data name="Common.PreviousPage" xml:space="preserve"><value>Page précédente</value></data>
+  <data name="Common.NextPage" xml:space="preserve"><value>Page suivante</value></data>
+  <data name="Common.TimeRange" xml:space="preserve"><value>Période</value></data>
+  <data name="Common.Validation.EnterValidEmail" xml:space="preserve"><value>Saisissez une adresse e-mail valide.</value></data>
+	<data name="Common.Task.ApprovalModeLabel"><value>Mode d’approbation</value></data>
+	<data name="Common.Task.ApprovalModeAutoReject"><value>Refus automatique si approbation requise</value></data>
+	<data name="Common.Task.ApprovalModeAutoApprove"><value>Accord automatique si approbation requise</value></data>
+	<data name="Common.Task.ApprovalModeHint"><value>Les tâches en arrière-plan n’ont pas d’utilisateur interactif. L’approbation des outils doit être décidée automatiquement.</value></data>
+  <data name="Common.Task.ExternalTrigger.EndpointLabel" xml:space="preserve"><value>Point de terminaison du webhook</value></data>
+  <data name="Common.Task.ExternalTrigger.ParameterKindLabel" xml:space="preserve"><value>Type de paramètre</value></data>
+</root>

@@ -1,0 +1,24 @@
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Core.Localization
+@inject IStringLocalizer<CommonText> Loc
+
+<AppDialogShell Title="@Loc.GetOrDefault(CommonTextKeys.ModelBudgetTitle, "Model budget")" HelpTopic="@HelpTopics.ModelBudgetWarning" CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <p class="text-sm">@string.Format(Loc.GetOrDefault(
+            Status.CanOverride ? NotificationTextKeys.ModelBudgetOwnerExceeded : NotificationTextKeys.ModelBudgetSharedExceeded,
+            Status.CanOverride ? "The budget for {0} has been reached. You can continue this operation anyway." : "The budget for {0} has been reached. Contact your operator or choose another model provider."), Status.ProviderName)</p>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn" @onclick="() => DialogInstance.Close(DialogResult.Cancel)">@Loc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        @if (Status.CanOverride)
+        {
+            <button type="button" class="btn btn-warning" @onclick="() => DialogInstance.Close(DialogResult.Ok)">@Loc.GetOrDefault(NotificationTextKeys.ModelBudgetContinue, "Continue anyway")</button>
+        }
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    [Parameter] public ModelBudgetStatus Status { get; set; } = default!;
+    protected override void OnInitialized() => Status = DialogInstance.Get("Status", Status);
+}

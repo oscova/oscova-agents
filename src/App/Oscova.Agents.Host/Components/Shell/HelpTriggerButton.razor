@@ -1,0 +1,26 @@
+@inject HelpPanelHost Host
+@inject IHelpContentService ContentService
+@inject IStringLocalizer<NavigationText> Loc
+
+@if (_topicExists)
+{
+    <button class="btn btn-ghost btn-sm btn-circle"
+            title="@Loc.GetOrDefault(NavigationTextKeys.HelpButtonAriaLabel, "Open help")"
+            aria-label="@Loc.GetOrDefault(NavigationTextKeys.HelpButtonAriaLabel, "Open help")"
+            @onclick="OnClick">
+        <iconify-icon icon="lucide:circle-help" width="18" height="18"></iconify-icon>
+    </button>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Topic { get; set; } = "";
+
+    private bool _topicExists;
+
+    protected override void OnParametersSet()
+    {
+        _topicExists = !string.IsNullOrWhiteSpace(Topic) && ContentService.TopicExists(Topic);
+    }
+
+    private Task OnClick() => Host.OpenAsync(Topic);
+}

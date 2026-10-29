@@ -1,0 +1,250 @@
+@inherits SettingsComponentBase
+@inject AuthenticationStateProvider AuthState
+@inject IStringLocalizer<SettingsText> Loc
+@inject SettingsApiClient SettingsApiClient
+@inject SoundCuePlayer Sound
+@inject UserServiceScope UserScope
+@implements IDisposable
+
+@if (_uiSettings is null)
+{
+    <div class="flex items-center gap-3 text-sm opacity-70">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span>@Loc.GetOrDefault(SettingsTextKeys.NotificationsLoadingMessage, "Loading notification settings...")</span>
+    </div>
+}
+else
+{
+    <div class="space-y-6">
+        <section class="space-y-4">
+            <div>
+                <h2 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.NotificationsDeliveryTitle, "Notification delivery")</h2>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.NotificationsDeliveryDescription, "Choose live alerts and review saved notifications in your inbox.")</p>
+            </div>
+
+            <div class="custom-settings-group">
+                <div class="custom-settings-switch-row">
+                    <input id="notifications-muted-toggle"
+                           type="checkbox"
+                           class="toggle toggle-primary toggle-sm"
+                           checked="@UiSettings.AreNotificationsMuted"
+                           disabled="@_isSaving"
+                           @onchange="OnNotificationsMutedChangedAsync" />
+                    <label for="notifications-muted-toggle" class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.NotificationsMutedDescription, "Pause live bell alerts. New notifications remain in your inbox.")</label>
+                </div>
+
+                <div class="custom-settings-switch-row opacity-100 has-[:disabled]:opacity-50">
+                    <input id="log-warning-notifications-toggle"
+                           type="checkbox"
+                           class="toggle toggle-primary toggle-sm"
+                           disabled="@(UiSettings.AreNotificationsMuted || _isSaving)"
+                           checked="@UiSettings.ShowLogWarningNotifications"
+                           @onchange="OnLogWarningNotificationsChangedAsync" />
+                    <label for="log-warning-notifications-toggle" class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ShowLogWarningsLabel, "Show log warnings")</label>
+                </div>
+
+                @if (_isAdmin)
+                {
+                    <div class="custom-settings-switch-row opacity-100 has-[:disabled]:opacity-50">
+                        <input id="system-error-notifications-toggle"
+                               type="checkbox"
+                               class="toggle toggle-primary toggle-sm"
+                               disabled="@(UiSettings.AreNotificationsMuted || _isSaving)"
+                               checked="@UiSettings.ShowSystemErrorNotifications"
+                               @onchange="OnSystemErrorNotificationsChangedAsync" />
+                        <label for="system-error-notifications-toggle" class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ShowSystemErrorsLabel, "Show system errors")</label>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div>
+                <h2 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.SoundEffectsTitle, "Sound effects")</h2>
+                <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SoundEffectsDescription, "Control the short audio cues that confirm important UI moments.")</p>
+            </div>
+
+            <div class="custom-settings-group">
+                <div class="custom-settings-switch-row">
+                    <input id="sound-master-toggle"
+                           type="checkbox"
+                           class="toggle toggle-primary toggle-sm"
+                           checked="@SoundSettings.MasterEnabled"
+                           disabled="@_isSaving"
+                           @onchange="OnSoundMasterChangedAsync" />
+                    <label for="sound-master-toggle" class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.SoundEffectsMasterLabel, "Play UI sounds")</label>
+                </div>
+
+                <div class="custom-settings-row opacity-100 has-[:disabled]:opacity-50">
+                    <label class="label block mb-1 pl-0" for="sound-volume-range">
+                        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.SoundEffectsVolumeLabel, "Volume"): @SoundVolumePercent%</span>
+                    </label>
+                    <input id="sound-volume-range"
+                           type="range"
+                           min="0"
+                           max="100"
+                           step="5"
+                           class="range range-primary"
+                           value="@SoundVolumePercent"
+                           disabled="@(!SoundSettings.MasterEnabled || _isSaving)"
+                           @onchange="OnSoundVolumeChangedAsync" />
+                    <p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.SoundEffectsVolumeDescription, "One volume setting applies to every cue.")</p>
+                </div>
+
+                <fieldset class="fieldset custom-settings-cues" disabled="@(!SoundSettings.MasterEnabled || _isSaving)">
+                    <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.SoundEffectsCueGroupLabel, "Sound cues")</legend>
+                    <div class="custom-settings-cue-list">
+                        @foreach (var cue in CueOptions)
+                        {
+                            var cueId = GetCueId(cue.Cue);
+                            var inputId = $"sound-cue-{cueId}";
+                            <div class="custom-settings-switch-row opacity-100 has-[:disabled]:opacity-50">
+                                <input id="@inputId"
+                                       type="checkbox"
+                                       class="toggle toggle-primary toggle-sm"
+                                       checked="@SoundSettings.IsCueEnabled(cueId)"
+                                       disabled="@(!SoundSettings.MasterEnabled || _isSaving)"
+                                       @onchange="args => OnCueChangedAsync(cue.Cue, args)" />
+                                <label for="@inputId" class="min-w-0 text-sm opacity-70">@Loc.GetOrDefault(cue.LabelKey, cue.LabelDefault)</label>
+                            </div>
+                        }
+                    </div>
+                </fieldset>
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    private static readonly IReadOnlyList<SoundCueOption> CueOptions =
+    [
+        new(SoundCue.Send, SettingsTextKeys.SoundCueSendLabel, "Send message"),
+        new(SoundCue.Enter, SettingsTextKeys.SoundCueEnterLabel, "Enter chat"),
+        new(SoundCue.Receive, SettingsTextKeys.SoundCueReceiveLabel, "Response complete"),
+        new(SoundCue.Error, SettingsTextKeys.SoundCueErrorLabel, "Response error"),
+        new(SoundCue.Notify, SettingsTextKeys.SoundCueNotifyLabel, "Notification arrival"),
+        new(SoundCue.Tap, SettingsTextKeys.SoundCueTapLabel, "Starter prompt tap"),
+        new(SoundCue.Complete, SettingsTextKeys.SoundCueCompleteLabel, "Onboarding complete")
+    ];
+
+    private UiSettingsSummary? _uiSettings;
+    private bool _isAdmin;
+    private bool _isSaving;
+    private AssistantUiSettings UiSettings => UserScope.UiSettings;
+    private SoundSettings SoundSettings => UserScope.SoundSettings;
+    private string SoundVolumePercent => Math.Round(SoundSettings.Volume * 100).ToString("0", CultureInfo.CurrentCulture);
+
+    protected override async Task OnInitializedAsync()
+    {
+        UiSettings.Changed += OnUiSettingsChanged;
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        _isAdmin = auth.User.IsInRole("Admin");
+        _uiSettings = await SettingsApiClient.GetUiSettingsAsync();
+    }
+
+    private Task OnNotificationsMutedChangedAsync(ChangeEventArgs e)
+    {
+        return SaveUiSettingsAsync(areNotificationsMuted: e.Value is true);
+    }
+
+
+
+    private Task OnLogWarningNotificationsChangedAsync(ChangeEventArgs e)
+    {
+        return SaveUiSettingsAsync(showLogWarningNotifications: e.Value is true);
+    }
+
+    private Task OnSystemErrorNotificationsChangedAsync(ChangeEventArgs e)
+    {
+        return SaveUiSettingsAsync(showSystemErrorNotifications: e.Value is true);
+    }
+
+    private Task OnSoundMasterChangedAsync(ChangeEventArgs e)
+    {
+        return SaveSoundSettingsAsync(() => SoundSettings.MasterEnabled = e.Value is true);
+    }
+
+    private Task OnSoundVolumeChangedAsync(ChangeEventArgs e)
+    {
+        var text = e.Value?.ToString();
+        var percent = double.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed)
+            ? parsed
+            : Math.Round(SoundSettings.Volume * 100);
+
+        return SaveSoundSettingsAsync(() => SoundSettings.Volume = Math.Clamp(percent, 0d, 100d) / 100d);
+    }
+
+    private Task OnCueChangedAsync(SoundCue cue, ChangeEventArgs e)
+    {
+        return SaveSoundSettingsAsync(() => SoundSettings.SetCueEnabled(GetCueId(cue), e.Value is true));
+    }
+
+    private async Task SaveUiSettingsAsync(
+        bool? areNotificationsMuted = null,
+        bool? showLogWarningNotifications = null,
+        bool? showSystemErrorNotifications = null)
+    {
+        if (_uiSettings is null)
+        {
+            return;
+        }
+
+        await RunAsync(v => _isSaving = v, async () =>
+        {
+            // Other surfaces may have saved preferences since this section opened.
+            var request = SaveUiSettingsRequest.From(UiSettings);
+            request.AreNotificationsMuted = areNotificationsMuted ?? request.AreNotificationsMuted;
+            request.ShowLogWarningNotifications = showLogWarningNotifications ?? request.ShowLogWarningNotifications;
+            request.ShowSystemErrorNotifications = showSystemErrorNotifications ?? request.ShowSystemErrorNotifications;
+
+            await SettingsApiClient.SaveUiSettingsAsync(request);
+            ApplyUiSettings(request);
+        }, Loc.GetOrDefault(
+            SettingsTextKeys.SharedSaveSettingsToast,
+            "Settings saved successfully."));
+    }
+
+    private async Task SaveSoundSettingsAsync(Action apply)
+    {
+        await RunAsync(v => _isSaving = v, async () =>
+        {
+            apply();
+            await SoundSettings.SaveAsync();
+            await Sound.ReconfigureAsync();
+        }, Loc.GetOrDefault(
+            SettingsTextKeys.SharedSaveSettingsToast,
+            "Settings saved successfully."));
+    }
+
+    private void ApplyUiSettings(SaveUiSettingsRequest request)
+    {
+        _uiSettings = new UiSettingsSummary
+        {
+            Theme = request.Theme,
+            TimeZoneId = request.TimeZoneId,
+            HideUserNameBadge = request.HideUserNameBadge,
+            IsGamificationEnabled = request.IsGamificationEnabled,
+            IsChatTitleGenerationEnabled = request.IsChatTitleGenerationEnabled,
+            AreNotificationsMuted = request.AreNotificationsMuted,
+            ChatFollowUpMode = request.ChatFollowUpMode,
+            ShowLogWarningNotifications = request.ShowLogWarningNotifications,
+            ShowSystemErrorNotifications = request.ShowSystemErrorNotifications,
+            CultureName = request.CultureName,
+            ChatResumeWindowMinutes = request.ChatResumeWindowMinutes,
+            IsLowBatteryTaskProtectionEnabled = request.IsLowBatteryTaskProtectionEnabled,
+            LowBatteryTaskThresholdPercentage = request.LowBatteryTaskThresholdPercentage,
+            HostPower = _uiSettings?.HostPower,
+            ConversationCount = _uiSettings?.ConversationCount ?? 0
+        };
+
+        request.ApplyTo(UiSettings);
+    }
+
+    private static string GetCueId(SoundCue cue) => cue.ToString().ToLowerInvariant();
+
+    private void OnUiSettingsChanged(object? sender, EventArgs args) => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => UiSettings.Changed -= OnUiSettingsChanged;
+
+    private sealed record SoundCueOption(SoundCue Cue, string LabelKey, string LabelDefault);
+}

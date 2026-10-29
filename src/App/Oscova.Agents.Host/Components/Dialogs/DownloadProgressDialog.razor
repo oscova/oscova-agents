@@ -1,0 +1,174 @@
+@implements IDisposable
+@inject IDownloadService DownloadService
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.DownloadingModel, "Downloading Model")"
+                HelpTopic="@HelpTopics.LocalModelDownload"
+                OnClose="CloseFromHeader">
+    <ChildContent>
+        <div class="py-4 space-y-3">
+            <p class="text-sm truncate">@_fileName</p>
+
+            @if (_error is not null)
+            {
+                <div class="alert alert-error text-sm">
+                    <iconify-icon icon="lucide:circle-alert"></iconify-icon>
+                    <span>@_error</span>
+                </div>
+            }
+            else if (_isComplete)
+            {
+                <div class="alert alert-success text-sm">
+                    <iconify-icon icon="lucide:circle-check"></iconify-icon>
+                    <span>@CommonLoc.GetOrDefault(CommonTextKeys.DownloadComplete, "Download complete!")</span>
+                </div>
+            }
+            else
+            {
+                <progress class="progress progress-primary w-full"
+                          aria-label="@_fileName"
+                          value=@((_percent ?? 0).ToString("F0"))
+                          max="100"></progress>
+                <div class="flex justify-between text-xs opacity-70">
+                    <span>@FormatBytes(_bytesReceived) / @FormatBytes(_totalBytes)</span>
+                    <span>@((_percent ?? 0).ToString("F0"))%</span>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        @if (_isComplete || _error is not null)
+        {
+            <button class="btn btn-primary" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Ok, "OK")</button>
+        }
+        else
+        {
+            <button class="btn" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        }
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _url = string.Empty;
+    private string _destinationPath = string.Empty;
+    private string _fileName = string.Empty;
+    private double? _percent;
+    private long _bytesReceived;
+    private long? _totalBytes;
+    private bool _isComplete;
+    private string? _error;
+    private CancellationTokenSource? _cts;
+
+    protected override void OnInitialized()
+    {
+        _url = DialogInstance.Get<string>("Url", string.Empty);
+        _destinationPath = DialogInstance.Get<string>("DestinationPath", string.Empty);
+        _fileName = Path.GetFileName(_destinationPath);
+
+        DownloadService.DownloadsChanged += OnProgressChanged;
+
+        _cts = new CancellationTokenSource();
+        _ = StartDownloadAsync(_cts.Token);
+    }
+
+    private async Task StartDownloadAsync(CancellationToken ct)
+    {
+        if (!Uri.TryCreate(_url, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.DownloadUrlInvalid, "Download URL must be a valid http or https address.");
+            StateHasChanged();
+            return;
+        }
+
+        try
+        {
+            // If the file already exists, EnsureDownloadAsync is a no-op and no events fire.
+            if (File.Exists(_destinationPath))
+            {
+                await InvokeAsync(() =>
+                {
+                    _isComplete = true;
+                    StateHasChanged();
+                });
+                return;
+            }
+
+            // EnsureDownloadAsync is fire-and-forget — it returns immediately.
+            // Completion is detected via OnProgressChanged subscribing to DownloadsChanged.
+            await DownloadService.EnsureDownloadAsync("local-model-download", _url, _destinationPath, ct);
+        }
+        catch (OperationCanceledException)
+        {
+            // User cancelled
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(() =>
+            {
+                _error = ex.Message;
+                StateHasChanged();
+            });
+        }
+    }
+
+    private void OnProgressChanged(object? sender, EventArgs args)
+    {
+        InvokeAsync(() =>
+        {
+            if (DownloadService.TryGet(_destinationPath, out var info) && info is not null)
+            {
+                _percent = info.Percent;
+                _bytesReceived = info.BytesReceived;
+                _totalBytes = info.TotalBytes;
+
+                if (info.Status == DownloadStatus.Completed)
+                {
+                    _isComplete = true;
+                }
+                else if (info.Status == DownloadStatus.Failed)
+                {
+                    _error = info.Error?.Message ?? CommonLoc.GetOrDefault(CommonTextKeys.DownloadFailed, "Download failed.");
+                }
+            }
+
+            StateHasChanged();
+        });
+    }
+
+    private void Cancel()
+    {
+        _cts?.Cancel();
+        DownloadService.DownloadsChanged -= OnProgressChanged;
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+
+    private void Close()
+    {
+        DownloadService.DownloadsChanged -= OnProgressChanged;
+        DialogInstance.Close(_isComplete ? DialogResult.Ok : DialogResult.Cancel);
+    }
+
+    private void CloseFromHeader()
+    {
+        if (_isComplete || _error is not null)
+        {
+            Close();
+            return;
+        }
+
+        Cancel();
+    }
+
+    public void Dispose()
+    {
+        DownloadService.DownloadsChanged -= OnProgressChanged;
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+
+    private static string FormatBytes(long? bytes) => ByteSize.Format(bytes);
+}

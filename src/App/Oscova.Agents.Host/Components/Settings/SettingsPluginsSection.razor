@@ -1,0 +1,428 @@
+@inherits SettingsComponentBase
+@implements IDisposable
+@inject NotificationHub<NodePluginStatus> NodeUpdates
+@inject HttpClient Http
+@inject IDialogService DialogService
+@inject IStringLocalizer<SettingsText> Loc
+@inject UserServiceScope UserScope
+
+@if (_summary is null)
+{
+    <div class="alert alert-info">
+        <iconify-icon icon="lucide:loader-circle"></iconify-icon>
+        <span>@Loc.GetOrDefault(SettingsTextKeys.PluginsLoadingMessage, "Loading plugin settings...")</span>
+    </div>
+}
+else
+{
+    <div class="space-y-6">
+        <div class="alert alert-info alert-soft">
+            <iconify-icon icon="lucide:shield-alert"></iconify-icon>
+            <div class="space-y-1 text-sm">
+                <div class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.PluginsSecurityTitle, "Trusted code only")</div>
+                <p>@Loc.GetOrDefault(SettingsTextKeys.PluginsSecurityDescription, "Plugins run inside Oscova Agents and can add capabilities for all users. Enable only plugins you trust.")</p>
+            </div>
+        </div>
+
+        @if (_summary.RestartRequired)
+        {
+            <div class="alert alert-warning">
+                <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.PluginsRestartRequiredAlert, "Restart Oscova Agents for plugin activation changes to take effect.")</span>
+            </div>
+        }
+
+        <div class="card custom-settings-catalog-card">
+            <div class="card-body custom-settings-plugin-body">
+                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-base-200 px-4 pt-4 pb-4">
+                    <div class="space-y-1">
+                        <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.PluginsInstalledTitle, "Installed Plugins")</h4>
+                        <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsInstalledDescription, "Choose which installed plugins may load for every user when Oscova Agents next starts.")</p>
+                        <p class="text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.PluginsRestartHint, "Installed plugins remain inactive until enabled and the application is restarted.")</p>
+                    </div>
+                    <div class="flex w-full flex-wrap items-center gap-2">
+                        @if (UserScope.IsInRole("Admin"))
+                        {
+                            <button type="button"
+                                    class="btn btn-primary btn-sm"
+                                    disabled="@_isLoading"
+                                    @onclick="OpenFindOnlineDialogAsync">
+                                <span class="iconify lucide--globe-2 size-4" aria-hidden="true"></span>
+                                @Loc.GetOrDefault(SettingsTextKeys.PluginsFindOnlineButton, "Find plugins online")
+                            </button>
+                        }
+                        <label class="input input-sm w-full shrink-0 sm:w-64">
+                            <iconify-icon icon="lucide:search" width="14" height="14" class="text-base-content/60"></iconify-icon>
+                            <input type="search"
+                                   class="grow"
+                                   placeholder="@(Loc.GetOrDefault(SettingsTextKeys.PluginsSearchPlaceholder, "Search plugins"))"
+                                   aria-label="@(Loc.GetOrDefault(SettingsTextKeys.PluginsSearchLabel, "Search plugins"))"
+                                   disabled="@_isLoading"
+                                   @bind="_searchTerm"
+                                   @bind:event="oninput" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="custom-settings-table-container overflow-auto">
+                    <table class="table custom-settings-adaptive-table">
+                        <thead>
+                            <tr>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderPlugin, "Plugin")</th>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderStatus, "Current Status")</th>
+                                <th>@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderNextStart, "Load On Next Restart")</th>
+                                <th class="custom-settings-actions">@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderActions, "Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (_summary.Plugins.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center text-sm opacity-60">
+                                        @Loc.GetOrDefault(SettingsTextKeys.PluginsNoPluginsMessage, "No installed plugins were found.")
+                                    </td>
+                                </tr>
+                            }
+                            else if (FilteredPlugins.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="4" class="py-8 text-center text-sm opacity-60">
+                                        @Loc.GetOrDefault(SettingsTextKeys.PluginsNoMatchesMessage, "No plugins match the current search.")
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var plugin in FilteredPlugins)
+                                {
+                                    <tr class="hover:bg-base-200/40 align-top" @key="GetPluginRowKey(plugin)">
+                                        <td data-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderPlugin, "Plugin")">
+                                            <div class="flex items-start gap-3">
+                                                <div class="bg-base-200 text-base-content/70 mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg">
+                                                    <iconify-icon icon="lucide:blocks" width="16" height="16"></iconify-icon>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="font-medium">@GetPluginName(plugin)</p>
+                                                    @if (plugin.HardwareRequirement is not null)
+                                                    {
+                                                        <PluginHardwareGuidance Requirement="@plugin.HardwareRequirement" Compact="@true" />
+                                                    }
+                                                    @if (!string.IsNullOrWhiteSpace(plugin.Id))
+                                                    {
+                                                        <code class="text-xs text-base-content/65">@plugin.Id</code>
+                                                    }
+                                                    @if (!string.IsNullOrWhiteSpace(plugin.Version))
+                                                    {
+                                                        <p class="text-xs opacity-60"><bdi dir="ltr">@plugin.Version</bdi></p>
+                                                    }
+                                                    @if (!string.IsNullOrWhiteSpace(plugin.PendingName))
+                                                    {
+                                                        <p class="text-xs opacity-60">@FormatPluginText(SettingsTextKeys.PluginsPendingReplacement,
+                                                            "After restart: {0} {1}", plugin.PendingName, $"\u2066{plugin.PendingVersion}\u2069")</p>
+                                                        @if (plugin.PendingHardwareRequirement is not null)
+                                                        {
+                                                            <PluginHardwareGuidance Requirement="@plugin.PendingHardwareRequirement" Compact="@true" />
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderStatus, "Current Status")">
+                                            <span class="@GetStatusBadgeClass(plugin.Status)">@GetStatusLabel(plugin.Status)</span>
+                                            @if (plugin.Devices is { } devices)
+                                            {
+                                                <div class="text-xs opacity-70 mt-2 [overflow-wrap:anywhere]" aria-live="polite">
+                                                    @if (devices.Preparing.Count > 0)
+                                                    {
+                                                        <p>@FormatPluginText(SettingsTextKeys.PluginsDevicePreparing, "Preparing on {0}", string.Join(", ", devices.Preparing))</p>
+                                                    }
+                                                    @if (devices.Unavailable.Count > 0)
+                                                    {
+                                                        <p>@FormatPluginText(SettingsTextKeys.PluginsDeviceUnavailable, "Temporarily unavailable on {0}", string.Join(", ", devices.Unavailable))</p>
+                                                    }
+                                                    @if (devices.Ready.Count > 0)
+                                                    {
+                                                        <p>@FormatPluginText(SettingsTextKeys.PluginsDeviceReady, "Ready on {0}", string.Join(", ", devices.Ready))</p>
+                                                    }
+                                                </div>
+                                            }
+                                        </td>
+                                        <td data-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderNextStart, "Load On Next Restart")">
+                                            <input type="checkbox"
+                                                   class="toggle toggle-primary toggle-sm"
+                                                   aria-label="@FormatPluginText(SettingsTextKeys.PluginsEnableLabel, "Load {0} on next restart", GetPluginName(plugin))"
+                                                   checked="@IsEnabledInDraft(plugin)"
+                                                   disabled="@(!plugin.CanConfigure || _isSaving)"
+                                                   @onchange="args => SetDraftActivation(plugin, args)" />
+                                        </td>
+                                        <td class="custom-settings-actions" data-label="@Loc.GetOrDefault(SettingsTextKeys.PluginsTableHeaderActions, "Actions")">
+                                            <div class="flex gap-1">
+                                                <button type="button"
+                                                        class="btn btn-ghost btn-square btn-sm"
+                                                        title="@Loc.GetOrDefault(SettingsTextKeys.PluginsDetailsButton, "View plugin details")"
+                                                        aria-label="@FormatPluginText(SettingsTextKeys.PluginsDetailsLabel, "View details for {0}", GetPluginName(plugin))"
+                                                        @onclick="() => OpenDetailsAsync(plugin)">
+                                                    <iconify-icon icon="lucide:info" width="16" height="16"></iconify-icon>
+                                                </button>
+                                                @if (UserScope.IsInRole("Admin") && (plugin.CanConfigure || plugin.Status == PluginRuntimeStatus.Inactive) && !string.IsNullOrWhiteSpace(plugin.Id))
+                                                {
+                                                    var uninstallDisabled = !CanUninstall(plugin);
+                                                    var uninstallLabel = FormatPluginText(
+                                                        SettingsTextKeys.PluginsUninstallLabel,
+                                                        "Uninstall {0}",
+                                                        GetPluginName(plugin));
+                                                    var uninstallTooltip = uninstallDisabled
+                                                        ? Loc.GetOrDefault(
+                                                            plugin.EnabledAtStartup
+                                                                ? SettingsTextKeys.PluginsUninstallRestartRequiredTooltip
+                                                                : SettingsTextKeys.PluginsUninstallDisableRequiredTooltip,
+                                                            plugin.EnabledAtStartup
+                                                                ? "Disable, save, and restart first."
+                                                                : "Disable and save first.")
+                                                        : null;
+                                                    <span title="@uninstallTooltip">
+                                                        <button type="button"
+                                                                class="btn btn-ghost btn-square btn-sm text-error"
+                                                                disabled="@(uninstallDisabled || _isSaving)"
+                                                                title="@(uninstallDisabled ? null : uninstallLabel)"
+                                                                aria-label="@uninstallLabel"
+                                                                @onclick="() => UninstallAsync(plugin)">
+                                                            <iconify-icon icon="lucide:trash-2" width="16" height="16"></iconify-icon>
+                                                        </button>
+                                                    </span>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex flex-wrap justify-end gap-2 border-t border-base-200 px-4 py-4">
+                    <button type="button"
+                            class="btn btn-outline btn-sm"
+                            disabled="@(!IsDirty || _isSaving)"
+                            @onclick="ResetDraft">
+                        @Loc.GetOrDefault(SettingsTextKeys.PluginsResetButton, "Reset")
+                    </button>
+                    <button type="button"
+                            class="btn btn-primary btn-sm"
+                            disabled="@(!IsDirty || _isSaving)"
+                            @onclick="SaveAsync">
+                        <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.PluginsSaveButton, "Save Plugin Settings")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private PluginSettingsSummary? _summary;
+    private HashSet<string> _savedEnabledPluginIds = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _draftEnabledPluginIds = new(StringComparer.OrdinalIgnoreCase);
+    private string _searchTerm = string.Empty;
+    private bool _isLoading;
+    private bool _isSaving;
+    private IDisposable? _nodeSubscription;
+
+    private List<PluginSettingsEntry> FilteredPlugins =>
+        [.. (_summary?.Plugins ?? [])
+            .Where(plugin => MatchesSearch(plugin))
+            .OrderBy(plugin => plugin.Name ?? plugin.Id ?? string.Empty, StringComparer.CurrentCultureIgnoreCase)];
+
+    private bool IsDirty => !_draftEnabledPluginIds.SetEquals(_savedEnabledPluginIds);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _nodeSubscription = NodeUpdates.Subscribe(UserScope.UserId, status => InvokeAsync(() =>
+        {
+            var plugin = _summary?.Plugins.FirstOrDefault(plugin => plugin.Id == status.PluginId);
+            if (plugin is not null) { plugin.Devices = status; StateHasChanged(); }
+        }));
+        await LoadAsync();
+    }
+
+    public void Dispose() => _nodeSubscription?.Dispose();
+
+    private async Task LoadAsync(bool preserveDraft = false)
+    {
+        await RunAsync(value => _isLoading = value, async () =>
+        {
+            _summary = await Http.GetFromJsonAsync<PluginSettingsSummary>(ApiRoutes.PluginSettings.Configuration)
+                ?? throw new InvalidOperationException(Loc.GetOrDefault(SettingsTextKeys.PluginsLoadErrorToast, "Plugin settings response was empty."));
+            SetDraftFromSummary(preserveDraft);
+        });
+    }
+
+    private async Task SaveAsync()
+    {
+        await RunAsync(value => _isSaving = value, async () =>
+        {
+            using var response = await Http.PutAsJsonAsync(
+                ApiRoutes.PluginSettings.Configuration,
+                new UpdatePluginSettingsRequest { EnabledPluginIds = [.. _draftEnabledPluginIds] });
+            response.EnsureSuccessStatusCode();
+            _summary = await response.Content.ReadFromJsonAsync<PluginSettingsSummary>()
+                ?? throw new InvalidOperationException(Loc.GetOrDefault(SettingsTextKeys.PluginsLoadErrorToast, "Plugin settings response was empty."));
+            SetDraftFromSummary();
+        }, Loc.GetOrDefault(SettingsTextKeys.PluginsSavedToast, "Plugin settings saved."));
+    }
+
+    private async Task UninstallAsync(PluginSettingsEntry plugin)
+    {
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.PluginsUninstallConfirmTitle, "Uninstall plugin"),
+            FormatPluginText(
+                SettingsTextKeys.PluginsUninstallConfirmMessage,
+                "Uninstall '{0}'? This removes its installed files but keeps plugin-created data and settings.",
+                GetPluginName(plugin)));
+        if (result != DialogResult.Ok)
+        {
+            return;
+        }
+
+        await RunAsync(value => _isSaving = value, async () =>
+        {
+            using var response = await Http.DeleteAsync(
+                $"{ApiRoutes.PluginSettings.Configuration}/{Uri.EscapeDataString(plugin.Id!)}");
+            response.EnsureSuccessStatusCode();
+            _summary = await response.Content.ReadFromJsonAsync<PluginSettingsSummary>()
+                ?? throw new InvalidOperationException(Loc.GetOrDefault(
+                    SettingsTextKeys.PluginsLoadErrorToast,
+                    "Plugin settings response was empty."));
+            SetDraftFromSummary(preserveDraft: true);
+        }, Loc.GetOrDefault(SettingsTextKeys.PluginsUninstalledToast, "Plugin uninstalled."));
+    }
+
+    private void SetDraftFromSummary(bool preserveDraft = false)
+    {
+        // Installing or removing a plugin must preserve unrelated unsaved activation choices.
+        var pendingEnabled = _draftEnabledPluginIds.Except(_savedEnabledPluginIds, StringComparer.OrdinalIgnoreCase).ToArray();
+        var pendingDisabled = _savedEnabledPluginIds.Except(_draftEnabledPluginIds, StringComparer.OrdinalIgnoreCase).ToArray();
+        _savedEnabledPluginIds = (_summary?.Plugins ?? [])
+            .Where(plugin => plugin.CanConfigure && plugin.LoadOnNextRestart && !string.IsNullOrWhiteSpace(plugin.Id))
+            .Select(plugin => plugin.Id!)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _draftEnabledPluginIds = new HashSet<string>(_savedEnabledPluginIds, StringComparer.OrdinalIgnoreCase);
+
+        if (preserveDraft)
+        {
+            _draftEnabledPluginIds.UnionWith(pendingEnabled);
+            _draftEnabledPluginIds.ExceptWith(pendingDisabled);
+            _draftEnabledPluginIds.IntersectWith((_summary?.Plugins ?? [])
+                .Where(plugin => plugin.CanConfigure && !string.IsNullOrWhiteSpace(plugin.Id))
+                .Select(plugin => plugin.Id!));
+        }
+    }
+
+    private void ResetDraft()
+    {
+        _draftEnabledPluginIds = new HashSet<string>(_savedEnabledPluginIds, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void SetDraftActivation(PluginSettingsEntry plugin, ChangeEventArgs args)
+    {
+        if (!plugin.CanConfigure || string.IsNullOrWhiteSpace(plugin.Id))
+        {
+            return;
+        }
+
+        if (args.Value is bool isEnabled && isEnabled)
+        {
+            _draftEnabledPluginIds.Add(plugin.Id);
+        }
+        else
+        {
+            _draftEnabledPluginIds.Remove(plugin.Id);
+        }
+    }
+
+    private bool IsEnabledInDraft(PluginSettingsEntry plugin)
+    {
+        return !string.IsNullOrWhiteSpace(plugin.Id) && _draftEnabledPluginIds.Contains(plugin.Id);
+    }
+
+    private bool CanUninstall(PluginSettingsEntry plugin) =>
+        (plugin.CanConfigure || plugin.Status == PluginRuntimeStatus.Inactive) &&
+        !string.IsNullOrWhiteSpace(plugin.Id) &&
+        !plugin.EnabledAtStartup &&
+        !plugin.LoadOnNextRestart &&
+        !IsEnabledInDraft(plugin);
+
+    private bool MatchesSearch(PluginSettingsEntry plugin)
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            return true;
+        }
+
+        return (plugin.Name?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+               (plugin.Id?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+               (plugin.Version?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+               (plugin.PendingName?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false) ||
+               (plugin.PendingVersion?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    private async Task OpenDetailsAsync(PluginSettingsEntry plugin)
+    {
+        await DialogService.ShowAsync<PluginDetailsDialog>(new Dictionary<string, object?>
+        {
+            ["Plugin"] = plugin,
+            ["StatusLabel"] = GetStatusLabel(plugin.Status),
+            ["NextStartLabel"] = IsEnabledInDraft(plugin)
+                ? Loc.GetOrDefault(SettingsTextKeys.PluginsEnabledLabel, "Enabled")
+                : Loc.GetOrDefault(SettingsTextKeys.PluginsDisabledLabel, "Disabled")
+        });
+    }
+
+    private async Task OpenFindOnlineDialogAsync()
+    {
+        var dialogResult = await DialogService.ShowAsync<PluginRegistryBrowserDialog>();
+        if (dialogResult == DialogResult.Ok)
+        {
+            await LoadAsync(preserveDraft: true);
+        }
+    }
+
+    private string GetPluginName(PluginSettingsEntry plugin)
+    {
+        return string.IsNullOrWhiteSpace(plugin.Name)
+            ? Loc.GetOrDefault(SettingsTextKeys.PluginsInvalidManifestName, "Invalid plugin manifest")
+            : plugin.Name;
+    }
+
+    private static string GetPluginRowKey(PluginSettingsEntry plugin)
+    {
+        return $"{plugin.Id}|{plugin.Name}|{plugin.Assembly}|{plugin.DiagnosticMessage}";
+    }
+
+    private string GetStatusLabel(PluginRuntimeStatus status)
+    {
+        return status switch
+        {
+            PluginRuntimeStatus.Active => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusActive, "Active"),
+            PluginRuntimeStatus.LoadFailed => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusLoadFailed, "Load failed"),
+            PluginRuntimeStatus.InvalidManifest => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusInvalidManifest, "Invalid manifest"),
+            _ => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusInactive, "Inactive")
+        };
+    }
+
+    private static string GetStatusBadgeClass(PluginRuntimeStatus status)
+    {
+        return status switch
+        {
+            PluginRuntimeStatus.Active => "badge badge-success badge-sm badge-soft",
+            PluginRuntimeStatus.LoadFailed or PluginRuntimeStatus.InvalidManifest => "badge badge-error badge-sm badge-soft",
+            _ => "badge badge-ghost badge-sm"
+        };
+    }
+
+    private string FormatPluginText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}

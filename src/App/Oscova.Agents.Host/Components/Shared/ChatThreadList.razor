@@ -1,0 +1,430 @@
+@using Oscova.Agents.Core.Conversation
+@inject IJSRuntime JS
+@inject IDialogService DialogService
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<NavigationText> NavigationLoc
+@inject ChatApiClient ChatApiClient
+@inject ILogger<ChatThreadList> Logger
+@implements IDisposable
+
+<div class="workspace-thread-list card bg-base-100 flex h-full flex-col">
+    <div class="card-body min-h-0">
+        <div class="workspace-panel-heading">
+            <span>Oscova Agents</span>
+            @if (OnHide.HasDelegate)
+            {
+                <button type="button" class="workspace-rail-button" title="@NavigationLoc[NavigationTextKeys.CloseSidebar]"
+                        aria-label="@NavigationLoc[NavigationTextKeys.CloseSidebar]" @onclick="OnHide">
+                    <span class="iconify lucide--panel-left size-4" aria-hidden="true"></span>
+                </button>
+            }
+        </div>
+        <button type="button" class="workspace-new-chat btn btn-ghost btn-sm" @onclick="() => NewProjectChatAsync(null)">
+            <span class="iconify lucide--square-pen size-4" aria-hidden="true"></span>
+            @Loc.GetOrDefault(ChatTextKeys.NewChatLabel, "New Chat")
+        </button>
+        <div class="flex items-center justify-between gap-3">
+            <label class="workspace-chat-search input input-sm grow">
+                <span class="iconify lucide--search text-base-content/80 size-4"></span>
+                <input class="grow focus:outline-0"
+                      placeholder="@(Loc.GetOrDefault(ChatTextKeys.SearchChatsLabel, "Search chats"))"
+                      aria-label="@(Loc.GetOrDefault(ChatTextKeys.SearchChatsLabel, "Search chats"))"
+                       type="search"
+                       value="@_searchText"
+                       @oninput="SearchAsync" />
+            </label>
+        </div>
+        <div class="flex min-w-0 flex-col gap-2">
+        <button type="button" class="workspace-new-chat btn btn-ghost btn-sm grow" @onclick="OnAddProject"
+                disabled="@(!CanAddProjects)" aria-describedby="@_projectHelpId">
+            <span class="iconify lucide--folder-plus size-4" aria-hidden="true"></span>
+            @Loc[ChatTextKeys.ProjectAdd]
+        </button>
+        @if (!CanAddProjects)
+        {
+            <p id="@_projectHelpId" class="text-base-content/60 px-2 text-xs whitespace-normal">
+                @(ProjectsEnabled ? Loc[ChatTextKeys.ProjectNodeRequired] : Loc[ChatTextKeys.ProjectPermissionDisabled])
+            </p>
+        }
+        </div>
+        <div class="custom-scrollbar min-h-0 flex-1 overflow-y-auto">
+            <div>
+                @{
+                    var visibleThreads = VisibleThreads;
+                }
+                @if (IsSearching)
+                {
+                    <div class="text-base-content/50 px-2.5 py-8 text-center text-sm" role="status">
+                        @CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")
+                    </div>
+                }
+                else if (_searchFailed)
+                {
+                    <div class="text-error px-2.5 py-8 text-center text-sm" role="alert">
+                        @Loc.GetOrDefault(ChatTextKeys.ThreadSearchFailed, "Conversation search is unavailable.")
+                    </div>
+                }
+                else if (HasSearch && visibleThreads.Count == 0)
+                {
+                    <div class="text-base-content/50 px-2.5 py-8 text-center text-sm">
+                        <p>@Loc.GetOrDefault(ChatTextKeys.NoConversationsMatchSearch, "No conversations match your search.")</p>
+                        <button type="button" class="btn btn-ghost btn-sm mt-2" @onclick="ClearSearch">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.Clear, "Clear")
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    var itemIndex = 0;
+                    @foreach (var projectId in ProjectSections)
+                    {
+                        var project = Projects.FirstOrDefault(item => item.Id == projectId);
+                        var sectionName = projectId is null ? Loc[ChatTextKeys.ProjectGeneral].Value : project?.Name ?? Loc[ChatTextKeys.ProjectUnavailable].Value;
+                        var expanded = HasSearch || !_collapsedSections.Contains(projectId);
+                        <div class="workspace-project-row mt-3 flex min-w-0 items-center">
+                            <button type="button" class="btn btn-ghost btn-sm min-w-0 grow justify-start" aria-expanded="@(expanded ? "true" : "false")" @onclick="() => ToggleSection(projectId)">
+                                <span class="iconify @(expanded ? "lucide--chevron-down" : "lucide--chevron-right") size-3 shrink-0" aria-hidden="true"></span>
+                                <span class="iconify @(projectId is null ? "lucide--messages-square" : "lucide--folder") size-4 shrink-0" aria-hidden="true"></span>
+                                <span class="truncate">@sectionName</span>
+                                @if (projectId is not null && !AvailableProjectIds.Contains(projectId))
+                                {
+                                    <span class="text-base-content/60 text-xs shrink-0">@Loc[ChatTextKeys.ProjectDeviceUnavailable]</span>
+                                }
+                            </button>
+                            @if (projectId is null || AvailableProjectIds.Contains(projectId))
+                            {
+                                var newChatLabel = $"{Loc.GetOrDefault(ChatTextKeys.NewChatLabel, "New Chat")}: {sectionName}";
+                                <button type="button" class="workspace-row-action btn btn-ghost btn-square btn-sm shrink-0" aria-label="@newChatLabel" title="@newChatLabel" @onclick="() => NewProjectChatAsync(projectId)">
+                                    <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                                </button>
+                            }
+                            @if (project is not null)
+                            {
+                                <DropdownMenu RootClass="workspace-row-action" Placement="dropdown-end" TriggerClass="btn btn-ghost btn-square btn-xs shrink-0"
+                                              ContentClass="bg-base-100 rounded-box z-10 p-2 shadow-sm w-48" AriaLabel="@Loc[ChatTextKeys.ProjectRemove]">
+                                    <TriggerContent><span class="iconify lucide--ellipsis-vertical size-3.5" aria-hidden="true"></span></TriggerContent>
+                                    <ChildContent>
+                                        <ul class="menu p-0"><li><button type="button" @onclick="() => OnRemoveProject.InvokeAsync(project.Id)">@Loc[ChatTextKeys.ProjectRemove]</button></li></ul>
+                                    </ChildContent>
+                                </DropdownMenu>
+                            }
+                        </div>
+                        @if (expanded)
+                        {
+                            <div class="ps-4">
+                                @foreach (var group in visibleThreads.Where(thread => thread.ProjectId == projectId).GroupBy(GetDateBucket).OrderBy(group => group.Key))
+                                {
+                                    @if (group.Key is int bucket)
+                                    {
+                                        <h3 class="text-base-content/60 px-2.5 pt-3 pb-1 text-xs font-semibold">
+                                            @GetDateBucketLabel(bucket)
+                                        </h3>
+                                    }
+                                    @foreach (var item in group)
+                                    {
+                                        var isActive = string.Equals(CurrentThreadId, item.Id, StringComparison.Ordinal);
+                                        <div @key="item.Id" class="group relative @GetThreadItemShellClass(item.Id)" style="@GetThreadItemShellStyle(item.Id, itemIndex)">
+                                            <button type="button"
+                                                    class="workspace-thread-row @(isActive ? "active" : "")"
+                                                    aria-current="@(isActive ? "true" : null)"
+                                                    title="@($"{item.Title} · {item.AgentName ?? Loc.GetOrDefault(ChatTextKeys.AssistantFallbackName, "Assistant")} · {FormatTime(item.UpdatedAt)}")"
+                                                    @onclick="() => OnLoadConversation.InvokeAsync(item.Id)">
+                                                <span class="min-w-0 grow truncate">@item.Title</span>
+                                                @if (item.IsIncognito)
+                                                {
+                                                    <span class="iconify lucide--eye-off size-3 shrink-0" role="img"
+                                                          title="@Loc.GetOrDefault(ChatTextKeys.IncognitoChatLabel, "Incognito")"
+                                                          aria-label="@Loc.GetOrDefault(ChatTextKeys.IncognitoChatLabel, "Incognito")"></span>
+                                                }
+                                                @if (item.IsUnread)
+                                                {
+                                                    <span class="bg-success size-2 shrink-0 rounded-full" aria-label="@Loc.GetOrDefault(ChatTextKeys.ThreadUnreadLabel, "Unread")" role="img"></span>
+                                                }
+                                            </button>
+                                            <DropdownMenu RootClass="absolute end-2 top-1/2 -translate-y-1/2"
+                                                          Placement="dropdown-end"
+                                                          TriggerClass="btn btn-ghost btn-xs btn-circle opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100"
+                                                          ContentClass="bg-base-100 rounded-box z-[1] p-2 shadow-sm w-32"
+                                                          AriaLabel="@Loc.GetOrDefault(ChatTextKeys.ThreadActionsLabel, "Thread actions")"
+                                                          StopPropagation="@true">
+                                                <TriggerContent>
+                                                    <iconify-icon icon="lucide:ellipsis-vertical" width="14" height="14"></iconify-icon>
+                                                </TriggerContent>
+                                                <ChildContent>
+                                                    <ul class="menu p-0">
+                                                        <li>
+                                                            <button @onclick="() => RenameThreadAsync(item)">
+                                                                <iconify-icon icon="lucide:pencil" width="14" height="14"></iconify-icon>
+                                                                @Loc.GetOrDefault(ChatTextKeys.RenameThread, "Rename")
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="text-error" @onclick="() => DeleteThreadAsync(item.Id)">
+                                                                <iconify-icon icon="lucide:trash" width="14" height="14"></iconify-icon>
+                                                                @CommonLoc.GetOrDefault(CommonTextKeys.Delete, "Delete")
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </ChildContent>
+                                            </DropdownMenu>
+                                        </div>
+                                        itemIndex++;
+                                    }
+                                }
+                            </div>
+                        }
+                    }
+                    @if (visibleThreads.Count == 0)
+                    {
+                        <div class="px-2.5 py-8 text-sm text-base-content/50 text-center select-none">
+                            @Loc.GetOrDefault(ChatTextKeys.NoConversationsFound, "No conversations found")
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter(Name = "UserTimeZone")] public TimeZoneInfo UserTimeZone { get; set; } = TimeZoneInfo.Local;
+    private readonly string _projectHelpId = $"project-availability-{Guid.NewGuid():N}";
+
+    [Parameter] public bool CanAddProjects { get; set; }
+    [Parameter] public bool ProjectsEnabled { get; set; }
+    [Parameter] public IReadOnlySet<string> AvailableProjectIds { get; set; } = new HashSet<string>(StringComparer.Ordinal);
+
+    [Parameter] public IReadOnlyList<ChatThread> Threads { get; set; } = [];
+    [Parameter] public IReadOnlyList<ProjectDefinition> Projects { get; set; } = [];
+    [Parameter] public EventCallback OnAddProject { get; set; }
+    [Parameter] public EventCallback OnHide { get; set; }
+    [Parameter] public EventCallback<string?> OnNewProjectChat { get; set; }
+    [Parameter] public EventCallback<string> OnRemoveProject { get; set; }
+
+    private IEnumerable<string?> ProjectSections => new string?[] { null }
+        .Concat(Projects.Select(project => project.Id)).Concat(Threads.Select(thread => thread.ProjectId)).Distinct(StringComparer.Ordinal);
+    [Parameter] public string? CurrentThreadId { get; set; }
+    [Parameter] public EventCallback<string> OnLoadConversation { get; set; }
+    [Parameter] public EventCallback<(string ThreadId, string Title)> OnRenameThread { get; set; }
+    [Parameter] public EventCallback<string> OnDeleteThread { get; set; }
+
+    private string _searchText = string.Empty;
+    private IReadOnlyList<string> _searchResultIds = [];
+    private CancellationTokenSource? _searchCts;
+    private bool _searchFailed;
+    private IJSObjectReference? _utilsModule;
+    private readonly HashSet<string> _knownThreadIds = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _enteringThreadIds = new(StringComparer.Ordinal);
+    private readonly HashSet<string?> _collapsedSections = new(StringComparer.Ordinal);
+
+    private void ToggleSection(string? projectId)
+    {
+        if (!_collapsedSections.Remove(projectId)) { _collapsedSections.Add(projectId); }
+    }
+
+    private async Task NewProjectChatAsync(string? projectId)
+    {
+        _collapsedSections.Remove(projectId);
+        await OnNewProjectChat.InvokeAsync(projectId);
+    }
+
+    protected override void OnParametersSet()
+    {
+        var currentThreadIds = Threads
+            .Select(thread => thread.Id)
+            .Where(threadId => !string.IsNullOrWhiteSpace(threadId))
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var threadId in currentThreadIds)
+        {
+            if (_knownThreadIds.Add(threadId))
+            {
+                _enteringThreadIds.Add(threadId);
+            }
+        }
+
+        _knownThreadIds.RemoveWhere(threadId => !currentThreadIds.Contains(threadId));
+        _enteringThreadIds.RemoveWhere(threadId => !currentThreadIds.Contains(threadId));
+    }
+
+    private bool HasSearch => !string.IsNullOrWhiteSpace(_searchText);
+    private bool IsSearching => _searchCts is not null;
+
+    private IReadOnlyList<ChatThread> VisibleThreads
+    {
+        get
+        {
+            // Incognito entries include messages, while persisted entries are history summaries.
+            var history = Threads.Where(thread => !thread.IsIncognito || thread.DisplayMessages.Count > 0);
+            if (!HasSearch)
+            {
+                return [.. history];
+            }
+
+            var threadsById = history.ToDictionary(thread => thread.Id, StringComparer.Ordinal);
+            return [.. _searchResultIds
+                .Where(threadsById.ContainsKey)
+                .Select(id => threadsById[id])];
+        }
+    }
+
+    private async Task SearchAsync(ChangeEventArgs args)
+    {
+        _searchText = args.Value?.ToString() ?? string.Empty;
+        _searchCts?.Cancel();
+        _searchFailed = false;
+        _searchResultIds = [];
+
+        if (!HasSearch)
+        {
+            _searchCts = null;
+            return;
+        }
+
+        var query = _searchText.Trim();
+        var cts = new CancellationTokenSource();
+        _searchCts = cts;
+        try
+        {
+            // Rapid input cancels here before the server reads any transcripts.
+            await Task.Delay(250, cts.Token);
+            var resultIds = await ChatApiClient.SearchThreadIdsAsync(query, cts.Token);
+            // Only the current query may publish results.
+            if (ReferenceEquals(_searchCts, cts))
+            {
+                _searchResultIds = resultIds;
+            }
+        }
+        catch (OperationCanceledException) when (cts.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            if (ReferenceEquals(_searchCts, cts))
+            {
+                Logger.LogError(ex, "Failed to search chat threads.");
+                _searchFailed = true;
+            }
+        }
+        finally
+        {
+            if (ReferenceEquals(_searchCts, cts))
+            {
+                _searchCts = null;
+            }
+
+            cts.Dispose();
+        }
+    }
+
+    private void ClearSearch()
+    {
+        var searchCts = _searchCts;
+        _searchCts = null;
+        searchCts?.Cancel();
+        _searchText = string.Empty;
+        _searchResultIds = [];
+        _searchFailed = false;
+    }
+
+    private int? GetDateBucket(ChatThread thread)
+    {
+        if (HasSearch)
+        {
+            return null;
+        }
+
+        var today = DateTimeOffset.UtcNow.ToUserTime(UserTimeZone).Date;
+        var threadDate = thread.UpdatedAt.ToUserTime(UserTimeZone).Date;
+        var age = (today - threadDate).Days;
+        return age switch
+        {
+            <= 0 => 0,
+            1 => 1,
+            <= 7 => 2,
+            _ => 3
+        };
+    }
+
+    private string GetDateBucketLabel(int bucket) => bucket switch
+    {
+        0 => Loc.GetOrDefault(ChatTextKeys.ThreadGroupToday, "Today"),
+        1 => Loc.GetOrDefault(ChatTextKeys.Yesterday, "Yesterday"),
+        2 => Loc.GetOrDefault(ChatTextKeys.ThreadGroupPreviousSevenDays, "Previous 7 days"),
+        _ => Loc.GetOrDefault(ChatTextKeys.ThreadGroupOlder, "Older")
+    };
+
+    private string GetThreadItemShellClass(string threadId)
+        => _enteringThreadIds.Contains(threadId)
+            ? "chat-thread-list-item chat-thread-list-item-entering"
+            : "chat-thread-list-item";
+
+    private string? GetThreadItemShellStyle(string threadId, int itemIndex)
+    {
+        if (!_enteringThreadIds.Contains(threadId))
+        {
+            return null;
+        }
+
+        var delay = Math.Min(itemIndex * 35, 175);
+        return $"--chat-thread-enter-delay: {delay}ms;";
+    }
+
+    private string FormatTime(DateTimeOffset utc)
+    {
+        var local = utc.ToUserTime(UserTimeZone);
+        var now = DateTimeOffset.UtcNow.ToUserTime(UserTimeZone);
+        if (local.Date == now.Date)
+        {
+            return local.ToString("t", CultureInfo.CurrentCulture);
+        }
+        if (local.Date == now.Date.AddDays(-1))
+        {
+            return Loc.GetOrDefault(ChatTextKeys.Yesterday, "Yesterday");
+        }
+        return local.ToString("d", CultureInfo.CurrentCulture);
+    }
+
+    private async Task RenameThreadAsync(ChatThread thread)
+    {
+        await CloseThreadActionsAsync();
+        var result = await DialogService.ShowAsync<RenameThreadDialog, string>(
+            new Dictionary<string, object?> { ["CurrentTitle"] = thread.Title });
+        if (result.IsOk && !string.IsNullOrWhiteSpace(result.Data))
+        {
+            await OnRenameThread.InvokeAsync((thread.Id, result.Data));
+        }
+    }
+
+    private async Task DeleteThreadAsync(string threadId)
+    {
+        await CloseThreadActionsAsync();
+
+        var confirmDialog = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(ChatTextKeys.DeleteThreadConfirmTitle, "Confirm Thread Deletion"),
+            Loc[ChatTextKeys.DeleteThreadConfirmMessage]);
+
+        if (confirmDialog != DialogResult.Ok)
+        {
+            return;
+        }
+
+        await OnDeleteThread.InvokeAsync(threadId);
+    }
+
+    private async Task CloseThreadActionsAsync()
+    {
+        _utilsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/utils.js");
+        await _utilsModule.InvokeVoidAsync("closeDropdowns");
+    }
+
+    public void Dispose()
+    {
+        var searchCts = _searchCts;
+        _searchCts = null;
+        searchCts?.Cancel();
+        searchCts?.Dispose();
+        _ = _utilsModule?.DisposeAsync() ?? default;
+    }
+}

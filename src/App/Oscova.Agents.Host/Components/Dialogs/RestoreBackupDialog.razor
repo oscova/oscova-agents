@@ -1,0 +1,246 @@
+@using Microsoft.AspNetCore.Mvc
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject IStringLocalizer<AuthText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreTitle, "Restore from backup"))"
+                Subtitle="@(Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreDescription, "Use this only on a fresh install. Select an encrypted .oscb backup and enter its passphrase."))"
+                Icon="lucide:rotate-ccw"
+                MaxWidthClass="max-w-xl"
+                HelpTopic="@HelpTopics.RestoreBackup"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_isRestoring)"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-4">
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <div role="alert" class="alert alert-error alert-soft">
+                    <span class="iconify lucide--circle-alert size-5"></span>
+                    <span class="min-w-0 break-words whitespace-normal text-sm">@_error</span>
+                </div>
+            }
+
+            @if (_isRestoring)
+            {
+                <div role="alert" class="alert alert-info alert-soft">
+                    <span class="loading loading-spinner loading-sm"></span>
+                    <div class="space-y-1 text-sm">
+                        <p>@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreInProgress, "Restoring the backup can take a minute. Keep this window open while Oscova prepares the restart.")</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div role="alert" class="alert alert-info alert-soft">
+                    <span class="iconify lucide--info size-5"></span>
+                    <span class="text-sm">@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreDescription, "Use this only on a fresh install. Select an encrypted .oscb backup and enter its passphrase.")</span>
+                </div>
+            }
+
+            <div class="flex flex-wrap items-center gap-3">
+                <label for="@RestoreFileInputId" class="btn btn-outline btn-sm cursor-pointer" aria-disabled="@(_isRestoring ? "true" : "false")">
+                    <span class="iconify lucide--file-up size-4"></span>
+                    @Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreChooseFileButton, "Choose backup file")
+                    <InputFile id="@RestoreFileInputId"
+                               class="sr-only"
+                               OnChange="SelectFileAsync"
+                               accept=".oscb"
+                               disabled="@_isRestoring" />
+                </label>
+                <span class="text-sm @(string.IsNullOrWhiteSpace(_selectedFileName) ? "opacity-60" : "font-medium")">
+                    @(string.IsNullOrWhiteSpace(_selectedFileName) ? CommonLoc.GetOrDefault(CommonTextKeys.NoFileSelected, "No file selected") : _selectedFileName)
+                </span>
+            </div>
+
+            @if (_showFileValidation)
+            {
+                <p class="text-error text-xs">@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreFileRequired, "Select a backup file.")</p>
+            }
+
+            <fieldset class="fieldset p-0">
+                <legend class="fieldset-legend">@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestorePassphraseLabel, "Backup passphrase")</legend>
+                <label class="input w-full">
+                    <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                    <input id="backup-passphrase" class="grow focus:outline-0"
+                           type="@(_showPassphrase ? "text" : "password")"
+                           aria-label="@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestorePassphraseLabel, "Backup passphrase")"
+                           placeholder="@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestorePassphrasePlaceholder, "Enter the backup passphrase")"
+                           disabled="@_isRestoring"
+                           @bind="_passphrase"
+                           @bind:event="oninput" />
+                    <label class="swap btn btn-xs btn-ghost btn-circle text-base-content/60">
+                        <input type="checkbox" disabled="@_isRestoring" @bind="@_showPassphrase" aria-label="@(Loc.GetOrDefault(AuthTextKeys.ShowPasswordLabel, "Show password"))" />
+                        <span class="iconify lucide--eye swap-off size-4"></span>
+                        <span class="iconify lucide--eye-off swap-on size-4"></span>
+                    </label>
+                </label>
+                @if (_showPassphraseValidation)
+                {
+                    <p class="fieldset-label text-error">
+                        @Loc.GetOrDefault(AuthTextKeys.AdminSetupRestorePassphraseRequired, "Enter the backup passphrase.")
+                    </p>
+                }
+            </fieldset>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_isRestoring" @onclick="CancelAsync">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@IsRestoreDisabled" @onclick="RestoreAsync">
+            @if (_isRestoring)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+            }
+            else
+            {
+                <span class="iconify lucide--rotate-ccw size-4"></span>
+            }
+            @Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreButton, "Restore backup")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    private const string RestoreFileInputId = "environment-restore-file";
+
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _selectedFileName = string.Empty;
+    private string _passphrase = string.Empty;
+    private string? _error;
+    private bool _hasFile;
+    private bool _isRestoring;
+    private bool _showFileValidation;
+    private bool _showPassphraseValidation;
+    private bool _showPassphrase;
+
+    private bool IsRestoreDisabled => _isRestoring;
+
+    private Task SelectFileAsync(InputFileChangeEventArgs args)
+    {
+        _error = null;
+        _hasFile = false;
+        _selectedFileName = string.Empty;
+        _showFileValidation = false;
+
+        if (args.File is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        _selectedFileName = args.File.Name;
+        _hasFile = Path.GetExtension(args.File.Name).Equals(".oscb", StringComparison.OrdinalIgnoreCase);
+        if (!_hasFile)
+        {
+            _error = Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreUnsupportedFile, "Only .oscb backup files are supported.");
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task RestoreAsync()
+    {
+        _showFileValidation = !_hasFile;
+        _showPassphraseValidation = string.IsNullOrWhiteSpace(_passphrase);
+        if (_showFileValidation || _showPassphraseValidation)
+        {
+            return;
+        }
+
+        _error = null;
+        _isRestoring = true;
+
+        try
+        {
+            await using var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            var result = await utilsModule.InvokeAsync<JsonElement>(
+                "restoreEnvironmentBackup",
+                NavigationManager.ToAbsoluteUri(ApiRoutes.Environment.Restore).ToString(),
+                RestoreFileInputId,
+                new { passphrase = _passphrase },
+                NavigationManager.ToAbsoluteUri("/login").ToString(),
+                40,
+                1000);
+
+            var status = result.GetProperty("status").GetInt32();
+            var body = result.GetProperty("body").GetString();
+            if (status == StatusCodes.Status202Accepted)
+            {
+                return;
+            }
+
+            _isRestoring = false;
+            var fallback = Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreFailed, "The backup could not be restored.");
+            var problem = status == StatusCodes.Status409Conflict
+                ? TryReadProblemDetails(body)
+                : null;
+            _error = problem?.Type switch
+            {
+                ApiRoutes.Environment.RestoreFreshInstallRequiredProblemType =>
+                    Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreFreshInstallOnly, "Restore is only available on a fresh install."),
+                ApiRoutes.Environment.RestorePendingProblemType =>
+                    Loc.GetOrDefault(
+                        AuthTextKeys.AdminSetupRestorePending,
+                        "An environment restore is pending. Wait for Oscova to restart before creating an account."),
+                _ => NormalizeUploadError(problem?.Detail ?? body, fallback)
+            };
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (Exception ex)
+        {
+            _isRestoring = false;
+            _error = ex.Message;
+        }
+    }
+
+    private Task CancelAsync()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+        return Task.CompletedTask;
+    }
+
+    private static string NormalizeUploadError(string? body, string fallback)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return fallback;
+        }
+
+        var trimmed = body.Trim();
+        if (trimmed.Length >= 2 && trimmed[0] == '"' && trimmed[^1] == '"')
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<string>(trimmed) ?? fallback;
+            }
+            catch (JsonException)
+            {
+            }
+        }
+
+        return trimmed;
+    }
+
+    private static ProblemDetails? TryReadProblemDetails(string? body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<ProblemDetails>(body, JsonSerializerOptions.Web);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+}

@@ -1,0 +1,59 @@
+@namespace Oscova.Agents.Host.Components.Reusable.Inputs
+
+<div class="dropdown w-full @Class @(_isOpen ? "dropdown-open" : null)">
+    <label class="input input-bordered w-full">
+        @if (!string.IsNullOrWhiteSpace(IconClass))
+        {
+            <span class="iconify @IconClass text-base-content/60 size-4.5"></span>
+        }
+        <input class="grow focus:outline-0"
+               value="@Value"
+               role="combobox"
+               aria-label="@AriaLabel"
+               aria-autocomplete="list"
+               aria-expanded="@(_isOpen ? "true" : "false")"
+               aria-controls="@_listboxId"
+               aria-activedescendant="@ActiveOptionId"
+               placeholder="@Placeholder"
+               disabled="@Disabled"
+               autocomplete="off"
+               @oninput="OnInputAsync"
+               @onkeydown="OnKeyDownAsync"
+               @onfocus="Open"
+               @onclick="Open"
+               @onfocusout="Close" />
+    </label>
+
+    @if (_isOpen)
+    {
+        var filtered = FilteredSuggestions();
+
+        @* Exclude the scroll container from Tab navigation so closing it cannot discard focus. *@
+        <ul id="@_listboxId" role="listbox" tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-[1] mt-1 max-h-60 w-full flex-nowrap overflow-y-auto border p-2 shadow-lg">
+            @* Keep focus on the input so blur does not close the menu before selection. *@
+            @for (var index = 0; index < filtered.Count; index++)
+            {
+                var suggestion = filtered[index];
+                var optionIndex = index;
+                <li @key="suggestion">
+                    <button type="button"
+                            id="@GetOptionId(optionIndex)"
+                            role="option"
+                            tabindex="-1"
+                            class="@(_activeIndex == optionIndex ? "menu-active" : null)"
+                            aria-selected="@(_activeIndex == optionIndex ? "true" : "false")"
+                            @onmousedown:preventDefault="true"
+                            @onclick="() => SelectAsync(suggestion)">
+                        @suggestion
+                    </button>
+                </li>
+            }
+            @if (filtered.Count == 0)
+            {
+                <li class="menu-disabled">
+                    <span class="opacity-60">@CommonLoc.GetOrDefault(CommonTextKeys.NoResults, "No results")</span>
+                </li>
+            }
+        </ul>
+    }
+</div>

@@ -1,0 +1,297 @@
+@inject SettingsPageRegistry SettingsRegistry
+@inject HttpClient Http
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthState
+@inject SettingsApiClient SettingsApiClient
+@inject UserServiceScope UserScope
+@inject ManagementApiClient UpdateApiClient
+@inject SystemHubClient SystemHubClient
+@inject SoundCuePlayer Sound
+@inject IStringLocalizer<CommonText> CommonLoc
+@implements IDisposable
+
+<DropdownMenu Placement="@Placement"
+              OnOpen="@LoadAsync"
+              TriggerClass="@($"btn btn-circle btn-ghost btn-sm relative {(HasUnreadNotifications ? "custom-notification-attention" : string.Empty)}")"
+              ContentClass="bg-base-100 rounded-box mt-2 w-[22rem] max-w-[calc(100vw-1rem)] shadow-sm border border-base-200"
+              AriaLabel="@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsTitle, "Notifications")"
+              Title="@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsTitle, "Notifications")">
+    <TriggerContent>
+        <span class="@BellIconClass"></span>
+        @if (HasUnreadNotifications)
+        {
+            <div class="status status-error status-sm absolute end-1 top-1"></div>
+        }
+    </TriggerContent>
+    <ChildContent>
+        <div class="flex items-center justify-between px-4 py-3">
+            <div>
+                <p class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsTitle, "Notifications")</p>
+                @if (_muted)
+                {
+                    <p class="text-xs text-base-content/55">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsMuted, "Notifications muted")</p>
+                }
+            </div>
+            <button type="button" class="btn btn-ghost btn-xs btn-circle" title="@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsClear, "Clear notifications")" @onclick="ClearAsync">
+                <span class="iconify lucide--trash-2 size-3.5"></span>
+            </button>
+        </div>
+        <div role="tablist" class="tabs tabs-border px-3">
+            <button role="tab" aria-selected="@TabSelected(AllTab)" class="tab tab-sm @TabClass(AllTab)" @onclick="() => SelectTab(AllTab)">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsAllTab, "All")</button>
+            <button role="tab" aria-selected="@TabSelected(TasksTab)" class="tab tab-sm @TabClass(TasksTab)" @onclick="() => SelectTab(TasksTab)">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsTasksTab, "Tasks")</button>
+            @if (_isAdmin)
+            {
+                <button role="tab" aria-selected="@TabSelected(SystemTab)" class="tab tab-sm @TabClass(SystemTab)" @onclick="() => SelectTab(SystemTab)">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsSystemTab, "System")</button>
+            }
+        </div>
+        <div class="max-h-96 overflow-y-auto py-1">
+            @if (_filtered.Count == 0)
+            {
+                <div class="flex flex-col items-center gap-2 px-6 py-10 text-center text-base-content/60">
+                    <span class="iconify lucide--bell-off size-8"></span>
+                    <p class="text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsEmptyState, "You are all caught up.")</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var entry in _filtered)
+                {
+                    <NotificationRow Entry="@entry" OnClick="@(() => HandleClickAsync(entry))" />
+                    <hr class="border-base-300 border-dashed" />
+                }
+            }
+        </div>
+        <div class="border-t border-base-200 flex items-center justify-between px-3 py-2">
+            <button type="button" class="btn btn-link btn-sm px-1" @onclick="OpenInboxAsync">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsViewAll, "View all")</button>
+            <div class="flex items-center gap-1">
+                <button type="button" class="btn btn-ghost btn-sm btn-circle" title="@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsMarkAllRead, "Mark all read")" @onclick="MarkAllReadAsync">
+                    <span class="iconify lucide--check-check size-4"></span>
+                </button>
+                <button type="button" class="btn btn-ghost btn-sm btn-circle" title="@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsMuted, "Notifications muted")" @onclick="ToggleMuteAsync">
+                    <span class="iconify @(_muted ? "lucide--bell-off" : "lucide--bell-ring") size-4"></span>
+                </button>
+                <button type="button" class="btn btn-ghost btn-sm btn-circle" title="@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsSettings, "Notification settings")" @onclick="OpenSettings">
+                    <span class="iconify lucide--settings size-4"></span>
+                </button>
+            </div>
+        </div>
+    </ChildContent>
+</DropdownMenu>
+
+@code {
+    [Parameter] public string Placement { get; set; } = "dropdown-bottom dropdown-center sm:dropdown-end";
+
+    private const string AllTab = "All";
+    private const string TasksTab = "Tasks";
+    private const string SystemTab = "System";
+
+    private readonly List<NotificationEntry> _entries = [];
+    private List<NotificationEntry> _filtered = [];
+    private UiSettingsSummary? _settings;
+    private bool _isAdmin;
+    private bool _muted;
+    private string _activeTab = AllTab;
+
+    private bool HasUnreadNotifications => _entries.Any(entry => !entry.IsRead);
+    private const string BellIconClass = "iconify lucide--bell size-4.5";
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserScope.UiSettings.Changed += OnUiSettingsChanged;
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        _isAdmin = auth.User.IsInRole("Admin");
+        try
+        {
+            _settings = await SettingsApiClient.GetUiSettingsAsync();
+            _muted = _settings.AreNotificationsMuted;
+            SystemHubClient.OnNotificationReceivedAsync = OnNotificationReceivedAsync;
+            await LoadAsync();
+            await SystemHubClient.EnsureConnectedAsync();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            // Account deletion can invalidate the circuit while its shell is initializing.
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            var entries = await Http.GetFromJsonAsync<List<NotificationEntry>>(ApiRoutes.Notifications.Base) ?? [];
+            _entries.Clear();
+            _entries.AddRange(entries.OrderByDescending(entry => entry.CreatedAt));
+            ApplyFilter();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            ToastService.Show(ex.Message, ToastType.Error);
+        }
+    }
+
+    private Task OnNotificationReceivedAsync(NotificationMessage message)
+    {
+        return InvokeAsync(async () =>
+        {
+            if (!_muted)
+            {
+                _ = Sound.PlayAsync(SoundCue.Notify);
+                // Low-priority notices still reach the inbox without an arrival toast.
+                if (message.Priority != NotificationPriority.Low)
+                {
+                    ToastService.Show(message.Title, message.Kind switch
+                    {
+                        NotificationKind.TaskSuccess => ToastType.Success,
+                        NotificationKind.TaskFailure or NotificationKind.SystemError => ToastType.Error,
+                        NotificationKind.SystemWarning => ToastType.Warning,
+                        _ => ToastType.Info
+                    });
+                }
+            }
+
+            await LoadAsync();
+            // Live hub callbacks need an explicit render after refreshing the inbox.
+            StateHasChanged();
+        });
+    }
+
+    private void SelectTab(string tab)
+    {
+        _activeTab = tab;
+        ApplyFilter();
+    }
+
+    private string TabSelected(string tab) => string.Equals(_activeTab, tab, StringComparison.Ordinal) ? "true" : "false";
+
+    private string TabClass(string tab) => string.Equals(_activeTab, tab, StringComparison.Ordinal) ? "tab-active" : string.Empty;
+
+    private void ApplyFilter()
+    {
+        _filtered = _activeTab switch
+        {
+            TasksTab => _entries.Where(entry => entry.Kind is NotificationKind.TaskSuccess or NotificationKind.TaskFailure).ToList(),
+            SystemTab => _entries.Where(entry => entry.IsSystem || entry.Kind is NotificationKind.SystemError or NotificationKind.SystemWarning).ToList(),
+            _ => [.. _entries]
+        };
+    }
+
+    private async Task HandleClickAsync(NotificationEntry entry)
+    {
+        await MarkReadAsync(entry);
+        if (await NotificationNavigation.OpenUpdateAsync(entry, DialogService, UpdateApiClient, NavigationManager)) { return; }
+
+        if (entry.Kind == NotificationKind.ChatMessage && !string.IsNullOrWhiteSpace(entry.ThreadId))
+        {
+            NavigationManager.NavigateTo($"/?threadId={Uri.EscapeDataString(entry.ThreadId)}");
+            return;
+        }
+
+        if (entry.Kind is NotificationKind.TaskSuccess or NotificationKind.TaskFailure && !string.IsNullOrWhiteSpace(entry.TaskId))
+        {
+            NavigationManager.NavigateTo(NotificationNavigation.BuildTaskUrl(entry.TaskId, entry.RunId));
+            return;
+        }
+
+        await DialogService.ShowAsync<NotificationDetailDialog>(new Dictionary<string, object?> { ["Entry"] = entry });
+    }
+
+    private async Task MarkReadAsync(NotificationEntry entry)
+    {
+        using var response = await Http.PostAsync(ApiRoutes.Notifications.MarkRead(entry.Id, entry.IsSystem), null);
+        if (!response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        var index = _entries.FindIndex(item => string.Equals(item.Id, entry.Id, StringComparison.OrdinalIgnoreCase));
+        if (index >= 0)
+        {
+            _entries[index] = _entries[index] with { IsRead = true };
+            ApplyFilter();
+        }
+    }
+
+    private async Task MarkAllReadAsync()
+    {
+        using var response = await Http.PostAsync(ApiRoutes.Notifications.MarkAllRead, null);
+        if (response.IsSuccessStatusCode)
+        {
+            for (var index = 0; index < _entries.Count; index++)
+            {
+                _entries[index] = _entries[index] with { IsRead = true };
+            }
+            ApplyFilter();
+        }
+    }
+
+    private async Task ClearAsync()
+    {
+        using var response = await Http.PostAsync(ApiRoutes.Notifications.Clear, null);
+        if (response.IsSuccessStatusCode)
+        {
+            _entries.Clear();
+            ApplyFilter();
+        }
+    }
+
+    private async Task ToggleMuteAsync()
+    {
+        if (_settings is null)
+        {
+            return;
+        }
+
+        // Change only mute, preserving preferences saved by other account surfaces.
+        var request = SaveUiSettingsRequest.From(UserScope.UiSettings);
+        request.AreNotificationsMuted = !request.AreNotificationsMuted;
+        try
+        {
+            await SettingsApiClient.SaveUiSettingsAsync(request);
+            request.ApplyTo(UserScope.UiSettings);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    private Task OpenInboxAsync()
+    {
+        return DialogService.ShowAsync<NotificationInboxDialog>();
+    }
+
+    private void OpenSettings()
+    {
+        NavigationManager.NavigateTo(SettingsRegistry.GetSectionRoute("notifications"));
+    }
+
+    public void Dispose()
+    {
+        UserScope.UiSettings.Changed -= OnUiSettingsChanged;
+        if (SystemHubClient.OnNotificationReceivedAsync == OnNotificationReceivedAsync)
+        {
+            SystemHubClient.OnNotificationReceivedAsync = null;
+        }
+    }
+
+    private void OnUiSettingsChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            var unmuted = _muted && !UserScope.UiSettings.AreNotificationsMuted;
+            _muted = UserScope.UiSettings.AreNotificationsMuted;
+
+            // Recover stored notices after mute without replaying their arrival alerts.
+            if (unmuted) { await LoadAsync(); }
+
+            StateHasChanged();
+        });
+    }
+}

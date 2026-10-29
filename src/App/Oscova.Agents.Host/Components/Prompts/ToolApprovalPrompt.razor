@@ -1,0 +1,388 @@
+@using System
+@using System.Globalization
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Localization
+@using Oscova.Agents.Core.Conversation
+@using Oscova.Agents.Host.Localization
+
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> SettingsLoc
+
+@if (Request.Outcome is { } resolved)
+{
+    <button type="button" class="btn btn-ghost btn-sm flex w-full min-w-0 justify-start text-start @(!Compact ? "custom-tool-approval-mobile-summary" : null)"
+            aria-expanded="@(_expanded ? "true" : "false")" @onclick="() => _expanded = !_expanded">
+        <span class="iconify lucide--shield-ellipsis size-4 shrink-0" aria-hidden="true"></span>
+        <span class="min-w-0 grow truncate">@OutcomeLabel(resolved)</span>
+        <span class="iconify lucide--chevron-down size-4 shrink-0 @(_expanded ? "rotate-180" : null)" aria-hidden="true"></span>
+    </button>
+}
+@if (!Compact || Request.Outcome is null || _expanded)
+{
+    @* Resolved mobile history starts collapsed while desktop retains its existing review card. *@
+    <div class="custom-tool-approval-details @(!Compact && Request.Outcome is not null && !_expanded ? "custom-tool-approval-desktop-details" : null)">
+        @ApprovalContent
+    </div>
+}
+
+@code {
+    // Both presentations retain the same review details and pending decision controls.
+    private RenderFragment ApprovalContent => @<ChatBubble IsUser="false"
+            AssistantInitials="@(!string.IsNullOrWhiteSpace(AssistantInitials) ? AssistantInitials : "AI")"
+            AssistantPictureUrl="@AssistantPictureUrl"
+            ExtraBubbleClass="w-full max-w-md p-0 overflow-hidden">
+        <article class="custom-chat-prompt">
+            <div class="flex items-center gap-3 px-4 py-3">
+                <span class="iconify lucide--shield-ellipsis size-4"></span>
+                <p class="grow truncate font-medium">@(Request.Outcome is { } resolvedOutcome ? OutcomeLabel(resolvedOutcome) : Loc.GetOrDefault(ChatTextKeys.ToolApprovalTitle, "Tool approval required"))</p>
+            </div>
+
+            <div class="border-base-300 border-t border-dashed px-4 py-2.5">
+                @if (Compact && Request.Outcome is not null)
+                {
+                    <p class="mb-2 break-words text-sm [overflow-wrap:anywhere]">@Request.ToolName</p>
+                    @if (!string.IsNullOrWhiteSpace(Request.ExecutionDevice) || !string.IsNullOrWhiteSpace(Request.ExecutionTarget))
+                    {
+                        <p class="mb-2 break-words text-xs [overflow-wrap:anywhere]">@string.Join(" · ", new[] { Request.ExecutionDevice, Request.ExecutionTarget }.Where(value => !string.IsNullOrWhiteSpace(value)))</p>
+                    }
+                }
+                @if (!string.IsNullOrWhiteSpace(Request.AgentName))
+                {
+                    <p class="mb-2 break-words text-sm font-medium">@Request.AgentName</p>
+                }
+                @if (Request.Review?.Kind == "skill-authoring")
+                {
+                    <div class="rounded-box border border-base-300 bg-base-100 p-3 text-sm">
+                        <div class="flex items-center gap-2 font-medium">
+                            <span class="iconify lucide--sparkles size-4"></span>
+                            @GetSkillApprovalMessage(Request.Review.Operation)
+                        </div>
+                        <dl class="mt-2 grid gap-2">
+                            <div>
+                                <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalSkillNameLabel, "Skill")</dt>
+                                <dd class="break-words [overflow-wrap:anywhere]">@DisplayValue(Request.Review.SkillName)</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalSkillDescriptionLabel, "Description")</dt>
+                                <dd class="break-words [overflow-wrap:anywhere]">@DisplayValue(Request.Review.Description)</dd>
+                            </div>
+                        </dl>
+                    </div>
+                }
+                else if (Request.Review?.Kind is "shell" or "skill-script")
+                {
+                    <div class="rounded-box border border-base-300 bg-base-100 p-3 text-sm">
+                        <p class="font-medium">@GetExecutionTargetLabel(Request.Review.RunMode)</p>
+                        @if (Request.Review.RunMode == "host")
+                        {
+                            <p class="text-warning mt-2 flex items-start gap-2 text-sm">
+                                <span class="iconify lucide--triangle-alert mt-0.5 size-4 shrink-0" aria-hidden="true"></span>
+                                <span>@Loc.GetOrDefault(ChatTextKeys.ToolApprovalHostWarning, "Runs on the machine running Oscova with its operating-system account's permissions.")</span>
+                            </p>
+                        }
+                        else if (Request.Review.RunMode == "project")
+                        {
+                            <p class="mt-2 text-sm">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalProjectWarning, "Runs on the selected project's device with that device account's operating-system permissions.")</p>
+                        }
+                        else if (Request.Review.RunMode is not (null or "disabled"))
+                        {
+                            <p class="mt-2 text-sm">
+                                @Loc.GetOrDefault(ChatTextKeys.ToolApprovalExecutionEnvironmentWarning, "Runs in the selected execution environment.")
+                            </p>
+                        }
+                        @if (Request.Review.Kind == "skill-script")
+                        {
+                            <p class="mt-2 text-sm">
+                                @Loc.GetOrDefault(ChatTextKeys.ToolApprovalScriptWarning, "Approval runs the whole script. Commands inside it are not approved separately.")
+                            </p>
+                        }
+                    </div>
+                }
+                else if (Request.Review?.Kind == "registry-install")
+                {
+                    var isSkill = Request.Review.Operation == "skill";
+                    <div class="rounded-box border border-base-300 bg-base-100 p-3 text-sm">
+                        <div class="flex items-center gap-2 font-medium">
+                            <span class="iconify lucide--package size-4"></span>
+                            @(isSkill
+                                ? Loc.GetOrDefault(ChatTextKeys.ToolApprovalRegistrySkillMessage, "Approve installing this skill?")
+                                : Loc.GetOrDefault(ChatTextKeys.ToolApprovalRegistryServerMessage, "Approve installing this MCP server?"))
+                        </div>
+                        <dl class="mt-2 grid gap-2">
+                            <div>
+                                <dt class="text-xs opacity-60">
+                                    @(isSkill
+                                        ? Loc.GetOrDefault(ChatTextKeys.ToolApprovalSkillNameLabel, "Skill")
+                                        : Loc.GetOrDefault(ChatTextKeys.ToolApprovalServerLabel, "MCP server"))
+                                </dt>
+                                <dd class="break-words [overflow-wrap:anywhere]">@DisplayValue(isSkill ? Request.Review.SkillName : Request.Review.ServerName)</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalPublisherLabel, "Publisher")</dt>
+                                <dd class="break-words [overflow-wrap:anywhere]">@DisplayValue(Request.Review.Publisher)</dd>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.Version))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalVersionLabel, "Version")</dt>
+                                    <dd class="break-words [overflow-wrap:anywhere]">@Request.Review.Version</dd>
+                                </div>
+                            }
+                            <div>
+                                <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalSourceLabel, "Source")</dt>
+                                <dd class="break-words [overflow-wrap:anywhere]">@DisplayValue(Request.Review.SourceRepository)</dd>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.Command))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">
+                                        @(Request.Review.Transport == "Stdio"
+                                            ? Loc.GetOrDefault(ChatTextKeys.ToolApprovalCommandLabel, "Command")
+                                            : Loc.GetOrDefault(ChatTextKeys.ToolApprovalConnectsToLabel, "Connects to"))
+                                    </dt>
+                                    <dd class="break-words font-mono text-xs [overflow-wrap:anywhere]">@Request.Review.Command</dd>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.NetworkScope))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalNetworkLabel, "Network")</dt>
+                                    <dd>@FormatNetworkScope(Request.Review.NetworkScope)</dd>
+                                </div>
+                            }
+                        </dl>
+                    </div>
+                }
+                else if (Request.Review?.Kind == "agent-task")
+                {
+                    <div class="rounded-box border border-base-300 bg-base-100 p-3 text-sm">
+                        <div class="flex items-center gap-2 font-medium">
+                            <span class="iconify lucide--calendar-clock size-4"></span>
+                            @GetTaskApprovalMessage(Request.Review.Operation)
+                        </div>
+                        <dl class="mt-2 grid gap-2">
+                            <div>
+                                <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskNameLabel, "Task")</dt>
+                                <dd class="break-words [overflow-wrap:anywhere]">@DisplayValue(Request.Review.TaskName)</dd>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.NewTaskName))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskNewNameLabel, "New name")</dt>
+                                    <dd class="break-words [overflow-wrap:anywhere]">@Request.Review.NewTaskName</dd>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.TaskAgentName))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskAgentLabel, "Agent")</dt>
+                                    <dd class="break-words [overflow-wrap:anywhere]">@Request.Review.TaskAgentName</dd>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.ScheduleKind))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskScheduleLabel, "Schedule")</dt>
+                                    <dd class="break-words [overflow-wrap:anywhere]">
+                                        @FormatTaskSchedule(Request.Review)
+                                        @if (Request.Review.ScheduleKind is "one_shot" or "cron")
+                                        {
+                                            <div class="mt-1 text-xs opacity-60">@FormatTaskTimeZone(Request.Review)</div>
+                                        }
+                                    </dd>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Request.Review.RunMode))
+                            {
+                                <div>
+                                    <dt class="text-xs opacity-60">@Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskRunModeLabel, "Restricted tools")</dt>
+                                    <dd>
+                                        @if (Request.Review.RunMode == "auto_approve")
+                                        {
+                                            <span class="badge badge-warning badge-soft">
+                                                @Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskAutoApproveValue, "Auto-approved during runs")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            @Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskAutoRejectValue, "Auto-rejected during runs")
+                                        }
+                                    </dd>
+                                    @if (Request.Review.RunMode == "auto_approve")
+                                    {
+                                        <p class="text-warning mt-1 text-xs font-medium">
+                                            @Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskAutoApproveWarning, "Approving this task change allows approval-required tools to run unattended. Host shell commands can change the machine running Oscova.")
+                                        </p>
+                                    }
+                                </div>
+                            }
+                        </dl>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-base-content/80 text-sm" dir="auto">@Request.Message</p>
+                }
+
+                @if (Request.Arguments is { ValueKind: JsonValueKind.Object } arguments && arguments.EnumerateObject().Any())
+                {
+                    <details open="@(Request.Review?.Kind is "shell" or "skill-script")" class="rounded-box bg-base-200/60 mt-3 px-3 py-2 text-xs">
+                        <summary class="cursor-pointer font-medium">
+                            @Loc.GetOrDefault(ChatTextKeys.ToolApprovalArgumentsLabel, "Arguments")
+                        </summary>
+                        <pre class="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-all" dir="ltr">@JsonSerializer.Serialize(arguments, _jsonOptions)</pre>
+                    </details>
+                }
+            </div>
+
+            @if (Request.Outcome is { } outcome)
+            {
+                <p class="custom-tool-approval-outcome px-4 pb-4 text-sm font-medium" role="status">@OutcomeLabel(outcome)</p>
+            }
+            else
+            {
+                <div class="mt-auto flex flex-wrap items-end gap-2 px-4 pt-2 pb-4">
+                    <button class="btn btn-sm ms-auto gap-2 border-none whitespace-nowrap"
+                            disabled="@_isSubmitting"
+                            @onclick="() => SubmitAsync(ToolApprovalDecision.Deny)">
+                        <span class="iconify lucide--x size-4"></span>
+                        @SettingsLoc.GetOrDefault(SettingsTextKeys.ToolsApprovalDeny, "Deny")
+                    </button>
+                    <button class="btn btn-sm btn-primary gap-2 border-none whitespace-nowrap"
+                            disabled="@_isSubmitting"
+                            @onclick="() => SubmitAsync(ToolApprovalDecision.AllowOnce)">
+                        <span class="iconify lucide--check size-4"></span>
+                        @Loc[ChatTextKeys.AllowOnce]
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary gap-2 border-none whitespace-nowrap"
+                            disabled="@(_isSubmitting || !Request.CanAllowForSession)"
+                            title="@(Request.CanAllowForSession ? Loc[ChatTextKeys.SessionLifetime] : Loc[ChatTextKeys.SessionUnavailable])"
+                            @onclick="() => SubmitAsync(ToolApprovalDecision.AllowForSession)">
+                        @Loc[ChatTextKeys.AllowForSession]
+                    </button>
+                </div>
+                <p class="px-4 pb-3 text-xs opacity-60">@(Request.CanAllowForSession ? Loc[ChatTextKeys.SessionLifetime] : Loc[ChatTextKeys.SessionUnavailable])</p>
+            }
+        </article>
+</ChatBubble>;
+}
+
+@code {
+    [Parameter] public bool Compact { get; set; }
+    private bool _expanded;
+    [Parameter, EditorRequired]
+    public ToolApprovalRequest Request { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public EventCallback<ToolApprovalChoice> OnRespond { get; set; }
+
+    [Parameter]
+    public string? AssistantInitials { get; set; }
+
+    [Parameter]
+    public string? AssistantPictureUrl { get; set; }
+
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private bool _isSubmitting;
+
+    private string GetSkillApprovalMessage(string operation) => operation switch
+    {
+        "create" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalSkillCreateMessage, "Approve creating this skill?"),
+        "update" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalSkillUpdateMessage, "Approve updating this skill?"),
+        _ => Request.Message
+    };
+
+    private string GetTaskApprovalMessage(string operation) => operation switch
+    {
+        "create" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskCreateMessage, "Approve creating this scheduled task?"),
+        "update" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskUpdateMessage, "Approve updating this scheduled task?"),
+        "delete" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskDeleteMessage, "Approve deleting this scheduled task?"),
+        "run" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalTaskRunMessage, "Approve running this scheduled task now?"),
+        _ => Request.Message
+    };
+
+    private string GetExecutionTargetLabel(string? runMode)
+    {
+        string target = runMode switch
+        {
+            "host" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalExecutionTargetHost, "Host"),
+            "project" => Loc.GetOrDefault(ChatTextKeys.ProjectDevice, "Device"),
+            "disabled" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalExecutionTargetDisabled, "Shell execution disabled"),
+            _ => runMode ?? Loc.GetOrDefault(ChatTextKeys.ToolApprovalExecutionTargetUnavailable, "Execution target unavailable")
+        };
+        return $"{Loc.GetOrDefault(ChatTextKeys.ToolApprovalExecutionTargetLabel, "Execution target")}: {target}";
+    }
+
+    private string FormatTaskSchedule(ToolApprovalReview review) => review.ScheduleKind switch
+    {
+        "interval" => FormatCommonText(CommonTextKeys.TaskEveryMinutes, "Every {0}m", DisplayValue(review.ScheduleValue)),
+        "one_shot" => FormatCommonText(CommonTextKeys.TaskOnceAt, "Once at {0}", DisplayValue(review.ScheduleValue)),
+        "cron" => FormatCommonText(CommonTextKeys.TaskCronExpression, "Cron: {0}", DisplayValue(review.ScheduleValue)),
+        _ => DisplayValue(review.ScheduleKind)
+    };
+
+    private string FormatTaskTimeZone(ToolApprovalReview review)
+    {
+        if (!string.IsNullOrWhiteSpace(review.TimeZoneId))
+        {
+            return FormatCommonText(
+                CommonTextKeys.TaskEvaluatedInTimeZone,
+                "Evaluated in {0}",
+                review.TimeZoneId);
+        }
+
+        return review.ScheduleKind == "one_shot"
+            ? CommonLoc.GetOrDefault(
+                CommonTextKeys.TaskRunAtTimeZoneHint,
+                "Uses your current user time zone when this task is saved and scheduled.")
+            : CommonLoc.GetOrDefault(
+                CommonTextKeys.TaskScheduleTimeZoneHint,
+                "Evaluated using your current user time zone when this task is saved.");
+    }
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+        => string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+
+    private string FormatNetworkScope(string scope) => scope switch
+    {
+        "None" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalNetworkNone, "No network access"),
+        "Incidental" => Loc.GetOrDefault(ChatTextKeys.ToolApprovalNetworkIncidental, "Occasional network use"),
+        _ => Loc.GetOrDefault(ChatTextKeys.ToolApprovalNetworkEgress, "Sends data to outside services")
+    };
+
+    private static string DisplayValue(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? "-" : value;
+
+    private string OutcomeLabel(ToolApprovalOutcome outcome) => Loc[outcome switch
+    {
+        ToolApprovalOutcome.AllowedOnce => ChatTextKeys.AllowedOnce,
+        ToolApprovalOutcome.AllowedForSession => ChatTextKeys.AllowedForSession,
+        ToolApprovalOutcome.Denied => ChatTextKeys.Denied,
+        ToolApprovalOutcome.SessionPermission => ChatTextKeys.SessionAutoApproved,
+        ToolApprovalOutcome.AutoApproved => ChatTextKeys.AutoApproved,
+        ToolApprovalOutcome.AutoRejected => ChatTextKeys.AutoRejected,
+        ToolApprovalOutcome.FullAccess => ChatTextKeys.FullAccess,
+        _ => ChatTextKeys.ApprovalExpired
+    }];
+
+    private async Task SubmitAsync(ToolApprovalDecision decision)
+    {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        try
+        {
+            await OnRespond.InvokeAsync(new ToolApprovalChoice(Request.RequestId, decision));
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

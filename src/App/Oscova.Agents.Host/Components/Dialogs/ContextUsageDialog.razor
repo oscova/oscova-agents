@@ -1,0 +1,97 @@
+@* Presents the existing context estimate without recalculating it. *@
+@using Oscova.Agents.Core.ApiContracts.Chat
+@inject IStringLocalizer<ChatText> Loc
+
+<AppDialogShell Title="@Loc.GetOrDefault(ChatTextKeys.ContextUsageDialogTitle, "Context usage")"
+                Subtitle="@ProviderDisplayName"
+                Icon="lucide:gauge"
+                HelpTopic="@HelpTopics.ContextUsage">
+    <ChildContent>
+        @if (AgentPreview is not null)
+        {
+            <AgentContextUsageDetails Preview="@AgentPreview" />
+        }
+        else if (!ContextUsage.IsContextWindowKnown)
+        {
+            <div class="alert">
+                @Loc.GetOrDefault(
+                    ChatTextKeys.ContextUsageUnavailableBody,
+                    "Set a context-window size for this model provider to see usage.")
+            </div>
+        }
+        else
+        {
+            <progress class="progress progress-primary w-full"
+                      value="@Math.Clamp(ContextUsage.EstimatedUsagePercentage, 0, 100)"
+                      aria-label="@UsageSummary"
+                      max="100"></progress>
+
+            <p class="mt-2 text-sm">
+                @UsageSummary
+            </p>
+
+            <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+                @Metric(
+                    Loc.GetOrDefault(ChatTextKeys.ContextUsageUsedLabel, "Used"),
+                    $"{FormatTokens(ContextUsage.EstimatedInputTokens)} ({ContextUsage.EstimatedUsagePercentage:N0}%)")
+                @Metric(
+                    Loc.GetOrDefault(ChatTextKeys.ContextUsageFreeInputLabel, "Free space"),
+                    $"{FormatTokens(ContextUsage.EstimatedFreeInputTokens)} ({ContextUsage.EstimatedFreeInputPercentage:N0}%)")
+                @Metric(
+                    Loc.GetOrDefault(ChatTextKeys.ContextUsageReservedOutputLabel, "Reserved output"),
+                    FormatTokens(ContextUsage.ReservedOutputTokens))
+                @Metric(
+                    Loc.GetOrDefault(ChatTextKeys.ContextUsageTotalLabel, "Context window"),
+                    FormatTokens(ContextUsage.ContextWindowSize))
+            </dl>
+        }
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter]
+    public ChatContextPreflightResponse ContextUsage { get; set; } = new();
+
+    [Parameter]
+    public AgentInstructionPreview? AgentPreview { get; set; }
+
+    [Parameter]
+    public bool IsMainAgentPreview { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ContextUsage = DialogInstance.Get("ContextUsage", ContextUsage);
+        AgentPreview = DialogInstance.Get<AgentInstructionPreview?>("AgentPreview", AgentPreview);
+        IsMainAgentPreview = DialogInstance.Get("IsMainAgentPreview", IsMainAgentPreview);
+    }
+
+    private string ProviderDisplayName
+    {
+        get
+        {
+            var provider = AgentPreview?.ProviderName ?? ContextUsage.ProviderName;
+            var model = AgentPreview?.ModelId ?? ContextUsage.ModelId;
+            return string.IsNullOrWhiteSpace(model) ? provider : $"{provider} ({model})";
+        }
+    }
+
+    private static string FormatTokens(int tokens) =>
+        tokens.ToString("N0", CultureInfo.CurrentCulture);
+
+    private string UsageSummary => string.Format(
+        CultureInfo.CurrentCulture,
+        Loc.GetOrDefault(
+            ChatTextKeys.ContextUsageSummaryFormat,
+            "Estimated: {0:N0} of {1:N0} tokens used ({2:N0}%)."),
+        ContextUsage.EstimatedInputTokens,
+        ContextUsage.ContextWindowSize,
+        ContextUsage.EstimatedUsagePercentage);
+
+    private static RenderFragment Metric(string label, string value) => @<div class="rounded-box bg-base-200 p-3">
+        <dt class="text-xs text-base-content/60">@label</dt>
+        <dd class="mt-1 text-sm font-medium">@value</dd>
+    </div>;
+}

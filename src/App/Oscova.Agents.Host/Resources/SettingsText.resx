@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Settings.Label"><value>Settings</value></data>
+	<data name="Settings.Category.Workspace.Label"><value>Preferences</value></data>
+	<data name="Settings.Category.Workspace.Description"><value>Appearance, language, notifications, persona, and voice.</value></data>
+	<data name="Settings.Category.Intelligence.Label"><value>Agents &amp; AI</value></data>
+	<data name="Settings.Category.Intelligence.Description"><value>Agents, model providers, instructions, skills, and tools.</value></data>
+	<data name="Settings.Category.Connections.Label"><value>Accounts &amp; Access</value></data>
+	<data name="Settings.Category.Connections.Description"><value>Connected accounts, credentials, network access, and webhooks.</value></data>
+	<data name="Settings.Category.Data.Label"><value>Files &amp; Backup</value></data>
+	<data name="Settings.Category.Data.Description"><value>Files, imports, exports, and backups.</value></data>
+	<data name="Settings.Section.General.Label"><value>General</value></data>
+	<data name="Settings.Section.General.Description"><value>Configure general application preferences and appearance.</value></data>
+	<data name="Settings.Section.Notifications.Description"><value>Control notification delivery and subtle UI sound cues.</value></data>
+	<data name="Settings.Section.Avatar.Label"><value>Avatar</value></data>
+	<data name="Settings.Section.Avatar.Description"><value>Customize the assistant's visual avatar appearance.</value></data>
+	<data name="Settings.Section.Speech.Label"><value>Speech</value></data>
+	<data name="Settings.Section.Speech.Description"><value>Configure text-to-speech and speech recognition options.</value></data>
+	<data name="Settings.Section.Providers.Label"><value>Model Providers</value></data>
+	<data name="Settings.Section.Providers.Description"><value>Manage model provider connections and API keys.</value></data>
+	<data name="Settings.Section.Agent.Label"><value>Main Agent</value></data>
+	<data name="Settings.Section.Agent.Description"><value>Configure the main AI assistant behavior and instructions.</value></data>
+	<data name="Settings.Section.Agents.Label"><value>Agents</value></data>
+	<data name="Settings.Section.Agents.Description"><value>Manage additional AI agents and their configurations.</value></data>
+	<data name="Settings.Section.Compaction.Label"><value>Instructions</value></data>
+	<data name="Settings.Section.Compaction.Description"><value>Edit the saved instructions used for compaction and memory.</value></data>
+	<data name="Settings.Section.Skills.Label"><value>Skills</value></data>
+	<data name="Settings.Section.Skills.Description"><value>Find, install, share, and remove agent skills.</value></data>
+	<data name="Settings.Section.Tools.Label"><value>Tools</value></data>
+	<data name="Settings.Section.Tools.Description"><value>Enable or disable tools available to the AI assistant.</value></data>
+	<data name="Settings.Section.Plugins.Label"><value>Plugins</value></data>
+	<data name="Settings.Section.Plugins.Description"><value>Manage installed extensions permitted to run after restart.</value></data>
+	<data name="Settings.Section.Mcp.Label"><value>MCP Servers</value></data>
+	<data name="Settings.Section.Mcp.Description"><value>Connect external tool servers that use the Model Context Protocol.</value></data>
+	<data name="Settings.Section.Network.Label"><value>Network</value></data>
+	<data name="Settings.Section.Network.Description"><value>Adjust network, proxy, and connection settings.</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Label"><value>Connected Accounts</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Description"><value>Connect Google and Microsoft accounts for OAuth-based integrations.</value></data>
+	<data name="Settings.Section.Credentials.Label"><value>Credentials</value></data>
+	<data name="Settings.Section.Credentials.Description"><value>Manage saved API keys and tokens.</value></data>
+	<data name="Settings.Channels.CredentialsTitle"><value>Bot Credentials</value></data>
+	<data name="Settings.Channels.AgentHint"><value>Choose the agent that replies in this channel.</value></data>
+	<data name="Settings.Channels.EnableAtStartupHint"><value>When enabled, the bot will automatically connect on application start</value></data>
+	<data name="Settings.Channels.NewCredentialButton"><value>Manage credentials</value></data>
+	<data name="Settings.Channels.SavedTokenHeading"><value>Saved Bot Token</value></data>
+	<data name="Settings.Channels.SaveSettingsButton"><value>Save Settings</value></data>
+	<data name="Settings.Channels.StartBotButton"><value>Start Bot</value></data>
+	<data name="Settings.Channels.StopBotButton"><value>Stop Bot</value></data>
+	<data name="Settings.Channels.StatusTitle"><value>Bot Status</value></data>
+	<data name="Settings.Channels.TokensManagedDescription"><value>Bot tokens are managed centrally in the Credentials tab.</value></data>
+	<data name="Settings.Discord.ConfigurationTitle"><value>Discord Bot Configuration</value></data>
+	<data name="Settings.Discord.ConfigurationDescription"><value>Configure your Discord bot to send and receive messages.</value></data>
+	<data name="Settings.Discord.EnableAtStartupLabel"><value>Enable Discord bot at startup</value></data>
+	<data name="Settings.Discord.CredentialsDescription"><value>Set the authorized Discord user ID. The bot token is managed in the Credentials tab.</value></data>
+	<data name="Settings.Discord.CredentialSelectLabel"><value>Discord Bot Credential</value></data>
+	<data name="Settings.Discord.CredentialTypeHint"><value>Use a `BotToken` credential for Discord.</value></data>
+	<data name="Settings.Discord.StatusDescription"><value>Current status of your Discord bot connection.</value></data>
+	<data name="Settings.Discord.CredentialValidStatus"><value>Selected credential has a stored token.</value></data>
+	<data name="Settings.Discord.CredentialInvalidStatus"><value>No valid Discord bot credential is selected.</value></data>
+	<data name="Settings.Discord.UserIdRequiredError"><value>User ID is required.</value></data>
+	<data name="Settings.Discord.UserIdInvalidFormatError"><value>Invalid User ID format. Must be a numeric Discord user ID.</value></data>
+	<data name="Settings.Discord.CredentialRequiredWarning"><value>Select and save a Discord bot credential before starting the bot.</value></data>
+	<data name="Settings.Discord.UserIdSaveWarning"><value>Please save your user ID before starting the bot.</value></data>
+	<data name="Settings.Discord.UserIdRequiredForStartup"><value>Discord User ID is required before enabling the bot at startup.</value></data>
+	<data name="Settings.Discord.CredentialRequiredForStartup"><value>Select a bot token credential before enabling the bot at startup.</value></data>
+	<data name="Settings.Section.ImportExport.Label"><value>Backup</value></data>
+	<data name="Settings.Section.ImportExport.Description"><value>Export an encrypted backup or reset restorable app data.</value></data>
+	<data name="Settings.ImportExport.ExportTitle"><value>Export Environment</value></data>
+	<data name="Settings.ImportExport.ExportDescription"><value>Download your restorable environment as an encrypted .oscb backup. Models, voices, logs, and pending operations are not included.</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseLabel"><value>Passphrase</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseHint"><value>Use a passphrase you can keep safe. Restoring this backup requires the same passphrase.</value></data>
+	<data name="Settings.ImportExport.ExportButton"><value>Export</value></data>
+	<data name="Settings.ImportExport.ExportDialogTitle"><value>Export environment</value></data>
+	<data name="Settings.ImportExport.ExportDialogDescription"><value>Create an encrypted .oscb backup of restorable app data. Models and voices are not included.</value></data>
+	<data name="Settings.ImportExport.PassphraseLabel"><value>Passphrase</value></data>
+	<data name="Settings.ImportExport.PassphrasePlaceholder"><value>Enter an export passphrase</value></data>
+	<data name="Settings.ImportExport.PassphraseRequiredError"><value>Enter a passphrase to continue.</value></data>
+	<data name="Settings.ImportExport.ExportFinishButton"><value>Start Export</value></data>
+	<data name="Settings.ImportExport.ExportStartedToast"><value>Environment export started.</value></data>
+	<data name="Settings.EnvironmentReset.Title"><value>Reset Environment</value></data>
+	<data name="Settings.EnvironmentReset.Description"><value>Retain the current environment, then restart Oscova with fresh app data.</value></data>
+	<data name="Settings.EnvironmentReset.Scope"><value>Users, conversations, settings, files, credentials, plugins, and keys move to a retained sibling directory. Models, voices, logs, CLI files, the installed tool, and Avatar files stay in place.</value></data>
+	<data name="Settings.EnvironmentReset.StopWriters"><value>Finish important work, run 'oscova avatar mcp stop', and stop external writers before continuing. Everyone will be signed out.</value></data>
+	<data name="Settings.EnvironmentReset.TemporaryAddress"><value>The current address stays available for setup. Reset network settings apply on later restarts, so configure LAN access or a custom port again.</value></data>
+	<data name="Settings.EnvironmentReset.ConfirmationLabel"><value>Type RESET to confirm</value></data>
+	<data name="Settings.EnvironmentReset.BackupLocation"><value>Previous environment retained at</value></data>
+	<data name="Settings.EnvironmentReset.Restarting"><value>Oscova is restarting and reinstalling default plugins...</value></data>
+	<data name="Settings.EnvironmentReset.Rejected"><value>Oscova rejected the environment reset.</value></data>
+	<data name="Settings.EnvironmentReset.Uncertain"><value>The connection closed before Oscova could confirm acceptance. Do not retry. Reopen Oscova and use offline recovery guidance if startup stopped.</value></data>
+	<data name="Settings.EnvironmentReset.Timeout"><value>Reset was accepted, but completion could not be verified. Reopen Oscova. If startup stopped, use 'oscova environment recover --yes' with the same OSCOVA_APP_DATA_DIR.</value></data>
+	<data name="Settings.EnvironmentReset.Reopen"><value>Reopen Oscova</value></data>
+	<data name="Settings.Section.Files.Label"><value>Files</value></data>
+	<data name="Settings.Section.Files.Description"><value>Manage file storage locations and upload preferences.</value></data>
+	<data name="Settings.Files.HomeBreadcrumb"><value>Home</value></data>
+	<data name="Settings.Files.SharedBreadcrumb"><value>Shared</value></data>
+	<data name="Settings.Files.NewFolder"><value>New Folder</value></data>
+	<data name="Settings.Files.NewFile"><value>New File</value></data>
+	<data name="Settings.Files.EmptyDirectoryMessage"><value>This directory is empty.</value></data>
+	<data name="Settings.Files.ColumnSize"><value>Size</value></data>
+	<data name="Settings.Files.ColumnModified"><value>Modified</value></data>
+	<data name="Settings.Files.FolderNamePlaceholder"><value>Folder name</value></data>
+	<data name="Settings.Files.FileNamePlaceholder"><value>filename.md</value></data>
+	<data name="Settings.Files.AllowedExtensionsHint"><value>Allowed: {0}</value></data>
+	<data name="Settings.Files.BackupHistoryButton"><value>History</value></data>
+	<data name="Settings.Files.BackupHistoryTitle"><value>History: {0}</value></data>
+	<data name="Settings.Files.BackupCurrentVersionLabel"><value>Current</value></data>
+	<data name="Settings.Files.BackupNoVersions"><value>No restore points are available for this file yet.</value></data>
+	<data name="Settings.Files.BackupRestoreButton"><value>Restore</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmTitle"><value>Restore version</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmMessage"><value>Restore this version? The current file will be backed up first.</value></data>
+	<data name="Settings.Files.BackupRestoreSuccessToast"><value>Version restored.</value></data>
+	<data name="Settings.Files.BackupVersionSize"><value>{0}</value></data>
+	<data name="Settings.Files.BackupLoadError"><value>Backup history could not be loaded.</value></data>
+	<data name="Settings.Files.BackupRestoreError"><value>The version could not be restored.</value></data>
+	<data name="Settings.Files.FolderCreatedToast"><value>Folder '{0}' created.</value></data>
+	<data name="Settings.Files.FileCreatedToast"><value>File '{0}' created.</value></data>
+	<data name="Settings.Files.DeleteConfirmTitle"><value>Confirm Delete</value></data>
+	<data name="Settings.Files.DeleteConfirmMessage"><value>Are you sure you want to delete "{0}"?{1}</value></data>
+	<data name="Settings.Files.DeleteDirectoryWarning"><value> This will delete all contents.</value></data>
+	<data name="Settings.Files.DeletedToast"><value>'{0}' deleted.</value></data>
+	<data name="Settings.Files.FileTooLargeToast"><value>'{0}' exceeds the {1} limit.</value></data>
+	<data name="Settings.Files.UploadFailedToast"><value>Failed to upload '{0}': {1}</value></data>
+	<data name="Settings.Files.UploadCompleteToast"><value>Upload complete.</value></data>
+	<data name="Settings.Files.AgentsFolderTitle"><value>Managed agent folders</value></data>
+	<data name="Settings.Files.AgentsFolderDescription"><value>Contains the main agent, custom agent definitions, shared-agent context, and each agent's persistent data.</value></data>
+	<data name="Settings.Files.MainAgentFolderTitle"><value>Main agent folder</value></data>
+	<data name="Settings.Files.MainAgentFolderDescription"><value>Stores the built-in main agent definition and its private persistent data.</value></data>
+	<data name="Settings.Files.CustomAgentFolderTitle"><value>Custom agent folder</value></data>
+	<data name="Settings.Files.CustomAgentFolderDescription"><value>Stores this custom agent's definition, tool policies, and private persistent data.</value></data>
+	<data name="Settings.Files.SharedAgentsFolderTitle"><value>Shared-agent context</value></data>
+	<data name="Settings.Files.SharedAgentsFolderDescription"><value>Contains your personal context files for shared agents.</value></data>
+	<data name="Settings.Files.SharedAgentFolderTitle"><value>Shared-agent personal context</value></data>
+	<data name="Settings.Files.SharedAgentFolderDescription"><value>Stores your private context for this shared agent.</value></data>
+	<data name="Settings.Files.AgentPrivateFolderTitle"><value>Agent private folder</value></data>
+	<data name="Settings.Files.AgentPrivateFolderDescription"><value>Provides this agent's persistent private folder for notes, progress records, and other files.</value></data>
+	<data name="Settings.Files.AgentNotesFolderTitle"><value>Private agent notes</value></data>
+	<data name="Settings.Files.AgentNotesFolderDescription"><value>Stores this agent's private improvement notes, which can be loaded into future runs.</value></data>
+	<data name="Settings.Files.WorkspaceRootTitle"><value>Managed workspaces</value></data>
+	<data name="Settings.Files.WorkspaceRootDescription"><value>Contains workspace folders that can be assigned to agents.</value></data>
+	<data name="Settings.Files.DefaultWorkspaceTitle"><value>Default workspace</value></data>
+	<data name="Settings.Files.DefaultWorkspaceDescription"><value>Provides the automatically created general workspace initially assigned to the main agent.</value></data>
+	<data name="Settings.Files.LibraryWorkspaceTitle"><value>Library workspace</value></data>
+	<data name="Settings.Files.LibraryWorkspaceDescription"><value>Stores reference documents indexed for Library Search and exposed to assigned agents as read-only files.</value></data>
+	<data name="Settings.Files.SharedFolderTitle"><value>Shared folder</value></data>
+	<data name="Settings.Files.SharedFolderDescription"><value>Every user with the Shared folder permission can open, change and delete these files, including encrypted ones.</value></data>
+	<data name="Settings.Files.WorkspaceFolderTitle"><value>Workspace folder</value></data>
+	<data name="Settings.Files.WorkspaceFolderDescription"><value>Provides a user-managed workspace that can be assigned to agents.</value></data>
+	<data name="Settings.Files.SettingsFolderTitle"><value>Managed settings</value></data>
+	<data name="Settings.Files.SettingsFolderDescription"><value>Stores your settings domains as YAML files.</value></data>
+	<data name="Settings.Files.PromptsFolderTitle"><value>Runtime instructions</value></data>
+	<data name="Settings.Files.PromptsFolderDescription"><value>Stores editable instructions used by future agent runs.</value></data>
+	<data name="Settings.Files.SkillsFolderTitle"><value>Managed skills</value></data>
+	<data name="Settings.Files.SkillsFolderDescription"><value>Contains imported and agent-authored skills available for assignment.</value></data>
+	<data name="Settings.Files.SkillFolderTitle"><value>Skill folder</value></data>
+	<data name="Settings.Files.SkillFolderDescription"><value>Contains one skill package rooted by SKILL.md, plus any resources, scripts, or assets it uses.</value></data>
+	<data name="Settings.Files.TasksFolderTitle"><value>Managed tasks</value></data>
+	<data name="Settings.Files.TasksFolderDescription"><value>Contains scheduled and externally triggered task definitions.</value></data>
+	<data name="Settings.Files.TaskFolderTitle"><value>Task folder</value></data>
+	<data name="Settings.Files.TaskFolderDescription"><value>Stores one task definition and its run history.</value></data>
+	<data name="Settings.Files.TaskRunsFolderTitle"><value>Task run history</value></data>
+	<data name="Settings.Files.TaskRunsFolderDescription"><value>Stores managed run indexes, transcripts, and session artifacts for this task.</value></data>
+	<data name="Settings.Files.MemoryFolderTitle"><value>User memory</value></data>
+	<data name="Settings.Files.MemoryFolderDescription"><value>Stores long-term, topic, daily, and conversation memory data.</value></data>
+	<data name="Settings.Files.DailyMemoryFolderTitle"><value>Daily memory</value></data>
+	<data name="Settings.Files.DailyMemoryFolderDescription"><value>Stores dated Markdown memory logs used by memory routines.</value></data>
+	<data name="Settings.Files.ChatFolderTitle"><value>Saved conversations</value></data>
+	<data name="Settings.Files.ChatFolderDescription"><value>Stores saved conversation indexes, transcripts, session metadata, and attachment state.</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderTitle"><value>Chat attachments</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderDescription"><value>Stores uploaded attachments in folders grouped by conversation.</value></data>
+	<data name="Settings.Files.LogsFolderTitle"><value>Application logs</value></data>
+	<data name="Settings.Files.LogsFolderDescription"><value>Stores this user's application log files.</value></data>
+	<data name="Settings.Files.MetricsFolderTitle"><value>Usage metrics</value></data>
+	<data name="Settings.Files.MetricsFolderDescription"><value>Stores this user's runtime metrics event stream.</value></data>
+	<data name="Settings.Files.AuditFolderTitle"><value>Egress audit</value></data>
+	<data name="Settings.Files.AuditFolderDescription"><value>Stores audit records for outbound provider activity.</value></data>
+	<data name="Settings.Files.NotificationsFolderTitle"><value>Notification inbox</value></data>
+	<data name="Settings.Files.NotificationsFolderDescription"><value>Stores this user's persistent notification inbox.</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderTitle"><value>Tool usage state</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderDescription"><value>Stores quota counters used by governed tool-call limits.</value></data>
+	<data name="Settings.Files.LibraryIndexingColumn"><value>Indexing</value></data>
+	<data name="Settings.Files.LibraryLocalOnlyBlockedMessage"><value>Library indexing is blocked until you select a local embedding provider.</value></data>
+	<data name="Settings.Files.LibraryCloudProviderWarning"><value>Cloud embedding provider in use. Text extracted from files in Library is sent to {0} for indexing and search. For private documents, a local embedding provider is recommended.</value></data>
+	<data name="Settings.Files.LibraryNoProviderMessage"><value>Library indexing and search will not start until an embedding provider is configured. Files already in Library will be discovered after a provider is selected.</value></data>
+	<data name="Settings.Files.LibraryLocalProviderMessage"><value>Library Search uses the local embedding provider {0}.</value></data>
+	<data name="Settings.Files.LibraryReadyStatus"><value>Ready</value></data>
+	<data name="Settings.Files.LibraryQueuedStatus"><value>Queued</value></data>
+	<data name="Settings.Files.LibraryIndexingStatus"><value>Indexing</value></data>
+	<data name="Settings.Files.LibrarySkippedStatus"><value>Skipped</value></data>
+	<data name="Settings.Files.LibraryFailedStatus"><value>Failed</value></data>
+	<data name="Settings.Notifications.Title"><value>Notifications</value></data>
+	<data name="Settings.Notifications.LoadingMessage"><value>Loading notification settings...</value></data>
+	<data name="Settings.Notifications.DeliveryTitle"><value>Notification delivery</value></data>
+	<data name="Settings.Notifications.DeliveryDescription"><value>Choose live alerts and review saved notifications in your inbox.</value></data>
+	<data name="Settings.Notifications.MutedDescription"><value>Pause live bell alerts. New notifications remain in your inbox.</value></data>
+	<data name="Settings.Notifications.ShowLogWarnings"><value>Show log warnings</value></data>
+	<data name="Settings.Notifications.ShowSystemErrors"><value>Show system errors</value></data>
+	<data name="Settings.SoundEffects.Title"><value>Sound effects</value></data>
+	<data name="Settings.SoundEffects.Description"><value>Control the short audio cues that confirm important UI moments.</value></data>
+	<data name="Settings.SoundEffects.MasterLabel"><value>Play UI sounds</value></data>
+	<data name="Settings.SoundEffects.VolumeLabel"><value>Volume</value></data>
+	<data name="Settings.SoundEffects.VolumeDescription"><value>One volume setting applies to every cue.</value></data>
+	<data name="Settings.SoundEffects.CueGroupLabel"><value>Sound cues</value></data>
+	<data name="Settings.SoundEffects.Cue.Send"><value>Send message</value></data>
+	<data name="Settings.SoundEffects.Cue.Enter"><value>Enter chat</value></data>
+	<data name="Settings.SoundEffects.Cue.Receive"><value>Response complete</value></data>
+	<data name="Settings.SoundEffects.Cue.Error"><value>Response error</value></data>
+	<data name="Settings.SoundEffects.Cue.Notify"><value>Notification arrival</value></data>
+	<data name="Settings.SoundEffects.Cue.Tap"><value>Starter prompt tap</value></data>
+	<data name="Settings.SoundEffects.Cue.Complete"><value>Onboarding complete</value></data>
+	<data name="Settings.Network.LoadingMessage"><value>Loading network settings...</value></data>
+	<data name="Settings.Network.AccessTitle"><value>Network Access</value></data>
+	<data name="Settings.Network.EnableAccessLabel"><value>Allow access from other devices</value></data>
+	<data name="Settings.Network.PortLabel"><value>Port</value></data>
+	<data name="Settings.Network.RestartRequiredHint"><value>Network access and port changes take effect after restart.</value></data>
+	<data name="Settings.Network.PrivateFetchTitle"><value>Web fetch access</value></data>
+	<data name="Settings.Network.AllowPrivateFetchLabel"><value>Allow fetching local and private-network URLs</value></data>
+	<data name="Settings.Network.AllowPrivateFetchDescription"><value>Only enable this when agents need to read trusted internal pages. Unspecified, link-local, multicast, and other non-routable addresses remain blocked.</value></data>
+	<data name="Settings.Network.SandboxAccessTitle"><value>Sandbox network access</value></data>
+	<data name="Settings.Network.AllowSandboxAccessLabel"><value>Allow sandboxed scripts to access the network</value></data>
+	<data name="Settings.Network.AllowSandboxAccessDescription"><value>This installation-wide Admin grant applies to every user's ordinary online sandbox run. Offline and local-only runs stay networkless.</value></data>
+	<data name="Settings.Network.PublicUrlTitle"><value>Public App URL</value></data>
+	<data name="Settings.Network.PublicUrlModeLabel"><value>Mode</value></data>
+	<data name="Settings.Network.PublicUrlModeAuto"><value>Auto-detected network URL</value></data>
+	<data name="Settings.Network.PublicUrlModeCustom"><value>Custom URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlLabel"><value>Custom Public App URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlPlaceholder"><value>https://oscova.company.local</value></data>
+	<data name="Settings.Network.RestartRequiredAlert"><value>Restart Oscova Agents for network access and port changes to take effect.</value></data>
+	<data name="Settings.Network.DetectedUrlsTitle"><value>Detected URLs</value></data>
+	<data name="Settings.Network.LocalUrlLabel"><value>Local URL</value></data>
+	<data name="Settings.Network.CopyToClipboardTitle"><value>Copy to clipboard</value></data>
+	<data name="Settings.Network.AutoNetworkUrlLabel"><value>Auto Network URL</value></data>
+	<data name="Settings.Network.AutoNetworkUrlUnavailable"><value>Auto network URL unavailable.</value></data>
+	<data name="Settings.Network.EffectivePublicUrlLabel"><value>Effective Public App URL</value></data>
+	<data name="Settings.Network.EffectivePublicUrlUnavailable"><value>Effective public URL unavailable.</value></data>
+	<data name="Settings.Network.ActiveUrlsLabel"><value>Active Server URLs</value></data>
+	<data name="Settings.Network.NoActiveUrls"><value>No active listener URLs were reported during startup.</value></data>
+	<data name="Settings.Network.QrCodeTitle"><value>QR Code</value></data>
+	<data name="Settings.Network.QrCodeAlt"><value>Effective Public App URL QR Code</value></data>
+	<data name="Settings.Network.DownloadQrCodeButton"><value>Download QR Code</value></data>
+	<data name="Settings.Network.ResetButton"><value>Reset</value></data>
+	<data name="Settings.Network.SaveButton"><value>Save Network Settings</value></data>
+	<data name="Settings.Network.LoadErrorToast"><value>Network settings load error: {0}</value></data>
+	<data name="Settings.Network.SaveFailedToast"><value>Network settings could not be saved.</value></data>
+	<data name="Settings.Network.SaveSuccessToast"><value>Network settings saved</value></data>
+	<data name="Settings.Network.SaveFailedWithMessageToast"><value>Failed to save network settings: {0}</value></data>
+	<data name="Settings.Network.CopySuccessToast"><value>Copied to clipboard</value></data>
+	<data name="Settings.Network.CopyFailedToast"><value>Failed to copy to clipboard</value></data>
+	<data name="Settings.Network.QrCodeDownloadedToast"><value>QR code downloaded</value></data>
+	<data name="Settings.Network.QrCodeDownloadFailedToast"><value>Failed to download QR code</value></data>
+	<data name="Settings.ConnectedAccounts.AvailableBadge"><value>Available</value></data>
+	<data name="Settings.ConnectedAccounts.NoProvidersMessage"><value>No account connections are available from the enabled plugins.</value></data>
+	<data name="Settings.ConnectedAccounts.UnavailableBadge"><value>Unavailable</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredMessage"><value>Not available. Contact an administrator to configure this provider.</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredAdminMessage"><value>Not set up yet. Use Manage providers to add its OAuth app.</value></data>
+	<data name="Settings.ConnectedAccounts.AuthenticatedAccountFallback"><value>an authenticated account</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectedAsMessage"><value>Connected as {0}.</value></data>
+	<data name="Settings.ConnectedAccounts.NotConnectedMessage"><value>Not connected.</value></data>
+	<data name="Settings.ConnectedAccounts.DisconnectButton"><value>Disconnect</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectButton"><value>Connect</value></data>
+	<data name="Settings.Credentials.SavedCredentialsTitle"><value>Saved Credentials</value></data>
+	<data name="Settings.Credentials.SavedCredentialsDescription"><value>Manage API keys and bot tokens centrally, then link them from provider and Discord settings.</value></data>
+	<data name="Settings.Credentials.AddCredentialButton"><value>Add Credential</value></data>
+	<data name="Settings.Credentials.LangsearchInfo"><value>Create an `ApiKey` credential with key `langsearch` to enable the `web_search` tool.</value></data>
+	<data name="Settings.Credentials.IntegrationCredentialsHeading"><value>Integration credentials</value></data>
+	<data name="Settings.Credentials.NoIntegrationCredentialsMessage"><value>No integration credentials are required.</value></data>
+	<data name="Settings.Credentials.UserCredentialsHeading"><value>Your credentials</value></data>
+	<data name="Settings.Credentials.NoCredentialsEmpty"><value>No credentials saved yet.</value></data>
+	<data name="Settings.Credentials.ColumnAlias"><value>Alias</value></data>
+	<data name="Settings.Credentials.ColumnKind"><value>Kind</value></data>
+	<data name="Settings.Credentials.ColumnKey"><value>Key</value></data>
+	<data name="Settings.Credentials.ColumnValue"><value>Value</value></data>
+	<data name="Settings.Credentials.ValueSetBadge"><value>Set</value></data>
+	<data name="Settings.Credentials.ValueNotSetBadge"><value>Not set</value></data>
+	<data name="Settings.Credentials.AddCredentialTitle"><value>Add Credential</value></data>
+	<data name="Settings.Credentials.EditCredentialTitle"><value>Edit Credential</value></data>
+	<data name="Settings.Credentials.NewCredentialLabel"><value>New credential</value></data>
+	<data name="Settings.Credentials.EncryptionDescription"><value>Secret values stay encrypted at rest and are never shown after save.</value></data>
+	<data name="Settings.Credentials.AliasLabel"><value>Name</value></data>
+	<data name="Settings.Credentials.AliasPlaceholder"><value>LangSearch API</value></data>
+	<data name="Settings.Credentials.KeyLabel"><value>Credential Key</value></data>
+	<data name="Settings.Credentials.KeyPlaceholder"><value>langsearch</value></data>
+	<data name="Settings.Credentials.KeyHint"><value>Lowercase letters, digits, and dashes only. The key becomes read-only after creation.</value></data>
+	<data name="Settings.Credentials.KindLabel"><value>Kind</value></data>
+	<data name="Settings.Credentials.DescriptionPlaceholder"><value>What this credential is used for</value></data>
+	<data name="Settings.Credentials.SecretValueLabel"><value>Secret Value</value></data>
+	<data name="Settings.Credentials.SecretValueNewPlaceholder"><value>Paste the secret value</value></data>
+	<data name="Settings.Credentials.SecretValueEditPlaceholder"><value>Leave blank to keep the current value</value></data>
+	<data name="Settings.Credentials.SecretValueNewHint"><value>Required for new credentials.</value></data>
+	<data name="Settings.Credentials.SecretValueEditHint"><value>Leave blank if you only want to update metadata.</value></data>
+	<data name="Settings.Credentials.ValueFieldLabel"><value>Value</value></data>
+	<data name="Settings.Credentials.StoredValueOption"><value>Enter a value</value></data>
+	<data name="Settings.Credentials.EnvironmentValueOption"><value>Use an environment variable</value></data>
+	<data name="Settings.Credentials.EnvironmentVariablePlaceholder"><value>ENVIRONMENT_VARIABLE</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableHint"><value>The value is read from this environment variable at runtime.</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableRequiredError"><value>Enter an environment variable name for {0}.</value></data>
+	<data name="Settings.Credentials.ValueRequiredError"><value>Enter a value for {0}.</value></data>
+	<data name="Settings.Credentials.SaveButton"><value>Save Credential</value></data>
+	<data name="Settings.Credentials.NotFoundToast"><value>Credential not found.</value></data>
+	<data name="Settings.Credentials.AliasRequiredError"><value>A credential name is required.</value></data>
+	<data name="Settings.Credentials.KeyRequiredError"><value>Credential key is required.</value></data>
+	<data name="Settings.Credentials.KeyInvalidFormatError"><value>Credential key must use lowercase letters, digits, and dashes only.</value></data>
+	<data name="Settings.Credentials.KeyAlreadyExistsError"><value>Credential key already exists.</value></data>
+	<data name="Settings.Credentials.SecretRequiredError"><value>Secret value is required for new credentials.</value></data>
+	<data name="Settings.Credentials.CreatedToast"><value>Credential created.</value></data>
+	<data name="Settings.Credentials.UpdatedToast"><value>Credential updated.</value></data>
+	<data name="Settings.Credentials.DeleteConfirmTitle"><value>Delete credential</value></data>
+	<data name="Settings.Credentials.DeleteConfirmMessage"><value>Are you sure you want to delete '{0}'?</value></data>
+	<data name="Settings.Credentials.StillLinkedWarning"><value>This credential is still linked to {0}. Remove those references before deleting it.</value></data>
+	<data name="Settings.Credentials.DeletedToast"><value>Credential deleted.</value></data>
+	<data name="Settings.Avatar.ConnectionHeading"><value>Connection</value></data>
+	<data name="Settings.Avatar.BridgeUrlLabel"><value>Bridge URL</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsTitle"><value>Apply to Live Avatar</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsButton"><value>Apply to Live Avatar</value></data>
+	<data name="Settings.Avatar.StartEngineButton"><value>Start Avatar Engine</value></data>
+	<data name="Settings.Avatar.EngineCheckingStatus"><value>Checking</value></data>
+	<data name="Settings.Avatar.EngineConnectedStatus"><value>Connected</value></data>
+	<data name="Settings.Avatar.EngineOfflineStatus"><value>Offline</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorStatus"><value>Catalog issue</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedStatus"><value>Not checked</value></data>
+	<data name="Settings.Avatar.EngineCheckingDescription"><value>Connecting to the Avatar Engine and loading live choices.</value></data>
+	<data name="Settings.Avatar.EngineConnectedDescription"><value>Avatar Engine is reachable at {0}.</value></data>
+	<data name="Settings.Avatar.EngineOfflineDescription"><value>Could not reach the Avatar Engine at {0}. Saved settings remain editable.</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorDescription"><value>The engine is reachable, but one or more live choice lists could not be loaded.</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedDescription"><value>Select Connect to load live avatars and expressions.</value></data>
+	<data name="Settings.Avatar.BridgeUrlDescription"><value>Saved bridge endpoint used by the shared avatar runtime.</value></data>
+	<data name="Settings.Avatar.SaveChangesWarning"><value>Save changes before applying them to the avatar engine.</value></data>
+	<data name="Settings.Avatar.AvatarHeading"><value>Avatar</value></data>
+	<data name="Settings.Avatar.SelectedAvatarLabel"><value>Selected Avatar</value></data>
+	<data name="Settings.Avatar.LoadingAvatarsOption"><value>Loading avatars...</value></data>
+	<data name="Settings.Avatar.LoadingEmotionsOption"><value>Loading expressions...</value></data>
+	<data name="Settings.Avatar.SavedUnverifiedOption"><value>Saved: {0} (not verified)</value></data>
+	<data name="Settings.Avatar.SavedUnavailableOption"><value>Saved: {0} (not available)</value></data>
+	<data name="Settings.Avatar.CatalogCheckingHint"><value>Loading live choices from the Avatar Engine.</value></data>
+	<data name="Settings.Avatar.CatalogOfflineHint"><value>Live choices are available after the Avatar Engine connects.</value></data>
+	<data name="Settings.Avatar.SavedValueUnverifiedHint"><value>Saved value '{0}' is shown but has not been verified with the running engine.</value></data>
+	<data name="Settings.Avatar.SavedValueUnavailableHint"><value>Saved value '{0}' is not available in the running engine.</value></data>
+	<data name="Settings.Avatar.RefreshAvatarsTitle"><value>Refresh Avatars</value></data>
+<data name="Settings.Avatar.ApplyAvatarButton"><value>Apply Appearance</value></data>
+	<data name="Settings.Avatar.ChooseAvatarDescription"><value>Choose an avatar to display</value></data>
+	<data name="Settings.Avatar.ExpressionHeading"><value>Expression</value></data>
+	<data name="Settings.Avatar.SelectedEmotionLabel"><value>Selected Emotion</value></data>
+	<data name="Settings.Avatar.ChooseEmotionDescription"><value>Choose an expression from the running engine.</value></data>
+	<data name="Settings.Avatar.RefreshEmotionsTitle"><value>Refresh Emotions</value></data>
+	<data name="Settings.Avatar.BlendSpeedLabel"><value>Blend Speed</value></data>
+	<data name="Settings.Avatar.CueBlendInLabel"><value>Cue Blend-In Seconds</value></data>
+	<data name="Settings.Avatar.CueRestoreAfterLabel"><value>Cue Restore After Seconds</value></data>
+	<data name="Settings.Avatar.CueTimingDescription"><value>Emotions from spoken replies blend in, hold, then return to the selected emotion at the blend speed above.</value></data>
+	<data name="Settings.Avatar.ApplyExpressionButton"><value>Apply Expression</value></data>
+	<data name="Settings.Avatar.WindowHeading"><value>Window</value></data>
+	<data name="Settings.Avatar.ResolutionLabel"><value>Resolution</value></data>
+	<data name="Settings.Avatar.Resolution1920x1080"><value>1920x1080 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1440"><value>2560x1440 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution3840x2160"><value>3840x2160 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1080"><value>2560x1080 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution3440x1440"><value>3440x1440 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution5120x2160"><value>5120x2160 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution1280x720"><value>1280x720 (16:9)</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLabel"><value>Graphics Preset</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLow"><value>Low</value></data>
+	<data name="Settings.Avatar.GraphicsPresetMedium"><value>Medium</value></data>
+	<data name="Settings.Avatar.GraphicsPresetHigh"><value>High</value></data>
+	<data name="Settings.Avatar.GraphicsPresetEpic"><value>Epic</value></data>
+	<data name="Settings.Avatar.GraphicsPresetCinematic"><value>Cinematic</value></data>
+	<data name="Settings.Avatar.RayTracingLabel"><value>Ray Tracing</value></data>
+	<data name="Settings.Avatar.RayTracingDescription"><value>Enables supported ray-traced effects independently of the quality preset. Off by default and may reduce performance.</value></data>
+	<data name="Settings.Avatar.FullscreenLabel"><value>Fullscreen</value></data>
+	<data name="Settings.Avatar.BackgroundColorLabel"><value>Background Color</value></data>
+	<data name="Settings.Avatar.ApplyWindowButton"><value>Apply Window</value></data>
+	<data name="Settings.Avatar.MessageAppearanceHeading"><value>Message Appearance</value></data>
+	<data name="Settings.Avatar.MessageFontSizeLabel"><value>Message Font Size</value></data>
+	<data name="Settings.Avatar.MessageColorLabel"><value>Color</value></data>
+	<data name="Settings.Avatar.MessageColorOpacityLabel"><value>Opacity</value></data>
+	<data name="Settings.Avatar.ApplyMessageAppearanceButton"><value>Apply Appearance</value></data>
+	<data name="Settings.Avatar.MessageBoxHeading"><value>Message Box</value></data>
+	<data name="Settings.Avatar.EditMessageLayoutButton"><value>Edit layout</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogTitle"><value>Message layout</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogSubtitle"><value>Position the message box on the {0} x {1} Avatar screen.</value></data>
+	<data name="Settings.Avatar.MessageLayoutInstructions"><value>Drag the message box to move it, resize it from a corner, or enter exact percentages below.</value></data>
+	<data name="Settings.Avatar.MessageLayoutScreenLabel"><value>Avatar screen</value></data>
+	<data name="Settings.Avatar.MessageLayoutBoxLabel"><value>Message box</value></data>
+	<data name="Settings.Avatar.MessageLayoutLeftLabel"><value>Left</value></data>
+	<data name="Settings.Avatar.MessageLayoutTopLabel"><value>Top</value></data>
+	<data name="Settings.Avatar.MessageLayoutInvalid"><value>Keep the message box inside the screen and make its width and height at least 1%.</value></data>
+	<data name="Settings.Avatar.TransformWidthLabel"><value>Width (%)</value></data>
+	<data name="Settings.Avatar.TransformHeightLabel"><value>Height (%)</value></data>
+	<data name="Settings.Avatar.MessageDisplayDurationLabel"><value>Display Duration</value></data>
+	<data name="Settings.Avatar.SecondsUnit"><value>seconds</value></data>
+	<data name="Settings.Avatar.ApplyMessageBoxButton"><value>Apply Message Box</value></data>
+	<data name="Settings.Avatar.MessagePreviewHeading"><value>Message Preview</value></data>
+	<data name="Settings.Avatar.PreviewTextLabel"><value>Preview Text</value></data>
+	<data name="Settings.Avatar.PreviewTextPlaceholder"><value>Type a message to preview in the avatar message box</value></data>
+	<data name="Settings.Avatar.SendPreviewButton"><value>Send Preview</value></data>
+	<data name="Settings.Avatar.ClearPreviewButton"><value>Clear</value></data>
+	<data name="Settings.Avatar.CameraHeading"><value>Camera</value></data>
+	<data name="Settings.Avatar.CameraYawLabel"><value>Camera Yaw</value></data>
+	<data name="Settings.Avatar.ApplyCameraButton"><value>Apply Camera</value></data>
+	<data name="Settings.Avatar.AudioHeading"><value>Audio</value></data>
+	<data name="Settings.Avatar.SpeechVolumeLabel"><value>Speech Volume</value></data>
+	<data name="Settings.Avatar.ApplyAudioButton"><value>Apply Audio</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarTitle"><value>Shutdown Avatar</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarButton"><value>Shutdown Avatar</value></data>
+	<data name="Settings.Avatar.ResetToDefaultsButton"><value>Reset to defaults</value></data>
+	<data name="Settings.Avatar.SaveSettingsButton"><value>Save Settings</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmTitle"><value>Confirm Avatar Shutdown</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmMessage"><value>Shut down the avatar connected to this bridge URL? This may affect an avatar running on another machine on the network.</value></data>
+	<data name="Settings.Avatar.DefaultPreviewMessage"><value>This is a test message.</value></data>
+	<data name="Settings.Avatar.SettingsLoadErrorToast"><value>Avatar settings load error: {0}</value></data>
+	<data name="Settings.Avatar.SavedSettingsAppliedToast"><value>Saved avatar settings applied</value></data>
+	<data name="Settings.Avatar.ApplySavedSettingsFailedToast"><value>Avatar settings could not be applied.</value></data>
+	<data name="Settings.Avatar.SyncErrorToast"><value>Avatar sync error: {0}</value></data>
+	<data name="Settings.Avatar.LoadedAvatarsToast"><value>Loaded {0} avatars</value></data>
+	<data name="Settings.Avatar.LoadAvatarsFailedToast"><value>Failed to load avatars: {0}</value></data>
+	<data name="Settings.Avatar.LoadAvatarsErrorToast"><value>Error loading avatars: {0}</value></data>
+	<data name="Settings.Avatar.LoadedEmotionsToast"><value>Loaded {0} emotions</value></data>
+	<data name="Settings.Avatar.LoadEmotionsFailedToast"><value>Failed to load emotions: {0}</value></data>
+	<data name="Settings.Avatar.LoadEmotionsErrorToast"><value>Error loading emotions: {0}</value></data>
+	<data name="Settings.Avatar.EngineOfflineToast"><value>Avatar Engine is not reachable.</value></data>
+	<data name="Settings.Avatar.EngineRefreshFailedToast"><value>Avatar Engine refresh failed: {0}</value></data>
+	<data name="Settings.Avatar.StartEngineStartedToast"><value>Avatar Engine started. Wait for its window, then select Connect.</value></data>
+	<data name="Settings.Avatar.StartEngineLocalUrlToast"><value>Use an http://localhost or http://127.0.0.1 Bridge URL to start the local Avatar Engine.</value></data>
+	<data name="Settings.Avatar.StartEngineFailedToast"><value>Avatar Engine could not be started.</value></data>
+	<data name="Settings.Avatar.EngineConnectedToast"><value>Avatar Engine connected and live choices loaded.</value></data>
+	<data name="Settings.Avatar.AppliedToast"><value>Appearance applied to '{0}'</value></data>
+	<data name="Settings.Avatar.ApplyFailedToast"><value>Failed to apply avatar: {0}</value></data>
+	<data name="Settings.Avatar.ApplyErrorToast"><value>Error applying avatar: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionAppliedToast"><value>Expression '{0}' applied</value></data>
+	<data name="Settings.Avatar.ExpressionFailedToast"><value>Failed to apply expression: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionErrorToast"><value>Error applying expression: {0}</value></data>
+	<data name="Settings.Avatar.WindowApplyFailedToast"><value>Failed to apply window: {0}</value></data>
+	<data name="Settings.Avatar.WindowSettingsAppliedToast"><value>Window settings applied</value></data>
+	<data name="Settings.Avatar.WindowApplyErrorToast"><value>Error applying window: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyFailedToast"><value>Failed to apply message appearance: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceAppliedToast"><value>Message appearance applied</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyErrorToast"><value>Error applying message appearance: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyFailedToast"><value>Failed to apply message box: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxAppliedToast"><value>Message box applied</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyErrorToast"><value>Error applying message box: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawAppliedToast"><value>Camera yaw set to {0} degrees</value></data>
+	<data name="Settings.Avatar.CameraYawApplyFailedToast"><value>Failed to apply camera yaw: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawApplyErrorToast"><value>Error applying camera yaw: {0}</value></data>
+	<data name="Settings.Avatar.AudioSettingsAppliedToast"><value>Audio settings applied ({0}%)</value></data>
+	<data name="Settings.Avatar.AudioApplyFailedToast"><value>Failed to apply audio: {0}</value></data>
+	<data name="Settings.Avatar.AudioApplyErrorToast"><value>Error applying audio: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageSentToast"><value>Preview message sent</value></data>
+	<data name="Settings.Avatar.PreviewMessageFailedToast"><value>Failed to send preview message: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageErrorToast"><value>Message preview error: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearedToast"><value>Preview message cleared</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearFailedToast"><value>Failed to clear preview message: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearErrorToast"><value>Message clear error: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownInitiatedToast"><value>Avatar shutdown initiated</value></data>
+	<data name="Settings.Avatar.ShutdownFailedToast"><value>Failed to initiate shutdown: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownErrorToast"><value>Shutdown error: {0}</value></data>
+	<data name="Settings.Avatar.SettingsSavedToast"><value>Avatar settings saved</value></data>
+	<data name="Settings.Avatar.SaveSettingsFailedToast"><value>Failed to save avatar settings: {0}</value></data>
+	<data name="Settings.Speech.VoiceLabel"><value>Voice</value></data>
+	<data name="Settings.Speech.NoVoicesOption"><value>(no voices found)</value></data>
+	<data name="Settings.Speech.TestVoiceButton"><value>Test Voice</value></data>
+	<data name="Settings.Speech.TestingButton"><value>Testing</value></data>
+	<data name="Settings.Speech.VoiceHelperText"><value>Click Save speech settings to apply this voice.</value></data>
+	<data name="Settings.Speech.SampleTextLabel"><value>Sample text</value></data>
+	<data name="Settings.Speech.SampleTextPlaceholder"><value>Type something to preview the selected voice...</value></data>
+	<data name="Settings.Speech.DefaultSampleText"><value>This is a quick voice preview.</value></data>
+	<data name="Settings.Speech.OutputModeLabel"><value>Assistant speech output</value></data>
+	<data name="Settings.Speech.OutputModeBrowserOnly"><value>Browser only</value></data>
+	<data name="Settings.Speech.OutputModeBrowserAndAvatar"><value>Browser and avatar</value></data>
+	<data name="Settings.Speech.OutputModeAvatarOnly"><value>Avatar only</value></data>
+	<data name="Settings.Speech.RecognitionSectionTitle"><value>Speech recognition</value></data>
+	<data name="Settings.Speech.SynthesisSectionTitle"><value>Speech synthesis</value></data>
+	<data name="Settings.Speech.DownloadModelButton"><value>Download model</value></data>
+	<data name="Settings.Speech.DownloadingLabel"><value>Downloading {0:0}%</value></data>
+	<data name="Settings.Speech.ModelReadyLabel"><value>Ready</value></data>
+	<data name="Settings.Speech.ModelMissingLabel"><value>Not downloaded</value></data>
+	<data name="Settings.Speech.CancelDownloadButton"><value>Cancel</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderTitle"><value>Default Provider</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderDescription"><value>Add your providers and choose which one should be used by default.</value></data>
+	<data name="Settings.ModelProviders.SelectPlaceholder"><value>Add a provider to get started</value></data>
+	<data name="Settings.ModelProviders.SelectDefaultPlaceholder"><value>Select a provider</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderTitle"><value>Fallback provider</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderDescription"><value>Used automatically if the default provider fails.</value></data>
+	<data name="Settings.ModelProviders.FallbackNoneOption"><value>None</value></data>
+	<data name="Settings.ModelProviders.AddButton"><value>Add custom provider</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderTitle"><value>Embedding Provider</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderDescription"><value>Configure an embedding model for agent memory search.</value></data>
+	<data name="Settings.ModelProviders.NoEmbeddingConfiguredMessage"><value>No embedding provider configured. Agent memory features require an embedding model.</value></data>
+	<data name="Settings.ModelProviders.AddEmbeddingButton"><value>Add embedding provider</value></data>
+	<data name="Settings.ModelProviders.ConfiguredProvidersTitle"><value>Configured Providers</value></data>
+	<data name="Settings.ModelProviders.SelectedProviderLabel"><value>Selected provider: {0}</value></data>
+	<data name="Settings.ModelProviders.NoProvidersMessage"><value>Add a model provider to start chatting.</value></data>
+	<data name="Settings.ModelProviders.TableHeaderProvider"><value>Provider</value></data>
+	<data name="Settings.ModelProviders.TableHeaderModel"><value>Model</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCredential"><value>Credential</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCapabilities"><value>Capabilities</value></data>
+	<data name="Settings.ModelProviders.TableHeaderLastTest"><value>Last Test</value></data>
+	<data name="Settings.ModelProviders.OpenDetailsTitle"><value>Open provider details</value></data>
+	<data name="Settings.ModelProviders.DefaultBadge"><value>Default</value></data>
+	<data name="Settings.ModelProviders.FallbackBadge"><value>Fallback</value></data>
+	<data name="Settings.ModelProviders.CapabilityText"><value>{0:N0} context</value></data>
+	<data name="Settings.ModelProviders.NoCapabilities"><value>No extra capabilities</value></data>
+	<data name="Settings.ModelProviders.NoTestRun"><value>Not tested</value></data>
+	<data name="Settings.ModelProviders.DetailsDialogTitle"><value>Provider details</value></data>
+	<data name="Settings.ModelProviders.EndpointDefault"><value>Default endpoint</value></data>
+	<data name="Settings.ModelProviders.TestButton"><value>Test</value></data>
+	<data name="Settings.ModelProviders.ModelNotSet"><value>Model not set</value></data>
+	<data name="Settings.ModelProviders.NoCredentialLinked"><value>No saved credential linked</value></data>
+	<data name="Settings.ModelProviders.CredentialSummary"><value>Credential: {0} [{1}]</value></data>
+	<data name="Settings.ModelProviders.CredentialMissing"><value>Credential linked but value is missing: [{0}]</value></data>
+	<data name="Settings.ModelProviders.CredentialNotFound"><value>Credential not found: [{0}]</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmTitle"><value>Remove provider</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmMessage"><value>Are you sure you want to remove {0}?</value></data>
+	<data name="Settings.ModelProviders.CopyNameSuffix"><value>{0} (Copy)</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmTitle"><value>Remove embedding provider</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmMessage"><value>Are you sure you want to remove {0}?</value></data>
+	<data name="Settings.ModelProviders.EditProviderDialogTitle"><value>Edit Provider</value></data>
+	<data name="Settings.ModelProviders.AddProviderDialogTitle"><value>Add Provider</value></data>
+	<data name="Settings.ModelProviders.DialogTabProvider"><value>Provider</value></data>
+	<data name="Settings.ModelProviders.DialogTabChatOptions"><value>Chat Options</value></data>
+	<data name="Settings.ModelProviders.ProviderTypeLabel"><value>Provider Type</value></data>
+	<data name="Settings.ModelProviders.ProviderNameLabel"><value>Provider Name</value></data>
+	<data name="Settings.ModelProviders.ProviderNamePlaceholder"><value>e.g., Work OpenAI</value></data>
+	<data name="Settings.ModelProviders.ProviderNameRequired"><value>Provider name is required</value></data>
+	<data name="Settings.ModelProviders.ModelFileLabel"><value>Model File</value></data>
+	<data name="Settings.ModelProviders.NoGgufFilesOption"><value>No GGUF files found</value></data>
+	<data name="Settings.ModelProviders.SelectModelPlaceholder"><value>Select a model...</value></data>
+	<data name="Settings.ModelProviders.GgufFilesLocation"><value>GGUF files in {0}</value></data>
+	<data name="Settings.ModelProviders.DownloadSectionTitle"><value>Download a GGUF model</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlLabel"><value>Download URL</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlPlaceholder"><value>https://huggingface.co/.../model.gguf</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlHelp"><value>Paste a direct link to a GGUF file (e.g. from HuggingFace)</value></data>
+	<data name="Settings.ModelProviders.BaseUrlLabel"><value>Base URL</value></data>
+	<data name="Settings.ModelProviders.BaseUrlInvalid"><value>Please enter a valid URL</value></data>
+	<data name="Settings.ModelProviders.ModelIdLabel"><value>Model ID</value></data>
+	<data name="Settings.ModelProviders.ModelIdRequired"><value>Model ID is required</value></data>
+	<data name="Settings.ModelProviders.ModelIdHelp"><value>Type any model ID manually, or fetch provider models below.</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsTitle"><value>Provider Models</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsDescription"><value>Fetch available or suggested models, then copy one into the Model ID field.</value></data>
+	<data name="Settings.ModelProviders.FetchModelsButton"><value>Fetch models</value></data>
+	<data name="Settings.ModelProviders.DownloadFetchedModelButton"><value>Download model</value></data>
+	<data name="Settings.ModelProviders.DownloadUnsupportedMessage"><value>The selected provider does not support model downloads.</value></data>
+	<data name="Settings.ModelProviders.InstalledModelBadge"><value>Installed</value></data>
+	<data name="Settings.ModelProviders.ModelLicenseLabel"><value>License</value></data>
+	<data name="Settings.ModelProviders.ChooseFetchedModelLabel"><value>Choose a fetched model</value></data>
+	<data name="Settings.ModelProviders.AvailableModelsLoadedLabel"><value>{0} loaded</value></data>
+	<data name="Settings.ModelProviders.SelectFetchedModelPlaceholder"><value>Select a fetched model...</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLabel"><value>Endpoint scope</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeAuto"><value>Auto-detect</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLocal"><value>Treat as local</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeCloud"><value>Treat as cloud</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeDescription"><value>Use this when a custom endpoint is misclassified by Offline mode, such as a LAN gateway or a cloud proxy.</value></data>
+	<data name="Settings.ModelProviders.CredentialSectionTitle"><value>Credential</value></data>
+	<data name="Settings.ModelProviders.CredentialDescription"><value>Link this provider to a saved API key instead of storing secrets on the provider itself.</value></data>
+	<data name="Settings.ModelProviders.NewCredentialButton"><value>Manage credentials</value></data>
+	<data name="Settings.ModelProviders.SavedApiKeyLabel"><value>Saved API Key</value></data>
+	<data name="Settings.ModelProviders.ModelConfigurationTitle"><value>Model Configuration</value></data>
+	<data name="Settings.ModelProviders.SupportsImagesLabel"><value>Supports images</value></data>
+	<data name="Settings.ModelProviders.SupportsThinkingLabel"><value>Supports thinking outputs</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeLabel"><value>Context Window Size</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeInvalid"><value>Context window size must be positive</value></data>
+	<data name="Settings.ModelProviders.MemoryFitFits"><value>Estimated memory fit for the computer running Oscova: fits.</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTight"><value>Estimated memory fit for the computer running Oscova: tight. A lower context window reduces the estimate.</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTooLarge"><value>Estimated memory fit for the computer running Oscova: too large. Try a smaller model or a lower context window.</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveLabel"><value>Keep alive</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveHelp"><value>Optional Ollama duration. Examples: 5m keeps the model loaded for five minutes, -1 keeps it loaded indefinitely, and 0 unloads it after the response. Blank uses the Ollama server default.</value></data>
+	<data name="Settings.ModelProviders.InputCostLabel"><value>Input price, USD per 1M tokens</value></data>
+	<data name="Settings.ModelProviders.OutputCostLabel"><value>Output price, USD per 1M tokens</value></data>
+	<data name="Settings.ModelProviders.CostEstimateHelp"><value>Optional standard rates for dashboard estimates. Cached input uses the input rate. Other charges are excluded.</value></data>
+	<data name="Settings.ModelProviders.CostPerMillionTokensInvalid"><value>Enter a non-negative amount or leave blank.</value></data>
+	<data name="Settings.ModelProviders.CostNotSet"><value>Cost not set</value></data>
+	<data name="Settings.ModelProviders.TemperatureLabel"><value>Temperature</value></data>
+	<data name="Settings.ModelProviders.ClearButton"><value>Clear</value></data>
+	<data name="Settings.ModelProviders.TemperatureDescription"><value>Higher values increase randomness; lower values make responses more focused.</value></data>
+	<data name="Settings.ModelProviders.TopPLabel"><value>Top P</value></data>
+	<data name="Settings.ModelProviders.TopPDescription"><value>Controls nucleus sampling. Lower values limit token choices.</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyLabel"><value>Frequency Penalty</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyDescription"><value>Positive values discourage repetition; negative values increase it.</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyLabel"><value>Presence Penalty</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyDescription"><value>Encourages the model to introduce new topics when positive.</value></data>
+	<data name="Settings.ModelProviders.TopKLabel"><value>Top K</value></data>
+	<data name="Settings.ModelProviders.TopKDescription"><value>Limits candidate tokens. Set to 0 to rely on the provider default.</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensLabel"><value>Max Output Tokens</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensInvalid"><value>Enter a positive number or leave blank.</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensDescription"><value>Leave blank to let the provider decide the response length.</value></data>
+	<data name="Settings.ModelProviders.SeedLabel"><value>Seed</value></data>
+	<data name="Settings.ModelProviders.SeedInvalid"><value>Enter a non-negative number or leave blank.</value></data>
+	<data name="Settings.ModelProviders.SeedDescription"><value>Use for reproducible responses when supported by the model.</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorLabel"><value>Tool Call Behavior</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAuto"><value>Auto</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAllowMultiple"><value>Allow multiple tool calls</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorSingle"><value>Single tool call only</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorDescription"><value>Choose how many tool calls the model may issue per request.</value></data>
+	<data name="Settings.ModelProviders.ResetToDefaultsButton"><value>Reset to defaults</value></data>
+	<data name="Settings.ModelProviders.ConnectedNoModelsMessage"><value>Connected successfully, but the provider returned no models. You can still type a model ID manually.</value></data>
+	<data name="Settings.ModelProviders.ModelsLoadedMessage"><value>Loaded {0} models.</value></data>
+	<data name="Settings.ModelProviders.ModelDetailsPrefilledMessage"><value>Auto-filled fields from the selected model. Review and adjust as needed.</value></data>
+	<data name="Settings.ModelProviders.InvalidDownloadUrl"><value>Please enter a valid http or https URL.</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOllama"><value>Override the local Ollama endpoint if it is not running on the default address</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpGroq"><value>Override the Groq endpoint only if you are routing through a proxy or gateway</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenAICompatible"><value>Set the endpoint for your compatible API, proxy, or gateway</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenRouter"><value>Override the OpenRouter endpoint only if you are routing through a proxy or gateway</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpDefault"><value>Override the default API endpoint</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpNoCredentials"><value>Create a credential in Settings > Credentials to use an authenticated provider.</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpGoogle"><value>Google Gemini requires an API key credential.</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpDefault"><value>Leave empty only if this provider can be used without an API key.</value></data>
+	<data name="Settings.ModelProviders.AutoValue"><value>Auto</value></data>
+	<data name="Settings.ModelProviders.AllowValue"><value>Allow</value></data>
+	<data name="Settings.ModelProviders.SingleValue"><value>Single</value></data>
+	<data name="Settings.ModelProviders.EmbeddingEditDialogTitle"><value>Edit Embedding Provider</value></data>
+	<data name="Settings.ModelProviders.EmbeddingAddDialogTitle"><value>Add Embedding Provider</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderNamePlaceholder"><value>e.g., Ollama Embeddings</value></data>
+	<data name="Settings.ModelProviders.EmbeddingModelIdPlaceholder"><value>e.g., nomic-embed-text</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsLabel"><value>Vector Dimensions</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsRequired"><value>Vector dimensions is required</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsHelp"><value>Must match the model's output (e.g. 768 for nomic-embed-text, 1536 for text-embedding-3-small). Saving a changed embedding model or dimensions clears the existing memory index so Oscova can rebuild it.</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialDescription"><value>Link this embedding provider to a saved API key credential.</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialHelp"><value>Select a saved credential, or leave empty for providers that do not require one.</value></data>
+	<data name="Settings.Agents.SectionDescription"><value>Create and manage custom agents to use in chat.</value></data>
+	<data name="Settings.Agents.NewAgentButton"><value>New Agent</value></data>
+	<data name="Settings.Agents.EmptyStateMessage"><value>No custom agents yet. Create one to get started.</value></data>
+	<data name="Settings.Agents.SharedBadge"><value>Shared</value></data>
+	<data name="Settings.Agents.DeleteButtonTitle"><value>Delete agent</value></data>
+	<data name="Settings.Agents.ExportButtonTitle"><value>Export agent</value></data>
+	<data name="Settings.Agents.ExportFailedToast"><value>The agent could not be exported.</value></data>
+	<data name="Settings.Agents.ImportDialogTitle"><value>Import Agent</value></data>
+	<data name="Settings.Agents.ImportDialogDescription"><value>Import an agent from an .oscagent file. The agent is always added as a new agent and never replaces an existing one.</value></data>
+	<data name="Settings.Agents.ChooseFileButton"><value>Choose Agent File</value></data>
+	<data name="Settings.Agents.ImporterLimitInfo"><value>The importer accepts one .oscagent package up to 5 MB. Chats, memory, and private agent notes are not included.</value></data>
+	<data name="Settings.Agents.ImportNameLabel"><value>Name (optional)</value></data>
+	<data name="Settings.Agents.ImportNameHint"><value>Leave this blank to keep the name stored in the file. If that name is already in use, a number is added.</value></data>
+	<data name="Settings.Agents.UnsupportedImportFileError"><value>Only .oscagent files are supported.</value></data>
+	<data name="Settings.Agents.InvalidImportFileError"><value>The agent file could not be imported.</value></data>
+	<data name="Settings.Agents.ImportedToast"><value>Agent '{0}' imported.</value></data>
+	<data name="Settings.Agents.ImportedWithRemovedToast"><value>Agent '{0}' imported. {1} reference(s) not available on this machine were removed.</value></data>
+	<data name="Settings.Agents.BackButton"><value>Back</value></data>
+	<data name="Settings.Agents.EditingLabel"><value>Editing: {0}</value></data>
+	<data name="Settings.Agents.DeleteConfirmTitle"><value>Delete agent</value></data>
+	<data name="Settings.Agents.DeleteConfirmMessage"><value>Are you sure you want to delete "{0}"?</value></data>
+	<data name="Settings.Agents.CustomizeButton"><value>Customize</value></data>
+	<data name="Settings.Agents.SharedAgentWarning"><value>Shared agent definitions can only be edited by Admin or Moderator users.</value></data>
+	<data name="Settings.Agents.SaveFirstTitle"><value>Save the agent first</value></data>
+	<data name="Settings.Agents.NamePlaceholder"><value>Assistant</value></data>
+	<data name="Settings.Agents.CallableNameCollisionMessage"><value>The agent name "{0}" resolves to callable name "{1}", which is already used by another agent. Choose a different agent name.</value></data>
+	<data name="Settings.Agents.DescriptionPlaceholder"><value>A short description of this agent...</value></data>
+	<data name="Settings.Agents.SystemInstructionLabel"><value>System Instruction</value></data>
+	<data name="Settings.Agents.SystemInstructionPlaceholder"><value>Enter a system instruction to steer the assistant...</value></data>
+	<data name="Settings.Agents.PreviewInstructionButton"><value>Preview</value></data>
+	<data name="Settings.Agents.PreviewInstructionTitle"><value>Resolved system instruction</value></data>
+	<data name="Settings.Agents.PreviewInstructionGeneratedAt"><value>Generated {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionFailed"><value>Could not estimate context usage: {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionTokenCount"><value>{0} tokens</value></data>
+	<data name="Settings.PromptVariables.AgentName"><value>The current agent name.</value></data>
+	<data name="Settings.PromptVariables.CurrentDate"><value>The current local date.</value></data>
+	<data name="Settings.PromptVariables.UserName"><value>The current user's display name.</value></data>
+	<data name="Settings.PromptVariables.UserNickname"><value>The current user's preferred name.</value></data>
+	<data name="Settings.PromptVariables.UserUsername"><value>The current user's login username.</value></data>
+	<data name="Settings.PromptVariables.UserEmail"><value>The current user's account email.</value></data>
+	<data name="Settings.PromptVariables.UserTimezone"><value>The current user's time zone.</value></data>
+	<data name="Settings.PromptVariables.UserContext"><value>Personal context the current user saved for this shared agent.</value></data>
+	<data name="Settings.Agents.ModelProviderLabel"><value>Default Model Provider</value></data>
+	<data name="Settings.Agents.ModelProviderDefaultOption"><value>Use app default</value></data>
+	<data name="Settings.Agents.ModelProviderDescription"><value>Default for tasks, messaging channels and delegated work. Your own chat with this agent or an explicit task provider can override it. Leave unset to use the app default.</value></data>
+	<data name="Settings.Agents.EnableCompactionLabel"><value>Enable Compaction</value></data>
+	<data name="Settings.Agents.EnableCompactionDescription"><value>Automatically summarize conversation history when the context window limit is reached.</value></data>
+	<data name="Settings.Agents.EnableMemoryLabel"><value>Enable Memory</value></data>
+	<data name="Settings.Agents.EnableMemoryDescription"><value>Load saved memories into context and allow the agent to save and retrieve memory across sessions.</value></data>
+	<data name="Settings.Agents.EnableTodoLabel"><value>Enable Task List</value></data>
+	<data name="Settings.Agents.EnableTodoDescription"><value>Let this agent track multi-step work in a session task list. Best for complex, long-running tasks.</value></data>
+	<data name="Settings.Agents.SubagentDelegationLabel"><value>Use subagents</value></data>
+	<data name="Settings.Agents.SubagentDelegationDescription"><value>Let this agent delegate tasks to separate instances of itself.</value></data>
+	<data name="Settings.Agents.LocalOnlyLabel"><value>Local only</value></data>
+	<data name="Settings.Agents.LocalOnlyDescription"><value>Block this agent from using cloud model providers and internet tools, even when global Offline mode is off.</value></data>
+	<data name="Settings.Agents.ToolSearchToggleLabel"><value>Tool discovery</value></data>
+	<data name="Settings.Agents.ToolSearchToggleHelp"><value>Expose only pinned tools upfront; the agent can search for the rest when needed.</value></data>
+	<data name="Settings.Agents.PinnedColumnLabel"><value>Pinned</value></data>
+	<data name="Settings.Agents.PinToolLabel"><value>Pin tool {0}</value></data>
+	<data name="Settings.Agents.ToolSearchSummary"><value>{0} pinned - {1} searchable</value></data>
+	<data name="Settings.Agents.ExposeAsToolLabel"><value>Expose as Tool</value></data>
+	<data name="Settings.Agents.ExposeAsToolDescription"><value>Allow other agents to invoke this agent as a tool.</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersLabel"><value>Share with all users</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersDescription"><value>Makes this agent visible to other users. The system instruction can include {{ user_context }} which each user personalizes.</value></data>
+	<data name="Settings.Agents.RestrictUsersTitle"><value>Restrict to specific users</value></data>
+	<data name="Settings.Agents.RestrictUsersDescription"><value>Leave all unchecked to share with everyone.</value></data>
+	<data name="Settings.Agents.NoUsersMessage"><value>No users found.</value></data>
+	<data name="Settings.Agents.AllowedToolsTitle"><value>Allowed Tools</value></data>
+	<data name="Settings.Agents.NoToolsAvailableMessage"><value>No tools available. Configure MCP servers in Settings -> MCP Servers to add external tools.</value></data>
+	<data name="Settings.Agents.AgentToolsTitle"><value>Agent Tools</value></data>
+	<data name="Settings.Agents.NoAgentToolsAvailableMessage"><value>No agents are available as tools. Enable "Expose as Tool" on a custom agent to use it here.</value></data>
+	<data name="Settings.Agents.SkillsTitle"><value>Skills</value></data>
+	<data name="Settings.Agents.NoSkillsFoundMessage"><value>No skills found. Add skills in Settings -> Files -> skills folder.</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersTitle"><value>Workspace Folders</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersDescription"><value>Managed workspaces are folders under workspace/. Create them in Settings -> Files, then select them here.</value></data>
+	<data name="Settings.Agents.NoWorkspacesMessage"><value>No workspace folders found yet. Create workspaces in Settings -> Files, then select them here.</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceLabel"><value>Library</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceDescription"><value>Selecting Library grants read-only file access and adds the Library Search tools.</value></data>
+	<data name="Settings.Agents.SharedFolderLabel"><value>Shared folder</value></data>
+	<data name="Settings.Agents.SharedFolderDescription"><value>Grants read and write access to the folder shared by every permitted user on this server, at /shared.</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessTitle"><value>Additional Folder Access</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessDescription"><value>Add external host folders or managed user folders for explicit /mnt access.</value></data>
+	<data name="Settings.Agents.AutomaticDataRootLabel"><value>Automatic data root</value></data>
+	<data name="Settings.Agents.AutomaticDataRootDescription"><value>Always available for this agent; private notes live under /data/notes.</value></data>
+	<data name="Settings.Agents.AddDirectoryButton"><value>Add Directory</value></data>
+	<data name="Settings.Agents.NoDirectoriesMessage"><value>No additional folders configured.</value></data>
+	<data name="Settings.Agents.DirectorySourceLabel"><value>Source</value></data>
+	<data name="Settings.Agents.DirectorySourceExternal"><value>External</value></data>
+	<data name="Settings.Agents.DirectorySourceManaged"><value>Managed</value></data>
+	<data name="Settings.Agents.DirectoryPathLabel"><value>Existing Folder Path</value></data>
+	<data name="Settings.Agents.DirectoryPathPlaceholder"><value>Project folder path</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathLabel"><value>User Folder Path</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathPlaceholder"><value>agents/main/data/notes</value></data>
+	<data name="Settings.Agents.DirectoryLabelLabel"><value>Label</value></data>
+	<data name="Settings.Agents.DirectoryLabelPlaceholder"><value>Obsidian Vault</value></data>
+	<data name="Settings.Agents.DirectoryAccessLabel"><value>Access</value></data>
+	<data name="Settings.Agents.AccessModeReadOnly"><value>Read Only</value></data>
+	<data name="Settings.Agents.AccessModeReadWrite"><value>Read &amp; Write</value></data>
+	<data name="Settings.Agents.RemoveDirectoryTitle"><value>Remove directory</value></data>
+	<data name="Settings.Agents.MountNameCollisionMessage"><value>Workspace names and folder labels must resolve to unique mount names. Conflicts: {0}.</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdatedToast"><value>Profile picture updated.</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdateFailedToast"><value>Could not update profile picture: {0}</value></data>
+	<data name="Settings.Prompts.CatalogTitle"><value>Custom Prompts</value></data>
+	<data name="Settings.Prompts.CatalogDescription"><value>Review and edit the prompt templates used by memory, Library Search, compaction, skills, and runtime context features.</value></data>
+	<data name="Settings.Prompts.CatalogCountBadge"><value>{0} prompts</value></data>
+	<data name="Settings.Prompts.CompactionInstructionLabel"><value>Compaction Instruction</value></data>
+	<data name="Settings.Prompts.CompactionDescription"><value>Controls how long conversations are summarized when the context window needs room.</value></data>
+	<data name="Settings.Prompts.StoredAsLabel"><value>Stored as</value></data>
+	<data name="Settings.Prompts.OpenInFileEditorLink"><value>Open in file editor</value></data>
+	<data name="Settings.Prompts.CompactionPlaceholder"><value>Enter an instruction for summarizing conversation history...</value></data>
+	<data name="Settings.Prompts.MemorySystemPromptLabel"><value>Memory System Prompt</value></data>
+	<data name="Settings.Prompts.MemorySystemDescription"><value>Shapes how saved memories are presented to the agent as context.</value></data>
+	<data name="Settings.Prompts.MemorySystemPlaceholder"><value>Enter the system prompt for the memory context provider...</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptLabel"><value>Environment Prompt</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptDescription"><value>Builds the runtime environment context added to agent instructions.</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptPlaceholder"><value>Enter the prompt template for runtime environment context...</value></data>
+	<data name="Settings.Prompts.LibraryPromptLabel"><value>Library Instruction</value></data>
+	<data name="Settings.Prompts.LibraryPromptDescription"><value>Guides how agents search persistent Library files and distinguish them from conversation memory.</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptLabel"><value>Tool Discovery Instruction</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptDescription"><value>Guides how agents search for tools when large tool sets are deferred.</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptLabel"><value>Task List Instruction</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptDescription"><value>Guides how opted-in agents create and maintain their task list during complex work.</value></data>
+	<data name="Settings.Prompts.SubagentsPromptLabel"><value>Subagents Instruction</value></data>
+	<data name="Settings.Prompts.SubagentsPromptDescription"><value>Guides how agents with subagents turned on delegate work to separate instances of themselves.</value></data>
+	<data name="Settings.Prompts.SkillsPromptLabel"><value>Skills Instruction</value></data>
+	<data name="Settings.Prompts.SkillsPromptDescription"><value>Guides how agents discover, load, and use assigned skills.</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptLabel"><value>Avatar Emotion Instruction</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptDescription"><value>Guides when the agent marks feelings with emotion tags while the avatar speaks replies.</value></data>
+	<data name="Settings.Prompts.VariablesBadge"><value>{0} variables</value></data>
+	<data name="Settings.Prompts.NoVariablesBadge"><value>No variables</value></data>
+	<data name="Settings.Prompts.VariablePickerHelperText"><value>Click a variable to insert it at the cursor.</value></data>
+	<data name="Settings.Skills.ScriptExecutionTitle"><value>Shell and Skill Script Execution</value></data>
+	<data name="Settings.Skills.ScriptExecutionDescription"><value>The operator chooses where shell commands and bundled skill scripts run for every account. Host is the default. Start a new run after changing the environment.</value></data>
+	<data name="Settings.Skills.ExecutionModeLabel"><value>Execution Mode</value></data>
+	<data name="Settings.Skills.SaveExecutionModeButton"><value>Save execution environment</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesTitle"><value>Supported bundled script types</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesDescription"><value>Container Sandboxed runs .py, .js, and .sh files directly; each needs a valid #! first line for a runtime installed in the image.</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesHostDescription"><value>Host runs files through the host shell and requires the matching runtime on PATH.</value></data>
+	<data name="Settings.Skills.InstalledSkillsTitle"><value>Installed Skills</value></data>
+	<data name="Settings.Skills.InstalledSkillsDescription"><value>Manage the skill packages available for assignment to your agents.</value></data>
+	<data name="Settings.Skills.ImportSkillButton"><value>Import Skill</value></data>
+	<data name="Settings.Skills.NoSkillsInstalledMessage"><value>No skills installed yet. Import a SKILL.md file or packaged .zip to make it available to your agents.</value></data>
+	<data name="Settings.Skills.InstalledBadge"><value>Installed</value></data>
+	<data name="Settings.Skills.DeleteButton"><value>Uninstall skill</value></data>
+	<data name="Settings.Skills.DeleteConfirmTitle"><value>Uninstall Skill</value></data>
+	<data name="Settings.Skills.DeleteConfirmMessage"><value>Are you sure you want to uninstall "{0}"? This removes it from all of your agents.</value></data>
+	<data name="Settings.Skills.DeletedToast"><value>Skill uninstalled.</value></data>
+	<data name="Settings.Skills.ImportedSkillsInfoNote"><value>Imported skills live in your skills/ directory and can currently be removed manually from the Files page.</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabled"><value>Disabled</value></data>
+	<data name="Settings.Skills.ExecutionModeHost"><value>Host</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxed"><value>Container Sandboxed</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabledDescription"><value>Shell commands and bundled skill scripts cannot run.</value></data>
+	<data name="Settings.Skills.ExecutionModeHostDescription"><value>Commands run directly on the machine running Oscova with its operating-system account's permissions. Approval follows the agent and run settings.</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxedDescription"><value>Commands run inside Docker with your granted folders mounted. Tools installed only inside the container are lost when it is removed. Host-installed tools are not automatically available.</value></data>
+	<data name="Settings.Skills.ExecutionModeSavedToast"><value>Execution environment saved. Start a new run to use it.</value></data>
+	<data name="Settings.Tools.AutoApproveHostWarning"><value>Auto-approved shell commands can change the machine running Oscova when host execution is enabled.</value></data>
+	<data name="Settings.Skills.ImportDialogTitle"><value>Import Skill</value></data>
+	<data name="Settings.Skills.ImportDialogDescription"><value>Import a single skill as a raw SKILL.md file or a packaged .zip archive.</value></data>
+	<data name="Settings.Skills.ChooseFileButton"><value>Choose Skill File</value></data>
+	<data name="Settings.Skills.ImporterLimitInfo"><value>The importer accepts one SKILL.md document or one .zip package up to 10 MB.</value></data>
+	<data name="Settings.Skills.ImporterZipInfo"><value>Zip imports may include scripts/, references/, and assets/.</value></data>
+	<data name="Settings.Skills.ImportWarningsTitle"><value>Import warnings</value></data>
+	<data name="Settings.Skills.UnsupportedFileTypeError"><value>Only .md and .zip files are supported.</value></data>
+	<data name="Settings.Skills.InvalidImportFileError"><value>The file does not seem to be a valid skill file. Import a SKILL.md file or a .zip package that contains one skill.</value></data>
+	<data name="Settings.Skills.ImportedToast"><value>Skill '{0}' imported.</value></data>
+	<data name="Settings.Tools.AvailableToolsTitle"><value>Available Tools</value></data>
+	<data name="Settings.Tools.AvailableToolsDescription"><value>These are the tools available to your agents, including built-in toolsets and MCP server tools.</value></data>
+	<data name="Settings.Tools.NoToolsAvailableMessage"><value>No tools available. Configure MCP servers in Settings -> MCP Servers to add external tools.</value></data>
+	<data name="Settings.Tools.SearchPlaceholder"><value>Search tools</value></data>
+	<data name="Settings.Tools.SearchLabel"><value>Search tools</value></data>
+	<data name="Settings.Tools.SelectedCountLabel"><value>{0} of {1} selected</value></data>
+
+  <data name="Settings.Tools.ShowEnabledOnlyLabel" xml:space="preserve"><value>Show enabled tools only</value></data>
+	<data name="Settings.Tools.ServerNameLabel"><value>Server name</value></data>
+	<data name="Settings.Tools.AllServersOption"><value>All</value></data>
+	<data name="Settings.Tools.SelectVisibleToolsLabel"><value>Select visible tools</value></data>
+	<data name="Settings.Tools.SelectToolLabel"><value>Select tool {0}</value></data>
+	<data name="Settings.Tools.TableHeaderTool"><value>Tool</value></data>
+	<data name="Settings.Tools.TableHeaderQualifiedName"><value>Qualified Name</value></data>
+	<data name="Settings.Tools.TableHeaderServer"><value>Server</value></data>
+	<data name="Settings.Tools.TableHeaderNetwork"><value>Internet</value></data>
+	<data name="Settings.Tools.TableHeaderApproval"><value>Approval</value></data>
+	<data name="Settings.Tools.ApprovalDefault"><value>Default</value></data>
+	<data name="Settings.Tools.ApprovalDefaultRequire"><value>Default (require approval)</value></data>
+	<data name="Settings.Tools.ApprovalDefaultAutoApprove"><value>Default (auto-approve)</value></data>
+	<data name="Settings.Tools.ApprovalRequire"><value>Require approval</value></data>
+	<data name="Settings.Tools.ApprovalAutoApprove"><value>Auto-approve</value></data>
+	<data name="Settings.Tools.ApprovalDeny"><value>Deny</value></data>
+	<data name="Settings.Tools.ApprovalUnavailable"><value>Not selected</value></data>
+	<data name="Settings.Tools.NetworkYes"><value>Internet</value></data>
+	<data name="Settings.Tools.NetworkNo"><value>Local only</value></data>
+	<data name="Settings.Tools.NoMatchesMessage"><value>No tools match the current filters.</value></data>
+	<data name="Settings.Plugins.LoadingMessage"><value>Loading plugin settings...</value></data>
+	<data name="Settings.Plugins.SecurityTitle"><value>Trusted code only</value></data>
+	<data name="Settings.Plugins.SecurityDescription"><value>Plugins run inside Oscova Agents and can add capabilities for all users. Enable only plugins you trust.</value></data>
+	<data name="Settings.Plugins.RestartRequiredAlert"><value>Restart Oscova Agents for plugin activation changes to take effect.</value></data>
+	<data name="Settings.Plugins.InstalledTitle"><value>Installed Plugins</value></data>
+	<data name="Settings.Plugins.InstalledDescription"><value>Choose which installed plugins may load for every user when Oscova Agents next starts.</value></data>
+	<data name="Settings.Plugins.RestartHint"><value>Installed plugins remain inactive until enabled and the application is restarted.</value></data>
+	<data name="Settings.Plugins.SearchPlaceholder"><value>Search plugins</value></data>
+	<data name="Settings.Plugins.SearchLabel"><value>Search plugins</value></data>
+	<data name="Settings.Plugins.TableHeaderPlugin"><value>Plugin</value></data>
+	<data name="Settings.Plugins.TableHeaderStatus"><value>Current Status</value></data>
+	<data name="Settings.Plugins.TableHeaderNextStart"><value>Load On Next Restart</value></data>
+	<data name="Settings.Plugins.TableHeaderActions"><value>Actions</value></data>
+	<data name="Settings.Plugins.NoPluginsMessage"><value>No installed plugins were found.</value></data>
+	<data name="Settings.Plugins.NoMatchesMessage"><value>No plugins match the current search.</value></data>
+	<data name="Settings.Plugins.EnableLabel"><value>Load {0} on next restart</value></data>
+	<data name="Settings.Plugins.DetailsButton"><value>View plugin details</value></data>
+	<data name="Settings.Plugins.DetailsLabel"><value>View details for {0}</value></data>
+	<data name="Settings.Plugins.ResetButton"><value>Reset</value></data>
+	<data name="Settings.Plugins.SaveButton"><value>Save Plugin Settings</value></data>
+	<data name="Settings.Plugins.LoadErrorToast"><value>Plugin settings response was empty.</value></data>
+	<data name="Settings.Plugins.SavedToast"><value>Plugin settings saved.</value></data>
+	<data name="Settings.Plugins.UninstallLabel"><value>Uninstall {0}</value></data>
+	<data name="Settings.Plugins.UninstallDisableRequiredTooltip"><value>Disable and save first.</value></data>
+	<data name="Settings.Plugins.UninstallRestartRequiredTooltip"><value>Disable, save, and restart first.</value></data>
+	<data name="Settings.Plugins.UninstallConfirmTitle"><value>Uninstall plugin</value></data>
+	<data name="Settings.Plugins.UninstallConfirmMessage"><value>Uninstall '{0}'? This removes its installed files, stored credentials, and connected-account tokens for all users. Other plugin-created data and settings are kept.</value></data>
+	<data name="Settings.Plugins.UninstalledToast"><value>Plugin uninstalled.</value></data>
+	<data name="Settings.Plugins.EnabledLabel"><value>Enabled</value></data>
+	<data name="Settings.Plugins.DisabledLabel"><value>Disabled</value></data>
+	<data name="Settings.Plugins.InvalidManifestName"><value>Invalid plugin manifest</value></data>
+	<data name="Settings.Plugins.StatusActive"><value>Active</value></data>
+	<data name="Settings.Plugins.StatusInactive"><value>Inactive</value></data>
+	<data name="Settings.Plugins.StatusLoadFailed"><value>Load failed</value></data>
+	<data name="Settings.Plugins.StatusInvalidManifest"><value>Invalid manifest</value></data>
+	<data name="Settings.Plugins.DetailsTitle"><value>Plugin Details</value></data>
+	<data name="Settings.Plugins.DetailsTrustNotice"><value>Enabled plugins run trusted code inside Oscova Agents. Enable only plugins you trust.</value></data>
+	<data name="Settings.Plugins.NameLabel"><value>Name</value></data>
+	<data name="Settings.Plugins.IdLabel"><value>Plugin ID</value></data>
+	<data name="Settings.Plugins.VersionLabel"><value>Version</value></data>
+	<data name="Settings.Plugins.AssemblyLabel"><value>Assembly</value></data>
+	<data name="Settings.Plugins.EntryTypeLabel"><value>Entry Type</value></data>
+	<data name="Settings.Plugins.CurrentStatusLabel"><value>Current Status</value></data>
+	<data name="Settings.Plugins.NextStartLabel"><value>Load On Next Restart</value></data>
+	<data name="Settings.Plugins.DiagnosticLabel"><value>Diagnostic</value></data>
+	<data name="Settings.McpServers.SectionTitle"><value>MCP Servers</value></data>
+	<data name="Settings.McpServers.FindOnlineButton"><value>Find online</value></data>
+	<data name="Settings.McpServers.FindOnlineDialogTitle"><value>Find MCP servers online</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPlaceholder"><value>Search the official MCP Registry...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchButton"><value>Search</value></data>
+	<data name="Settings.McpServers.FindOnlineSearching"><value>Searching MCP Registry...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPrompt"><value>Search for a server, then choose a setup method to review in the MCP server editor.</value></data>
+	<data name="Settings.McpServers.FindOnlineEmptyResults"><value>No MCP servers matched your search.</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchFailed"><value>MCP Registry search failed.</value></data>
+	<data name="Settings.McpServers.FindOnlineNoDescription"><value>No description is available for this server.</value></data>
+	<data name="Settings.McpServers.FindOnlineVersionLabel"><value>v{0}</value></data>
+	<data name="Settings.McpServers.FindOnlineWebsiteButton"><value>Website</value></data>
+	<data name="Settings.McpServers.FindOnlineRepositoryButton"><value>Repository</value></data>
+	<data name="Settings.McpServers.FindOnlineAddButton"><value>Add</value></data>
+	<data name="Settings.McpServers.FindOnlineRequiredFieldsPrefix"><value>You'll need to provide: {0}</value></data>
+	<data name="Settings.McpServers.FindOnlineManualSetupHint"><value>This server needs manual setup. Ask your agent to set this up.</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderServer"><value>Server</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderSetup"><value>Setup</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteHttpOption"><value>Remote (HTTP)</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteSseOption"><value>Remote (SSE)</value></data>
+	<data name="Settings.McpServers.FindOnlineNpxOption"><value>Local (npx)</value></data>
+	<data name="Settings.McpServers.FindOnlineUvxOption"><value>Local (uvx)</value></data>
+	<data name="Settings.McpServers.FindOnlineDockerOption"><value>Local (docker)</value></data>
+	<data name="Settings.McpServers.FindOnlineDnxOption"><value>Local (dnx)</value></data>
+	<data name="Settings.McpServers.FindOnlineManualOption"><value>Manual setup</value></data>
+	<data name="Settings.McpServers.ImportJsonButton"><value>Import JSON</value></data>
+	<data name="Settings.McpServers.AddServerButton"><value>Add server</value></data>
+	<data name="Settings.McpServers.NoServersMessage"><value>No MCP servers configured.</value></data>
+	<data name="Settings.McpServers.UnnamedServerLabel"><value>(unnamed server)</value></data>
+	<data name="Settings.McpServers.NamePlaceholder"><value>e.g. My MCP Server</value></data>
+	<data name="Settings.McpServers.NameRequired"><value>Name is required.</value></data>
+	<data name="Settings.McpServers.TransportLabel"><value>Transport</value></data>
+	<data name="Settings.McpServers.TransportHttp"><value>HTTP</value></data>
+	<data name="Settings.McpServers.TransportStdio"><value>STDIO</value></data>
+	<data name="Settings.McpServers.NetworkScopeLabel"><value>Network use</value></data>
+	<data name="Settings.McpServers.NetworkScopeHelp"><value>Air-gapped runs exclude only servers classified as Internet. Choose the server's actual network classification.</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentLabel"><value>Execution environment</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHost"><value>Host process</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainer"><value>Docker sandbox</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHostHint"><value>Runs on the configured device with the app's permissions.</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainerHint"><value>Runs in Docker on the configured device. Project runs mount /project. Central runs mount /workspace/&lt;name>.</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentBadge"><value>Sandboxed</value></data>
+	<data name="Settings.McpServers.EndpointLabel"><value>Endpoint</value></data>
+	<data name="Settings.McpServers.EndpointPlaceholder"><value>http://127.0.0.1:8811/mcp</value></data>
+	<data name="Settings.McpServers.EndpointRequired"><value>Endpoint is required before reconnecting.</value></data>
+	<data name="Settings.McpServers.HeadersLabel"><value>Headers (key=value per line)</value></data>
+	<data name="Settings.McpServers.HeadersPlaceholder"><value>Authorization=Bearer sk-xxx</value></data>
+	<data name="Settings.McpServers.CommandLabel"><value>Command</value></data>
+	<data name="Settings.McpServers.CommandPlaceholder"><value>npx</value></data>
+	<data name="Settings.McpServers.CommandRequired"><value>Command is required before reconnecting.</value></data>
+	<data name="Settings.McpServers.WorkingDirectoryLabel"><value>Working Directory (optional)</value></data>
+	<data name="Settings.McpServers.ArgumentsLabel"><value>Arguments (one per line)</value></data>
+	<data name="Settings.McpServers.ArgumentsPlaceholder"><value>-y
+@modelcontextprotocol/server-everything</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesLabel"><value>Environment Variables (KEY=VALUE or KEY per line)</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesPlaceholder"><value>API_KEY
+NODE_ENV=production</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesHelp"><value>Use KEY=VALUE for a saved literal. For Host processes, use KEY to read it from Oscova at launch; missing keys are omitted, and resolved values are never saved or shown.</value></data>
+	<data name="Settings.McpServers.SaveAndReconnectButton"><value>Save &amp; Reconnect All</value></data>
+	<data name="Settings.McpServers.CompleteRequiredFieldsToast"><value>Complete each MCP server's required fields before saving.</value></data>
+	<data name="Settings.McpServers.SavedReconnectStartedToast"><value>MCP servers saved and reconnect started.</value></data>
+	<data name="Settings.McpServers.SaveFailedToast"><value>Failed to save MCP servers: {0}</value></data>
+	<data name="Settings.McpServers.ImportedToast"><value>Imported {0} MCP server(s).</value></data>
+	<data name="Settings.McpServers.ImportFailedToast"><value>Failed to import MCP servers: {0}</value></data>
+	<data name="Settings.McpServers.ReconnectAllButton"><value>Reconnect all</value></data>
+	<data name="Settings.McpServers.ServerAddedToast"><value>MCP server "{0}" added and connected. To use its tools, select them under Allowed Tools in an agent's settings.</value></data>
+	<data name="Settings.McpServers.ServerUpdatedToast"><value>MCP server "{0}" updated and reconnected.</value></data>
+	<data name="Settings.McpServers.ServerRemovedToast"><value>MCP server "{0}" removed.</value></data>
+	<data name="Settings.McpServers.ReconnectedAllToast"><value>All MCP servers reconnected.</value></data>
+	<data name="Settings.McpServers.ServerAddedConnectionFailedToast"><value>MCP server "{0}" was saved, but connection failed: {1}</value></data>
+	<data name="Settings.McpServers.ServerUpdatedConnectionFailedToast"><value>MCP server "{0}" was saved, but reconnection failed: {1}</value></data>
+	<data name="Settings.McpServers.ReconnectAllFailedToast"><value>{0} MCP server(s) were saved but could not reconnect.</value></data>
+	<data name="Settings.McpServers.OperationFailedToast"><value>MCP server operation failed: {0}</value></data>
+	<data name="Settings.McpServers.CopyNameSuffix"><value>{0} (Copy)</value></data>
+	<data name="Settings.McpServers.ImportDialogTitle"><value>Import MCP Server Configuration</value></data>
+	<data name="Settings.McpServers.ImportDialogDescription"><value>Paste JSON from VS Code, Cursor, or Claude Desktop format.</value></data>
+	<data name="Settings.McpServers.NoServersFoundError"><value>No servers found in the provided JSON.</value></data>
+	<data name="Settings.McpServers.InvalidJsonError"><value>Invalid JSON: {0}</value></data>
+	<data name="Settings.McpServers.TableHeaderServer"><value>Server</value></data>
+	<data name="Settings.McpServers.TableHeaderConnection"><value>Connection</value></data>
+	<data name="Settings.McpServers.TableHeaderOptions"><value>Options</value></data>
+	<data name="Settings.McpServers.OpenDetailsTitle"><value>Open server details</value></data>
+	<data name="Settings.McpServers.DetailsDialogTitle"><value>Server configuration</value></data>
+	<data name="Settings.McpServers.AddDialogTitle"><value>Add MCP server</value></data>
+	<data name="Settings.McpServers.EditDialogTitle"><value>Edit MCP server</value></data>
+	<data name="Settings.McpServers.SaveServerButton"><value>Save server</value></data>
+	<data name="Settings.McpServers.ConfiguredBadge"><value>Configured</value></data>
+	<data name="Settings.McpServers.IncompleteBadge"><value>Incomplete</value></data>
+	<data name="Settings.McpServers.HeadersCountLabel"><value>{0} header(s)</value></data>
+	<data name="Settings.McpServers.ArgumentsCountLabel"><value>{0} argument(s)</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesCountLabel"><value>{0} variable(s)</value></data>
+	<data name="Settings.McpServers.NoHeaders"><value>No headers</value></data>
+	<data name="Settings.McpServers.NoArguments"><value>No arguments</value></data>
+	<data name="Settings.McpServers.NoEnvironmentVariables"><value>No environment variables</value></data>
+	<data name="Settings.Section.Hooks.Label"><value>Hooks</value></data>
+	<data name="Settings.Section.Hooks.Description"><value>Configure outbound lifecycle hooks and inbound task webhooks.</value></data>
+	<data name="Settings.Hooks.LoadingMessage"><value>Loading hook settings...</value></data>
+	<data name="Settings.Hooks.SectionTitle"><value>Hook handlers</value></data>
+	<data name="Settings.Hooks.SectionDescription"><value>Run commands or HTTP endpoints when agent and task events happen.</value></data>
+	<data name="Settings.Hooks.AddHookButton"><value>Add hook</value></data>
+	<data name="Settings.Hooks.VisualTab"><value>Visual</value></data>
+	<data name="Settings.Hooks.JsonTab"><value>JSON</value></data>
+	<data name="Settings.Hooks.NoHooksMessage"><value>No outbound hooks configured.</value></data>
+	<data name="Settings.Hooks.UnnamedHookLabel"><value>Unnamed hook</value></data>
+	<data name="Settings.Hooks.NewHookDefaultName"><value>New hook</value></data>
+	<data name="Settings.Hooks.AddHookDialogTitle"><value>Add hook</value></data>
+	<data name="Settings.Hooks.EditHookDialogTitle"><value>Edit hook</value></data>
+	<data name="Settings.Hooks.SaveHookButton"><value>Save hook</value></data>
+	<data name="Settings.Hooks.CopyNameSuffix"><value>{0} (Copy)</value></data>
+	<data name="Settings.Hooks.NamePlaceholder"><value>e.g. Block risky tools</value></data>
+	<data name="Settings.Hooks.EnabledLabel"><value>Enable this hook</value></data>
+	<data name="Settings.Hooks.EnabledStatus"><value>Enabled</value></data>
+	<data name="Settings.Hooks.DisabledStatus"><value>Disabled</value></data>
+	<data name="Settings.Hooks.EventsLabel"><value>Events</value></data>
+	<data name="Settings.Hooks.HandlerTypeLabel"><value>Handler type</value></data>
+	<data name="Settings.Hooks.HandlerCommand"><value>Command</value></data>
+	<data name="Settings.Hooks.HandlerHttp"><value>HTTP</value></data>
+	<data name="Settings.Hooks.FailureModeLabel"><value>Failure mode</value></data>
+	<data name="Settings.Hooks.FailureFailClosed"><value>Fail closed</value></data>
+	<data name="Settings.Hooks.FailureFailOpen"><value>Fail open</value></data>
+	<data name="Settings.Hooks.TimeoutLabel"><value>Timeout seconds</value></data>
+	<data name="Settings.Hooks.TargetLabel"><value>Target</value></data>
+	<data name="Settings.Hooks.CommandFileNameLabel"><value>Command</value></data>
+	<data name="Settings.Hooks.CommandArgumentsLabel"><value>Arguments, one per line</value></data>
+	<data name="Settings.Hooks.CommandWorkingDirectoryLabel"><value>Working directory</value></data>
+	<data name="Settings.Hooks.HttpUrlLabel"><value>URL</value></data>
+	<data name="Settings.Hooks.StaticHeadersLabel"><value>Static headers</value></data>
+	<data name="Settings.Hooks.SecretHeadersLabel"><value>Secret headers</value></data>
+	<data name="Settings.Hooks.HeaderNamePlaceholder"><value>Header name</value></data>
+	<data name="Settings.Hooks.HeaderValuePlaceholder"><value>Header value</value></data>
+	<data name="Settings.Hooks.CredentialSelectPlaceholder"><value>Select outbound HTTP secret</value></data>
+	<data name="Settings.Hooks.AddHeaderButton"><value>Add header</value></data>
+	<data name="Settings.Hooks.AddSecretHeaderButton"><value>Add secret header</value></data>
+	<data name="Settings.Hooks.ResetButton"><value>Reset</value></data>
+	<data name="Settings.Hooks.SaveButton"><value>Save hooks</value></data>
+	<data name="Settings.Hooks.JsonLabel"><value>Hook settings JSON</value></data>
+	<data name="Settings.Hooks.CopyJsonButton"><value>Copy JSON</value></data>
+	<data name="Settings.Hooks.ApplyJsonButton"><value>Apply JSON</value></data>
+	<data name="Settings.Hooks.SavedToast"><value>Hook settings saved.</value></data>
+	<data name="Settings.Hooks.LoadFailedToast"><value>Failed to load hook settings: {0}</value></data>
+	<data name="Settings.Hooks.SaveFailedToast"><value>Failed to save hook settings: {0}</value></data>
+	<data name="Settings.Hooks.JsonAppliedToast"><value>Hook JSON applied.</value></data>
+	<data name="Settings.Hooks.InvalidJsonToast"><value>Invalid hook JSON: {0}</value></data>
+	<data name="Settings.Hooks.Event.TaskStart"><value>Task start</value></data>
+	<data name="Settings.Hooks.Event.TaskComplete"><value>Task complete</value></data>
+	<data name="Settings.Hooks.Event.TaskFailed"><value>Task failed</value></data>
+	<data name="Settings.Hooks.Event.SessionStart"><value>Session start</value></data>
+	<data name="Settings.Hooks.Event.UserPromptSubmit"><value>User prompt submit</value></data>
+	<data name="Settings.Hooks.Event.PreToolUse"><value>Before tool use</value></data>
+	<data name="Settings.Hooks.Event.PostToolUse"><value>After tool use</value></data>
+	<data name="Settings.Hooks.ApiKeysTitle"><value>Task webhook API keys</value></data>
+	<data name="Settings.Hooks.ApiKeysDescription"><value>Create bearer tokens for external systems that trigger allowed tasks.</value></data>
+	<data name="Settings.Hooks.NewApiKeyNameLabel"><value>API key name</value></data>
+	<data name="Settings.Hooks.AllowedTaskSlugsLabel"><value>Allowed task slugs, comma separated</value></data>
+	<data name="Settings.Hooks.CreateApiKeyButton"><value>Create API key</value></data>
+	<data name="Settings.Hooks.CreateApiKeyDialogTitle"><value>Create task webhook API key</value></data>
+	<data name="Settings.Hooks.NoApiKeysMessage"><value>No task webhook API keys yet.</value></data>
+	<data name="Settings.Hooks.CreatedTokenTitle"><value>Copy this token now</value></data>
+	<data name="Settings.Hooks.CopyTokenButton"><value>Copy</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedLabel"><value>Created {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyLastUsedLabel"><value>Last used {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyNeverUsed"><value>Never used</value></data>
+	<data name="Settings.Hooks.ApiKeyScopesLabel"><value>Scopes</value></data>
+	<data name="Settings.Hooks.ApiKeyAllowedSlugsLabel"><value>Allowed slugs</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmTitle"><value>Delete task webhook API key</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmMessage"><value>Delete task webhook API key "{0}"?</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedToast"><value>Task webhook API key created.</value></data>
+	<data name="Settings.Hooks.ApiKeyUpdatedToast"><value>Task webhook API key updated.</value></data>
+	<data name="Settings.Hooks.ApiKeyDeletedToast"><value>Task webhook API key deleted.</value></data>
+	<data name="Settings.Hooks.SecretsTitle"><value>Outbound HTTP hook secrets</value></data>
+	<data name="Settings.Hooks.SecretsDescription"><value>Store header values Oscova sends to external HTTP hook endpoints.</value></data>
+	<data name="Settings.Hooks.NewSecretButton"><value>New</value></data>
+	<data name="Settings.Hooks.NewSecretDialogTitle"><value>New outbound HTTP hook secret</value></data>
+	<data name="Settings.Hooks.EditSecretDialogTitle"><value>Edit outbound HTTP hook secret</value></data>
+	<data name="Settings.Hooks.SecretNameLabel"><value>Secret name</value></data>
+	<data name="Settings.Hooks.SecretKeyLabel"><value>Secret reference key</value></data>
+	<data name="Settings.Hooks.SecretValueLabel"><value>Secret value</value></data>
+	<data name="Settings.Hooks.SecretDescriptionLabel"><value>Description</value></data>
+	<data name="Settings.Hooks.SecretValueEditHint"><value>Leave blank to keep the current value.</value></data>
+	<data name="Settings.Hooks.SaveSecretButton"><value>Save secret</value></data>
+	<data name="Settings.Hooks.NoSecretsMessage"><value>No outbound HTTP hook secrets saved yet.</value></data>
+	<data name="Settings.Hooks.SecretSetStatus"><value>Set</value></data>
+	<data name="Settings.Hooks.SecretUpdatedLabel"><value>Updated {0}</value></data>
+	<data name="Settings.Hooks.SecretSavedToast"><value>Outbound HTTP hook secret saved.</value></data>
+	<data name="Settings.Hooks.SecretDeletedToast"><value>Outbound HTTP hook secret deleted.</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmTitle"><value>Delete outbound HTTP hook secret</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmMessage"><value>Delete outbound HTTP hook secret "{0}"?</value></data>
+	<data name="Settings.Hooks.DeleteSecretReferencedConfirmMessage"><value>Delete outbound HTTP hook secret "{0}"? One or more HTTP hooks still reference this credential.</value></data>
+	<data name="Settings.General.AssistantNameLabel"><value>Assistant Name</value></data>
+	<data name="Settings.General.AssistantNamePlaceholder"><value>Enter assistant name...</value></data>
+	<data name="Settings.General.SaveNameTitle"><value>Save name</value></data>
+	<data name="Settings.General.UnsavedChangesHint"><value>Changes are not saved automatically.</value></data>
+	<data name="Settings.General.ShowTopBarProfileLabel"><value>Show profile in top bar</value></data>
+	<data name="Settings.General.ShowTopBarProfileDescription"><value>Display your avatar, name, and username in the top bar</value></data>
+	<data name="Settings.General.GamificationLabel"><value>Achievements and XP</value></data>
+	<data name="Settings.General.GamificationDescription"><value>Show achievements and XP, and send unlock notifications</value></data>
+	<data name="Settings.General.TimeZoneLabel"><value>Time Zone</value></data>
+	<data name="Settings.General.SearchTimeZonesPlaceholder"><value>Search time zones...</value></data>
+	<data name="Settings.General.ServerDefault"><value>Server Default</value></data>
+	<data name="Settings.General.TimeZoneDescription"><value>Timestamps in the UI will be displayed in this time zone.</value></data>
+	<data name="Settings.General.LanguageLabel"><value>Language</value></data>
+	<data name="Settings.General.LanguageReloadHint"><value>Changes apply after the page reloads.</value></data>
+	<data name="Settings.General.DeleteConversationsLabel"><value>Delete Conversations</value></data>
+	<data name="Settings.General.DeleteConversationsDescription"><value>Permanently deletes every chat conversation in the app. This cannot be undone.</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmTitle"><value>Confirm Deletion</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmMessage"><value>Permanently delete all {0} conversations? This cannot be undone.</value></data>
+	<data name="Settings.Shared.SaveSettingsToast"><value>Settings saved successfully.</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Back"><value>Back</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Customize"><value>Customize: {0}</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Description"><value>Add personal context that will be injected into this shared agent's instructions for your sessions, such as preferred names or calling preferences.</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Label"><value>Personal Context</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Placeholder"><value>Add notes, preferences, background, or other personal context for this shared agent...</value></data>
+	<data name="Settings.Category.Channels.Label"><value>Channels</value></data>
+	<data name="Settings.Category.Channels.Description"><value>Chat channels and bot integrations.</value></data>
+	<data name="Settings.General.ChatTitleGenerationLabel"><value>Generate chat titles</value></data>
+	<data name="Settings.General.ChatTitleGenerationDescription"><value>Use your selected chat model to rename conversations after a few messages</value></data>
+	<data name="Settings.General.ChatResumeWindowLabel"><value>Resume recent chats</value></data>
+	<data name="Settings.General.ChatResumeWindowDescription"><value>Return to the latest current chat when your last message is this many minutes old or newer. Use 0 to always show the start screen.</value></data>
+	<data name="Settings.General.ChatResumeWindowInvalid"><value>Enter a whole number of minutes, 0 or more.</value></data>
+	<data name="Settings.General.AboutTitle"><value>About</value></data>
+	<data name="Settings.General.AboutDescription"><value>Version details for this app and its agent framework.</value></data>
+	<data name="Settings.General.HostVersionLabel"><value>Oscova Agents</value></data>
+	<data name="Settings.General.FrameworkVersionLabel"><value>Framework</value></data>
+	<data name="Settings.Skills.FindOnlineButton"><value>Find skills online</value></data>
+	<data name="Settings.Skills.ManageSourcesButton"><value>Manage sources</value></data>
+	<data name="Settings.Skills.FindOnlineDialogTitle"><value>Find skills online</value></data>
+	<data name="Settings.Skills.FindOnlineSearchPlaceholder"><value>Search by name...</value></data>
+	<data name="Settings.Skills.FindOnlineInstallButton"><value>Install</value></data>
+	<data name="Settings.Skills.FindOnlineDescriptionLoading"><value>Loading description...</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsUnavailable"><value>Details could not be loaded.</value></data>
+	<data name="Settings.Skills.FindOnlineNoDescription"><value>No description is available for this skill.</value></data>
+	<data name="Settings.Skills.FindOnlineInstalledToast"><value>Skill installed.</value></data>
+	<data name="Settings.Skills.FindOnlineNoSourcesMessage"><value>No skill sources configured. Ask an administrator to add one.</value></data>
+	<data name="Settings.Skills.FindOnlineEmptyResults"><value>No skills match your search.</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsButton"><value>Details</value></data>
+	<data name="Settings.Skills.FindOnlineHideButton"><value>Hide</value></data>
+	<data name="Settings.Skills.FindOnlineRetryButton"><value>Retry</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSkill"><value>Skill</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSource"><value>Source</value></data>
+	<data name="Settings.Skills.RegistrySourcesDialogTitle"><value>Skill sources</value></data>
+	<data name="Settings.Skills.RegistrySourcesDescription"><value>Configure the GitHub repositories used by Find skills online.</value></data>
+	<data name="Settings.Skills.RegistrySourcesAddRow"><value>Add source</value></data>
+	<data name="Settings.Skills.RegistrySourcesOwnerLabel"><value>Owner</value></data>
+	<data name="Settings.Skills.RegistrySourcesRepoLabel"><value>Repository</value></data>
+	<data name="Settings.Skills.RegistrySourcesBranchLabel"><value>Branch</value></data>
+	<data name="Settings.Skills.RegistryPatHint"><value>An admin can add a Personal Access Token on the Admin page under GitHub Skill Search for authenticated repository access.</value></data>
+	<data name="Settings.Skills.RegistrySavedToast"><value>Skill sources saved.</value></data>
+	<data name="Settings.Skills.InstallStageResolving"><value>Resolving files</value></data>
+	<data name="Settings.Skills.InstallStageDownloading"><value>Downloading</value></data>
+	<data name="Settings.Skills.InstallStageImporting"><value>Importing</value></data>
+	<data name="Settings.Skills.InstallStageInstalled"><value>Installed</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialTitle"><value>GitHub Skill Search</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialDescription"><value>Optional Personal Access Token used by Find skills online. Raises the GitHub API rate limit from 60 to 5,000 requests per hour for the whole host.</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialHint"><value>Leave the field blank to keep an existing token. Use Clear to remove it.</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialFieldLabel"><value>Personal Access Token</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialLoading"><value>Loading current status...</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderExists"><value>Leave blank to keep current token</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderNew"><value>Paste GitHub personal access token</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialSavedToast"><value>GitHub skill search token saved.</value></data>
+	<data name="Settings.Plugins.FindOnlineButton"><value>Find plugins online</value></data>
+	<data name="Settings.Plugins.FindOnlineDialogTitle"><value>Find plugins online</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPlaceholder"><value>Search NuGet packages...</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchButton"><value>Search</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPrompt"><value>Type a package name to search OscovaPlugin packages on NuGet.org.</value></data>
+	<data name="Settings.Plugins.FindOnlineSearching"><value>Searching NuGet.org...</value></data>
+	<data name="Settings.Plugins.FindOnlineEmptyResults"><value>No plugins match your search.</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsButton"><value>Details</value></data>
+	<data name="Settings.Plugins.FindOnlineHideButton"><value>Hide</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallButton"><value>Install or update</value></data>
+	<data name="Settings.Plugins.FindOnlineRetryButton"><value>Retry</value></data>
+	<data name="Settings.Plugins.FindOnlineRequiresNewerOscova"><value>Requires a newer Oscova</value></data>
+	<data name="Settings.Plugins.FindOnlineIncompatible"><value>Not compatible with this Oscova</value></data>
+	<data name="Settings.Plugins.FindOnlinePrereleaseOnly"><value>Prerelease only</value></data>
+	<data name="Settings.Plugins.FindOnlineDescriptionLoading"><value>Loading details...</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsUnavailable"><value>Details could not be loaded.</value></data>
+	<data name="Settings.Plugins.FindOnlineNoDescription"><value>No description is available for this plugin.</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledToast"><value>Plugin package is ready. Confirm Load On Next Restart, then restart.</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallNotice"><value>Plugin package is ready. Confirm Load On Next Restart, then restart.</value></data>
+	<data name="Settings.Plugins.FindOnlineDownloadsLabel"><value>{0:N0} downloads</value></data>
+	<data name="Settings.Plugins.FindOnlineVersionLabel"><value>Version {0}</value></data>
+	<data name="Settings.Plugins.FindOnlineUnknownAuthor"><value>Unknown author</value></data>
+	<data name="Settings.Plugins.FindOnlineLicenseLabel"><value>License</value></data>
+	<data name="Settings.Plugins.FindOnlineProjectButton"><value>Project</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderPackage"><value>Package</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderMetadata"><value>Metadata</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallingButton"><value>Installing...</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledButton"><value>Installed</value></data>
+	<data name="Settings.Speech.RecognitionProviderDescription"><value>Choose how microphone audio is transcribed after hands-free capture. Language: Automatic detection.</value></data>
+	<data name="Settings.Speech.SynthesisProviderDescription"><value>Choose how assistant text is converted to audio.</value></data>
+	<data name="Settings.Speech.ProviderLabel"><value>Provider</value></data>
+	<data name="Settings.Speech.ProviderLocal"><value>Local</value></data>
+	<data name="Settings.Speech.ProviderOpenAI"><value>OpenAI</value></data>
+	<data name="Settings.Speech.CredentialLabel"><value>Credential</value></data>
+	<data name="Settings.Speech.CredentialPlaceholder"><value>Select saved credential</value></data>
+	<data name="Settings.Speech.CredentialHelp"><value>Credentials are managed in Settings > Credentials.</value></data>
+	<data name="Settings.Speech.ModelLabel"><value>Model</value></data>
+	<data name="Settings.Speech.SaveProviderButton"><value>Save speech settings</value></data>
+	<data name="Settings.Speech.SettingsSavedToast"><value>Speech settings saved.</value></data>
+	<data name="Settings.Credentials.ConfiguredStatus"><value>Configured</value></data>
+	<data name="Settings.Credentials.MissingStatus"><value>Missing value</value></data>
+	<data name="Settings.Section.Privacy.Label"><value>Privacy</value></data>
+	<data name="Settings.Section.Privacy.Description"><value>Control offline mode, automatic sign-out, and what your agent can send out.</value></data>
+	<data name="Settings.Privacy.LoadingMessage"><value>Loading privacy settings...</value></data>
+	<data name="Settings.Privacy.OfflineModeTitle"><value>Offline mode</value></data>
+	<data name="Settings.Privacy.OfflineModeLabel"><value>Keep agent runs offline</value></data>
+	<data name="Settings.Privacy.OfflineModeDescription"><value>When enabled, your agent can use local models, local tools, and LAN endpoints, but public internet providers and egress tools are blocked.</value></data>
+	<data name="Settings.Privacy.OfflineModeOffBadge"><value>Off</value></data>
+	<data name="Settings.Privacy.OfflineModeOnBadge"><value>On</value></data>
+	<data name="Settings.Privacy.EffectsTitle"><value>Live effect</value></data>
+	<data name="Settings.Privacy.EffectsOff"><value>Offline limits are inactive. Your configured providers and tools can use their normal network access.</value></data>
+	<data name="Settings.Privacy.DisabledToolsCount"><value>{0} tools disabled</value></data>
+	<data name="Settings.Privacy.CloudProvidersTitle"><value>Cloud providers blocked</value></data>
+	<data name="Settings.Privacy.NoCloudProviders"><value>No configured cloud providers are currently blocked.</value></data>
+	<data name="Settings.Privacy.LocalNetworkTitle"><value>Local network</value></data>
+	<data name="Settings.Privacy.LocalNetworkDescription"><value>Loopback and local-network addresses stay available, including local Ollama or an avatar engine on another machine.</value></data>
+	<data name="Settings.Privacy.RedactionTitle"><value>Redaction</value></data>
+	<data name="Settings.Privacy.RedactionBadge"><value>Always on</value></data>
+	<data name="Settings.Privacy.RedactionDescription"><value>Saved secrets are masked in agent logs, approvals, and captured request details. This protection cannot be turned off.</value></data>
+	<data name="Settings.Privacy.ChannelsTitle"><value>Connected channels</value></data>
+	<data name="Settings.Privacy.ChannelsDescription"><value>Discord, Telegram, and Slack still relay your messages through their own servers when those channels are enabled.</value></data>
+	<data name="Settings.Privacy.AutoLogout.Title"><value>Automatic sign-out</value></data>
+	<data name="Settings.Privacy.AutoLogout.Description"><value>Sign out this browser after the selected time without mouse, touch, keyboard, scrolling, or submitting a message in any open Oscova tab.</value></data>
+	<data name="Settings.Privacy.AutoLogout.Label"><value>Sign out after</value></data>
+	<data name="Settings.Privacy.AutoLogout.OffOption"><value>Off</value></data>
+	<data name="Settings.Privacy.AutoLogout.MinutesOption"><value>{0} minutes</value></data>
+	<data name="Settings.Privacy.ResetButton"><value>Reset</value></data>
+	<data name="Settings.Privacy.SaveButton"><value>Save Privacy Settings</value></data>
+	<data name="Settings.Privacy.LoadErrorToast"><value>Privacy settings load error: {0}</value></data>
+	<data name="Settings.Privacy.SaveSuccessToast"><value>Privacy settings saved</value></data>
+	<data name="Settings.Privacy.SaveFailedToast"><value>Privacy settings could not be saved.</value></data>
+	<data name="Settings.Privacy.SaveFailedWithMessageToast"><value>Failed to save privacy settings: {0}</value></data>
+	<data name="Settings.Tools.NetworkEgress"><value>Internet</value></data>
+	<data name="Settings.Tools.NetworkIncidental"><value>Can reach network</value></data>
+	<data name="Settings.Tools.EgressDisabledNotice"><value>Internet tools are blocked by the current local-only setting.</value></data>
+	<data name="Settings.Tools.EgressDisabledBadge"><value>Blocked</value></data>
+	<data name="Settings.Tools.EgressDisabledTooltip"><value>Turn off the active local-only setting to select this internet tool.</value></data>
+	<data name="Settings.Tools.TableHeaderPolicy"><value>Policy</value></data>
+	<data name="Settings.Tools.ConfigurePolicyTooltip"><value>Configure tool policy</value></data>
+	<data name="Settings.Tools.ConfigurePolicyLabel"><value>Configure policy for {0}</value></data>
+	<data name="Settings.Tools.Governance.OverrideBadge"><value>Overridden</value></data>
+	<data name="Settings.Tools.Governance.DefaultBadge"><value>Default</value></data>
+	<data name="Settings.Tools.Governance.CustomBadge"><value>Custom</value></data>
+	<data name="Settings.Tools.Governance.QuotaBadge"><value>{0} / {1}</value></data>
+	<data name="Settings.Tools.Governance.DialogTitle"><value>Tool policy</value></data>
+	<data name="Settings.Tools.Governance.NetworkLabel"><value>Network access</value></data>
+	<data name="Settings.Tools.Governance.UseDeclaredOption"><value>Use declared scope</value></data>
+	<data name="Settings.Tools.Governance.NetworkHint"><value>This classification controls whether local-only mode hides the tool.</value></data>
+	<data name="Settings.Tools.Governance.LocalOnlyWarning"><value>This tool will be unavailable while local-only mode is active.</value></data>
+	<data name="Settings.Tools.Governance.LimitEnabledLabel"><value>Limit calls</value></data>
+	<data name="Settings.Tools.Governance.MaxCallsLabel"><value>Maximum calls</value></data>
+	<data name="Settings.Tools.Governance.WindowHint"><value>Limit applies over a fixed 24-hour window.</value></data>
+	<data name="Settings.Tools.Governance.InvalidLimitMessage"><value>Enter a call limit from 1 to 1000000.</value></data>
+	<data name="Settings.Tools.Governance.SavedToast"><value>Tool policy saved.</value></data>
+	<data name="Settings.Tools.Governance.SaveFailedToast"><value>Tool policy could not be saved: {0}</value></data>
+	<data name="Settings.Avatar.ConnectEngineTitle"><value>Connect to Avatar Engine</value></data>
+	<data name="Settings.Avatar.ConnectEngineButton"><value>Connect</value></data>
+	<data name="Settings.Avatar.AccessModeLabel"><value>Access mode</value></data>
+	<data name="Settings.Avatar.AccessModeShared"><value>Shared</value></data>
+	<data name="Settings.Avatar.AccessModeExclusive"><value>Exclusive</value></data>
+	<data name="Settings.Avatar.AccessModeHelp"><value>Shared allows other paired clients. Exclusive blocks them until the Engine restarts.</value></data>
+	<data name="Settings.Avatar.PairingDialogTitle"><value>Pair Avatar Engine</value></data>
+	<data name="Settings.Avatar.PairingCodeLabel"><value>Pairing code</value></data>
+	<data name="Settings.Avatar.PairingCodeHelp"><value>Enter the six-digit code shown by the Avatar Engine.</value></data>
+	<data name="Settings.Avatar.PairingLifetime"><value>The code expires in about {0} seconds.</value></data>
+	<data name="Settings.Avatar.PairingButton"><value>Pair</value></data>
+	<data name="Settings.Avatar.PairingBusy"><value>Pairing...</value></data>
+	<data name="Settings.Avatar.PairingFailed"><value>Pairing failed. Request a new code and try again.</value></data>
+	<data name="Settings.Avatar.PairingExpired"><value>The code has expired. Close this dialog and select Connect for a new code.</value></data>
+	<data name="Settings.Avatar.PairingInvalidResponse"><value>The Avatar Engine returned an invalid response. Close this dialog and select Connect to try again.</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredStatus"><value>Pairing required</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictStatus"><value>Access conflict</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedStatus"><value>Rate limited</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorStatus"><value>Configuration issue</value></data>
+	<data name="Settings.Avatar.EngineErrorStatus"><value>Engine error</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredDescription"><value>Select Connect to pair this Oscova installation.</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictDescription"><value>Another client currently owns incompatible runtime access.</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedDescription"><value>Wait before selecting Connect again.</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedRetryDescription"><value>Wait {0} seconds before selecting Connect again.</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorDescription"><value>Fix local settings storage, then select Connect again.</value></data>
+	<data name="Settings.Avatar.EngineErrorDescription"><value>The Avatar Engine returned an unexpected response. Select Connect to try again.</value></data>
+  <data name="Settings.Agents.Prebuilt.Browse" xml:space="preserve">
+    <value>Browse prebuilt agents</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Summary" xml:space="preserve">
+    <value>Choose a specialist for an on-demand conversation. Installing creates an editable agent.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Selection" xml:space="preserve">
+    <value>Choose an agent</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.OptionalTools" xml:space="preserve">
+    <value>Selected read tools depend on your installation and account setup. Review tools and access in the editor.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Install" xml:space="preserve">
+    <value>Install agent</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Empty" xml:space="preserve">
+    <value>No prebuilt agents are available.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.LoadFailed" xml:space="preserve">
+    <value>The catalog could not be loaded. Retry to load it again.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Installed" xml:space="preserve">
+    <value>Agent installed. You can edit your copy now.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.RefreshFailed" xml:space="preserve">
+    <value>The agent was installed, but the editor could not be loaded. Refresh Agents to open your copy.</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.InstallFailed" xml:space="preserve">
+    <value>Installation could not be confirmed. Refresh Agents and check for a new copy before installing again.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Available" xml:space="preserve">
+    <value>Update available</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Title" xml:space="preserve">
+    <value>Application update</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Versions" xml:space="preserve">
+    <value>Installed {0}, available {1}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.PluginsOnly" xml:space="preserve">
+    <value>Installed {0}. Only plugins have updates.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Interruption" xml:space="preserve">
+    <value>Finish important work first. Oscova will be unavailable while it updates and restarts.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Start" xml:space="preserve">
+    <value>Update and restart</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.BackupLocation" xml:space="preserve">
+    <value>Recovery files: {0}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Preparing" xml:space="preserve">
+    <value>Preparing the update</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Restarting" xml:space="preserve">
+    <value>Updating. Waiting for Oscova to restart...</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Failed" xml:space="preserve">
+    <value>The application update failed.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Unsupported" xml:space="preserve">
+    <value>This installation must be updated from the terminal.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailable" xml:space="preserve">
+    <value>The release check is unavailable. Try Refresh or update from the terminal.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RecoveryHint" xml:space="preserve">
+    <value>Run 'oscova update status' on the Host computer for progress or recovery guidance.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.FailedOnVersion" xml:space="preserve">
+    <value>Update failed. Oscova is still on {0}.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RetryGuidance" xml:space="preserve">
+    <value>Your data is unchanged. Select Retry to try again. If it fails again, run 'oscova update status' on the Host computer.</value>
+  </data>
+  <data name="PluginsPendingReplacement" xml:space="preserve">
+    <value>After restart: {0} {1}</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesAction" xml:space="preserve">
+    <value>Credits and licenses</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesTitle" xml:space="preserve">
+    <value>Credits and licenses</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesDescription" xml:space="preserve">
+    <value>License notices for third-party software included with Oscova are stored locally and available offline.</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesLoading" xml:space="preserve">
+    <value>Loading license notices...</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesUnavailable" xml:space="preserve">
+    <value>The bundled license notices could not be loaded.</value>
+  </data>
+  <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>Hair</value></data>
+  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>Top</value></data>
+  <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>Choose hair for the selected avatar.</value></data>
+  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>Choose a top for the selected avatar.</value></data>
+  <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>Some appearance choices could not be loaded. Check the Engine connection and refresh.</value></data>
+  <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>Could not apply {0}: {1}. Choose an available option and try again.</value></data>
+  <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Current" xml:space="preserve">
+    <value>Oscova is up to date.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailableLabel" xml:space="preserve">
+    <value>Update check unavailable</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.TakingLonger" xml:space="preserve">
+    <value>This update is taking longer. Oscova may still be backing up your data or downloading components. You can keep waiting or check 'oscova update status'.</value>
+  </data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>Connect at startup</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>Save changes before starting the channel.</value></data>
+	<data name="Settings.Plugins.VerifiedBadge"><value>Verified</value></data>
+	<data name="Settings.Plugins.ReplaceButton"><value>Replace plugin</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmTitle"><value>Replace {0} with {1}?</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmMessage"><value>This replacement keeps the plugin's identity, settings, and credentials.</value></data>
+  <data name="Settings.General.FollowUpModeLabel" xml:space="preserve"><value>Follow-up behavior</value></data>
+  <data name="Settings.General.FollowUpModeSteer" xml:space="preserve"><value>Steer</value></data>
+  <data name="Settings.General.FollowUpModeQueue" xml:space="preserve"><value>Queue</value></data>
+  <data name="Settings.General.FollowUpModeDescription" xml:space="preserve"><value>While the agent is working, Enter uses this choice. Steer guides the current response. Queue sends your message after it finishes. Ctrl+Enter uses the other choice once.</value></data>
+  <data name="Settings.Agents.ContextUsage.Initial" xml:space="preserve">
+    <value>Estimated initial input tokens</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Scope" xml:space="preserve">
+    <value>Local estimate for these settings. Conversation input, later skill bodies and tool results are excluded. Model framing and tokenization may differ.</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Deferred" xml:space="preserve">
+    <value>Deferred tools</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.DeferredHelp" xml:space="preserve">
+    <value>Searchable declarations load when needed and are excluded from the initial total.</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Assembly" xml:space="preserve">
+    <value>Tool assembly adjustment</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Runtime" xml:space="preserve">
+    <value>Runtime and workspace</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Todo" xml:space="preserve">
+    <value>Task list</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Vision" xml:space="preserve">
+    <value>Image analysis</value>
+  </data>
+<data name="Settings.LowBatteryProtection.Label" xml:space="preserve"><value>Skip scheduled tasks on low battery</value></data>
+<data name="Settings.LowBatteryProtection.Description" xml:space="preserve"><value>Skip automatic task runs below your battery threshold while this server computer is unplugged. You will receive a notification and can run the skipped task manually.</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdLabel" xml:space="preserve"><value>Battery threshold (%)</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdInvalid" xml:space="preserve"><value>Enter a whole number from 1 to 100.</value></data>
+<data name="Settings.LowBatteryProtection.Checking" xml:space="preserve"><value>Checking battery information on the computer running Oscova.</value></data>
+<data name="Settings.LowBatteryProtection.NotDetected" xml:space="preserve"><value>No system battery is detected on the computer running Oscova.</value></data>
+<data name="Settings.LowBatteryProtection.Unavailable" xml:space="preserve"><value>Battery or power connection information is unavailable on the computer running Oscova.</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderLabel"><value>Skills folder (optional)</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderHint"><value>For example: skills. Leave blank to search the whole repository.</value></data>
+  <data name="Settings.Prompts.ChatContinuationInstructionLabel"><value>Chat Resume Instruction</value></data>
+  <data name="Settings.Prompts.ChatContinuationDescription"><value>Guides how an interrupted chat resumes its last request.</value></data>
+  <data name="Settings.Prompts.ChatTitleInstructionLabel"><value>Chat Title Instruction</value></data>
+  <data name="Settings.Prompts.ChatTitleDescription"><value>Guides the automatic titles created for chats.</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryInstructionLabel"><value>Tool Failure Recovery Instruction</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryDescription"><value>Guides how agents recover after repeated tool failures.</value></data>
+  <data name="Settings.Prompts.WorkspaceHasAliasesVariableDescription"><value>True when a workspace has a file-tool alias.</value></data>
+  <data name="Settings.Prompts.UsesHostPathsVariableDescription"><value>True when shell commands use host paths.</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationSummary"><value>Skill sources: {0} of {1} finished.</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCheckingCache"><value>Checking cache</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationWaiting"><value>Waiting to prepare</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationConnecting"><value>Connecting</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationIndexing"><value>Indexing download</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPreparingFiles"><value>Preparing files</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationScanning"><value>Scanning skills</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCached"><value>Cached</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReady"><value>Ready: {0} skills</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReadyCached"><value>Ready: {0} skills (cached)</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationFailed"><value>Failed</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReceivedBytes"><value>{0} received</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPartialResults"><value>Results from ready sources. More sources are still being prepared.</value></data>
+  <data name="Settings.Avatar.Presentation.Heading" xml:space="preserve"><value>Presentation</value></data>
+  <data name="Settings.Avatar.Presentation.ModeLabel" xml:space="preserve"><value>Layout mode</value></data>
+  <data name="Settings.Avatar.Presentation.AutoLabel" xml:space="preserve"><value>Auto</value></data>
+  <data name="Settings.Avatar.Presentation.SubtitleLabel" xml:space="preserve"><value>Subtitle</value></data>
+  <data name="Settings.Avatar.Presentation.SideLabel" xml:space="preserve"><value>Side</value></data>
+  <data name="Settings.Avatar.Presentation.ApplyPresentationButton" xml:space="preserve"><value>Apply Presentation</value></data>
+  <data name="Settings.Avatar.Presentation.TestButton" xml:space="preserve"><value>Test layout</value></data>
+  <data name="Settings.Avatar.Presentation.EndTestButton" xml:space="preserve"><value>End Test</value></data>
+  <data name="Settings.Avatar.Presentation.TestDescription" xml:space="preserve"><value>Testing uses the display duration above, then restores the selected layout mode. Set a duration greater than zero to test.</value></data>
+  <data name="Settings.Avatar.Presentation.FailedToast" xml:space="preserve"><value>Could not apply presentation settings.</value></data>
+  <data name="Settings.Mcp.Governance.McpEnabled" xml:space="preserve"><value>Enabled</value></data>
+  <data name="Settings.Mcp.Governance.McpShared" xml:space="preserve"><value>Share with users</value></data>
+  <data name="Skills.UpdateForUsers" xml:space="preserve"><value>Update for users</value></data>
+  <data name="Skills.ShareWithUsers" xml:space="preserve"><value>Share with users</value></data>
+  <data name="Skills.ManagedByOperator" xml:space="preserve"><value>Managed by operator</value></data>
+  <data name="Settings.Mcp.Device" xml:space="preserve"><value>Device</value></data>
+  <data name="Settings.Mcp.SelectDevice" xml:space="preserve"><value>Select a device</value></data>
+  <data name="Settings.Mcp.CentralServer" xml:space="preserve"><value>Server</value></data>
+  <data name="Settings.Mcp.DeviceOnline" xml:space="preserve"><value>Online</value></data>
+  <data name="Settings.Mcp.DeviceOffline" xml:space="preserve"><value>Offline</value></data>
+  <data name="Settings.Mcp.SavedDeviceOffline" xml:space="preserve"><value>Saved. Device offline. Connect it to check this MCP server.</value></data>
+  <data name="Skills.IncludedForAll" xml:space="preserve"><value>Included for all users</value></data>
+  <data name="Skills.PublicationResult" xml:space="preserve"><value>Sharing enabled. Copies added or updated: {0}. Personal copies kept: {1}.</value></data>
+  <data name="Plugins.DeviceReady" xml:space="preserve"><value>Ready on {0}</value></data>
+  <data name="Plugins.DevicePreparing" xml:space="preserve"><value>Preparing on {0}</value></data>
+  <data name="Plugins.DeviceUnavailable" xml:space="preserve"><value>Temporarily unavailable on {0}</value></data>
+  <data name="Settings.PromptsBrowserUseLabel" xml:space="preserve"><value>Browser use</value></data>
+  <data name="Settings.PromptsBrowserUseDescription" xml:space="preserve"><value>Guides website interaction, user login help, and confirmation before sensitive actions. These instructions guide the model and do not guarantee detection.</value></data>
+  <data name="Settings.ModelProviders.DownloadFailedMessage" xml:space="preserve"><value>Could not download model '{0}': {1}</value></data>
+  <data name="Settings.Prompts.RestoreDefaultButton" xml:space="preserve">
+    <value>Restore default</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmTitle" xml:space="preserve">
+    <value>Restore default instruction?</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmMessage" xml:space="preserve">
+    <value>Clear your custom instruction for {0} and switch to Use Default? Click Save afterward to apply the change.</value>
+  </data>
+  <data name="Settings.Execution.UnavailableDescription" xml:space="preserve">
+    <value>This environment is unavailable. Enable its plugin and restart, or select and save another environment.</value>
+  </data>
+  <data name="Settings.Execution.Description" xml:space="preserve">
+    <value>Choose where shell commands and bundled skill scripts run.</value>
+  </data>
+  <data name="Settings.Execution.EnvironmentLabel" xml:space="preserve">
+    <value>Execution environment</value>
+  </data>
+  <data name="Settings.Execution.Label" xml:space="preserve">
+    <value>Execution</value>
+  </data>
+  <data name="Settings.Execution.ScriptsDescription" xml:space="preserve">
+    <value>Scripts need a runtime installed in the selected environment and a valid invocation for its shell.</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Completed" xml:space="preserve"><value>Updated to {0}</value></data>
+  <data name="Settings.ApplicationUpdate.PluginsCompleted" xml:space="preserve"><value>Plugins updated. Oscova stays on {0}.</value></data>
+  <data name="Settings.ApplicationUpdate.NotStarted" xml:space="preserve"><value>The update did not start, so Oscova was not changed. Check the update window on the Host computer, then try again.</value></data>
+  <data name="Settings.ApplicationUpdate.FilesKept" xml:space="preserve"><value>Its files and settings have been kept.</value></data>
+  <data name="Settings.ApplicationUpdate.OpenPlugins" xml:space="preserve"><value>Open Plugins</value></data>
+  <data name="Settings.ApplicationUpdate.Compatibility" xml:space="preserve"><value>Plugins that do not support the new version will be disabled. Their files and settings will be kept.</value></data>
+  <data name="Settings.ApplicationUpdate.PluginUpdated" xml:space="preserve"><value>Updated</value></data>
+  <data name="Settings.ApplicationUpdate.PluginDisabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="Settings.ApplicationUpdate.PluginRetained" xml:space="preserve"><value>Kept</value></data>
+  <data name="Settings.Execution.Checking" xml:space="preserve"><value>Checking…</value></data>
+  <data name="Settings.Execution.Available" xml:space="preserve"><value>Available on this machine</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLabel" xml:space="preserve"><value>Search method</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodApi" xml:space="preserve"><value>GitHub API</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocal" xml:space="preserve"><value>Local repository downloads</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodHint" xml:space="preserve"><value>Applies to everyone using this host.</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocalNotice" xml:space="preserve"><value>Downloads entire repositories, including scripts, to the computer running Oscova.</value></data>
+  <data name="Settings.Skills.FindOnlinePreparationReadingMetadata" xml:space="preserve"><value>Reading repository metadata</value></data>
+  <data name="Settings.Goal.MaxIterations" xml:space="preserve">
+    <value>Goal max iterations</value>
+  </data>
+  <data name="Settings.Goal.Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsInvalid" xml:space="preserve">
+    <value>Enter a whole number from 1 to 2147483647.</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsHelp" xml:space="preserve">
+    <value>Limits goal work cycles. Blank uses the default.</value>
+  </data>
+  <data name="Settings.Goal.JudgeInstruction" xml:space="preserve">
+    <value>Goal judge instruction</value>
+  </data>
+  <data name="Settings.Goal.JudgeDescription" xml:space="preserve">
+    <value>Checks whether the goal is complete after a work cycle.</value>
+  </data>
+  <data name="Settings.Goal.ContinuationInstruction" xml:space="preserve">
+    <value>Goal continuation template</value>
+  </data>
+  <data name="Settings.Goal.ContinuationDescription" xml:space="preserve">
+    <value>Turns the judge&apos;s gap analysis into the worker&apos;s next instruction.</value>
+  </data>
+  <data name="Settings.Goal.GapAnalysis" xml:space="preserve">
+    <value>What the judge says still needs to be done.</value>
+  </data>
+  <data name="Settings.Prompts.PrivateDirectoriesVariableDescription" xml:space="preserve">
+    <value>The agent's private folder list.</value>
+  </data>
+  <data name="Settings.Prompts.HasPrivateDirectoryVariableDescription" xml:space="preserve">
+    <value>True when the agent has a private folder.</value>
+  </data>
+  <data name="Settings.Prompts.ShellRootVariablesVariableDescription" xml:space="preserve">
+    <value>Shell environment variable names and their folder aliases.</value>
+  </data>
+  <data name="Settings.Prompts.HasShellRootsVariableDescription" xml:space="preserve">
+    <value>True when shell root variables are available.</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsLabel" xml:space="preserve">
+    <value>Use chat model when joining another agent&apos;s chat</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsDescription" xml:space="preserve">
+    <value>Web chat mentions and consultations only. Off uses the provider above.</value>
+  </data>
+  <data name="Settings.Prompts.InstructionModeLabel" xml:space="preserve"><value>Instruction mode</value></data>
+  <data name="Settings.Prompts.InstructionUseDefault" xml:space="preserve"><value>Use Default</value></data>
+  <data name="Settings.Prompts.InstructionAppend" xml:space="preserve"><value>Add to Default</value></data>
+  <data name="Settings.Prompts.InstructionReplace" xml:space="preserve"><value>Replace Default</value></data>
+  <data name="Settings.Prompts.InstructionDefaultReference" xml:space="preserve"><value>Default instruction</value></data>
+  <data name="Speech.InstallPluginHelp" xml:space="preserve"><value>Install a speech plugin in Settings &gt; Plugins, then restart.</value></data>
+  <data name="Speech.ProviderUnavailableHelp" xml:space="preserve"><value>This provider is unavailable. Enable its plugin and restart, or choose an installed provider.</value></data>
+  <data name="Settings.Speech.VoiceCatalogFailed" xml:space="preserve"><value>Could not load voices. Check the selected credential and voice permissions, then select the credential again.</value></data>
+  <data name="Settings.Prompts.MetadataError" xml:space="preserve">
+    <value>Instruction metadata is missing or invalid. This instruction cannot be edited.</value>
+  </data>
+  <data name="Settings.Prompts.LoadFailed" xml:space="preserve">
+    <value>Instructions could not be loaded.</value>
+  </data>
+  <data name="Updates.HarnessUpdateNoticeTitle" xml:space="preserve"><value>Harness update available</value></data>
+  <data name="Updates.HarnessUpdateNoticeBody" xml:space="preserve"><value>Oscova {0} is available. Open Dashboard Updates to review it.</value></data>
+  <data name="Updates.AvatarUpdateNoticeTitle" xml:space="preserve"><value>Avatar Engine available</value></data>
+  <data name="Updates.AvatarUpdateNoticeBody" xml:space="preserve"><value>Avatar Engine {0} is available. Open Dashboard Updates to review installation on this computer.</value></data>
+  <data name="Updates.AvatarUpdateTitle" xml:space="preserve"><value>Avatar Engine</value></data>
+  <data name="Updates.AvatarInstall" xml:space="preserve"><value>Install Avatar</value></data>
+  <data name="Updates.AvatarUpdateAction" xml:space="preserve"><value>Update Avatar</value></data>
+  <data name="Updates.AvatarUpdateVersions" xml:space="preserve"><value>Local: {0}. Available: {1}. Download: {2}.</value></data>
+  <data name="Updates.AvatarNotInstalled" xml:space="preserve"><value>Not installed</value></data>
+  <data name="Updates.AvatarUpdateUnknown" xml:space="preserve"><value>Unknown version</value></data>
+  <data name="Updates.AvatarUpdateConfirm" xml:space="preserve"><value>I confirm installing this release on this computer.</value></data>
+  <data name="Updates.AvatarUpdateStopImpact" xml:space="preserve"><value>The local Avatar Engine will stop, then restart after installation.</value></data>
+  <data name="Updates.AvatarUpdateUnsupported" xml:space="preserve"><value>Avatar installation and updates require Windows.</value></data>
+  <data name="Updates.AvatarUpdateUnmanaged" xml:space="preserve"><value>Launch with 'oscova start' to manage Avatar Engine on this computer.</value></data>
+  <data name="Updates.AvatarUpdateCurrent" xml:space="preserve"><value>Avatar Engine is up to date.</value></data>
+  <data name="Updates.AvatarUpdateRunning" xml:space="preserve"><value>Running</value></data>
+  <data name="Updates.AvatarUpdateStopped" xml:space="preserve"><value>Stopped</value></data>
+  <data name="Updates.AvatarUpdateComputer" xml:space="preserve"><value>Computer: {0}</value></data>
+  <data name="Updates.AvatarUpdateDownloading" xml:space="preserve"><value>Downloading {0} of {1}</value></data>
+  <data name="Updates.AvatarUpdateInstalling" xml:space="preserve"><value>Installing...</value></data>
+  <data name="Updates.AvatarUpdateRestarting" xml:space="preserve"><value>Restarting Avatar Engine...</value></data>
+  <data name="Updates.AvatarUpdateStopping" xml:space="preserve"><value>Stopping Avatar Engine...</value></data>
+  <data name="Updates.AvatarUpdateCompleted" xml:space="preserve"><value>Avatar Engine installed.</value></data>
+  <data name="Updates.AvatarUpdateVerifying" xml:space="preserve"><value>Verifying download...</value></data>
+  <data name="Updates.AvatarUpdateNotRunning" xml:space="preserve"><value>Avatar Engine is installed but is not running. Start it from Avatar settings or run 'oscova avatar start'.</value></data>
+  <data name="Updates.ApplicationUpdateReadNotes" xml:space="preserve"><value>Read release notes</value></data>
+  <data name="Updates.ApplicationUpdateWhatsNew" xml:space="preserve"><value>See what's new</value></data>
+  <data name="Updates.ApplicationUpdateAllNotes" xml:space="preserve"><value>All release notes</value></data>
+  <data name="Updates.ApplicationUpdateChecking" xml:space="preserve"><value>Checking for updates...</value></data>
+  <data name="Updates.ApplicationUpdatePluginsIncluded" xml:space="preserve"><value>These plugin updates are installed with the update.</value></data>
+  <data name="Updates.ApplicationUpdateInstalledColumn" xml:space="preserve"><value>Installed</value></data>
+  <data name="Updates.ApplicationUpdateAvailableColumn" xml:space="preserve"><value>Available</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLabel" xml:space="preserve"><value>Reasoning effort</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLow" xml:space="preserve"><value>Low</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortMedium" xml:space="preserve"><value>Medium</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHigh" xml:space="preserve"><value>High</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortExtraHigh" xml:space="preserve"><value>Extra high</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHelp" xml:space="preserve"><value>Default uses Medium for OpenAI with thinking outputs enabled and the model default otherwise. The selected model must support the chosen effort.</value></data>
+  <data name="ModelProvidersAnthropicMaxOutputTokensDescription" xml:space="preserve"><value>Leave blank to use {0} output tokens.</value></data>
+  <data name="Plugins.NotAvailableOnPlatform" xml:space="preserve"><value>This plugin is not available on this platform.</value></data>
+	<data name="Settings.Files.Encrypted"><value>Encrypted</value></data>
+  <data name="Settings.OAuthConnected" xml:space="preserve"><value>{0} connected.</value></data>
+  <data name="Settings.OAuthCanceled" xml:space="preserve"><value>{0} connection was canceled.</value></data>
+  <data name="Settings.OAuthUnverified" xml:space="preserve"><value>{0} connection could not be verified. Start the flow again.</value></data>
+  <data name="Settings.OAuthMissingCode" xml:space="preserve"><value>{0} did not return an authorization code.</value></data>
+  <data name="Settings.OAuthNotConfigured" xml:space="preserve"><value>{0} is not configured yet.</value></data>
+  <data name="Settings.OAuthTokenExchangeFailed" xml:space="preserve"><value>{0} token exchange failed.</value></data>
+  <data name="Settings.OAuthVaultLocked" xml:space="preserve"><value>Create or unlock your Vault Password before connecting {0}.</value></data>
+  <data name="Settings.OAuthFailed" xml:space="preserve"><value>{0} connection failed: {1}.</value></data>
+  <data name="Settings.AdminOnlySettings" xml:space="preserve"><value>{0} settings are available to administrators only.</value></data>
+  <data name="Settings.ModelProviders.FetchRecovery" xml:space="preserve"><value>Could not load models. Check the Base URL, provider connection and saved API key, then select Fetch models again.</value></data>
+  <data name="Settings.ModelProviders.MemoryFitUnknown" xml:space="preserve"><value>Memory fit is unavailable. You can still save.</value></data>
+  <data name="Settings.ModelProviders.MemoryFitEstimateHelp" xml:space="preserve"><value>Capacity estimate only. Save, then Test. The separate check needs extra memory while other models stay loaded.</value></data>
+  <data name="Settings.ModelProviders.ManagedHardware" xml:space="preserve"><value>The provider manages hardware placement. Host memory cannot predict its runtime.</value></data>
+  <data name="Settings.ModelProviders.AdvancedOptions" xml:space="preserve"><value>Advanced options</value></data>
+  <data name="Settings.ModelProviders.TestSkipped" xml:space="preserve"><value>Test skipped. Another diagnostic may be running or prerequisites are unavailable.</value></data>
+  <data name="Settings.ModelProviders.TestTimedOut" xml:space="preserve"><value>Test timed out.</value></data>
+  <data name="Settings.ModelProviders.TestCancelled" xml:space="preserve"><value>Test cancelled or connection interrupted. Execution was not confirmed.</value></data>
+  <data name="Settings.ModelProviders.TestCleanupUnconfirmed" xml:space="preserve"><value>Worker cleanup could not be confirmed. Another test is blocked until the worker exits.</value></data>
+  <data name="Settings.Plugins.HardwareSummary" xml:space="preserve"><value>Hardware observations</value></data>
+  <data name="Settings.Plugins.HardwareUnknown" xml:space="preserve"><value>Hardware check unavailable or requirements unknown.</value></data>
+  <data name="Settings.Plugins.HardwareNotDetected" xml:space="preserve"><value>Matching hardware was not detected by this check. This does not prove that hardware or drivers are absent.</value></data>
+  <data name="Settings.Plugins.RuntimeUnverified" xml:space="preserve"><value>Runtime execution has not been verified. Use the model provider Test action.</value></data>
+  <data name="Settings.Plugins.RuntimeRequirements" xml:space="preserve"><value>Declared requirements</value></data>
+  <data name="Settings.ModelProviders.MemoryFootprint" xml:space="preserve"><value>Estimated weights and F16 cache: {0}.</value></data>
+  <data name="Settings.ModelProviders.TestInferencePassed" xml:space="preserve"><value>Inference passed. Load: {0} ms. Inference: {1} ms.</value></data>
+  <data name="Settings.ModelProviders.TestInferenceFailed" xml:space="preserve"><value>Local inference failed. Check the server log for the native cause. Reduce context or GPU layers, free GPU memory, or install the CPU edition and restart.</value></data>
+  <data name="Settings.ModelProviders.TestRuntime" xml:space="preserve"><value>Observed backend: {0}. Device: {1}. Offloaded layers: {2}.</value></data>
+  <data name="Settings.ModelProviders.TestPlacementUnknown" xml:space="preserve"><value>Hardware placement could not be verified.</value></data>
+  <data name="Settings.ModelProviders.TestModelUnavailable" xml:space="preserve"><value>Select an available GGUF model file, save the provider, and test again.</value></data>
+</root>

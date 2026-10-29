@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Settings.Label"><value>सेटिंग्स</value></data>
+	<data name="Settings.Category.Workspace.Label"><value>प्राथमिकताएं</value></data>
+	<data name="Settings.Category.Workspace.Description"><value>दिखावट, भाषा, सूचनाएं, व्यक्तित्व और आवाज़।</value></data>
+	<data name="Settings.Category.Intelligence.Label"><value>एजेंट्स और AI</value></data>
+	<data name="Settings.Category.Intelligence.Description"><value>एजेंट्स, मॉडल प्रदाता, निर्देश, स्किल्स और टूल्स।</value></data>
+	<data name="Settings.Category.Connections.Label"><value>खाते और एक्सेस</value></data>
+	<data name="Settings.Category.Connections.Description"><value>कनेक्ट किए गए खाते, क्रेडेंशियल्स, नेटवर्क एक्सेस और वेबहुक।</value></data>
+	<data name="Settings.Category.Data.Label"><value>फ़ाइलें और बैकअप</value></data>
+	<data name="Settings.Category.Data.Description"><value>फ़ाइलें, आयात, निर्यात और बैकअप।</value></data>
+	<data name="Settings.Section.General.Label"><value>सामान्य</value></data>
+	<data name="Settings.Section.General.Description"><value>सामान्य एप्लिकेशन प्राथमिकताओं और दिखावट को कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Section.Notifications.Description"><value>सूचना वितरण और सूक्ष्म UI ध्वनि संकेतों को नियंत्रित करें।</value></data>
+	<data name="Settings.Section.Avatar.Label"><value>अवतार</value></data>
+	<data name="Settings.Section.Avatar.Description"><value>सहायक के विज़ुअल अवतार दिखावट को अनुकूलित करें।</value></data>
+	<data name="Settings.Section.Speech.Label"><value>आवाज़</value></data>
+	<data name="Settings.Section.Speech.Description"><value>टेक्स्ट-टू-स्पीच और वाक् पहचान विकल्पों को कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Section.Providers.Label"><value>मॉडल प्रदाता</value></data>
+	<data name="Settings.Section.Providers.Description"><value>मॉडल प्रदाता कनेक्शन और API कुंजियों का प्रबंधन करें।</value></data>
+	<data name="Settings.Section.Agent.Label"><value>मुख्य एजेंट</value></data>
+	<data name="Settings.Section.Agent.Description"><value>मुख्य AI सहायक के व्यवहार और निर्देशों को कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Section.Agents.Label"><value>एजेंट्स</value></data>
+	<data name="Settings.Section.Agents.Description"><value>अतिरिक्त AI एजेंट्स और उनके कॉन्फ़िगरेशन का प्रबंधन करें।</value></data>
+	<data name="Settings.Section.Compaction.Label"><value>निर्देश</value></data>
+	<data name="Settings.Section.Compaction.Description"><value>कॉम्पैक्शन और मेमोरी के लिए उपयोग किए जाने वाले सहेजे गए निर्देशों को संपादित करें।</value></data>
+	<data name="Settings.Section.Skills.Label"><value>स्किल्स</value></data>
+	<data name="Settings.Section.Skills.Description"><value>एजेंट कौशल खोजें, स्थापित करें, साझा करें और हटाएँ।</value></data>
+	<data name="Settings.Section.Tools.Label"><value>टूल्स</value></data>
+	<data name="Settings.Section.Tools.Description"><value>AI सहायक के लिए उपलब्ध टूल्स को सक्षम या अक्षम करें।</value></data>
+	<data name="Settings.Section.Plugins.Label"><value>प्लगइन्स</value></data>
+	<data name="Settings.Section.Plugins.Description"><value>रीस्टार्ट के बाद चलने के लिए स्वीकृत इंस्टॉल किए गए एक्सटेंशन प्रबंधित करें।</value></data>
+	<data name="Settings.Section.Mcp.Label"><value>MCP सर्वर</value></data>
+	<data name="Settings.Section.Mcp.Description"><value>मॉडल कॉन्टेक्स्ट प्रोटोकॉल (Model Context Protocol) का उपयोग करने वाले बाहरी टूल सर्वर कनेक्ट करें।</value></data>
+	<data name="Settings.Section.Network.Label"><value>नेटवर्क</value></data>
+	<data name="Settings.Section.Network.Description"><value>नेटवर्क, प्रॉक्सी और कनेक्शन सेटिंग्स समायोजित करें।</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Label"><value>कनेक्ट किए गए खाते</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Description"><value>OAuth-आधारित एकीकरण के लिए Google और Microsoft खाते कनेक्ट करें।</value></data>
+	<data name="Settings.Section.Credentials.Label"><value>क्रेडेंशियल्स</value></data>
+	<data name="Settings.Section.Credentials.Description"><value>सहेजी गई API कुंजियों और टोकन का प्रबंधन करें।</value></data>
+	<data name="Settings.Channels.CredentialsTitle"><value>बॉट क्रेडेंशियल्स</value></data>
+	<data name="Settings.Channels.AgentHint"><value>इस चैनल में जवाब देने वाला एजेंट चुनें।</value></data>
+	<data name="Settings.Channels.EnableAtStartupHint"><value>सक्षम होने पर, एप्लिकेशन शुरू होने पर बॉट अपने आप कनेक्ट हो जाएगा</value></data>
+	<data name="Settings.Channels.NewCredentialButton"><value>क्रेडेंशियल्स प्रबंधित करें</value></data>
+	<data name="Settings.Channels.SavedTokenHeading"><value>सहेजा गया बॉट टोकन</value></data>
+	<data name="Settings.Channels.SaveSettingsButton"><value>सेटिंग्स सहेजें</value></data>
+	<data name="Settings.Channels.StartBotButton"><value>बॉट प्रारंभ करें</value></data>
+	<data name="Settings.Channels.StopBotButton"><value>बॉट रोकें</value></data>
+	<data name="Settings.Channels.StatusTitle"><value>बॉट स्थिति</value></data>
+	<data name="Settings.Channels.TokensManagedDescription"><value>बॉट टोकन क्रेडेंशियल्स टैब में केंद्रीय रूप से प्रबंधित किए जाते हैं।</value></data>
+	<data name="Settings.Discord.ConfigurationTitle"><value>Discord बॉट कॉन्फ़िगरेशन</value></data>
+	<data name="Settings.Discord.ConfigurationDescription"><value>संदेश भेजने और प्राप्त करने के लिए अपने Discord बॉट को कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Discord.EnableAtStartupLabel"><value>स्टार्टअप पर Discord बॉट सक्षम करें</value></data>
+	<data name="Settings.Discord.CredentialsDescription"><value>अधिकृत Discord उपयोगकर्ता ID सेट करें। बॉट टोकन क्रेडेंशियल्स टैब में प्रबंधित किया जाता है।</value></data>
+	<data name="Settings.Discord.CredentialSelectLabel"><value>Discord बॉट क्रेडेंशियल</value></data>
+	<data name="Settings.Discord.CredentialTypeHint"><value>Discord के लिए `BotToken` क्रेडेंशियल का उपयोग करें।</value></data>
+	<data name="Settings.Discord.StatusDescription"><value>आपके Discord बॉट कनेक्शन की वर्तमान स्थिति।</value></data>
+	<data name="Settings.Discord.CredentialValidStatus"><value>चयनित क्रेडेंशियल में एक संग्रहीत टोकन है।</value></data>
+	<data name="Settings.Discord.CredentialInvalidStatus"><value>कोई मान्य Discord बॉट क्रेडेंशियल चयनित नहीं है।</value></data>
+	<data name="Settings.Discord.UserIdRequiredError"><value>उपयोगकर्ता ID आवश्यक है।</value></data>
+	<data name="Settings.Discord.UserIdInvalidFormatError"><value>अमान्य उपयोगकर्ता ID प्रारूप। यह एक संख्यात्मक Discord उपयोगकर्ता ID होनी चाहिए।</value></data>
+	<data name="Settings.Discord.CredentialRequiredWarning"><value>बॉट शुरू करने से पहले एक Discord बॉट क्रेडेंशियल चुनें और सहेजें।</value></data>
+	<data name="Settings.Discord.UserIdSaveWarning"><value>कृपया बॉट शुरू करने से पहले अपनी उपयोगकर्ता ID सहेजें।</value></data>
+	<data name="Settings.Discord.UserIdRequiredForStartup"><value>स्टार्टअप पर बॉट को सक्षम करने से पहले Discord उपयोगकर्ता ID आवश्यक है।</value></data>
+	<data name="Settings.Discord.CredentialRequiredForStartup"><value>स्टार्टअप पर बॉट को सक्षम करने से पहले एक बॉट टोकन क्रेडेंशियल चुनें।</value></data>
+	<data name="Settings.Section.ImportExport.Label"><value>बैकअप</value></data>
+	<data name="Settings.Section.ImportExport.Description"><value>एन्क्रिप्टेड बैकअप निर्यात करें या पुनर्प्राप्ति योग्य ऐप डेटा रीसेट करें।</value></data>
+	<data name="Settings.ImportExport.ExportTitle"><value>वातावरण निर्यात करें</value></data>
+	<data name="Settings.ImportExport.ExportDescription"><value>अपने पुनर्प्राप्ति योग्य वातावरण को एक एन्क्रिप्टेड .oscb बैकअप के रूप में डाउनलोड करें। मॉडल, आवाज़ें, लॉग और लंबित संचालन शामिल नहीं हैं।</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseLabel"><value>पासफ़्रेज़</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseHint"><value>ऐसा पासफ़्रेज़ उपयोग करें जिसे आप सुरक्षित रख सकें। इस बैकअप को पुनर्स्थापित करने के लिए उसी पासफ़्रेज़ की आवश्यकता होगी।</value></data>
+	<data name="Settings.ImportExport.ExportButton"><value>निर्यात करें</value></data>
+	<data name="Settings.ImportExport.ExportDialogTitle"><value>वातावरण निर्यात करें</value></data>
+	<data name="Settings.ImportExport.ExportDialogDescription"><value>पुनर्प्राप्ति योग्य ऐप डेटा का एक एन्क्रिप्टेड .oscb बैकअप बनाएं। मॉडल और आवाज़ें शामिल नहीं हैं।</value></data>
+	<data name="Settings.ImportExport.PassphraseLabel"><value>पासफ़्रेज़</value></data>
+	<data name="Settings.ImportExport.PassphrasePlaceholder"><value>एक निर्यात पासफ़्रेज़ दर्ज करें</value></data>
+	<data name="Settings.ImportExport.PassphraseRequiredError"><value>जारी रखने के लिए एक पासफ़्रेज़ दर्ज करें।</value></data>
+	<data name="Settings.ImportExport.ExportFinishButton"><value>निर्यात शुरू करें</value></data>
+	<data name="Settings.ImportExport.ExportStartedToast"><value>वातावरण निर्यात शुरू हुआ।</value></data>
+	<data name="Settings.EnvironmentReset.Title"><value>वातावरण रीसेट करें</value></data>
+	<data name="Settings.EnvironmentReset.Description"><value>मौजूदा वातावरण सुरक्षित रखें, फिर नए ऐप डेटा के साथ Oscova पुनः शुरू करें।</value></data>
+	<data name="Settings.EnvironmentReset.Scope"><value>उपयोगकर्ता, वार्तालाप, सेटिंग्स, फ़ाइलें, क्रेडेंशियल, प्लगइन और कुंजियाँ सुरक्षित सिबलिंग डायरेक्टरी में चली जाती हैं। मॉडल, आवाज़ें, लॉग, CLI फ़ाइलें, इंस्टॉल किया गया टूल और Avatar फ़ाइलें वहीं रहती हैं।</value></data>
+	<data name="Settings.EnvironmentReset.StopWriters"><value>महत्वपूर्ण काम पूरा करें, 'oscova avatar mcp stop' चलाएँ और आगे बढ़ने से पहले बाहरी राइटर रोकें। सभी को साइन आउट कर दिया जाएगा।</value></data>
+	<data name="Settings.EnvironmentReset.TemporaryAddress"><value>मौजूदा पता सेटअप के लिए उपलब्ध रहता है। रीसेट नेटवर्क सेटिंग्स बाद के पुनः आरंभ पर लागू होती हैं, इसलिए LAN एक्सेस या कस्टम पोर्ट फिर से कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.EnvironmentReset.ConfirmationLabel"><value>पुष्टि के लिए RESET टाइप करें</value></data>
+	<data name="Settings.EnvironmentReset.BackupLocation"><value>पिछला वातावरण यहाँ सुरक्षित है</value></data>
+	<data name="Settings.EnvironmentReset.Restarting"><value>Oscova पुनः शुरू हो रहा है और डिफ़ॉल्ट प्लगइन फिर से इंस्टॉल कर रहा है...</value></data>
+	<data name="Settings.EnvironmentReset.Rejected"><value>Oscova ने वातावरण रीसेट अस्वीकार कर दिया।</value></data>
+	<data name="Settings.EnvironmentReset.Uncertain"><value>Oscova की स्वीकृति की पुष्टि से पहले कनेक्शन बंद हो गया। दोबारा प्रयास न करें। Oscova फिर खोलें और यदि स्टार्टअप रुक गया हो तो ऑफ़लाइन रिकवरी मार्गदर्शन का उपयोग करें।</value></data>
+	<data name="Settings.EnvironmentReset.Timeout"><value>रीसेट स्वीकार हुआ, लेकिन पूर्णता सत्यापित नहीं हो सकी। Oscova फिर खोलें। यदि स्टार्टअप रुक गया हो, तो उसी OSCOVA_APP_DATA_DIR के साथ 'oscova environment recover --yes' चलाएँ।</value></data>
+	<data name="Settings.EnvironmentReset.Reopen"><value>Oscova फिर से खोलें</value></data>
+	<data name="Settings.Section.Files.Label"><value>फ़ाइलें</value></data>
+	<data name="Settings.Section.Files.Description"><value>फ़ाइल संग्रहण स्थानों और अपलोड प्राथमिकताओं का प्रबंधन करें।</value></data>
+	<data name="Settings.Files.HomeBreadcrumb"><value>होम</value></data>
+	<data name="Settings.Files.SharedBreadcrumb"><value>साझा</value></data>
+	<data name="Settings.Files.NewFolder"><value>नया फ़ोल्डर</value></data>
+	<data name="Settings.Files.NewFile"><value>नई फ़ाइल</value></data>
+	<data name="Settings.Files.EmptyDirectoryMessage"><value>यह निर्देशिका खाली है।</value></data>
+	<data name="Settings.Files.ColumnSize"><value>आकार</value></data>
+	<data name="Settings.Files.ColumnModified"><value>संशोधित</value></data>
+	<data name="Settings.Files.FolderNamePlaceholder"><value>फ़ोल्डर का नाम</value></data>
+	<data name="Settings.Files.FileNamePlaceholder"><value>filename.md</value></data>
+	<data name="Settings.Files.AllowedExtensionsHint"><value>अनुमत: {0}</value></data>
+	<data name="Settings.Files.BackupHistoryButton"><value>इतिहास</value></data>
+	<data name="Settings.Files.BackupHistoryTitle"><value>इतिहास: {0}</value></data>
+	<data name="Settings.Files.BackupCurrentVersionLabel"><value>वर्तमान</value></data>
+	<data name="Settings.Files.BackupNoVersions"><value>इस फ़ाइल के लिए अभी तक कोई पुनर्स्थापना बिंदु उपलब्ध नहीं है।</value></data>
+	<data name="Settings.Files.BackupRestoreButton"><value>पुनर्स्थापित करें</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmTitle"><value>संस्करण पुनर्स्थापित करें</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmMessage"><value>क्या इस संस्करण को पुनर्स्थापित करें? वर्तमान फ़ाइल का पहले बैकअप लिया जाएगा।</value></data>
+	<data name="Settings.Files.BackupRestoreSuccessToast"><value>संस्करण पुनर्स्थापित किया गया।</value></data>
+	<data name="Settings.Files.BackupVersionSize"><value>{0}</value></data>
+	<data name="Settings.Files.BackupLoadError"><value>बैकअप इतिहास लोड नहीं किया जा सका।</value></data>
+	<data name="Settings.Files.BackupRestoreError"><value>संस्करण पुनर्स्थापित नहीं किया जा सका।</value></data>
+	<data name="Settings.Files.FolderCreatedToast"><value>फ़ोल्डर '{0}' बनाया गया।</value></data>
+	<data name="Settings.Files.FileCreatedToast"><value>फ़ाइल '{0}' बनाई गई।</value></data>
+	<data name="Settings.Files.DeleteConfirmTitle"><value>हटाने की पुष्टि करें</value></data>
+	<data name="Settings.Files.DeleteConfirmMessage"><value>क्या आप निश्चित रूप से "{0}" को हटाना चाहते हैं?{1}</value></data>
+	<data name="Settings.Files.DeleteDirectoryWarning"><value> यह सभी सामग्री को हटा देगा।</value></data>
+	<data name="Settings.Files.DeletedToast"><value>'{0}' हटा दिया गया।</value></data>
+	<data name="Settings.Files.FileTooLargeToast"><value>'{0}' {1} सीमा से अधिक है।</value></data>
+	<data name="Settings.Files.UploadFailedToast"><value>'{0}' अपलोड करने में विफल: {1}</value></data>
+	<data name="Settings.Files.UploadCompleteToast"><value>अपलोड पूर्ण हुआ।</value></data>
+	<data name="Settings.Files.AgentsFolderTitle"><value>प्रबंधित एजेंट फ़ोल्डर</value></data>
+	<data name="Settings.Files.AgentsFolderDescription"><value>मुख्य एजेंट, कस्टम एजेंट परिभाषाएं, साझा-एजेंट संदर्भ और प्रत्येक एजेंट का स्थायी डेटा शामिल है।</value></data>
+	<data name="Settings.Files.MainAgentFolderTitle"><value>मुख्य एजेंट फ़ोल्डर</value></data>
+	<data name="Settings.Files.MainAgentFolderDescription"><value>अंतर्निहित मुख्य एजेंट परिभाषा और उसके निजी स्थायी डेटा को संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.CustomAgentFolderTitle"><value>कस्टम एजेंट फ़ोल्डर</value></data>
+	<data name="Settings.Files.CustomAgentFolderDescription"><value>इस कस्टम एजेंट की परिभाषा, टूल नीतियां और निजी स्थायी डेटा संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.SharedAgentsFolderTitle"><value>साझा-एजेंट संदर्भ</value></data>
+	<data name="Settings.Files.SharedAgentsFolderDescription"><value>साझा एजेंट्स के लिए आपकी व्यक्तिगत संदर्भ फ़ाइलें शामिल हैं।</value></data>
+	<data name="Settings.Files.SharedAgentFolderTitle"><value>साझा-एजेंट व्यक्तिगत संदर्भ</value></data>
+	<data name="Settings.Files.SharedAgentFolderDescription"><value>इस साझा एजेंट के लिए आपका निजी संदर्भ संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.AgentPrivateFolderTitle"><value>एजेंट का निजी फ़ोल्डर</value></data>
+	<data name="Settings.Files.AgentPrivateFolderDescription"><value>नोट्स, प्रगति रिकॉर्ड और अन्य फ़ाइलों के लिए इस एजेंट का स्थायी निजी फ़ोल्डर प्रदान करता है।</value></data>
+	<data name="Settings.Files.AgentNotesFolderTitle"><value>निजी एजेंट नोट्स</value></data>
+	<data name="Settings.Files.AgentNotesFolderDescription"><value>इस एजेंट के निजी सुधार नोट्स संग्रहीत करता है, जिन्हें भविष्य के रन में लोड किया जा सकता है।</value></data>
+	<data name="Settings.Files.WorkspaceRootTitle"><value>प्रबंधित वर्कस्पेस</value></data>
+	<data name="Settings.Files.WorkspaceRootDescription"><value>वर्कस्पेस फ़ोल्डर शामिल हैं जिन्हें एजेंट्स को सौंपा जा सकता है।</value></data>
+	<data name="Settings.Files.DefaultWorkspaceTitle"><value>डिफ़ॉल्ट वर्कस्पेस</value></data>
+	<data name="Settings.Files.DefaultWorkspaceDescription"><value>प्रारंभ में मुख्य एजेंट को सौंपा गया स्वचालित रूप से निर्मित सामान्य वर्कस्पेस प्रदान करता है।</value></data>
+	<data name="Settings.Files.LibraryWorkspaceTitle"><value>लाइब्रेरी वर्कस्पेस</value></data>
+	<data name="Settings.Files.LibraryWorkspaceDescription"><value>लाइब्रेरी खोज के लिए अनुक्रमित और सौंपे गए एजेंट्स को केवल-पढ़ने के लिए उपलब्ध कराए गए संदर्भ दस्तावेज़ संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.SharedFolderTitle"><value>साझा फ़ोल्डर</value></data>
+	<data name="Settings.Files.SharedFolderDescription"><value>साझा फ़ोल्डर अनुमति वाला हर उपयोगकर्ता इन फ़ाइलों को खोल, बदल और हटा सकता है, एन्क्रिप्ट की गई फ़ाइलों सहित।</value></data>
+	<data name="Settings.Files.WorkspaceFolderTitle"><value>वर्कस्पेस फ़ोल्डर</value></data>
+	<data name="Settings.Files.WorkspaceFolderDescription"><value>उपयोगकर्ता-प्रबंधित वर्कस्पेस प्रदान करता है जिसे एजेंट्स को सौंपा जा सकता है।</value></data>
+	<data name="Settings.Files.SettingsFolderTitle"><value>प्रबंधित सेटिंग्स</value></data>
+	<data name="Settings.Files.SettingsFolderDescription"><value>आपके सेटिंग्स डोमेन को YAML फ़ाइलों के रूप में संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.PromptsFolderTitle"><value>रनटाइम निर्देश</value></data>
+	<data name="Settings.Files.PromptsFolderDescription"><value>भविष्य के एजेंट रन द्वारा उपयोग किए जाने वाले संपादन योग्य निर्देश संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.SkillsFolderTitle"><value>प्रबंधित स्किल्स</value></data>
+	<data name="Settings.Files.SkillsFolderDescription"><value>असाइनमेंट के लिए उपलब्ध आयातित और एजेंट द्वारा लिखित स्किल्स शामिल हैं।</value></data>
+	<data name="Settings.Files.SkillFolderTitle"><value>स्किल फ़ोल्डर</value></data>
+	<data name="Settings.Files.SkillFolderDescription"><value>SKILL.md द्वारा आधारित एक स्किल पैकेज, साथ ही इसके द्वारा उपयोग किए जाने वाले संसाधन, स्क्रिप्ट या संपत्तियां शामिल हैं।</value></data>
+	<data name="Settings.Files.TasksFolderTitle"><value>प्रबंधित कार्य</value></data>
+	<data name="Settings.Files.TasksFolderDescription"><value>अनुसूचित और बाह्य रूप से ट्रिगर की गई कार्य परिभाषाएं शामिल हैं।</value></data>
+	<data name="Settings.Files.TaskFolderTitle"><value>कार्य फ़ोल्डर</value></data>
+	<data name="Settings.Files.TaskFolderDescription"><value>एक कार्य परिभाषा और उसका रन इतिहास संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.TaskRunsFolderTitle"><value>कार्य रन इतिहास</value></data>
+	<data name="Settings.Files.TaskRunsFolderDescription"><value>इस कार्य के लिए प्रबंधित रन इंडेक्स, ट्रांसक्रिप्ट और सत्र आर्टिफ़ैक्ट्स संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.MemoryFolderTitle"><value>उपयोगकर्ता मेमोरी</value></data>
+	<data name="Settings.Files.MemoryFolderDescription"><value>दीर्घकालिक, विषय, दैनिक और बातचीत मेमोरी डेटा संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.DailyMemoryFolderTitle"><value>दैनिक मेमोरी</value></data>
+	<data name="Settings.Files.DailyMemoryFolderDescription"><value>मेमोरी रूटीन द्वारा उपयोग किए जाने वाले दिनांकित Markdown मेमोरी लॉग संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.ChatFolderTitle"><value>सहेजी गई बातचीत</value></data>
+	<data name="Settings.Files.ChatFolderDescription"><value>सहेजी गई बातचीत के इंडेक्स, ट्रांसक्रिप्ट, सत्र मेटाडेटा और अटैचमेंट स्थिति संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderTitle"><value>चैट अटैचमेंट</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderDescription"><value>बातचीत के आधार पर समूहीकृत फ़ोल्डरों में अपलोड किए गए अटैचमेंट संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.LogsFolderTitle"><value>एप्लिकेशन लॉग</value></data>
+	<data name="Settings.Files.LogsFolderDescription"><value>इस उपयोगकर्ता की एप्लिकेशन लॉग फ़ाइलें संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.MetricsFolderTitle"><value>उपयोग मेट्रिक्स</value></data>
+	<data name="Settings.Files.MetricsFolderDescription"><value>इस उपयोगकर्ता का रनटाइम मेट्रिक्स इवेंट स्ट्रीम संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.AuditFolderTitle"><value>डेटा निकास ऑडिट</value></data>
+	<data name="Settings.Files.AuditFolderDescription"><value>आउटबाउंड प्रदाता गतिविधि के लिए ऑडिट रिकॉर्ड संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.NotificationsFolderTitle"><value>सूचना इनबॉक्स</value></data>
+	<data name="Settings.Files.NotificationsFolderDescription"><value>इस उपयोगकर्ता का स्थायी सूचना इनबॉक्स संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderTitle"><value>टूल उपयोग स्थिति</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderDescription"><value>नियंत्रित टूल-कॉल सीमाओं द्वारा उपयोग किए जाने वाले कोटा काउंटर संग्रहीत करता है।</value></data>
+	<data name="Settings.Files.LibraryIndexingColumn"><value>इंडेक्सिंग</value></data>
+	<data name="Settings.Files.LibraryLocalOnlyBlockedMessage"><value>जब तक आप एक स्थानीय एम्बेडिंग प्रदाता का चयन नहीं करते, तब तक लाइब्रेरी इंडेक्सिंग अवरुद्ध रहेगी।</value></data>
+	<data name="Settings.Files.LibraryCloudProviderWarning"><value>क्लाउड एम्बेडिंग प्रदाता उपयोग में है। लाइब्रेरी में फ़ाइलों से निकाला गया टेक्स्ट इंडेक्सिंग और खोज के लिए {0} को भेजा जाता है। निजी दस्तावेज़ों के लिए, स्थानीय एम्बेडिंग प्रदाता की सिफारिश की जाती है।</value></data>
+	<data name="Settings.Files.LibraryNoProviderMessage"><value>जब तक कोई एम्बेडिंग प्रदाता कॉन्फ़िगर नहीं किया जाता, लाइब्रेरी इंडेक्सिंग और खोज शुरू नहीं होगी। प्रदाता चुने जाने के बाद लाइब्रेरी में पहले से मौजूद फ़ाइलें खोजी जाएंगी।</value></data>
+	<data name="Settings.Files.LibraryLocalProviderMessage"><value>लाइब्रेरी खोज स्थानीय एम्बेडिंग प्रदाता {0} का उपयोग करती है।</value></data>
+	<data name="Settings.Files.LibraryReadyStatus"><value>तैयार</value></data>
+	<data name="Settings.Files.LibraryQueuedStatus"><value>कतार में</value></data>
+	<data name="Settings.Files.LibraryIndexingStatus"><value>इंडेक्स हो रहा है</value></data>
+	<data name="Settings.Files.LibrarySkippedStatus"><value>छोड़ा गया</value></data>
+	<data name="Settings.Files.LibraryFailedStatus"><value>विफल</value></data>
+	<data name="Settings.Notifications.Title"><value>सूचनाएं</value></data>
+	<data name="Settings.Notifications.LoadingMessage"><value>सूचना सेटिंग्स लोड हो रही हैं...</value></data>
+	<data name="Settings.Notifications.DeliveryTitle"><value>सूचना वितरण</value></data>
+	<data name="Settings.Notifications.DeliveryDescription"><value>लाइव अलर्ट चुनें और इनबॉक्स में सहेजी गई सूचनाएँ देखें।</value></data>
+	<data name="Settings.Notifications.MutedDescription"><value>घंटी के लाइव अलर्ट रोकें। नई सूचनाएँ आपके इनबॉक्स में बनी रहती हैं।</value></data>
+	<data name="Settings.Notifications.ShowLogWarnings"><value>लॉग चेतावनियां दिखाएं</value></data>
+	<data name="Settings.Notifications.ShowSystemErrors"><value>सिस्टम त्रुटियां दिखाएं</value></data>
+	<data name="Settings.SoundEffects.Title"><value>ध्वनि प्रभाव</value></data>
+	<data name="Settings.SoundEffects.Description"><value>महत्वपूर्ण UI पलों की पुष्टि करने वाले छोटे ऑडियो संकेतों को नियंत्रित करें।</value></data>
+	<data name="Settings.SoundEffects.MasterLabel"><value>UI ध्वनियां चलाएं</value></data>
+	<data name="Settings.SoundEffects.VolumeLabel"><value>वॉल्यूम</value></data>
+	<data name="Settings.SoundEffects.VolumeDescription"><value>एक वॉल्यूम सेटिंग प्रत्येक ध्वनि संकेत पर लागू होती है।</value></data>
+	<data name="Settings.SoundEffects.CueGroupLabel"><value>ध्वनि संकेत</value></data>
+	<data name="Settings.SoundEffects.Cue.Send"><value>संदेश भेजें</value></data>
+	<data name="Settings.SoundEffects.Cue.Enter"><value>चैट में प्रवेश करें</value></data>
+	<data name="Settings.SoundEffects.Cue.Receive"><value>प्रतिक्रिया पूर्ण</value></data>
+	<data name="Settings.SoundEffects.Cue.Error"><value>प्रतिक्रिया त्रुटि</value></data>
+	<data name="Settings.SoundEffects.Cue.Notify"><value>सूचना आगमन</value></data>
+	<data name="Settings.SoundEffects.Cue.Tap"><value>स्टार्टर प्रॉम्प्ट टैप</value></data>
+	<data name="Settings.SoundEffects.Cue.Complete"><value>ऑनबोर्डिंग पूर्ण</value></data>
+	<data name="Settings.Network.LoadingMessage"><value>नेटवर्क सेटिंग्स लोड हो रही हैं...</value></data>
+	<data name="Settings.Network.AccessTitle"><value>नेटवर्क एक्सेस</value></data>
+	<data name="Settings.Network.EnableAccessLabel"><value>अन्य उपकरणों से एक्सेस की अनुमति दें</value></data>
+	<data name="Settings.Network.PortLabel"><value>पोर्ट</value></data>
+	<data name="Settings.Network.RestartRequiredHint"><value>नेटवर्क एक्सेस और पोर्ट परिवर्तन पुनरारंभ के बाद प्रभावी होते हैं।</value></data>
+	<data name="Settings.Network.PrivateFetchTitle"><value>वेब फ़ेच एक्सेस</value></data>
+	<data name="Settings.Network.AllowPrivateFetchLabel"><value>स्थानीय और निजी-नेटवर्क URL फ़ेच करने की अनुमति दें</value></data>
+	<data name="Settings.Network.AllowPrivateFetchDescription"><value>इसे केवल तभी सक्षम करें जब एजेंटों को विश्वसनीय आंतरिक पृष्ठों को पढ़ने की आवश्यकता हो। अनिर्दिष्ट, लिंक-लोकल, मल्टीकास्ट और अन्य गैर-रूट करने योग्य पते अवरुद्ध रहते हैं।</value></data>
+	<data name="Settings.Network.SandboxAccessTitle"><value>सैंडबॉक्स नेटवर्क एक्सेस</value></data>
+	<data name="Settings.Network.AllowSandboxAccessLabel"><value>सैंडबॉक्स किए गए स्क्रिप्ट को नेटवर्क तक पहुंचने की अनुमति दें</value></data>
+	<data name="Settings.Network.AllowSandboxAccessDescription"><value>यह संपूर्ण-स्थापना व्यवस्थापक अनुमति प्रत्येक उपयोगकर्ता के सामान्य ऑनलाइन सैंडबॉक्स रन पर लागू होती है। ऑफ़लाइन और केवल-स्थानीय रन बिना नेटवर्क के रहते हैं।</value></data>
+	<data name="Settings.Network.PublicUrlTitle"><value>सार्वजनिक ऐप URL</value></data>
+	<data name="Settings.Network.PublicUrlModeLabel"><value>मोड</value></data>
+	<data name="Settings.Network.PublicUrlModeAuto"><value>स्वचालित रूप से पहचाना गया नेटवर्क URL</value></data>
+	<data name="Settings.Network.PublicUrlModeCustom"><value>कस्टम URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlLabel"><value>कस्टम सार्वजनिक ऐप URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlPlaceholder"><value>https://oscova.company.local</value></data>
+	<data name="Settings.Network.RestartRequiredAlert"><value>नेटवर्क एक्सेस और पोर्ट परिवर्तनों को प्रभावी करने के लिए Oscova Agents को पुनरारंभ करें।</value></data>
+	<data name="Settings.Network.DetectedUrlsTitle"><value>पहचाने गए URL</value></data>
+	<data name="Settings.Network.LocalUrlLabel"><value>स्थानीय URL</value></data>
+	<data name="Settings.Network.CopyToClipboardTitle"><value>क्लिपबोर्ड पर कॉपी करें</value></data>
+	<data name="Settings.Network.AutoNetworkUrlLabel"><value>स्वचालित नेटवर्क URL</value></data>
+	<data name="Settings.Network.AutoNetworkUrlUnavailable"><value>स्वचालित नेटवर्क URL अनुपलब्ध है।</value></data>
+	<data name="Settings.Network.EffectivePublicUrlLabel"><value>प्रभावी सार्वजनिक ऐप URL</value></data>
+	<data name="Settings.Network.EffectivePublicUrlUnavailable"><value>प्रभावी सार्वजनिक URL अनुपलब्ध है।</value></data>
+	<data name="Settings.Network.ActiveUrlsLabel"><value>सक्रिय सर्वर URL</value></data>
+	<data name="Settings.Network.NoActiveUrls"><value>स्टार्टअप के दौरान कोई सक्रिय श्रोता URL रिपोर्ट नहीं किया गया।</value></data>
+	<data name="Settings.Network.QrCodeTitle"><value>QR कोड</value></data>
+	<data name="Settings.Network.QrCodeAlt"><value>प्रभावी सार्वजनिक ऐप URL QR कोड</value></data>
+	<data name="Settings.Network.DownloadQrCodeButton"><value>QR कोड डाउनलोड करें</value></data>
+	<data name="Settings.Network.ResetButton"><value>रीसेट करें</value></data>
+	<data name="Settings.Network.SaveButton"><value>नेटवर्क सेटिंग्स सहेजें</value></data>
+	<data name="Settings.Network.LoadErrorToast"><value>नेटवर्क सेटिंग्स लोड त्रुटि: {0}</value></data>
+	<data name="Settings.Network.SaveFailedToast"><value>नेटवर्क सेटिंग्स सहेजी नहीं जा सकीं।</value></data>
+	<data name="Settings.Network.SaveSuccessToast"><value>नेटवर्क सेटिंग्स सहेजी गईं</value></data>
+	<data name="Settings.Network.SaveFailedWithMessageToast"><value>नेटवर्क सेटिंग्स सहेजने में विफल: {0}</value></data>
+	<data name="Settings.Network.CopySuccessToast"><value>क्लिपबोर्ड पर कॉपी किया गया</value></data>
+	<data name="Settings.Network.CopyFailedToast"><value>क्लिपबोर्ड पर कॉपी करने में विफल</value></data>
+	<data name="Settings.Network.QrCodeDownloadedToast"><value>QR कोड डाउनलोड हो गया</value></data>
+	<data name="Settings.Network.QrCodeDownloadFailedToast"><value>QR कोड डाउनलोड करने में विफल</value></data>
+	<data name="Settings.ConnectedAccounts.AvailableBadge"><value>उपलब्ध</value></data>
+	<data name="Settings.ConnectedAccounts.NoProvidersMessage"><value>सक्रिय प्लगइन से कोई खाता कनेक्शन उपलब्ध नहीं है।</value></data>
+	<data name="Settings.ConnectedAccounts.UnavailableBadge"><value>अनुपलब्ध</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredMessage"><value>उपलब्ध नहीं है। इस प्रदाता को कॉन्फ़िगर करने के लिए व्यवस्थापक से संपर्क करें।</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredAdminMessage"><value>अभी सेट अप नहीं है। इसका OAuth ऐप जोड़ने के लिए "प्रदाताओं को प्रबंधित करें" का उपयोग करें।</value></data>
+	<data name="Settings.ConnectedAccounts.AuthenticatedAccountFallback"><value>एक प्रमाणित खाता</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectedAsMessage"><value>{0} के रूप में कनेक्टेड।</value></data>
+	<data name="Settings.ConnectedAccounts.NotConnectedMessage"><value>कनेक्ट नहीं है।</value></data>
+	<data name="Settings.ConnectedAccounts.DisconnectButton"><value>डिस्कनेक्ट करें</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectButton"><value>कनेक्ट करें</value></data>
+	<data name="Settings.Credentials.SavedCredentialsTitle"><value>सहेजे गए क्रेडेंशियल्स</value></data>
+	<data name="Settings.Credentials.SavedCredentialsDescription"><value>API कुंजी और बॉट टोकन केंद्रीय रूप से प्रबंधित करें, फिर उन्हें प्रदाता और Discord सेटिंग्स से लिंक करें।</value></data>
+	<data name="Settings.Credentials.AddCredentialButton"><value>क्रेडेंशियल जोड़ें</value></data>
+	<data name="Settings.Credentials.LangsearchInfo"><value>`web_search` टूल सक्षम करने के लिए `langsearch` कुंजी के साथ एक `ApiKey` क्रेडेंशियल बनाएं।</value></data>
+	<data name="Settings.Credentials.IntegrationCredentialsHeading"><value>एकीकरण क्रेडेंशियल्स</value></data>
+	<data name="Settings.Credentials.NoIntegrationCredentialsMessage"><value>किसी एकीकरण क्रेडेंशियल की आवश्यकता नहीं है।</value></data>
+	<data name="Settings.Credentials.UserCredentialsHeading"><value>आपके क्रेडेंशियल्स</value></data>
+	<data name="Settings.Credentials.NoCredentialsEmpty"><value>अभी तक कोई क्रेडेंशियल सहेजा नहीं गया है।</value></data>
+	<data name="Settings.Credentials.ColumnAlias"><value>उपनाम</value></data>
+	<data name="Settings.Credentials.ColumnKind"><value>प्रकार</value></data>
+	<data name="Settings.Credentials.ColumnKey"><value>कुंजी</value></data>
+	<data name="Settings.Credentials.ColumnValue"><value>मान</value></data>
+	<data name="Settings.Credentials.ValueSetBadge"><value>सेट है</value></data>
+	<data name="Settings.Credentials.ValueNotSetBadge"><value>सेट नहीं है</value></data>
+	<data name="Settings.Credentials.AddCredentialTitle"><value>क्रेडेंशियल जोड़ें</value></data>
+	<data name="Settings.Credentials.EditCredentialTitle"><value>क्रेडेंशियल संपादित करें</value></data>
+	<data name="Settings.Credentials.NewCredentialLabel"><value>नया क्रेडेंशियल</value></data>
+	<data name="Settings.Credentials.EncryptionDescription"><value>गोपनीय मान एन्क्रिप्टेड रूप में संग्रहीत रहते हैं और सहेजने के बाद कभी नहीं दिखाए जाते।</value></data>
+	<data name="Settings.Credentials.AliasLabel"><value>नाम</value></data>
+	<data name="Settings.Credentials.AliasPlaceholder"><value>LangSearch API</value></data>
+	<data name="Settings.Credentials.KeyLabel"><value>क्रेडेंशियल कुंजी</value></data>
+	<data name="Settings.Credentials.KeyPlaceholder"><value>langsearch</value></data>
+	<data name="Settings.Credentials.KeyHint"><value>केवल छोटे अक्षर, अंक और डैश। निर्माण के बाद कुंजी केवल-पढ़ने योग्य हो जाती है।</value></data>
+	<data name="Settings.Credentials.KindLabel"><value>प्रकार</value></data>
+	<data name="Settings.Credentials.DescriptionPlaceholder"><value>यह क्रेडेंशियल किस लिए उपयोग किया जाता है</value></data>
+	<data name="Settings.Credentials.SecretValueLabel"><value>गुप्त मान</value></data>
+	<data name="Settings.Credentials.SecretValueNewPlaceholder"><value>गुप्त मान पेस्ट करें</value></data>
+	<data name="Settings.Credentials.SecretValueEditPlaceholder"><value>वर्तमान मान रखने के लिए रिक्त छोड़ें</value></data>
+	<data name="Settings.Credentials.SecretValueNewHint"><value>नए क्रेडेंशियल्स के लिए आवश्यक।</value></data>
+	<data name="Settings.Credentials.SecretValueEditHint"><value>यदि आप केवल मेटाडेटा अपडेट करना चाहते हैं तो रिक्त छोड़ें।</value></data>
+	<data name="Settings.Credentials.ValueFieldLabel"><value>मान</value></data>
+	<data name="Settings.Credentials.StoredValueOption"><value>मान दर्ज करें</value></data>
+	<data name="Settings.Credentials.EnvironmentValueOption"><value>पर्यावरण चर का उपयोग करें</value></data>
+	<data name="Settings.Credentials.EnvironmentVariablePlaceholder"><value>ENVIRONMENT_VARIABLE</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableHint"><value>रनटाइम पर यह मान इस पर्यावरण चर से पढ़ा जाता है।</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableRequiredError"><value>{0} के लिए पर्यावरण चर नाम दर्ज करें।</value></data>
+	<data name="Settings.Credentials.ValueRequiredError"><value>{0} के लिए मान दर्ज करें।</value></data>
+	<data name="Settings.Credentials.SaveButton"><value>क्रेडेंशियल सहेजें</value></data>
+	<data name="Settings.Credentials.NotFoundToast"><value>क्रेडेंशियल नहीं मिला।</value></data>
+	<data name="Settings.Credentials.AliasRequiredError"><value>क्रेडेंशियल नाम आवश्यक है।</value></data>
+	<data name="Settings.Credentials.KeyRequiredError"><value>क्रेडेंशियल कुंजी आवश्यक है।</value></data>
+	<data name="Settings.Credentials.KeyInvalidFormatError"><value>क्रेडेंशियल कुंजी में केवल छोटे अक्षर, अंक और डैश होने चाहिए।</value></data>
+	<data name="Settings.Credentials.KeyAlreadyExistsError"><value>क्रेडेंशियल कुंजी पहले से मौजूद है।</value></data>
+	<data name="Settings.Credentials.SecretRequiredError"><value>नए क्रेडेंशियल्स के लिए गुप्त मान आवश्यक है।</value></data>
+	<data name="Settings.Credentials.CreatedToast"><value>क्रेडेंशियल बनाया गया।</value></data>
+	<data name="Settings.Credentials.UpdatedToast"><value>क्रेडेंशियल अपडेट किया गया।</value></data>
+	<data name="Settings.Credentials.DeleteConfirmTitle"><value>क्रेडेंशियल हटाएं</value></data>
+	<data name="Settings.Credentials.DeleteConfirmMessage"><value>क्या आप वाकई '{0}' को हटाना चाहते हैं?</value></data>
+	<data name="Settings.Credentials.StillLinkedWarning"><value>यह क्रेडेंशियल अभी भी {0} से लिंक है। इसे हटाने से पहले उन संदर्भों को हटाएं।</value></data>
+	<data name="Settings.Credentials.DeletedToast"><value>क्रेडेंशियल हटा दिया गया।</value></data>
+	<data name="Settings.Avatar.ConnectionHeading"><value>कनेक्शन</value></data>
+	<data name="Settings.Avatar.BridgeUrlLabel"><value>ब्रिज URL</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsTitle"><value>लाइव अवतार पर लागू करें</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsButton"><value>लाइव अवतार पर लागू करें</value></data>
+	<data name="Settings.Avatar.StartEngineButton"><value>Avatar Engine शुरू करें</value></data>
+	<data name="Settings.Avatar.EngineCheckingStatus"><value>जांच हो रही है</value></data>
+	<data name="Settings.Avatar.EngineConnectedStatus"><value>कनेक्टेड</value></data>
+	<data name="Settings.Avatar.EngineOfflineStatus"><value>ऑफ़लाइन</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorStatus"><value>कैटलॉग समस्या</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedStatus"><value>जांचा नहीं गया</value></data>
+	<data name="Settings.Avatar.EngineCheckingDescription"><value>Avatar Engine से कनेक्ट हो रहा है और लाइव विकल्प लोड कर रहा है।</value></data>
+	<data name="Settings.Avatar.EngineConnectedDescription"><value>Avatar Engine {0} पर उपलब्ध है।</value></data>
+	<data name="Settings.Avatar.EngineOfflineDescription"><value>{0} पर Avatar Engine तक नहीं पहुंचा जा सका। सहेजी गई सेटिंग्स संपादन योग्य रहेंगी।</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorDescription"><value>इंजन उपलब्ध है, लेकिन एक या अधिक लाइव विकल्प सूचियां लोड नहीं की जा सकीं।</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedDescription"><value>लाइव अवतार और भाव लोड करने के लिए कनेक्ट चुनें।</value></data>
+	<data name="Settings.Avatar.BridgeUrlDescription"><value>साझा अवतार रनटाइम द्वारा उपयोग किया जाने वाला सहेजा गया ब्रिज एंडपॉइंट।</value></data>
+	<data name="Settings.Avatar.SaveChangesWarning"><value>परिवर्तनों को अवतार इंजन पर लागू करने से पहले उन्हें सहेजें।</value></data>
+	<data name="Settings.Avatar.AvatarHeading"><value>अवतार</value></data>
+	<data name="Settings.Avatar.SelectedAvatarLabel"><value>चयनित अवतार</value></data>
+	<data name="Settings.Avatar.LoadingAvatarsOption"><value>अवतार लोड हो रहे हैं...</value></data>
+	<data name="Settings.Avatar.LoadingEmotionsOption"><value>भाव लोड हो रहे हैं...</value></data>
+	<data name="Settings.Avatar.SavedUnverifiedOption"><value>सहेजा गया: {0} (सत्यापित नहीं)</value></data>
+	<data name="Settings.Avatar.SavedUnavailableOption"><value>सहेजा गया: {0} (उपलब्ध नहीं)</value></data>
+	<data name="Settings.Avatar.CatalogCheckingHint"><value>Avatar Engine से लाइव विकल्प लोड हो रहे हैं।</value></data>
+	<data name="Settings.Avatar.CatalogOfflineHint"><value>Avatar Engine के कनेक्ट होने के बाद लाइव विकल्प उपलब्ध होंगे।</value></data>
+	<data name="Settings.Avatar.SavedValueUnverifiedHint"><value>सहेजा गया मान '{0}' दिखाया गया है लेकिन चल रहे इंजन के साथ सत्यापित नहीं किया गया है।</value></data>
+	<data name="Settings.Avatar.SavedValueUnavailableHint"><value>सहेजा गया मान '{0}' चल रहे इंजन में उपलब्ध नहीं है।</value></data>
+	<data name="Settings.Avatar.RefreshAvatarsTitle"><value>अवतार रीफ़्रेश करें</value></data>
+<data name="Settings.Avatar.ApplyAvatarButton"><value>रूप-रंग लागू करें</value></data>
+	<data name="Settings.Avatar.ChooseAvatarDescription"><value>प्रदर्शित करने के लिए एक अवतार चुनें</value></data>
+	<data name="Settings.Avatar.ExpressionHeading"><value>भाव</value></data>
+	<data name="Settings.Avatar.SelectedEmotionLabel"><value>चयनित भावना</value></data>
+	<data name="Settings.Avatar.ChooseEmotionDescription"><value>चल रहे इंजन से एक भाव चुनें।</value></data>
+	<data name="Settings.Avatar.RefreshEmotionsTitle"><value>भावनाएं रीफ़्रेश करें</value></data>
+	<data name="Settings.Avatar.BlendSpeedLabel"><value>ब्लेंड गति</value></data>
+	<data name="Settings.Avatar.CueBlendInLabel"><value>भाव में आने का समय (सेकंड)</value></data>
+	<data name="Settings.Avatar.CueRestoreAfterLabel"><value>भाव लौटने तक का समय (सेकंड)</value></data>
+	<data name="Settings.Avatar.CueTimingDescription"><value>बोले गए उत्तरों के भाव धीरे-धीरे आते हैं, कुछ देर रहते हैं, फिर ऊपर दी गई ब्लेंड गति से चुने हुए भाव में लौटते हैं।</value></data>
+	<data name="Settings.Avatar.ApplyExpressionButton"><value>भाव लागू करें</value></data>
+	<data name="Settings.Avatar.WindowHeading"><value>विंडो</value></data>
+	<data name="Settings.Avatar.ResolutionLabel"><value>रिज़ॉल्यूशन</value></data>
+	<data name="Settings.Avatar.Resolution1920x1080"><value>1920x1080 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1440"><value>2560x1440 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution3840x2160"><value>3840x2160 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1080"><value>2560x1080 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution3440x1440"><value>3440x1440 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution5120x2160"><value>5120x2160 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution1280x720"><value>1280x720 (16:9)</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLabel"><value>ग्राफ़िक्स प्रीसेट</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLow"><value>निम्न</value></data>
+	<data name="Settings.Avatar.GraphicsPresetMedium"><value>मध्यम</value></data>
+	<data name="Settings.Avatar.GraphicsPresetHigh"><value>उच्च</value></data>
+	<data name="Settings.Avatar.GraphicsPresetEpic"><value>शानदार</value></data>
+	<data name="Settings.Avatar.GraphicsPresetCinematic"><value>सिनेमैटिक</value></data>
+	<data name="Settings.Avatar.RayTracingLabel"><value>रे ट्रेसिंग</value></data>
+	<data name="Settings.Avatar.RayTracingDescription"><value>समर्थित रे-ट्रेस्ड प्रभावों को गुणवत्ता प्रीसेट से अलग सक्षम करता है। यह डिफ़ॉल्ट रूप से बंद है और प्रदर्शन कम कर सकता है।</value></data>
+	<data name="Settings.Avatar.FullscreenLabel"><value>फ़ुलस्क्रीन</value></data>
+	<data name="Settings.Avatar.BackgroundColorLabel"><value>पृष्ठभूमि का रंग</value></data>
+	<data name="Settings.Avatar.ApplyWindowButton"><value>विंडो लागू करें</value></data>
+	<data name="Settings.Avatar.MessageAppearanceHeading"><value>संदेश का स्वरूप</value></data>
+	<data name="Settings.Avatar.MessageFontSizeLabel"><value>संदेश फ़ॉन्ट का आकार</value></data>
+	<data name="Settings.Avatar.MessageColorLabel"><value>रंग</value></data>
+	<data name="Settings.Avatar.MessageColorOpacityLabel"><value>अपारदर्शिता</value></data>
+	<data name="Settings.Avatar.ApplyMessageAppearanceButton"><value>स्वरूप लागू करें</value></data>
+	<data name="Settings.Avatar.MessageBoxHeading"><value>संदेश बॉक्स</value></data>
+	<data name="Settings.Avatar.EditMessageLayoutButton"><value>लेआउट संपादित करें</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogTitle"><value>संदेश लेआउट</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogSubtitle"><value>{0} x {1} अवतार स्क्रीन पर संदेश बॉक्स रखें।</value></data>
+	<data name="Settings.Avatar.MessageLayoutInstructions"><value>संदेश बॉक्स को खींचकर ले जाएँ, किसी कोने से उसका आकार बदलें, या नीचे सटीक प्रतिशत दर्ज करें।</value></data>
+	<data name="Settings.Avatar.MessageLayoutScreenLabel"><value>अवतार स्क्रीन</value></data>
+	<data name="Settings.Avatar.MessageLayoutBoxLabel"><value>संदेश बॉक्स</value></data>
+	<data name="Settings.Avatar.MessageLayoutLeftLabel"><value>बायाँ</value></data>
+	<data name="Settings.Avatar.MessageLayoutTopLabel"><value>ऊपर</value></data>
+	<data name="Settings.Avatar.MessageLayoutInvalid"><value>संदेश बॉक्स को स्क्रीन के अंदर रखें और उसकी चौड़ाई तथा ऊँचाई कम से कम 1% रखें।</value></data>
+	<data name="Settings.Avatar.TransformWidthLabel"><value>चौड़ाई (%)</value></data>
+	<data name="Settings.Avatar.TransformHeightLabel"><value>ऊँचाई (%)</value></data>
+	<data name="Settings.Avatar.MessageDisplayDurationLabel"><value>प्रदर्शन अवधि</value></data>
+	<data name="Settings.Avatar.SecondsUnit"><value>सेकंड</value></data>
+	<data name="Settings.Avatar.ApplyMessageBoxButton"><value>संदेश बॉक्स लागू करें</value></data>
+	<data name="Settings.Avatar.MessagePreviewHeading"><value>संदेश पूर्वावलोकन</value></data>
+	<data name="Settings.Avatar.PreviewTextLabel"><value>पूर्वावलोकन टेक्स्ट</value></data>
+	<data name="Settings.Avatar.PreviewTextPlaceholder"><value>अवतार संदेश बॉक्स में पूर्वावलोकन के लिए एक संदेश लिखें</value></data>
+	<data name="Settings.Avatar.SendPreviewButton"><value>पूर्वावलोकन भेजें</value></data>
+	<data name="Settings.Avatar.ClearPreviewButton"><value>साफ़ करें</value></data>
+	<data name="Settings.Avatar.CameraHeading"><value>कैमरा</value></data>
+	<data name="Settings.Avatar.CameraYawLabel"><value>कैमरा यॉ</value></data>
+	<data name="Settings.Avatar.ApplyCameraButton"><value>कैमरा लागू करें</value></data>
+	<data name="Settings.Avatar.AudioHeading"><value>ऑडियो</value></data>
+	<data name="Settings.Avatar.SpeechVolumeLabel"><value>वाक् वॉल्यूम</value></data>
+	<data name="Settings.Avatar.ApplyAudioButton"><value>ऑडियो लागू करें</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarTitle"><value>अवतार बंद करें</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarButton"><value>अवतार बंद करें</value></data>
+	<data name="Settings.Avatar.ResetToDefaultsButton"><value>डिफ़ॉल्ट पर रीसेट करें</value></data>
+	<data name="Settings.Avatar.SaveSettingsButton"><value>सेटिंग्स सहेजें</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmTitle"><value>अवतार बंद करने की पुष्टि करें</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmMessage"><value>क्या इस ब्रिज URL से जुड़े अवतार को बंद करें? यह नेटवर्क की किसी अन्य मशीन पर चल रहे अवतार को प्रभावित कर सकता है।</value></data>
+	<data name="Settings.Avatar.DefaultPreviewMessage"><value>यह एक परीक्षण संदेश है।</value></data>
+	<data name="Settings.Avatar.SettingsLoadErrorToast"><value>अवतार सेटिंग्स लोड करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.SavedSettingsAppliedToast"><value>सहेजी गई अवतार सेटिंग्स लागू की गईं</value></data>
+	<data name="Settings.Avatar.ApplySavedSettingsFailedToast"><value>अवतार सेटिंग्स लागू नहीं की जा सकीं।</value></data>
+	<data name="Settings.Avatar.SyncErrorToast"><value>अवतार सिंक त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.LoadedAvatarsToast"><value>{0} अवतार लोड किए गए</value></data>
+	<data name="Settings.Avatar.LoadAvatarsFailedToast"><value>अवतार लोड करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.LoadAvatarsErrorToast"><value>अवतार लोड करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.LoadedEmotionsToast"><value>{0} भावनाएं लोड की गईं</value></data>
+	<data name="Settings.Avatar.LoadEmotionsFailedToast"><value>भावनाएं लोड करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.LoadEmotionsErrorToast"><value>भावनाएं लोड करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.EngineOfflineToast"><value>Avatar Engine तक पहुँचा नहीं जा सकता।</value></data>
+	<data name="Settings.Avatar.EngineRefreshFailedToast"><value>Avatar Engine रीफ़्रेश विफल रहा: {0}</value></data>
+	<data name="Settings.Avatar.StartEngineStartedToast"><value>Avatar Engine शुरू हो गया। इसकी विंडो खुलने की प्रतीक्षा करें, फिर कनेक्ट चुनें।</value></data>
+	<data name="Settings.Avatar.StartEngineLocalUrlToast"><value>स्थानीय Avatar Engine शुरू करने के लिए http://localhost या http://127.0.0.1 Bridge URL का उपयोग करें।</value></data>
+	<data name="Settings.Avatar.StartEngineFailedToast"><value>Avatar Engine शुरू नहीं किया जा सका।</value></data>
+	<data name="Settings.Avatar.EngineConnectedToast"><value>Avatar Engine कनेक्ट हो गया और लाइव विकल्प लोड हो गए।</value></data>
+	<data name="Settings.Avatar.AppliedToast"><value>'{0}' पर रूप-रंग लागू किया गया</value></data>
+	<data name="Settings.Avatar.ApplyFailedToast"><value>अवतार लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.ApplyErrorToast"><value>अवतार लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionAppliedToast"><value>भाव '{0}' लागू किया गया</value></data>
+	<data name="Settings.Avatar.ExpressionFailedToast"><value>भाव लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionErrorToast"><value>भाव लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.WindowApplyFailedToast"><value>विंडो लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.WindowSettingsAppliedToast"><value>विंडो सेटिंग्स लागू की गईं</value></data>
+	<data name="Settings.Avatar.WindowApplyErrorToast"><value>विंडो लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyFailedToast"><value>संदेश का स्वरूप लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceAppliedToast"><value>संदेश का स्वरूप लागू किया गया</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyErrorToast"><value>संदेश का स्वरूप लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyFailedToast"><value>संदेश बॉक्स लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxAppliedToast"><value>संदेश बॉक्स लागू किया गया</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyErrorToast"><value>संदेश बॉक्स लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawAppliedToast"><value>कैमरा यॉ {0} डिग्री पर सेट किया गया</value></data>
+	<data name="Settings.Avatar.CameraYawApplyFailedToast"><value>कैमरा यॉ लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawApplyErrorToast"><value>कैमरा यॉ लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.AudioSettingsAppliedToast"><value>ऑडियो सेटिंग्स लागू की गईं ({0}%)</value></data>
+	<data name="Settings.Avatar.AudioApplyFailedToast"><value>ऑडियो लागू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.AudioApplyErrorToast"><value>ऑडियो लागू करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageSentToast"><value>पूर्वावलोकन संदेश भेजा गया</value></data>
+	<data name="Settings.Avatar.PreviewMessageFailedToast"><value>पूर्वावलोकन संदेश भेजने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageErrorToast"><value>संदेश पूर्वावलोकन त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearedToast"><value>पूर्वावलोकन संदेश साफ़ किया गया</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearFailedToast"><value>पूर्वावलोकन संदेश साफ़ करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearErrorToast"><value>संदेश साफ़ करने में त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownInitiatedToast"><value>अवतार शटडाउन शुरू किया गया</value></data>
+	<data name="Settings.Avatar.ShutdownFailedToast"><value>शटडाउन शुरू करने में विफल: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownErrorToast"><value>शटडाउन त्रुटि: {0}</value></data>
+	<data name="Settings.Avatar.SettingsSavedToast"><value>अवतार सेटिंग्स सहेजी गईं</value></data>
+	<data name="Settings.Avatar.SaveSettingsFailedToast"><value>अवतार सेटिंग्स सहेजने में विफल: {0}</value></data>
+	<data name="Settings.Speech.VoiceLabel"><value>आवाज़</value></data>
+	<data name="Settings.Speech.NoVoicesOption"><value>(कोई आवाज़ नहीं मिली)</value></data>
+	<data name="Settings.Speech.TestVoiceButton"><value>आवाज़ का परीक्षण करें</value></data>
+	<data name="Settings.Speech.TestingButton"><value>परीक्षण किया जा रहा है</value></data>
+	<data name="Settings.Speech.VoiceHelperText"><value>इस आवाज़ को लागू करने के लिए 'आवाज़ सेटिंग्स सहेजें' पर क्लिक करें।</value></data>
+	<data name="Settings.Speech.SampleTextLabel"><value>नमूना टेक्स्ट</value></data>
+	<data name="Settings.Speech.SampleTextPlaceholder"><value>चयनित आवाज़ का पूर्वावलोकन करने के लिए कुछ लिखें...</value></data>
+	<data name="Settings.Speech.DefaultSampleText"><value>यह एक त्वरित आवाज़ पूर्वावलोकन है।</value></data>
+	<data name="Settings.Speech.OutputModeLabel"><value>सहायक की वाक् आउटपुट</value></data>
+	<data name="Settings.Speech.OutputModeBrowserOnly"><value>केवल ब्राउज़र</value></data>
+	<data name="Settings.Speech.OutputModeBrowserAndAvatar"><value>ब्राउज़र और अवतार</value></data>
+	<data name="Settings.Speech.OutputModeAvatarOnly"><value>केवल अवतार</value></data>
+	<data name="Settings.Speech.RecognitionSectionTitle"><value>वाक् पहचान</value></data>
+	<data name="Settings.Speech.SynthesisSectionTitle"><value>वाक् संश्लेषण</value></data>
+	<data name="Settings.Speech.DownloadModelButton"><value>मॉडल डाउनलोड करें</value></data>
+	<data name="Settings.Speech.DownloadingLabel"><value>डाउनलोड हो रहा है {0:0}%</value></data>
+	<data name="Settings.Speech.ModelReadyLabel"><value>तैयार</value></data>
+	<data name="Settings.Speech.ModelMissingLabel"><value>डाउनलोड नहीं किया गया</value></data>
+	<data name="Settings.Speech.CancelDownloadButton"><value>रद्द करें</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderTitle"><value>डिफ़ॉल्ट प्रदाता</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderDescription"><value>अपने प्रदाता जोड़ें और चुनें कि डिफ़ॉल्ट रूप से किसका उपयोग किया जाना चाहिए।</value></data>
+	<data name="Settings.ModelProviders.SelectPlaceholder"><value>शुरू करने के लिए एक प्रदाता जोड़ें</value></data>
+	<data name="Settings.ModelProviders.SelectDefaultPlaceholder"><value>एक प्रदाता चुनें</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderTitle"><value>फ़ॉलबैक प्रदाता</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderDescription"><value>यदि डिफ़ॉल्ट प्रदाता विफल हो जाता है तो स्वचालित रूप से उपयोग किया जाता है।</value></data>
+	<data name="Settings.ModelProviders.FallbackNoneOption"><value>कोई नहीं</value></data>
+	<data name="Settings.ModelProviders.AddButton"><value>कस्टम प्रदाता जोड़ें</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderTitle"><value>एम्बेडिंग प्रदाता</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderDescription"><value>एजेंट मेमोरी खोज के लिए एक एम्बेडिंग मॉडल कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.ModelProviders.NoEmbeddingConfiguredMessage"><value>कोई एम्बेडिंग प्रदाता कॉन्फ़िगर नहीं किया गया है। एजेंट मेमोरी सुविधाओं के लिए एक एम्बेडिंग मॉडल की आवश्यकता होती है।</value></data>
+	<data name="Settings.ModelProviders.AddEmbeddingButton"><value>एम्बेडिंग प्रदाता जोड़ें</value></data>
+	<data name="Settings.ModelProviders.ConfiguredProvidersTitle"><value>कॉन्फ़िगर किए गए प्रदाता</value></data>
+	<data name="Settings.ModelProviders.SelectedProviderLabel"><value>चयनित प्रदाता: {0}</value></data>
+	<data name="Settings.ModelProviders.NoProvidersMessage"><value>चैट शुरू करने के लिए एक मॉडल प्रदाता जोड़ें।</value></data>
+	<data name="Settings.ModelProviders.TableHeaderProvider"><value>प्रदाता</value></data>
+	<data name="Settings.ModelProviders.TableHeaderModel"><value>मॉडल</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCredential"><value>क्रेडेंशियल</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCapabilities"><value>क्षमताएं</value></data>
+	<data name="Settings.ModelProviders.TableHeaderLastTest"><value>अंतिम परीक्षण</value></data>
+	<data name="Settings.ModelProviders.OpenDetailsTitle"><value>प्रदाता विवरण खोलें</value></data>
+	<data name="Settings.ModelProviders.DefaultBadge"><value>डिफ़ॉल्ट</value></data>
+	<data name="Settings.ModelProviders.FallbackBadge"><value>फ़ॉलबैक</value></data>
+	<data name="Settings.ModelProviders.CapabilityText"><value>{0:N0} संदर्भ</value></data>
+	<data name="Settings.ModelProviders.NoCapabilities"><value>कोई अतिरिक्त क्षमताएं नहीं</value></data>
+	<data name="Settings.ModelProviders.NoTestRun"><value>परीक्षण नहीं किया गया</value></data>
+	<data name="Settings.ModelProviders.DetailsDialogTitle"><value>प्रदाता विवरण</value></data>
+	<data name="Settings.ModelProviders.EndpointDefault"><value>डिफ़ॉल्ट एंडपॉइंट</value></data>
+	<data name="Settings.ModelProviders.TestButton"><value>परीक्षण करें</value></data>
+	<data name="Settings.ModelProviders.ModelNotSet"><value>मॉडल सेट नहीं है</value></data>
+	<data name="Settings.ModelProviders.NoCredentialLinked"><value>कोई सहेजा गया क्रेडेंशियल लिंक नहीं है</value></data>
+	<data name="Settings.ModelProviders.CredentialSummary"><value>क्रेडेंशियल: {0} [{1}]</value></data>
+	<data name="Settings.ModelProviders.CredentialMissing"><value>क्रेडेंशियल लिंक है लेकिन मान गायब है: [{0}]</value></data>
+	<data name="Settings.ModelProviders.CredentialNotFound"><value>क्रेडेंशियल नहीं मिला: [{0}]</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmTitle"><value>प्रदाता हटाएं</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmMessage"><value>क्या आप निश्चित रूप से {0} को हटाना चाहते हैं?</value></data>
+	<data name="Settings.ModelProviders.CopyNameSuffix"><value>{0} (प्रतिलिपि)</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmTitle"><value>एम्बेडिंग प्रदाता हटाएं</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmMessage"><value>क्या आप निश्चित रूप से {0} को हटाना चाहते हैं?</value></data>
+	<data name="Settings.ModelProviders.EditProviderDialogTitle"><value>प्रदाता संपादित करें</value></data>
+	<data name="Settings.ModelProviders.AddProviderDialogTitle"><value>प्रदाता जोड़ें</value></data>
+	<data name="Settings.ModelProviders.DialogTabProvider"><value>प्रदाता</value></data>
+	<data name="Settings.ModelProviders.DialogTabChatOptions"><value>चैट विकल्प</value></data>
+	<data name="Settings.ModelProviders.ProviderTypeLabel"><value>प्रदाता प्रकार</value></data>
+	<data name="Settings.ModelProviders.ProviderNameLabel"><value>प्रदाता का नाम</value></data>
+	<data name="Settings.ModelProviders.ProviderNamePlaceholder"><value>जैसे, कार्य OpenAI</value></data>
+	<data name="Settings.ModelProviders.ProviderNameRequired"><value>प्रदाता का नाम आवश्यक है</value></data>
+	<data name="Settings.ModelProviders.ModelFileLabel"><value>मॉडल फ़ाइल</value></data>
+	<data name="Settings.ModelProviders.NoGgufFilesOption"><value>कोई GGUF फ़ाइलें नहीं मिलीं</value></data>
+	<data name="Settings.ModelProviders.SelectModelPlaceholder"><value>एक मॉडल चुनें...</value></data>
+	<data name="Settings.ModelProviders.GgufFilesLocation"><value>{0} में GGUF फ़ाइलें</value></data>
+	<data name="Settings.ModelProviders.DownloadSectionTitle"><value>एक GGUF मॉडल डाउनलोड करें</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlLabel"><value>डाउनलोड URL</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlPlaceholder"><value>https://huggingface.co/.../model.gguf</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlHelp"><value>GGUF फ़ाइल का सीधा लिंक चिपकाएँ (उदा. HuggingFace से)</value></data>
+	<data name="Settings.ModelProviders.BaseUrlLabel"><value>बेस URL</value></data>
+	<data name="Settings.ModelProviders.BaseUrlInvalid"><value>कृपया एक मान्य URL दर्ज करें</value></data>
+	<data name="Settings.ModelProviders.ModelIdLabel"><value>मॉडल ID</value></data>
+	<data name="Settings.ModelProviders.ModelIdRequired"><value>मॉडल ID आवश्यक है</value></data>
+	<data name="Settings.ModelProviders.ModelIdHelp"><value>कोई भी मॉडल ID मैन्युअल रूप से टाइप करें, या नीचे प्रदाता मॉडल प्राप्त करें।</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsTitle"><value>प्रदाता मॉडल</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsDescription"><value>उपलब्ध या सुझाए गए मॉडल प्राप्त करें, फिर एक को मॉडल ID फ़ील्ड में कॉपी करें।</value></data>
+	<data name="Settings.ModelProviders.FetchModelsButton"><value>मॉडल प्राप्त करें</value></data>
+	<data name="Settings.ModelProviders.DownloadFetchedModelButton"><value>मॉडल डाउनलोड करें</value></data>
+	<data name="Settings.ModelProviders.DownloadUnsupportedMessage"><value>चयनित प्रदाता मॉडल डाउनलोड का समर्थन नहीं करता है।</value></data>
+	<data name="Settings.ModelProviders.InstalledModelBadge"><value>स्थापित</value></data>
+	<data name="Settings.ModelProviders.ModelLicenseLabel"><value>लाइसेंस</value></data>
+	<data name="Settings.ModelProviders.ChooseFetchedModelLabel"><value>प्राप्त किया गया मॉडल चुनें</value></data>
+	<data name="Settings.ModelProviders.AvailableModelsLoadedLabel"><value>{0} लोड किए गए</value></data>
+	<data name="Settings.ModelProviders.SelectFetchedModelPlaceholder"><value>प्राप्त किया गया मॉडल चुनें...</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLabel"><value>एंडपॉइंट स्कोप</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeAuto"><value>ऑटो-डिटेक्ट</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLocal"><value>स्थानीय के रूप में मानें</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeCloud"><value>क्लाउड के रूप में मानें</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeDescription"><value>इसका उपयोग तब करें जब किसी कस्टम एंडपॉइंट को ऑफ़लाइन मोड द्वारा गलत वर्गीकृत किया गया हो, जैसे कि LAN गेटवे या क्लाउड प्रॉक्सी।</value></data>
+	<data name="Settings.ModelProviders.CredentialSectionTitle"><value>क्रेडेंशियल</value></data>
+	<data name="Settings.ModelProviders.CredentialDescription"><value>प्रदाता पर ही सीक्रेट्स स्टोर करने के बजाय इस प्रदाता को एक सहेजी गई API कुंजी से लिंक करें।</value></data>
+	<data name="Settings.ModelProviders.NewCredentialButton"><value>क्रेडेंशियल प्रबंधित करें</value></data>
+	<data name="Settings.ModelProviders.SavedApiKeyLabel"><value>सहेजी गई API कुंजी</value></data>
+	<data name="Settings.ModelProviders.ModelConfigurationTitle"><value>मॉडल कॉन्फ़िगरेशन</value></data>
+	<data name="Settings.ModelProviders.SupportsImagesLabel"><value>छवियों का समर्थन करता है</value></data>
+	<data name="Settings.ModelProviders.SupportsThinkingLabel"><value>थिंकिंग आउटपुट का समर्थन करता है</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeLabel"><value>संदर्भ विंडो का आकार</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeInvalid"><value>संदर्भ विंडो का आकार सकारात्मक होना चाहिए</value></data>
+	<data name="Settings.ModelProviders.MemoryFitFits"><value>Oscova चलाने वाले कंप्यूटर के लिए अनुमानित मेमोरी अनुकूलता: उपयुक्त।</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTight"><value>Oscova चलाने वाले कंप्यूटर के लिए अनुमानित मेमोरी अनुकूलता: सीमित। छोटी संदर्भ विंडो से अनुमान कम हो जाता है।</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTooLarge"><value>Oscova चलाने वाले कंप्यूटर के लिए अनुमानित मेमोरी अनुकूलता: बहुत बड़ा। छोटा मॉडल या छोटी संदर्भ विंडो आज़माएँ।</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveLabel"><value>सक्रिय रखें</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveHelp"><value>वैकल्पिक Ollama अवधि। उदाहरण: 5m मॉडल को पाँच मिनट तक लोड रखता है, -1 इसे अनिश्चित काल तक लोड रखता है, और 0 प्रतिक्रिया के बाद इसे अनलोड कर देता है। खाली छोड़ने पर Ollama सर्वर डिफ़ॉल्ट का उपयोग होता है।</value></data>
+	<data name="Settings.ModelProviders.InputCostLabel"><value>इनपुट मूल्य, प्रति 10 लाख टोकन USD</value></data>
+	<data name="Settings.ModelProviders.OutputCostLabel"><value>आउटपुट मूल्य, प्रति 10 लाख टोकन USD</value></data>
+	<data name="Settings.ModelProviders.CostEstimateHelp"><value>डैशबोर्ड अनुमान के लिए वैकल्पिक मानक दरें। कैश किया गया इनपुट इनपुट दर पर गिना जाता है। अन्य शुल्क शामिल नहीं हैं।</value></data>
+	<data name="Settings.ModelProviders.CostPerMillionTokensInvalid"><value>एक गैर-ऋणात्मक राशि दर्ज करें या खाली छोड़ दें।</value></data>
+	<data name="Settings.ModelProviders.CostNotSet"><value>लागत सेट नहीं है</value></data>
+	<data name="Settings.ModelProviders.TemperatureLabel"><value>तापमान</value></data>
+	<data name="Settings.ModelProviders.ClearButton"><value>साफ़ करें</value></data>
+	<data name="Settings.ModelProviders.TemperatureDescription"><value>उच्च मान यादृच्छिकता बढ़ाते हैं; कम मान उत्तरों को अधिक केंद्रित बनाते हैं।</value></data>
+	<data name="Settings.ModelProviders.TopPLabel"><value>Top P</value></data>
+	<data name="Settings.ModelProviders.TopPDescription"><value>न्यूक्लियस सैंपलिंग को नियंत्रित करता है। कम मान टोकन विकल्पों को सीमित करते हैं।</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyLabel"><value>फ़्रीक्वेंसी पेनल्टी</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyDescription"><value>सकारात्मक मान दोहराव को हतोत्साहित करते हैं; नकारात्मक मान इसे बढ़ाते हैं।</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyLabel"><value>प्रेज़ेंस पेनल्टी</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyDescription"><value>सकारात्मक होने पर मॉडल को नए विषय पेश करने के लिए प्रोत्साहित करता है।</value></data>
+	<data name="Settings.ModelProviders.TopKLabel"><value>Top K</value></data>
+	<data name="Settings.ModelProviders.TopKDescription"><value>उम्मीदवार टोकन को सीमित करता है। प्रदाता डिफ़ॉल्ट पर भरोसा करने के लिए 0 पर सेट करें।</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensLabel"><value>अधिकतम आउटपुट टोकन</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensInvalid"><value>एक सकारात्मक संख्या दर्ज करें या खाली छोड़ दें।</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensDescription"><value>प्रदाता को प्रतिक्रिया की लंबाई तय करने देने के लिए खाली छोड़ दें।</value></data>
+	<data name="Settings.ModelProviders.SeedLabel"><value>सीड (Seed)</value></data>
+	<data name="Settings.ModelProviders.SeedInvalid"><value>एक गैर-ऋणात्मक संख्या दर्ज करें या खाली छोड़ दें।</value></data>
+	<data name="Settings.ModelProviders.SeedDescription"><value>मॉडल द्वारा समर्थित होने पर दोहराए जा सकने वाले उत्तरों के लिए उपयोग करें।</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorLabel"><value>टूल कॉल व्यवहार</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAuto"><value>ऑटो</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAllowMultiple"><value>एकाधिक टूल कॉल की अनुमति दें</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorSingle"><value>केवल एकल टूल कॉल</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorDescription"><value>चुनें कि मॉडल प्रति अनुरोध कितने टूल कॉल जारी कर सकता है।</value></data>
+	<data name="Settings.ModelProviders.ResetToDefaultsButton"><value>डिफ़ॉल्ट पर रीसेट करें</value></data>
+	<data name="Settings.ModelProviders.ConnectedNoModelsMessage"><value>सफलतापूर्वक कनेक्ट हुआ, लेकिन प्रदाता ने कोई मॉडल वापस नहीं किया। आप अभी भी मैन्युअल रूप से मॉडल ID टाइप कर सकते हैं।</value></data>
+	<data name="Settings.ModelProviders.ModelsLoadedMessage"><value>{0} मॉडल लोड किए गए।</value></data>
+	<data name="Settings.ModelProviders.ModelDetailsPrefilledMessage"><value>चयनित मॉडल से फ़ील्ड स्वतः भरे गए। समीक्षा करें और आवश्यकतानुसार समायोजित करें।</value></data>
+	<data name="Settings.ModelProviders.InvalidDownloadUrl"><value>कृपया एक मान्य http या https URL दर्ज करें।</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOllama"><value>यदि स्थानीय Ollama डिफ़ॉल्ट पते पर नहीं चल रहा है तो एंडपॉइंट को ओवरराइड करें</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpGroq"><value>Groq एंडपॉइंट को केवल तभी ओवरराइड करें यदि आप किसी प्रॉक्सी या गेटवे के माध्यम से रूट कर रहे हैं</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenAICompatible"><value>अपने संगत API, प्रॉक्सी या गेटवे के लिए एंडपॉइंट सेट करें</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenRouter"><value>OpenRouter एंडपॉइंट को केवल तभी ओवरराइड करें यदि आप किसी प्रॉक्सी या गेटवे के माध्यम से रूट कर रहे हैं</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpDefault"><value>डिफ़ॉल्ट API एंडपॉइंट को ओवरराइड करें</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpNoCredentials"><value>प्रमाणीकृत प्रदाता का उपयोग करने के लिए सेटिंग्स > क्रेडेंशियल में एक क्रेडेंशियल बनाएं।</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpGoogle"><value>Google Gemini को एक API कुंजी क्रेडेंशियल की आवश्यकता होती है।</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpDefault"><value>केवल तभी खाली छोड़ें जब इस प्रदाता का उपयोग बिना किसी API कुंजी के किया जा सके।</value></data>
+	<data name="Settings.ModelProviders.AutoValue"><value>ऑटो</value></data>
+	<data name="Settings.ModelProviders.AllowValue"><value>अनुमति दें</value></data>
+	<data name="Settings.ModelProviders.SingleValue"><value>एकल</value></data>
+	<data name="Settings.ModelProviders.EmbeddingEditDialogTitle"><value>एम्बेडिंग प्रदाता संपादित करें</value></data>
+	<data name="Settings.ModelProviders.EmbeddingAddDialogTitle"><value>एम्बेडिंग प्रदाता जोड़ें</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderNamePlaceholder"><value>उदा., Ollama एम्बेडिंग्स</value></data>
+	<data name="Settings.ModelProviders.EmbeddingModelIdPlaceholder"><value>उदा., nomic-embed-text</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsLabel"><value>वेक्टर आयाम</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsRequired"><value>वेक्टर आयाम आवश्यक हैं</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsHelp"><value>मॉडल के आउटपुट से मेल खाना चाहिए (उदा. nomic-embed-text के लिए 768, text-embedding-3-small के लिए 1536)। बदले हुए एम्बेडिंग मॉडल या आयामों को सहेजने से मौजूदा मेमोरी इंडेक्स साफ़ हो जाता है ताकि Oscova इसे फिर से बना सके।</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialDescription"><value>इस एम्बेडिंग प्रदाता को सहेजी गई API कुंजी क्रेडेंशियल से लिंक करें।</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialHelp"><value>एक सहेजा गया क्रेडेंशियल चुनें, या उन प्रदाताओं के लिए खाली छोड़ दें जिन्हें इसकी आवश्यकता नहीं है।</value></data>
+	<data name="Settings.Agents.SectionDescription"><value>चैट में उपयोग करने के लिए कस्टम एजेंट बनाएं और प्रबंधित करें।</value></data>
+	<data name="Settings.Agents.NewAgentButton"><value>नया एजेंट</value></data>
+	<data name="Settings.Agents.EmptyStateMessage"><value>अभी तक कोई कस्टम एजेंट नहीं है। शुरू करने के लिए एक बनाएं।</value></data>
+	<data name="Settings.Agents.SharedBadge"><value>साझा</value></data>
+	<data name="Settings.Agents.DeleteButtonTitle"><value>एजेंट हटाएं</value></data>
+	<data name="Settings.Agents.ExportButtonTitle"><value>एजेंट निर्यात करें</value></data>
+	<data name="Settings.Agents.ExportFailedToast"><value>एजेंट निर्यात नहीं किया जा सका।</value></data>
+	<data name="Settings.Agents.ImportDialogTitle"><value>एजेंट आयात करें</value></data>
+	<data name="Settings.Agents.ImportDialogDescription"><value>.oscagent फ़ाइल से एजेंट आयात करें। एजेंट को हमेशा एक नए एजेंट के रूप में जोड़ा जाता है और यह कभी भी किसी मौजूदा एजेंट को नहीं बदलता है।</value></data>
+	<data name="Settings.Agents.ChooseFileButton"><value>एजेंट फ़ाइल चुनें</value></data>
+	<data name="Settings.Agents.ImporterLimitInfo"><value>आयातक 5 MB तक का एक .oscagent पैकेज स्वीकार करता है। चैट, मेमोरी और निजी एजेंट नोट्स शामिल नहीं हैं।</value></data>
+	<data name="Settings.Agents.ImportNameLabel"><value>नाम (वैकल्पिक)</value></data>
+	<data name="Settings.Agents.ImportNameHint"><value>फ़ाइल में संग्रहीत नाम को बनाए रखने के लिए इसे खाली छोड़ दें। यदि वह नाम पहले से उपयोग में है, तो एक संख्या जोड़ दी जाती है।</value></data>
+	<data name="Settings.Agents.UnsupportedImportFileError"><value>केवल .oscagent फ़ाइलें समर्थित हैं।</value></data>
+	<data name="Settings.Agents.InvalidImportFileError"><value>एजेंट फ़ाइल आयात नहीं की जा सकी।</value></data>
+	<data name="Settings.Agents.ImportedToast"><value>एजेंट '{0}' आयात किया गया।</value></data>
+	<data name="Settings.Agents.ImportedWithRemovedToast"><value>एजेंट '{0}' आयात किया गया। इस मशीन पर अनुपलब्ध {1} संदर्भ हटा दिए गए।</value></data>
+	<data name="Settings.Agents.BackButton"><value>पीछे</value></data>
+	<data name="Settings.Agents.EditingLabel"><value>संपादन: {0}</value></data>
+	<data name="Settings.Agents.DeleteConfirmTitle"><value>एजेंट हटाएं</value></data>
+	<data name="Settings.Agents.DeleteConfirmMessage"><value>क्या आप निश्चित रूप से "{0}" को हटाना चाहते हैं?</value></data>
+	<data name="Settings.Agents.CustomizeButton"><value>कस्टमाइज़ करें</value></data>
+	<data name="Settings.Agents.SharedAgentWarning"><value>साझा एजेंट परिभाषाएँ केवल एडमिन या मॉडरेटर उपयोगकर्ताओं द्वारा ही संपादित की जा सकती हैं।</value></data>
+	<data name="Settings.Agents.SaveFirstTitle"><value>पहले एजेंट को सहेजें</value></data>
+	<data name="Settings.Agents.NamePlaceholder"><value>सहायक</value></data>
+	<data name="Settings.Agents.CallableNameCollisionMessage"><value>एजेंट नाम "{0}" कॉल करने योग्य नाम "{1}" में बदल जाता है, जो पहले से ही किसी अन्य एजेंट द्वारा उपयोग किया जा रहा है। एक भिन्न एजेंट नाम चुनें।</value></data>
+	<data name="Settings.Agents.DescriptionPlaceholder"><value>इस एजेंट का संक्षिप्त विवरण...</value></data>
+	<data name="Settings.Agents.SystemInstructionLabel"><value>सिस्टम निर्देश</value></data>
+	<data name="Settings.Agents.SystemInstructionPlaceholder"><value>सहायक को निर्देशित करने के लिए सिस्टम निर्देश दर्ज करें...</value></data>
+	<data name="Settings.Agents.PreviewInstructionButton"><value>पूर्वावलोकन</value></data>
+	<data name="Settings.Agents.PreviewInstructionTitle"><value>मान भरने के बाद तैयार सिस्टम निर्देश</value></data>
+	<data name="Settings.Agents.PreviewInstructionGeneratedAt"><value>जनरेट किया गया {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionFailed"><value>संदर्भ उपयोग का अनुमान नहीं लगाया जा सका: {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionTokenCount"><value>{0} टोकन</value></data>
+	<data name="Settings.PromptVariables.AgentName"><value>वर्तमान एजेंट का नाम।</value></data>
+	<data name="Settings.PromptVariables.CurrentDate"><value>वर्तमान स्थानीय तिथि।</value></data>
+	<data name="Settings.PromptVariables.UserName"><value>वर्तमान उपयोगकर्ता का प्रदर्शन नाम।</value></data>
+	<data name="Settings.PromptVariables.UserNickname"><value>वर्तमान उपयोगकर्ता का पसंदीदा नाम।</value></data>
+	<data name="Settings.PromptVariables.UserUsername"><value>वर्तमान उपयोगकर्ता का लॉगिन उपयोगकर्ता नाम।</value></data>
+	<data name="Settings.PromptVariables.UserEmail"><value>वर्तमान उपयोगकर्ता का खाता ईमेल।</value></data>
+	<data name="Settings.PromptVariables.UserTimezone"><value>वर्तमान उपयोगकर्ता का समय क्षेत्र।</value></data>
+	<data name="Settings.PromptVariables.UserContext"><value>व्यक्तिगत संदर्भ जो वर्तमान उपयोगकर्ता ने इस साझा एजेंट के लिए सहेजा है।</value></data>
+	<data name="Settings.Agents.ModelProviderLabel"><value>डिफ़ॉल्ट मॉडल प्रदाता</value></data>
+	<data name="Settings.Agents.ModelProviderDefaultOption"><value>ऐप के डिफ़ॉल्ट प्रदाता का उपयोग करें</value></data>
+	<data name="Settings.Agents.ModelProviderDescription"><value>कार्यों, संदेश चैनलों और सौंपे गए काम के लिए डिफ़ॉल्ट। इस एजेंट के साथ आपकी अपनी चैट या कार्य में स्पष्ट रूप से चुना गया प्रदाता इसे बदल सकता है। ऐप का डिफ़ॉल्ट उपयोग करने के लिए खाली छोड़ें।</value></data>
+	<data name="Settings.Agents.EnableCompactionLabel"><value>कॉम्पैक्शन सक्षम करें</value></data>
+	<data name="Settings.Agents.EnableCompactionDescription"><value>संदर्भ विंडो की सीमा पूरी होने पर वार्तालाप इतिहास को स्वतः संक्षेप में प्रस्तुत करें।</value></data>
+	<data name="Settings.Agents.EnableMemoryLabel"><value>मेमोरी सक्षम करें</value></data>
+	<data name="Settings.Agents.EnableMemoryDescription"><value>सहेजी गई मेमोरी को संदर्भ में लोड करें और एजेंट को मेमोरी सहेजने तथा बाद के सत्रों में भी उसे पुनर्प्राप्त करने की अनुमति दें।</value></data>
+	<data name="Settings.Agents.EnableTodoLabel"><value>कार्य सूची सक्षम करें</value></data>
+	<data name="Settings.Agents.EnableTodoDescription"><value>इस एजेंट को एक सत्र कार्य सूची में बहु-चरणीय कार्य को ट्रैक करने दें। जटिल, लंबे समय तक चलने वाले कार्यों के लिए सर्वोत्तम।</value></data>
+	<data name="Settings.Agents.SubagentDelegationLabel"><value>सबएजेंट का उपयोग करें</value></data>
+	<data name="Settings.Agents.SubagentDelegationDescription"><value>इस एजेंट को अपने ही अलग इंस्टेंस को कार्य सौंपने दें।</value></data>
+	<data name="Settings.Agents.LocalOnlyLabel"><value>केवल स्थानीय</value></data>
+	<data name="Settings.Agents.LocalOnlyDescription"><value>इस एजेंट को क्लाउड मॉडल प्रदाताओं और इंटरनेट टूल्स का उपयोग करने से रोकें, भले ही वैश्विक ऑफ़लाइन मोड बंद हो।</value></data>
+	<data name="Settings.Agents.ToolSearchToggleLabel"><value>टूल खोज</value></data>
+	<data name="Settings.Agents.ToolSearchToggleHelp"><value>केवल पिन किए गए टूल को पहले से प्रदर्शित करें; जरूरत पड़ने पर एजेंट बाकियों को खोज सकता है।</value></data>
+	<data name="Settings.Agents.PinnedColumnLabel"><value>पिन किया गया</value></data>
+	<data name="Settings.Agents.PinToolLabel"><value>टूल {0} पिन करें</value></data>
+	<data name="Settings.Agents.ToolSearchSummary"><value>{0} पिन किए गए - {1} खोजने योग्य</value></data>
+	<data name="Settings.Agents.ExposeAsToolLabel"><value>टूल के रूप में प्रदर्शित करें</value></data>
+	<data name="Settings.Agents.ExposeAsToolDescription"><value>अन्य एजेंटों को इस एजेंट को एक टूल के रूप में कॉल करने की अनुमति दें।</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersLabel"><value>सभी उपयोगकर्ताओं के साथ साझा करें</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersDescription"><value>इस एजेंट को अन्य उपयोगकर्ताओं के लिए दृश्यमान बनाता है। सिस्टम निर्देश में {{ user_context }} शामिल हो सकता है जिसे प्रत्येक उपयोगकर्ता वैयक्तिकृत करता है।</value></data>
+	<data name="Settings.Agents.RestrictUsersTitle"><value>विशिष्ट उपयोगकर्ताओं तक सीमित करें</value></data>
+	<data name="Settings.Agents.RestrictUsersDescription"><value>सभी के साथ साझा करने के लिए सभी को अनचेक रहने दें।</value></data>
+	<data name="Settings.Agents.NoUsersMessage"><value>कोई उपयोगकर्ता नहीं मिला।</value></data>
+	<data name="Settings.Agents.AllowedToolsTitle"><value>अनुमत उपकरण</value></data>
+	<data name="Settings.Agents.NoToolsAvailableMessage"><value>कोई उपकरण उपलब्ध नहीं है। बाहरी उपकरण जोड़ने के लिए सेटिंग्स -> MCP सर्वर में MCP सर्वर कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Agents.AgentToolsTitle"><value>एजेंट उपकरण</value></data>
+	<data name="Settings.Agents.NoAgentToolsAvailableMessage"><value>उपकरण के रूप में कोई एजेंट उपलब्ध नहीं है। इसे यहां उपयोग करने के लिए कस्टम एजेंट पर "टूल के रूप में प्रदर्शित करें" सक्षम करें।</value></data>
+	<data name="Settings.Agents.SkillsTitle"><value>कौशल</value></data>
+	<data name="Settings.Agents.NoSkillsFoundMessage"><value>कोई कौशल नहीं मिला। सेटिंग्स -> फ़ाइलें -> skills फ़ोल्डर में कौशल जोड़ें।</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersTitle"><value>कार्यक्षेत्र फ़ोल्डर</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersDescription"><value>प्रबंधित कार्यक्षेत्र workspace/ के अंतर्गत फ़ोल्डर हैं। उन्हें सेटिंग्स -> फ़ाइलें में बनाएं, फिर उन्हें यहां चुनें।</value></data>
+	<data name="Settings.Agents.NoWorkspacesMessage"><value>अभी तक कोई कार्यक्षेत्र फ़ोल्डर नहीं मिला। सेटिंग्स -> फ़ाइलें में कार्यक्षेत्र बनाएं, फिर उन्हें यहां चुनें।</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceLabel"><value>लाइब्रेरी</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceDescription"><value>लाइब्रेरी चुनने से केवल-पढ़ने के लिए फ़ाइल का उपयोग मिलता है और लाइब्रेरी खोज उपकरण जुड़ते हैं।</value></data>
+	<data name="Settings.Agents.SharedFolderLabel"><value>साझा फ़ोल्डर</value></data>
+	<data name="Settings.Agents.SharedFolderDescription"><value>इस सर्वर के सभी अनुमत उपयोगकर्ताओं द्वारा साझा किए गए फ़ोल्डर /shared में पढ़ने और लिखने की पहुँच देता है।</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessTitle"><value>अतिरिक्त फ़ोल्डर एक्सेस</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessDescription"><value>स्पष्ट /mnt एक्सेस के लिए बाहरी होस्ट फ़ोल्डर या प्रबंधित उपयोगकर्ता फ़ोल्डर जोड़ें।</value></data>
+	<data name="Settings.Agents.AutomaticDataRootLabel"><value>स्वचालित डेटा रूट</value></data>
+	<data name="Settings.Agents.AutomaticDataRootDescription"><value>इस एजेंट के लिए हमेशा उपलब्ध; निजी नोट्स /data/notes के अंतर्गत रहते हैं।</value></data>
+	<data name="Settings.Agents.AddDirectoryButton"><value>निर्देशिका जोड़ें</value></data>
+	<data name="Settings.Agents.NoDirectoriesMessage"><value>कोई अतिरिक्त फ़ोल्डर कॉन्फ़िगर नहीं किए गए हैं।</value></data>
+	<data name="Settings.Agents.DirectorySourceLabel"><value>स्रोत</value></data>
+	<data name="Settings.Agents.DirectorySourceExternal"><value>बाहरी</value></data>
+	<data name="Settings.Agents.DirectorySourceManaged"><value>प्रबंधित</value></data>
+	<data name="Settings.Agents.DirectoryPathLabel"><value>मौजूदा फ़ोल्डर पथ</value></data>
+	<data name="Settings.Agents.DirectoryPathPlaceholder"><value>प्रोजेक्ट फ़ोल्डर पथ</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathLabel"><value>उपयोगकर्ता फ़ोल्डर पथ</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathPlaceholder"><value>agents/main/data/notes</value></data>
+	<data name="Settings.Agents.DirectoryLabelLabel"><value>लेबल</value></data>
+	<data name="Settings.Agents.DirectoryLabelPlaceholder"><value>Obsidian वॉल्ट</value></data>
+	<data name="Settings.Agents.DirectoryAccessLabel"><value>एक्सेस</value></data>
+	<data name="Settings.Agents.AccessModeReadOnly"><value>केवल पढ़ने योग्य</value></data>
+	<data name="Settings.Agents.AccessModeReadWrite"><value>पढ़ना और लिखना</value></data>
+	<data name="Settings.Agents.RemoveDirectoryTitle"><value>डायरेक्टरी हटाएं</value></data>
+	<data name="Settings.Agents.MountNameCollisionMessage"><value>कार्यक्षेत्र के नामों और फ़ोल्डर लेबल से बनने वाले माउंट नाम अद्वितीय होने चाहिए। टकराव: {0}।</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdatedToast"><value>प्रोफ़ाइल फ़ोटो अपडेट हो गई।</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdateFailedToast"><value>प्रोफ़ाइल फ़ोटो अपडेट नहीं की जा सकी: {0}</value></data>
+	<data name="Settings.Prompts.CatalogTitle"><value>कस्टम प्रॉम्प्ट्स</value></data>
+	<data name="Settings.Prompts.CatalogDescription"><value>मेमोरी, लाइब्रेरी सर्च, कॉम्पेक्शन, स्किल्स और रनटाइम संदर्भ सुविधाओं द्वारा उपयोग किए जाने वाले प्रॉम्प्ट टेम्प्लेट की समीक्षा करें और उन्हें संपादित करें।</value></data>
+	<data name="Settings.Prompts.CatalogCountBadge"><value>{0} प्रॉम्प्ट्स</value></data>
+	<data name="Settings.Prompts.CompactionInstructionLabel"><value>कॉम्पेक्शन निर्देश</value></data>
+	<data name="Settings.Prompts.CompactionDescription"><value>नियंत्रित करता है कि संदर्भ विंडो में स्थान की आवश्यकता होने पर लंबी बातचीत को कैसे संक्षेपित किया जाता है।</value></data>
+	<data name="Settings.Prompts.StoredAsLabel"><value>इस रूप में संग्रहीत</value></data>
+	<data name="Settings.Prompts.OpenInFileEditorLink"><value>फ़ाइल संपादक में खोलें</value></data>
+	<data name="Settings.Prompts.CompactionPlaceholder"><value>बातचीत के इतिहास को संक्षेपित करने के लिए कोई निर्देश दर्ज करें...</value></data>
+	<data name="Settings.Prompts.MemorySystemPromptLabel"><value>मेमोरी सिस्टम प्रॉम्प्ट</value></data>
+	<data name="Settings.Prompts.MemorySystemDescription"><value>यह आकार देता है कि सहेजी गई यादें एजेंट को संदर्भ के रूप में कैसे प्रस्तुत की जाती हैं।</value></data>
+	<data name="Settings.Prompts.MemorySystemPlaceholder"><value>मेमोरी संदर्भ प्रदाता के लिए सिस्टम प्रॉम्प्ट दर्ज करें...</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptLabel"><value>वातावरण प्रॉम्प्ट</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptDescription"><value>एजेंट के निर्देशों में जोड़े गए रनटाइम वातावरण के संदर्भ का निर्माण करता है।</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptPlaceholder"><value>रनटाइम वातावरण संदर्भ के लिए प्रॉम्प्ट टेम्प्लेट दर्ज करें...</value></data>
+	<data name="Settings.Prompts.LibraryPromptLabel"><value>लाइब्रेरी निर्देश</value></data>
+	<data name="Settings.Prompts.LibraryPromptDescription"><value>मार्गदर्शन करता है कि एजेंट स्थायी लाइब्रेरी फ़ाइलों को कैसे खोजते हैं और उन्हें बातचीत की मेमोरी से अलग करते हैं।</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptLabel"><value>टूल खोज निर्देश</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptDescription"><value>मार्गदर्शन करता है कि बड़े टूल सेट के स्थगित होने पर एजेंट टूल कैसे खोजते हैं।</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptLabel"><value>कार्य सूची निर्देश</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptDescription"><value>जिन एजेंटों के लिए कार्य सूची सक्षम है, उन्हें जटिल कार्य के दौरान अपनी कार्य सूची बनाने और बनाए रखने का मार्गदर्शन देता है।</value></data>
+	<data name="Settings.Prompts.SubagentsPromptLabel"><value>सबएजेंट निर्देश</value></data>
+	<data name="Settings.Prompts.SubagentsPromptDescription"><value>बताता है कि सबएजेंट चालू होने पर एजेंट अपने ही अलग इंस्टेंस को काम कैसे सौंपते हैं।</value></data>
+	<data name="Settings.Prompts.SkillsPromptLabel"><value>स्किल्स निर्देश</value></data>
+	<data name="Settings.Prompts.SkillsPromptDescription"><value>मार्गदर्शन करता है कि एजेंट असाइन की गई स्किल्स को कैसे खोजते हैं, लोड करते हैं और उपयोग करते हैं।</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptLabel"><value>अवतार भाव निर्देश</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptDescription"><value>अवतार के उत्तर बोलते समय एजेंट को भाव टैग से भावनाएँ चिह्नित करने का तरीका बताता है।</value></data>
+	<data name="Settings.Prompts.VariablesBadge"><value>{0} चर</value></data>
+	<data name="Settings.Prompts.NoVariablesBadge"><value>कोई चर नहीं</value></data>
+	<data name="Settings.Prompts.VariablePickerHelperText"><value>कर्सर पर सम्मिलित करने के लिए किसी चर पर क्लिक करें।</value></data>
+	<data name="Settings.Skills.ScriptExecutionTitle"><value>शेल और स्किल स्क्रिप्ट निष्पादन</value></data>
+	<data name="Settings.Skills.ScriptExecutionDescription"><value>ऑपरेटर सभी खातों के लिए शेल कमांड और कौशल स्क्रिप्ट का निष्पादन वातावरण चुनता है। होस्ट डिफ़ॉल्ट है। वातावरण बदलने के बाद नया रन शुरू करें।</value></data>
+	<data name="Settings.Skills.ExecutionModeLabel"><value>निष्पादन मोड</value></data>
+	<data name="Settings.Skills.SaveExecutionModeButton"><value>निष्पादन वातावरण सहेजें</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesTitle"><value>समर्थित बंडल स्क्रिप्ट प्रकार</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesDescription"><value>कंटेनर सैंडबॉक्स्ड सीधे .py, .js, और .sh फ़ाइलें चलाता है; प्रत्येक को इमेज में इंस्टॉल किए गए रनटाइम के लिए एक मान्य #! पहली पंक्ति की आवश्यकता होती है।</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesHostDescription"><value>होस्ट मोड में फ़ाइलें होस्ट शेल के माध्यम से चलती हैं और संबंधित रनटाइम PATH पर उपलब्ध होना चाहिए।</value></data>
+	<data name="Settings.Skills.InstalledSkillsTitle"><value>इंस्टॉल की गई स्किल्स</value></data>
+	<data name="Settings.Skills.InstalledSkillsDescription"><value>अपने एजेंटों को सौंपने के लिए उपलब्ध स्किल पैकेजों का प्रबंधन करें।</value></data>
+	<data name="Settings.Skills.ImportSkillButton"><value>स्किल आयात करें</value></data>
+	<data name="Settings.Skills.NoSkillsInstalledMessage"><value>अभी तक कोई स्किल इंस्टॉल नहीं की गई है। अपने एजेंटों के लिए उपलब्ध कराने हेतु SKILL.md फ़ाइल या पैकेज्ड .zip आयात करें।</value></data>
+	<data name="Settings.Skills.InstalledBadge"><value>इंस्टॉल किया गया</value></data>
+	<data name="Settings.Skills.DeleteButton"><value>स्किल अनइंस्टॉल करें</value></data>
+	<data name="Settings.Skills.DeleteConfirmTitle"><value>स्किल अनइंस्टॉल करें</value></data>
+	<data name="Settings.Skills.DeleteConfirmMessage"><value>क्या आप वाकई "{0}" को अनइंस्टॉल करना चाहते हैं? यह इसे आपके सभी एजेंटों से हटा देगा।</value></data>
+	<data name="Settings.Skills.DeletedToast"><value>स्किल अनइंस्टॉल कर दी गई।</value></data>
+	<data name="Settings.Skills.ImportedSkillsInfoNote"><value>आयात की गई स्किल्स आपकी skills/ डायरेक्टरी में रहती हैं और वर्तमान में उन्हें फ़ाइलें पृष्ठ से मैन्युअल रूप से हटाया जा सकता है।</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabled"><value>अक्षम</value></data>
+	<data name="Settings.Skills.ExecutionModeHost"><value>होस्ट</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxed"><value>कंटेनर सैंडबॉक्स्ड</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabledDescription"><value>शेल कमांड और बंडल किए गए स्किल स्क्रिप्ट नहीं चल सकते।</value></data>
+	<data name="Settings.Skills.ExecutionModeHostDescription"><value>कमांड Oscova चलाने वाली मशीन पर उसके ऑपरेटिंग सिस्टम खाते की अनुमतियों के साथ सीधे चलते हैं। अनुमोदन एजेंट और रन सेटिंग्स का पालन करता है।</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxedDescription"><value>कमांड Docker के अंदर आपके अनुमत फ़ोल्डर माउंट करके चलते हैं। केवल कंटेनर में इंस्टॉल किए गए टूल कंटेनर हटने पर खो जाते हैं। होस्ट पर इंस्टॉल टूल अपने आप उपलब्ध नहीं होते।</value></data>
+	<data name="Settings.Skills.ExecutionModeSavedToast"><value>वातावरण सहेजा गया। इसे उपयोग करने के लिए नया रन शुरू करें।</value></data>
+	<data name="Settings.Tools.AutoApproveHostWarning"><value>होस्ट निष्पादन सक्षम होने पर स्वतः अनुमोदित शेल कमांड Oscova चलाने वाली मशीन को बदल सकते हैं।</value></data>
+	<data name="Settings.Skills.ImportDialogTitle"><value>स्किल आयात करें</value></data>
+	<data name="Settings.Skills.ImportDialogDescription"><value>किसी एक स्किल को रॉ SKILL.md फ़ाइल या पैकेज्ड .zip संग्रह के रूप में आयात करें।</value></data>
+	<data name="Settings.Skills.ChooseFileButton"><value>स्किल फ़ाइल चुनें</value></data>
+	<data name="Settings.Skills.ImporterLimitInfo"><value>आयातक 10 MB तक का एक SKILL.md दस्तावेज़ या एक .zip पैकेज स्वीकार करता है।</value></data>
+	<data name="Settings.Skills.ImporterZipInfo"><value>ज़िप आयात में scripts/, references/, और assets/ शामिल हो सकते हैं।</value></data>
+	<data name="Settings.Skills.ImportWarningsTitle"><value>आयात चेतावनियाँ</value></data>
+	<data name="Settings.Skills.UnsupportedFileTypeError"><value>केवल .md और .zip फ़ाइलें समर्थित हैं।</value></data>
+	<data name="Settings.Skills.InvalidImportFileError"><value>फ़ाइल एक मान्य स्किल फ़ाइल प्रतीत नहीं होती है। SKILL.md फ़ाइल या .zip पैकेज आयात करें जिसमें एक स्किल हो।</value></data>
+	<data name="Settings.Skills.ImportedToast"><value>स्किल '{0}' आयात की गई।</value></data>
+	<data name="Settings.Tools.AvailableToolsTitle"><value>उपलब्ध टूल्स</value></data>
+	<data name="Settings.Tools.AvailableToolsDescription"><value>ये आपके एजेंटों के लिए उपलब्ध टूल्स हैं, जिनमें अंतर्निहित टूलसेट और MCP सर्वर टूल्स शामिल हैं।</value></data>
+	<data name="Settings.Tools.NoToolsAvailableMessage"><value>कोई टूल उपलब्ध नहीं है। बाहरी टूल्स जोड़ने के लिए सेटिंग्स -> MCP सर्वर में MCP सर्वर कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Tools.SearchPlaceholder"><value>टूल्स खोजें</value></data>
+	<data name="Settings.Tools.SearchLabel"><value>टूल्स खोजें</value></data>
+	<data name="Settings.Tools.SelectedCountLabel"><value>{1} में से {0} चयनित</value></data>
+
+  <data name="Settings.Tools.ShowEnabledOnlyLabel" xml:space="preserve"><value>केवल सक्षम टूल दिखाएँ</value></data>
+	<data name="Settings.Tools.ServerNameLabel"><value>सर्वर का नाम</value></data>
+	<data name="Settings.Tools.AllServersOption"><value>सभी</value></data>
+	<data name="Settings.Tools.SelectVisibleToolsLabel"><value>दृश्यमान टूल्स चुनें</value></data>
+	<data name="Settings.Tools.SelectToolLabel"><value>टूल {0} चुनें</value></data>
+	<data name="Settings.Tools.TableHeaderTool"><value>टूल</value></data>
+	<data name="Settings.Tools.TableHeaderQualifiedName"><value>पूर्ण टूल नाम</value></data>
+	<data name="Settings.Tools.TableHeaderServer"><value>सर्वर</value></data>
+	<data name="Settings.Tools.TableHeaderNetwork"><value>इंटरनेट</value></data>
+	<data name="Settings.Tools.TableHeaderApproval"><value>स्वीकृति</value></data>
+	<data name="Settings.Tools.ApprovalDefault"><value>डिफ़ॉल्ट</value></data>
+	<data name="Settings.Tools.ApprovalDefaultRequire"><value>डिफ़ॉल्ट (स्वीकृति आवश्यक)</value></data>
+	<data name="Settings.Tools.ApprovalDefaultAutoApprove"><value>डिफ़ॉल्ट (स्वतः स्वीकृत)</value></data>
+	<data name="Settings.Tools.ApprovalRequire"><value>स्वीकृति आवश्यक</value></data>
+	<data name="Settings.Tools.ApprovalAutoApprove"><value>स्वतः स्वीकृति</value></data>
+	<data name="Settings.Tools.ApprovalDeny"><value>अस्वीकार करें</value></data>
+	<data name="Settings.Tools.ApprovalUnavailable"><value>चयनित नहीं</value></data>
+	<data name="Settings.Tools.NetworkYes"><value>इंटरनेट</value></data>
+	<data name="Settings.Tools.NetworkNo"><value>केवल स्थानीय</value></data>
+	<data name="Settings.Tools.NoMatchesMessage"><value>कोई भी टूल वर्तमान फ़िल्टर से मेल नहीं खाता है।</value></data>
+	<data name="Settings.Plugins.LoadingMessage"><value>प्लगइन सेटिंग्स लोड हो रही हैं...</value></data>
+	<data name="Settings.Plugins.SecurityTitle"><value>केवल विश्वसनीय कोड</value></data>
+	<data name="Settings.Plugins.SecurityDescription"><value>प्लगइन्स Oscova Agents के अंदर चलते हैं और सभी उपयोगकर्ताओं के लिए क्षमताएं जोड़ सकते हैं। केवल उन प्लगइन्स को सक्षम करें जिन पर आप भरोसा करते हैं।</value></data>
+	<data name="Settings.Plugins.RestartRequiredAlert"><value>प्लगइन सक्रियण परिवर्तनों को प्रभावी करने के लिए Oscova Agents को पुनरारंभ करें।</value></data>
+	<data name="Settings.Plugins.InstalledTitle"><value>इंस्टॉल किए गए प्लगइन्स</value></data>
+	<data name="Settings.Plugins.InstalledDescription"><value>चुनें कि Oscova Agents के अगली बार प्रारंभ होने पर प्रत्येक उपयोगकर्ता के लिए कौन से इंस्टॉल किए गए प्लगइन्स लोड हो सकते हैं।</value></data>
+	<data name="Settings.Plugins.RestartHint"><value>इंस्टॉल किए गए प्लगइन्स तब तक निष्क्रिय रहते हैं जब तक उन्हें सक्षम नहीं किया जाता और एप्लिकेशन को पुनरारंभ नहीं किया जाता।</value></data>
+	<data name="Settings.Plugins.SearchPlaceholder"><value>प्लगइन्स खोजें</value></data>
+	<data name="Settings.Plugins.SearchLabel"><value>प्लगइन्स खोजें</value></data>
+	<data name="Settings.Plugins.TableHeaderPlugin"><value>प्लगइन</value></data>
+	<data name="Settings.Plugins.TableHeaderStatus"><value>वर्तमान स्थिति</value></data>
+	<data name="Settings.Plugins.TableHeaderNextStart"><value>अगले पुनरारंभ पर लोड करें</value></data>
+	<data name="Settings.Plugins.TableHeaderActions"><value>क्रियाएँ</value></data>
+	<data name="Settings.Plugins.NoPluginsMessage"><value>कोई इंस्टॉल किया गया प्लगइन नहीं मिला।</value></data>
+	<data name="Settings.Plugins.NoMatchesMessage"><value>वर्तमान खोज से कोई भी प्लगइन मेल नहीं खाता है।</value></data>
+	<data name="Settings.Plugins.EnableLabel"><value>अगले पुनरारंभ पर {0} लोड करें</value></data>
+	<data name="Settings.Plugins.DetailsButton"><value>प्लगइन विवरण देखें</value></data>
+	<data name="Settings.Plugins.DetailsLabel"><value>{0} के लिए विवरण देखें</value></data>
+	<data name="Settings.Plugins.ResetButton"><value>रीसेट करें</value></data>
+	<data name="Settings.Plugins.SaveButton"><value>प्लगइन सेटिंग्स सहेजें</value></data>
+	<data name="Settings.Plugins.LoadErrorToast"><value>प्लगइन सेटिंग्स प्रतिक्रिया खाली थी।</value></data>
+	<data name="Settings.Plugins.SavedToast"><value>प्लगइन सेटिंग्स सहेजी गईं।</value></data>
+	<data name="Settings.Plugins.UninstallLabel"><value>{0} अनइंस्टॉल करें</value></data>
+	<data name="Settings.Plugins.UninstallDisableRequiredTooltip"><value>पहले अक्षम करें और सहेजें।</value></data>
+	<data name="Settings.Plugins.UninstallRestartRequiredTooltip"><value>पहले अक्षम करें, सहेजें और पुनरारंभ करें।</value></data>
+	<data name="Settings.Plugins.UninstallConfirmTitle"><value>प्लगइन अनइंस्टॉल करें</value></data>
+	<data name="Settings.Plugins.UninstallConfirmMessage"><value>'{0}' को अनइंस्टॉल करें? इससे सभी उपयोगकर्ताओं के लिए इसकी इंस्टॉल की गई फ़ाइलें, संग्रहीत क्रेडेंशियल और जुड़े खातों के टोकन हट जाएंगे। प्लगइन द्वारा बनाए गए अन्य डेटा और सेटिंग बनी रहेंगी।</value></data>
+	<data name="Settings.Plugins.UninstalledToast"><value>प्लगइन अनइंस्टॉल हो गया।</value></data>
+	<data name="Settings.Plugins.EnabledLabel"><value>सक्षम</value></data>
+	<data name="Settings.Plugins.DisabledLabel"><value>अक्षम</value></data>
+	<data name="Settings.Plugins.InvalidManifestName"><value>अमान्य प्लगइन मेनिफेस्ट</value></data>
+	<data name="Settings.Plugins.StatusActive"><value>सक्रिय</value></data>
+	<data name="Settings.Plugins.StatusInactive"><value>निष्क्रिय</value></data>
+	<data name="Settings.Plugins.StatusLoadFailed"><value>लोड विफल</value></data>
+	<data name="Settings.Plugins.StatusInvalidManifest"><value>अमान्य मेनिफेस्ट</value></data>
+	<data name="Settings.Plugins.DetailsTitle"><value>प्लगइन विवरण</value></data>
+	<data name="Settings.Plugins.DetailsTrustNotice"><value>सक्षम प्लगइन्स Oscova Agents के अंदर विश्वसनीय कोड चलाते हैं। केवल उन प्लगइन्स को सक्षम करें जिन पर आप भरोसा करते हैं।</value></data>
+	<data name="Settings.Plugins.NameLabel"><value>नाम</value></data>
+	<data name="Settings.Plugins.IdLabel"><value>प्लगइन आईडी</value></data>
+	<data name="Settings.Plugins.VersionLabel"><value>संस्करण</value></data>
+	<data name="Settings.Plugins.AssemblyLabel"><value>असेंबली</value></data>
+	<data name="Settings.Plugins.EntryTypeLabel"><value>प्रविष्टि प्रकार</value></data>
+	<data name="Settings.Plugins.CurrentStatusLabel"><value>वर्तमान स्थिति</value></data>
+	<data name="Settings.Plugins.NextStartLabel"><value>अगले पुनरारंभ पर लोड करें</value></data>
+	<data name="Settings.Plugins.DiagnosticLabel"><value>निदान</value></data>
+	<data name="Settings.McpServers.SectionTitle"><value>MCP सर्वर</value></data>
+	<data name="Settings.McpServers.FindOnlineButton"><value>ऑनलाइन खोजें</value></data>
+	<data name="Settings.McpServers.FindOnlineDialogTitle"><value>ऑनलाइन MCP सर्वर खोजें</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPlaceholder"><value>आधिकारिक MCP रजिस्ट्री खोजें...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchButton"><value>खोजें</value></data>
+	<data name="Settings.McpServers.FindOnlineSearching"><value>MCP रजिस्ट्री खोजी जा रही है...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPrompt"><value>किसी सर्वर को खोजें, फिर MCP सर्वर संपादक में समीक्षा के लिए सेटअप विधि चुनें।</value></data>
+	<data name="Settings.McpServers.FindOnlineEmptyResults"><value>आपकी खोज से कोई MCP सर्वर मेल नहीं खाता।</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchFailed"><value>MCP रजिस्ट्री खोज विफल रही।</value></data>
+	<data name="Settings.McpServers.FindOnlineNoDescription"><value>इस सर्वर के लिए कोई विवरण उपलब्ध नहीं है।</value></data>
+	<data name="Settings.McpServers.FindOnlineVersionLabel"><value>v{0}</value></data>
+	<data name="Settings.McpServers.FindOnlineWebsiteButton"><value>वेबसाइट</value></data>
+	<data name="Settings.McpServers.FindOnlineRepositoryButton"><value>रिपॉजिटरी</value></data>
+	<data name="Settings.McpServers.FindOnlineAddButton"><value>जोड़ें</value></data>
+	<data name="Settings.McpServers.FindOnlineRequiredFieldsPrefix"><value>आपको प्रदान करना होगा: {0}</value></data>
+	<data name="Settings.McpServers.FindOnlineManualSetupHint"><value>इस सर्वर को मैन्युअल सेटअप की आवश्यकता है। इसे सेट करने के लिए अपने एजेंट से कहें।</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderServer"><value>सर्वर</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderSetup"><value>सेटअप</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteHttpOption"><value>रिमोट (HTTP)</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteSseOption"><value>रिमोट (SSE)</value></data>
+	<data name="Settings.McpServers.FindOnlineNpxOption"><value>स्थानीय (npx)</value></data>
+	<data name="Settings.McpServers.FindOnlineUvxOption"><value>स्थानीय (uvx)</value></data>
+	<data name="Settings.McpServers.FindOnlineDockerOption"><value>स्थानीय (docker)</value></data>
+	<data name="Settings.McpServers.FindOnlineDnxOption"><value>स्थानीय (dnx)</value></data>
+	<data name="Settings.McpServers.FindOnlineManualOption"><value>मैन्युअल सेटअप</value></data>
+	<data name="Settings.McpServers.ImportJsonButton"><value>JSON आयात करें</value></data>
+	<data name="Settings.McpServers.AddServerButton"><value>सर्वर जोड़ें</value></data>
+	<data name="Settings.McpServers.NoServersMessage"><value>कोई MCP सर्वर कॉन्फ़िगर नहीं किया गया है।</value></data>
+	<data name="Settings.McpServers.UnnamedServerLabel"><value>(अनाम सर्वर)</value></data>
+	<data name="Settings.McpServers.NamePlaceholder"><value>जैसे: मेरा MCP सर्वर</value></data>
+	<data name="Settings.McpServers.NameRequired"><value>नाम आवश्यक है।</value></data>
+	<data name="Settings.McpServers.TransportLabel"><value>ट्रांसपोर्ट</value></data>
+	<data name="Settings.McpServers.TransportHttp"><value>HTTP</value></data>
+	<data name="Settings.McpServers.TransportStdio"><value>STDIO</value></data>
+	<data name="Settings.McpServers.NetworkScopeLabel"><value>नेटवर्क उपयोग</value></data>
+	<data name="Settings.McpServers.NetworkScopeHelp"><value>एयर-गैप्ड रन केवल इंटरनेट के रूप में वर्गीकृत सर्वरों को बाहर रखते हैं। सर्वर का वास्तविक नेटवर्क वर्गीकरण चुनें।</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentLabel"><value>निष्पादन परिवेश</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHost"><value>होस्ट प्रक्रिया</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainer"><value>डॉकर सैंडबॉक्स</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHostHint"><value>कॉन्फ़िगर किए गए डिवाइस पर ऐप की अनुमतियों के साथ चलता है।</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainerHint"><value>कॉन्फ़िगर किए गए डिवाइस पर Docker में चलता है। प्रोजेक्ट /project और केंद्रीय रन /workspace/&lt;name> माउंट करते हैं।</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentBadge"><value>सैंडबॉक्स किया गया</value></data>
+	<data name="Settings.McpServers.EndpointLabel"><value>एंडपॉइंट</value></data>
+	<data name="Settings.McpServers.EndpointPlaceholder"><value>http://127.0.0.1:8811/mcp</value></data>
+	<data name="Settings.McpServers.EndpointRequired"><value>पुन: कनेक्ट करने से पहले एंडपॉइंट आवश्यक है।</value></data>
+	<data name="Settings.McpServers.HeadersLabel"><value>हेडर (प्रति पंक्ति key=value)</value></data>
+	<data name="Settings.McpServers.HeadersPlaceholder"><value>Authorization=Bearer sk-xxx</value></data>
+	<data name="Settings.McpServers.CommandLabel"><value>कमांड</value></data>
+	<data name="Settings.McpServers.CommandPlaceholder"><value>npx</value></data>
+	<data name="Settings.McpServers.CommandRequired"><value>पुन: कनेक्ट करने से पहले कमांड आवश्यक है।</value></data>
+	<data name="Settings.McpServers.WorkingDirectoryLabel"><value>कार्य निर्देशिका (वैकल्पिक)</value></data>
+	<data name="Settings.McpServers.ArgumentsLabel"><value>आर्ग्युमेंट (प्रति पंक्ति एक)</value></data>
+	<data name="Settings.McpServers.ArgumentsPlaceholder"><value>-y
+@modelcontextprotocol/server-everything</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesLabel"><value>पर्यावरण चर (प्रति पंक्ति KEY=VALUE या KEY)</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesPlaceholder"><value>API_KEY
+NODE_ENV=production</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesHelp"><value>कोई मान सीधे सहेजने के लिए KEY=VALUE का उपयोग करें। होस्ट प्रक्रियाओं में, लॉन्च के समय Oscova से मान पढ़ने के लिए केवल KEY लिखें; अनुपलब्ध कुंजियों को छोड़ दिया जाता है, और पढ़े गए मान कभी सहेजे या दिखाए नहीं जाते।</value></data>
+	<data name="Settings.McpServers.SaveAndReconnectButton"><value>सहेजें और सभी पुन: कनेक्ट करें</value></data>
+	<data name="Settings.McpServers.CompleteRequiredFieldsToast"><value>सहेजने से पहले प्रत्येक MCP सर्वर के आवश्यक फ़ील्ड भरें।</value></data>
+	<data name="Settings.McpServers.SavedReconnectStartedToast"><value>MCP सर्वर सहेजे गए और पुन: कनेक्ट होना प्रारंभ हुआ।</value></data>
+	<data name="Settings.McpServers.SaveFailedToast"><value>MCP सर्वर सहेजने में विफल: {0}</value></data>
+	<data name="Settings.McpServers.ImportedToast"><value>{0} MCP सर्वर आयात किए गए।</value></data>
+	<data name="Settings.McpServers.ImportFailedToast"><value>MCP सर्वर आयात करने में विफल: {0}</value></data>
+	<data name="Settings.McpServers.ReconnectAllButton"><value>सभी पुन: कनेक्ट करें</value></data>
+	<data name="Settings.McpServers.ServerAddedToast"><value>MCP सर्वर "{0}" जोड़ा गया और कनेक्ट हुआ। इसके टूल उपयोग करने के लिए, किसी एजेंट की सेटिंग्स में अनुमत उपकरण के अंतर्गत उन्हें चुनें।</value></data>
+	<data name="Settings.McpServers.ServerUpdatedToast"><value>MCP सर्वर "{0}" अपडेट किया गया और पुन: कनेक्ट हुआ।</value></data>
+	<data name="Settings.McpServers.ServerRemovedToast"><value>MCP सर्वर "{0}" हटा दिया गया।</value></data>
+	<data name="Settings.McpServers.ReconnectedAllToast"><value>सभी MCP सर्वर पुन: कनेक्ट हो गए।</value></data>
+	<data name="Settings.McpServers.ServerAddedConnectionFailedToast"><value>MCP सर्वर "{0}" सहेजा गया था, लेकिन कनेक्शन विफल रहा: {1}</value></data>
+	<data name="Settings.McpServers.ServerUpdatedConnectionFailedToast"><value>MCP सर्वर "{0}" सहेजा गया था, लेकिन पुन: कनेक्शन विफल रहा: {1}</value></data>
+	<data name="Settings.McpServers.ReconnectAllFailedToast"><value>{0} MCP सर्वर सहेजे गए थे लेकिन पुन: कनेक्ट नहीं हो सके।</value></data>
+	<data name="Settings.McpServers.OperationFailedToast"><value>MCP सर्वर ऑपरेशन विफल: {0}</value></data>
+	<data name="Settings.McpServers.CopyNameSuffix"><value>{0} (प्रतिलिपि)</value></data>
+	<data name="Settings.McpServers.ImportDialogTitle"><value>MCP सर्वर कॉन्फ़िगरेशन आयात करें</value></data>
+	<data name="Settings.McpServers.ImportDialogDescription"><value>VS Code, Cursor या Claude Desktop प्रारूप से JSON चिपकाएँ।</value></data>
+	<data name="Settings.McpServers.NoServersFoundError"><value>दिए गए JSON में कोई सर्वर नहीं मिला।</value></data>
+	<data name="Settings.McpServers.InvalidJsonError"><value>अमान्य JSON: {0}</value></data>
+	<data name="Settings.McpServers.TableHeaderServer"><value>सर्वर</value></data>
+	<data name="Settings.McpServers.TableHeaderConnection"><value>कनेक्शन</value></data>
+	<data name="Settings.McpServers.TableHeaderOptions"><value>विकल्प</value></data>
+	<data name="Settings.McpServers.OpenDetailsTitle"><value>सर्वर विवरण खोलें</value></data>
+	<data name="Settings.McpServers.DetailsDialogTitle"><value>सर्वर कॉन्फ़िगरेशन</value></data>
+	<data name="Settings.McpServers.AddDialogTitle"><value>MCP सर्वर जोड़ें</value></data>
+	<data name="Settings.McpServers.EditDialogTitle"><value>MCP सर्वर संपादित करें</value></data>
+	<data name="Settings.McpServers.SaveServerButton"><value>सर्वर सहेजें</value></data>
+	<data name="Settings.McpServers.ConfiguredBadge"><value>कॉन्फ़िगर किया गया</value></data>
+	<data name="Settings.McpServers.IncompleteBadge"><value>अपूर्ण</value></data>
+	<data name="Settings.McpServers.HeadersCountLabel"><value>{0} हेडर</value></data>
+	<data name="Settings.McpServers.ArgumentsCountLabel"><value>{0} आर्ग्युमेंट</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesCountLabel"><value>{0} चर</value></data>
+	<data name="Settings.McpServers.NoHeaders"><value>कोई हेडर नहीं</value></data>
+	<data name="Settings.McpServers.NoArguments"><value>कोई आर्ग्युमेंट नहीं</value></data>
+	<data name="Settings.McpServers.NoEnvironmentVariables"><value>कोई पर्यावरण चर नहीं</value></data>
+	<data name="Settings.Section.Hooks.Label"><value>हुक</value></data>
+	<data name="Settings.Section.Hooks.Description"><value>आउटबाउंड लाइफ़साइकिल हुक और इनबाउंड टास्क वेबहुक कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Hooks.LoadingMessage"><value>हुक सेटिंग्स लोड हो रही हैं...</value></data>
+	<data name="Settings.Hooks.SectionTitle"><value>हुक हैंडलर</value></data>
+	<data name="Settings.Hooks.SectionDescription"><value>एजेंट और टास्क की घटनाएँ होने पर कमांड या HTTP एंडपॉइंट चलाएँ।</value></data>
+	<data name="Settings.Hooks.AddHookButton"><value>हुक जोड़ें</value></data>
+	<data name="Settings.Hooks.VisualTab"><value>विज़ुअल</value></data>
+	<data name="Settings.Hooks.JsonTab"><value>JSON</value></data>
+	<data name="Settings.Hooks.NoHooksMessage"><value>कोई आउटबाउंड हुक कॉन्फ़िगर नहीं किया गया है।</value></data>
+	<data name="Settings.Hooks.UnnamedHookLabel"><value>अनाम हुक</value></data>
+	<data name="Settings.Hooks.NewHookDefaultName"><value>नया हुक</value></data>
+	<data name="Settings.Hooks.AddHookDialogTitle"><value>हुक जोड़ें</value></data>
+	<data name="Settings.Hooks.EditHookDialogTitle"><value>हुक संपादित करें</value></data>
+	<data name="Settings.Hooks.SaveHookButton"><value>हुक सहेजें</value></data>
+	<data name="Settings.Hooks.CopyNameSuffix"><value>{0} (प्रतिलिपि)</value></data>
+	<data name="Settings.Hooks.NamePlaceholder"><value>जैसे: जोखिम भरे टूल्स ब्लॉक करें</value></data>
+	<data name="Settings.Hooks.EnabledLabel"><value>इस हुक को सक्षम करें</value></data>
+	<data name="Settings.Hooks.EnabledStatus"><value>सक्षम</value></data>
+	<data name="Settings.Hooks.DisabledStatus"><value>अक्षम</value></data>
+	<data name="Settings.Hooks.EventsLabel"><value>घटनाएँ</value></data>
+	<data name="Settings.Hooks.HandlerTypeLabel"><value>हैंडलर प्रकार</value></data>
+	<data name="Settings.Hooks.HandlerCommand"><value>कमांड</value></data>
+	<data name="Settings.Hooks.HandlerHttp"><value>HTTP</value></data>
+	<data name="Settings.Hooks.FailureModeLabel"><value>विफलता मोड</value></data>
+	<data name="Settings.Hooks.FailureFailClosed"><value>विफल होने पर ब्लॉक करें</value></data>
+	<data name="Settings.Hooks.FailureFailOpen"><value>विफल होने पर अनुमति दें</value></data>
+	<data name="Settings.Hooks.TimeoutLabel"><value>टाइमआउट सेकंड</value></data>
+	<data name="Settings.Hooks.TargetLabel"><value>लक्ष्य</value></data>
+	<data name="Settings.Hooks.CommandFileNameLabel"><value>कमांड</value></data>
+	<data name="Settings.Hooks.CommandArgumentsLabel"><value>आर्ग्युमेंट, प्रति पंक्ति एक</value></data>
+	<data name="Settings.Hooks.CommandWorkingDirectoryLabel"><value>कार्य निर्देशिका</value></data>
+	<data name="Settings.Hooks.HttpUrlLabel"><value>URL</value></data>
+	<data name="Settings.Hooks.StaticHeadersLabel"><value>स्थिर हेडर</value></data>
+	<data name="Settings.Hooks.SecretHeadersLabel"><value>गुप्त हेडर</value></data>
+	<data name="Settings.Hooks.HeaderNamePlaceholder"><value>हेडर का नाम</value></data>
+	<data name="Settings.Hooks.HeaderValuePlaceholder"><value>हेडर का मान</value></data>
+	<data name="Settings.Hooks.CredentialSelectPlaceholder"><value>आउटबाउंड HTTP सीक्रेट चुनें</value></data>
+	<data name="Settings.Hooks.AddHeaderButton"><value>हेडर जोड़ें</value></data>
+	<data name="Settings.Hooks.AddSecretHeaderButton"><value>गुप्त हेडर जोड़ें</value></data>
+	<data name="Settings.Hooks.ResetButton"><value>रीसेट करें</value></data>
+	<data name="Settings.Hooks.SaveButton"><value>हुक सहेजें</value></data>
+	<data name="Settings.Hooks.JsonLabel"><value>हुक सेटिंग्स JSON</value></data>
+	<data name="Settings.Hooks.CopyJsonButton"><value>JSON कॉपी करें</value></data>
+	<data name="Settings.Hooks.ApplyJsonButton"><value>JSON लागू करें</value></data>
+	<data name="Settings.Hooks.SavedToast"><value>हुक सेटिंग्स सहेजी गईं।</value></data>
+	<data name="Settings.Hooks.LoadFailedToast"><value>हुक सेटिंग्स लोड करने में विफल: {0}</value></data>
+	<data name="Settings.Hooks.SaveFailedToast"><value>हुक सेटिंग्स सहेजने में विफल: {0}</value></data>
+	<data name="Settings.Hooks.JsonAppliedToast"><value>हुक JSON लागू किया गया।</value></data>
+	<data name="Settings.Hooks.InvalidJsonToast"><value>अमान्य हुक JSON: {0}</value></data>
+	<data name="Settings.Hooks.Event.TaskStart"><value>कार्य प्रारंभ</value></data>
+	<data name="Settings.Hooks.Event.TaskComplete"><value>कार्य पूर्ण</value></data>
+	<data name="Settings.Hooks.Event.TaskFailed"><value>कार्य विफल</value></data>
+	<data name="Settings.Hooks.Event.SessionStart"><value>सत्र प्रारंभ</value></data>
+	<data name="Settings.Hooks.Event.UserPromptSubmit"><value>उपयोगकर्ता प्रॉम्प्ट सबमिट</value></data>
+	<data name="Settings.Hooks.Event.PreToolUse"><value>टूल उपयोग से पहले</value></data>
+	<data name="Settings.Hooks.Event.PostToolUse"><value>टूल उपयोग के बाद</value></data>
+	<data name="Settings.Hooks.ApiKeysTitle"><value>टास्क वेबहुक API कुंजियाँ</value></data>
+	<data name="Settings.Hooks.ApiKeysDescription"><value>उन बाहरी प्रणालियों के लिए बियरर टोकन बनाएँ जो अनुमत कार्यों को ट्रिगर करती हैं।</value></data>
+	<data name="Settings.Hooks.NewApiKeyNameLabel"><value>API कुंजी नाम</value></data>
+	<data name="Settings.Hooks.AllowedTaskSlugsLabel"><value>अनुमत टास्क स्लग, अल्पविराम द्वारा अलग किए गए</value></data>
+	<data name="Settings.Hooks.CreateApiKeyButton"><value>API कुंजी बनाएँ</value></data>
+	<data name="Settings.Hooks.CreateApiKeyDialogTitle"><value>टास्क वेबहुक API कुंजी बनाएँ</value></data>
+	<data name="Settings.Hooks.NoApiKeysMessage"><value>अभी तक कोई टास्क वेबहुक API कुंजी नहीं है।</value></data>
+	<data name="Settings.Hooks.CreatedTokenTitle"><value>इस टोकन को अभी कॉपी करें</value></data>
+	<data name="Settings.Hooks.CopyTokenButton"><value>कॉपी करें</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedLabel"><value>बनाया गया {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyLastUsedLabel"><value>अंतिम उपयोग {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyNeverUsed"><value>कभी उपयोग नहीं किया गया</value></data>
+	<data name="Settings.Hooks.ApiKeyScopesLabel"><value>स्कोप</value></data>
+	<data name="Settings.Hooks.ApiKeyAllowedSlugsLabel"><value>अनुमत स्लग</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmTitle"><value>टास्क वेबहुक API कुंजी हटाएँ</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmMessage"><value>क्या टास्क वेबहुक API कुंजी "{0}" हटाएँ?</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedToast"><value>टास्क वेबहुक API कुंजी बनाई गई।</value></data>
+	<data name="Settings.Hooks.ApiKeyUpdatedToast"><value>टास्क वेबहुक API कुंजी अपडेट की गई।</value></data>
+	<data name="Settings.Hooks.ApiKeyDeletedToast"><value>टास्क वेबहुक API कुंजी हटाई गई।</value></data>
+	<data name="Settings.Hooks.SecretsTitle"><value>आउटबाउंड HTTP हुक सीक्रेट</value></data>
+	<data name="Settings.Hooks.SecretsDescription"><value>हेडर मान संग्रहीत करें जो Oscova बाहरी HTTP हुक एंडपॉइंट पर भेजता है।</value></data>
+	<data name="Settings.Hooks.NewSecretButton"><value>नया</value></data>
+	<data name="Settings.Hooks.NewSecretDialogTitle"><value>नया आउटबाउंड HTTP हुक सीक्रेट</value></data>
+	<data name="Settings.Hooks.EditSecretDialogTitle"><value>आउटबाउंड HTTP हुक सीक्रेट संपादित करें</value></data>
+	<data name="Settings.Hooks.SecretNameLabel"><value>सीक्रेट का नाम</value></data>
+	<data name="Settings.Hooks.SecretKeyLabel"><value>सीक्रेट संदर्भ कुंजी</value></data>
+	<data name="Settings.Hooks.SecretValueLabel"><value>सीक्रेट मान</value></data>
+	<data name="Settings.Hooks.SecretDescriptionLabel"><value>विवरण</value></data>
+	<data name="Settings.Hooks.SecretValueEditHint"><value>वर्तमान मान बनाए रखने के लिए खाली छोड़ें।</value></data>
+	<data name="Settings.Hooks.SaveSecretButton"><value>सीक्रेट सहेजें</value></data>
+	<data name="Settings.Hooks.NoSecretsMessage"><value>अभी तक कोई आउटबाउंड HTTP हुक सीक्रेट सहेजा नहीं गया है।</value></data>
+	<data name="Settings.Hooks.SecretSetStatus"><value>सेट किया गया</value></data>
+	<data name="Settings.Hooks.SecretUpdatedLabel"><value>{0} को अपडेट किया गया</value></data>
+	<data name="Settings.Hooks.SecretSavedToast"><value>आउटबाउंड HTTP हुक सीक्रेट सहेजा गया।</value></data>
+	<data name="Settings.Hooks.SecretDeletedToast"><value>आउटबाउंड HTTP हुक सीक्रेट हटा दिया गया।</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmTitle"><value>आउटबाउंड HTTP हुक सीक्रेट हटाएं</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmMessage"><value>क्या आउटबाउंड HTTP हुक सीक्रेट "{0}" को हटाएं?</value></data>
+	<data name="Settings.Hooks.DeleteSecretReferencedConfirmMessage"><value>क्या आउटबाउंड HTTP हुक सीक्रेट "{0}" को हटाएं? एक या अधिक HTTP हुक अभी भी इस क्रेडेंशियल का संदर्भ दे रहे हैं।</value></data>
+	<data name="Settings.General.AssistantNameLabel"><value>सहायक का नाम</value></data>
+	<data name="Settings.General.AssistantNamePlaceholder"><value>सहायक का नाम दर्ज करें...</value></data>
+	<data name="Settings.General.SaveNameTitle"><value>नाम सहेजें</value></data>
+	<data name="Settings.General.UnsavedChangesHint"><value>परिवर्तन स्वचालित रूप से सहेजे नहीं जाते हैं।</value></data>
+	<data name="Settings.General.ShowTopBarProfileLabel"><value>शीर्ष बार में प्रोफ़ाइल दिखाएं</value></data>
+	<data name="Settings.General.ShowTopBarProfileDescription"><value>शीर्ष बार में अपना अवतार, नाम और उपयोगकर्ता नाम प्रदर्शित करें</value></data>
+	<data name="Settings.General.GamificationLabel"><value>उपलब्धियां और XP</value></data>
+	<data name="Settings.General.GamificationDescription"><value>उपलब्धियां और XP दिखाएं, और अनलॉक सूचनाएं भेजें</value></data>
+	<data name="Settings.General.TimeZoneLabel"><value>समय क्षेत्र</value></data>
+	<data name="Settings.General.SearchTimeZonesPlaceholder"><value>समय क्षेत्र खोजें...</value></data>
+	<data name="Settings.General.ServerDefault"><value>सर्वर डिफ़ॉल्ट</value></data>
+	<data name="Settings.General.TimeZoneDescription"><value>UI में टाइमस्टैम्प इस समय क्षेत्र में प्रदर्शित किए जाएंगे।</value></data>
+	<data name="Settings.General.LanguageLabel"><value>भाषा</value></data>
+	<data name="Settings.General.LanguageReloadHint"><value>पृष्ठ पुनः लोड होने के बाद परिवर्तन लागू होते हैं।</value></data>
+	<data name="Settings.General.DeleteConversationsLabel"><value>बातचीत हटाएं</value></data>
+	<data name="Settings.General.DeleteConversationsDescription"><value>ऐप में हर चैट बातचीत को स्थायी रूप से हटा देता है। इसे पूर्ववत नहीं किया जा सकता।</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmTitle"><value>हटाने की पुष्टि करें</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmMessage"><value>क्या सभी {0} वार्तालापों को स्थायी रूप से हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता।</value></data>
+	<data name="Settings.Shared.SaveSettingsToast"><value>सेटिंग्स सफलतापूर्वक सहेजी गईं।</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Back"><value>पीछे</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Customize"><value>कस्टमाइज़ करें: {0}</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Description"><value>व्यक्तिगत संदर्भ जोड़ें जिसे आपके सत्रों के लिए इस साझा एजेंट के निर्देशों में शामिल किया जाएगा, जैसे पसंदीदा नाम या बुलाने की प्राथमिकताएं।</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Label"><value>व्यक्तिगत संदर्भ</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Placeholder"><value>इस साझा एजेंट के लिए नोट्स, प्राथमिकताएं, पृष्ठभूमि या अन्य व्यक्तिगत संदर्भ जोड़ें...</value></data>
+	<data name="Settings.Category.Channels.Label"><value>चैनल</value></data>
+	<data name="Settings.Category.Channels.Description"><value>चैट चैनल और बॉट एकीकरण।</value></data>
+	<data name="Settings.General.ChatTitleGenerationLabel"><value>चैट शीर्षक जनरेट करें</value></data>
+	<data name="Settings.General.ChatTitleGenerationDescription"><value>कुछ संदेशों के बाद बातचीत का नाम बदलने के लिए अपने चयनित चैट मॉडल का उपयोग करें</value></data>
+	<data name="Settings.General.ChatResumeWindowLabel"><value>हाल की चैट फिर से शुरू करें</value></data>
+	<data name="Settings.General.ChatResumeWindowDescription"><value>यदि आपके अंतिम संदेश को दिए गए मिनटों से अधिक समय नहीं हुआ है, तो सबसे हाल की चालू चैट पर लौटें। हमेशा प्रारंभिक स्क्रीन दिखाने के लिए 0 का उपयोग करें।</value></data>
+	<data name="Settings.General.ChatResumeWindowInvalid"><value>मिनटों की संख्या पूर्णांक में दर्ज करें, 0 या अधिक।</value></data>
+	<data name="Settings.General.AboutTitle"><value>के बारे में</value></data>
+	<data name="Settings.General.AboutDescription"><value>इस ऐप और इसके एजेंट फ़्रेमवर्क के लिए संस्करण विवरण।</value></data>
+	<data name="Settings.General.HostVersionLabel"><value>Oscova Agents</value></data>
+	<data name="Settings.General.FrameworkVersionLabel"><value>फ़्रेमवर्क</value></data>
+	<data name="Settings.Skills.FindOnlineButton"><value>ऑनलाइन कौशल खोजें</value></data>
+	<data name="Settings.Skills.ManageSourcesButton"><value>स्रोत प्रबंधित करें</value></data>
+	<data name="Settings.Skills.FindOnlineDialogTitle"><value>ऑनलाइन कौशल खोजें</value></data>
+	<data name="Settings.Skills.FindOnlineSearchPlaceholder"><value>नाम से खोजें...</value></data>
+	<data name="Settings.Skills.FindOnlineInstallButton"><value>इंस्टॉल करें</value></data>
+	<data name="Settings.Skills.FindOnlineDescriptionLoading"><value>विवरण लोड हो रहा है...</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsUnavailable"><value>विवरण लोड नहीं किया जा सका।</value></data>
+	<data name="Settings.Skills.FindOnlineNoDescription"><value>इस कौशल के लिए कोई विवरण उपलब्ध नहीं है।</value></data>
+	<data name="Settings.Skills.FindOnlineInstalledToast"><value>कौशल इंस्टॉल हो गया।</value></data>
+	<data name="Settings.Skills.FindOnlineNoSourcesMessage"><value>कोई कौशल स्रोत कॉन्फ़िगर नहीं किया गया है। किसी व्यवस्थापक से जोड़ने के लिए कहें।</value></data>
+	<data name="Settings.Skills.FindOnlineEmptyResults"><value>आपकी खोज से कोई कौशल मेल नहीं खाता।</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsButton"><value>विवरण</value></data>
+	<data name="Settings.Skills.FindOnlineHideButton"><value>छिपाएं</value></data>
+	<data name="Settings.Skills.FindOnlineRetryButton"><value>पुनः प्रयास करें</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSkill"><value>कौशल</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSource"><value>स्रोत</value></data>
+	<data name="Settings.Skills.RegistrySourcesDialogTitle"><value>कौशल स्रोत</value></data>
+	<data name="Settings.Skills.RegistrySourcesDescription"><value>"ऑनलाइन कौशल खोजें" द्वारा उपयोग किए जाने वाले GitHub रिपॉजिटरी कॉन्फ़िगर करें।</value></data>
+	<data name="Settings.Skills.RegistrySourcesAddRow"><value>स्रोत जोड़ें</value></data>
+	<data name="Settings.Skills.RegistrySourcesOwnerLabel"><value>स्वामी</value></data>
+	<data name="Settings.Skills.RegistrySourcesRepoLabel"><value>रिपॉजिटरी</value></data>
+	<data name="Settings.Skills.RegistrySourcesBranchLabel"><value>शाखा</value></data>
+	<data name="Settings.Skills.RegistryPatHint"><value>प्रमाणीकरण के साथ रिपॉज़िटरी तक पहुँचने के लिए व्यवस्थापक एडमिन पृष्ठ पर GitHub Skill Search के अंतर्गत व्यक्तिगत एक्सेस टोकन जोड़ सकता है।</value></data>
+	<data name="Settings.Skills.RegistrySavedToast"><value>कौशल स्रोत सहेजे गए।</value></data>
+	<data name="Settings.Skills.InstallStageResolving"><value>फ़ाइलों की सूची प्राप्त की जा रही है</value></data>
+	<data name="Settings.Skills.InstallStageDownloading"><value>डाउनलोड हो रहा है</value></data>
+	<data name="Settings.Skills.InstallStageImporting"><value>आयात किया जा रहा है</value></data>
+	<data name="Settings.Skills.InstallStageInstalled"><value>इंस्टॉल किया गया</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialTitle"><value>GitHub Skill Search</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialDescription"><value>"ऑनलाइन कौशल खोजें" द्वारा उपयोग किया जाने वाला वैकल्पिक व्यक्तिगत एक्सेस टोकन। पूरे होस्ट के लिए GitHub API दर सीमा 60 से बढ़ाकर 5,000 अनुरोध प्रति घंटा करता है।</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialHint"><value>मौजूदा टोकन रखने के लिए फ़ील्ड खाली छोड़ें। इसे हटाने के लिए साफ़ करें का उपयोग करें।</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialFieldLabel"><value>व्यक्तिगत एक्सेस टोकन</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialLoading"><value>वर्तमान स्थिति लोड हो रही है...</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderExists"><value>वर्तमान टोकन रखने के लिए खाली छोड़ें</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderNew"><value>GitHub व्यक्तिगत एक्सेस टोकन पेस्ट करें</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialSavedToast"><value>GitHub कौशल खोज टोकन सहेजा गया।</value></data>
+	<data name="Settings.Plugins.FindOnlineButton"><value>ऑनलाइन प्लगइन्स खोजें</value></data>
+	<data name="Settings.Plugins.FindOnlineDialogTitle"><value>ऑनलाइन प्लगइन्स खोजें</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPlaceholder"><value>NuGet पैकेज खोजें...</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchButton"><value>खोजें</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPrompt"><value>NuGet.org पर OscovaPlugin पैकेज खोजने के लिए पैकेज का नाम लिखें।</value></data>
+	<data name="Settings.Plugins.FindOnlineSearching"><value>NuGet.org पर खोजा जा रहा है...</value></data>
+	<data name="Settings.Plugins.FindOnlineEmptyResults"><value>आपकी खोज से कोई प्लगइन मेल नहीं खाता।</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsButton"><value>विवरण</value></data>
+	<data name="Settings.Plugins.FindOnlineHideButton"><value>छिपाएं</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallButton"><value>इंस्टॉल या अपडेट करें</value></data>
+	<data name="Settings.Plugins.FindOnlineRetryButton"><value>पुनः प्रयास करें</value></data>
+	<data name="Settings.Plugins.FindOnlineRequiresNewerOscova"><value>नए Oscova की आवश्यकता है</value></data>
+	<data name="Settings.Plugins.FindOnlineIncompatible"><value>इस Oscova के साथ संगत नहीं</value></data>
+	<data name="Settings.Plugins.FindOnlinePrereleaseOnly"><value>केवल प्रीरिलीज़</value></data>
+	<data name="Settings.Plugins.FindOnlineDescriptionLoading"><value>विवरण लोड हो रहा है...</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsUnavailable"><value>विवरण लोड नहीं किया जा सका।</value></data>
+	<data name="Settings.Plugins.FindOnlineNoDescription"><value>इस प्लगइन के लिए कोई विवरण उपलब्ध नहीं है।</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledToast"><value>प्लगइन पैकेज तैयार है। अगली बार पुनरारंभ करने पर लोड की पुष्टि करें, फिर पुनरारंभ करें।</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallNotice"><value>प्लगइन पैकेज तैयार है। अगली बार पुनरारंभ करने पर लोड की पुष्टि करें, फिर पुनरारंभ करें।</value></data>
+	<data name="Settings.Plugins.FindOnlineDownloadsLabel"><value>{0:N0} डाउनलोड</value></data>
+	<data name="Settings.Plugins.FindOnlineVersionLabel"><value>संस्करण {0}</value></data>
+	<data name="Settings.Plugins.FindOnlineUnknownAuthor"><value>अज्ञात लेखक</value></data>
+	<data name="Settings.Plugins.FindOnlineLicenseLabel"><value>लाइसेंस</value></data>
+	<data name="Settings.Plugins.FindOnlineProjectButton"><value>परियोजना</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderPackage"><value>पैकेज</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderMetadata"><value>मेटाडेटा</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallingButton"><value>इंस्टॉल हो रहा है...</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledButton"><value>इंस्टॉल किया गया</value></data>
+	<data name="Settings.Speech.RecognitionProviderDescription"><value>चुनें कि हैंड्स-फ़्री कैप्चर के बाद माइक्रोफ़ोन ऑडियो को कैसे ट्रांसक्राइब किया जाए। भाषा: स्वचालित पहचान।</value></data>
+	<data name="Settings.Speech.SynthesisProviderDescription"><value>चुनें कि सहायक पाठ को ऑडियो में कैसे बदला जाए।</value></data>
+	<data name="Settings.Speech.ProviderLabel"><value>प्रदाता</value></data>
+	<data name="Settings.Speech.ProviderLocal"><value>स्थानीय</value></data>
+	<data name="Settings.Speech.ProviderOpenAI"><value>OpenAI</value></data>
+	<data name="Settings.Speech.CredentialLabel"><value>क्रेडेंशियल</value></data>
+	<data name="Settings.Speech.CredentialPlaceholder"><value>सहेजा गया क्रेडेंशियल चुनें</value></data>
+	<data name="Settings.Speech.CredentialHelp"><value>क्रेडेंशियल सेटिंग्स > क्रेडेंशियल में प्रबंधित किए जाते हैं।</value></data>
+	<data name="Settings.Speech.ModelLabel"><value>मॉडल</value></data>
+	<data name="Settings.Speech.SaveProviderButton"><value>आवाज़ सेटिंग्स सहेजें</value></data>
+	<data name="Settings.Speech.SettingsSavedToast"><value>आवाज़ सेटिंग्स सहेजी गईं।</value></data>
+	<data name="Settings.Credentials.ConfiguredStatus"><value>कॉन्फ़िगर किया गया</value></data>
+	<data name="Settings.Credentials.MissingStatus"><value>मान गायब है</value></data>
+	<data name="Settings.Section.Privacy.Label"><value>गोपनीयता</value></data>
+	<data name="Settings.Section.Privacy.Description"><value>ऑफ़लाइन मोड, स्वचालित साइन-आउट और आपका एजेंट क्या भेज सकता है, इसे नियंत्रित करें।</value></data>
+	<data name="Settings.Privacy.LoadingMessage"><value>गोपनीयता सेटिंग्स लोड हो रही हैं...</value></data>
+	<data name="Settings.Privacy.OfflineModeTitle"><value>ऑफ़लाइन मोड</value></data>
+	<data name="Settings.Privacy.OfflineModeLabel"><value>एजेंट के निष्पादन को ऑफ़लाइन रखें</value></data>
+	<data name="Settings.Privacy.OfflineModeDescription"><value>सक्षम होने पर, आपका एजेंट स्थानीय मॉडल, स्थानीय टूल और LAN एंडपॉइंट का उपयोग कर सकता है, लेकिन सार्वजनिक इंटरनेट प्रदाता और निकास टूल अवरुद्ध हैं।</value></data>
+	<data name="Settings.Privacy.OfflineModeOffBadge"><value>बंद</value></data>
+	<data name="Settings.Privacy.OfflineModeOnBadge"><value>चालू</value></data>
+	<data name="Settings.Privacy.EffectsTitle"><value>लाइव प्रभाव</value></data>
+	<data name="Settings.Privacy.EffectsOff"><value>ऑफ़लाइन सीमाएं निष्क्रिय हैं। आपके कॉन्फ़िगर किए गए प्रदाता और टूल अपने सामान्य नेटवर्क एक्सेस का उपयोग कर सकते हैं।</value></data>
+	<data name="Settings.Privacy.DisabledToolsCount"><value>{0} टूल अक्षम हैं</value></data>
+	<data name="Settings.Privacy.CloudProvidersTitle"><value>क्लाउड प्रदाता अवरुद्ध हैं</value></data>
+	<data name="Settings.Privacy.NoCloudProviders"><value>वर्तमान में कोई कॉन्फ़िगर किया गया क्लाउड प्रदाता अवरुद्ध नहीं है।</value></data>
+	<data name="Settings.Privacy.LocalNetworkTitle"><value>स्थानीय नेटवर्क</value></data>
+	<data name="Settings.Privacy.LocalNetworkDescription"><value>लूपबैक और स्थानीय-नेटवर्क पते उपलब्ध रहते हैं, जिसमें स्थानीय Ollama या किसी अन्य मशीन पर अवतार इंजन शामिल है।</value></data>
+	<data name="Settings.Privacy.RedactionTitle"><value>गोपनीय मान छिपाना</value></data>
+	<data name="Settings.Privacy.RedactionBadge"><value>हमेशा चालू</value></data>
+	<data name="Settings.Privacy.RedactionDescription"><value>सहेजे गए सीक्रेट एजेंट लॉग, स्वीकृतियों और कैप्चर किए गए अनुरोध विवरणों में छुपाए जाते हैं। इस सुरक्षा को बंद नहीं किया जा सकता।</value></data>
+	<data name="Settings.Privacy.ChannelsTitle"><value>कनेक्ट किए गए चैनल</value></data>
+	<data name="Settings.Privacy.ChannelsDescription"><value>जब वे चैनल सक्षम होते हैं तब भी Discord, Telegram और Slack आपके संदेशों को अपने सर्वर के माध्यम से रिले करते हैं।</value></data>
+	<data name="Settings.Privacy.AutoLogout.Title"><value>स्वचालित साइन-आउट</value></data>
+	<data name="Settings.Privacy.AutoLogout.Description"><value>किसी भी खुले Oscova टैब में माउस, टच, कीबोर्ड, स्क्रॉलिंग या संदेश सबमिट किए बिना चयनित समय के बाद इस ब्राउज़र से साइन आउट करें।</value></data>
+	<data name="Settings.Privacy.AutoLogout.Label"><value>इसके बाद साइन आउट करें</value></data>
+	<data name="Settings.Privacy.AutoLogout.OffOption"><value>बंद</value></data>
+	<data name="Settings.Privacy.AutoLogout.MinutesOption"><value>{0} मिनट</value></data>
+	<data name="Settings.Privacy.ResetButton"><value>रीसेट करें</value></data>
+	<data name="Settings.Privacy.SaveButton"><value>गोपनीयता सेटिंग्स सहेजें</value></data>
+	<data name="Settings.Privacy.LoadErrorToast"><value>गोपनीयता सेटिंग्स लोड त्रुटि: {0}</value></data>
+	<data name="Settings.Privacy.SaveSuccessToast"><value>गोपनीयता सेटिंग्स सहेजी गईं</value></data>
+	<data name="Settings.Privacy.SaveFailedToast"><value>गोपनीयता सेटिंग्स सहेजी नहीं जा सकीं।</value></data>
+	<data name="Settings.Privacy.SaveFailedWithMessageToast"><value>गोपनीयता सेटिंग्स सहेजने में विफल: {0}</value></data>
+	<data name="Settings.Tools.NetworkEgress"><value>इंटरनेट</value></data>
+	<data name="Settings.Tools.NetworkIncidental"><value>नेटवर्क तक पहुंच सकता है</value></data>
+	<data name="Settings.Tools.EgressDisabledNotice"><value>इंटरनेट टूल वर्तमान केवल-स्थानीय सेटिंग द्वारा अवरुद्ध हैं।</value></data>
+	<data name="Settings.Tools.EgressDisabledBadge"><value>अवरुद्ध</value></data>
+	<data name="Settings.Tools.EgressDisabledTooltip"><value>इस इंटरनेट टूल का चयन करने के लिए सक्रिय केवल-स्थानीय सेटिंग बंद करें।</value></data>
+	<data name="Settings.Tools.TableHeaderPolicy"><value>नीति</value></data>
+	<data name="Settings.Tools.ConfigurePolicyTooltip"><value>टूल नीति कॉन्फ़िगर करें</value></data>
+	<data name="Settings.Tools.ConfigurePolicyLabel"><value>{0} के लिए नीति कॉन्फ़िगर करें</value></data>
+	<data name="Settings.Tools.Governance.OverrideBadge"><value>ओवरराइड किया गया</value></data>
+	<data name="Settings.Tools.Governance.DefaultBadge"><value>डिफ़ॉल्ट</value></data>
+	<data name="Settings.Tools.Governance.CustomBadge"><value>कस्टम</value></data>
+	<data name="Settings.Tools.Governance.QuotaBadge"><value>{0} / {1}</value></data>
+	<data name="Settings.Tools.Governance.DialogTitle"><value>टूल नीति</value></data>
+	<data name="Settings.Tools.Governance.NetworkLabel"><value>नेटवर्क एक्सेस</value></data>
+	<data name="Settings.Tools.Governance.UseDeclaredOption"><value>घोषित दायरे का उपयोग करें</value></data>
+	<data name="Settings.Tools.Governance.NetworkHint"><value>यह वर्गीकरण नियंत्रित करता है कि केवल-स्थानीय मोड टूल को छुपाता है या नहीं।</value></data>
+	<data name="Settings.Tools.Governance.LocalOnlyWarning"><value>जब तक केवल-स्थानीय मोड सक्रिय है, यह टूल अनुपलब्ध रहेगा।</value></data>
+	<data name="Settings.Tools.Governance.LimitEnabledLabel"><value>कॉल सीमित करें</value></data>
+	<data name="Settings.Tools.Governance.MaxCallsLabel"><value>अधिकतम कॉल</value></data>
+	<data name="Settings.Tools.Governance.WindowHint"><value>सीमा एक निश्चित 24 घंटे की अवधि पर लागू होती है।</value></data>
+	<data name="Settings.Tools.Governance.InvalidLimitMessage"><value>1 से 1000000 तक की कॉल सीमा दर्ज करें।</value></data>
+	<data name="Settings.Tools.Governance.SavedToast"><value>टूल नीति सहेजी गई।</value></data>
+	<data name="Settings.Tools.Governance.SaveFailedToast"><value>टूल नीति सहेजी नहीं जा सकी: {0}</value></data>
+	<data name="Settings.Avatar.ConnectEngineTitle"><value>अवतार इंजन से कनेक्ट करें</value></data>
+	<data name="Settings.Avatar.ConnectEngineButton"><value>कनेक्ट</value></data>
+	<data name="Settings.Avatar.AccessModeLabel"><value>एक्सेस मोड</value></data>
+	<data name="Settings.Avatar.AccessModeShared"><value>साझा</value></data>
+	<data name="Settings.Avatar.AccessModeExclusive"><value>विशेष</value></data>
+	<data name="Settings.Avatar.AccessModeHelp"><value>साझा मोड अन्य पेयर किए गए क्लाइंट को अनुमति देता है। विशेष मोड इंजन के पुनः आरंभ होने तक उन्हें रोकता है।</value></data>
+	<data name="Settings.Avatar.PairingDialogTitle"><value>अवतार इंजन पेयर करें</value></data>
+	<data name="Settings.Avatar.PairingCodeLabel"><value>पेयरिंग कोड</value></data>
+	<data name="Settings.Avatar.PairingCodeHelp"><value>अवतार इंजन में दिखाया गया छह अंकों का कोड दर्ज करें।</value></data>
+	<data name="Settings.Avatar.PairingLifetime"><value>कोड लगभग {0} सेकंड में समाप्त हो जाएगा।</value></data>
+	<data name="Settings.Avatar.PairingButton"><value>पेयर</value></data>
+	<data name="Settings.Avatar.PairingBusy"><value>पेयर हो रहा है...</value></data>
+	<data name="Settings.Avatar.PairingFailed"><value>पेयरिंग विफल रही। नया कोड माँगें और फिर प्रयास करें।</value></data>
+	<data name="Settings.Avatar.PairingExpired"><value>कोड की समय-सीमा समाप्त हो गई है। यह संवाद बंद करें और नया कोड पाने के लिए कनेक्ट चुनें।</value></data>
+	<data name="Settings.Avatar.PairingInvalidResponse"><value>अवतार इंजन ने अमान्य प्रतिक्रिया दी। यह संवाद बंद करें और फिर प्रयास करने के लिए कनेक्ट चुनें।</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredStatus"><value>पेयरिंग आवश्यक</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictStatus"><value>एक्सेस विरोध</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedStatus"><value>दर सीमित</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorStatus"><value>कॉन्फ़िगरेशन समस्या</value></data>
+	<data name="Settings.Avatar.EngineErrorStatus"><value>इंजन त्रुटि</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredDescription"><value>इस Oscova स्थापना को पेयर करने के लिए कनेक्ट चुनें।</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictDescription"><value>किसी अन्य क्लाइंट के पास अभी असंगत रनटाइम एक्सेस है।</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedDescription"><value>कनेक्ट दोबारा चुनने से पहले प्रतीक्षा करें।</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedRetryDescription"><value>कनेक्ट दोबारा चुनने से पहले {0} सेकंड प्रतीक्षा करें।</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorDescription"><value>स्थानीय सेटिंग संग्रह ठीक करें, फिर कनेक्ट दोबारा चुनें।</value></data>
+	<data name="Settings.Avatar.EngineErrorDescription"><value>अवतार इंजन ने अनपेक्षित प्रतिक्रिया दी। फिर प्रयास करने के लिए कनेक्ट चुनें।</value></data>
+  <data name="Settings.Agents.Prebuilt.Browse" xml:space="preserve">
+    <value>पूर्वनिर्मित एजेंट देखें</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Summary" xml:space="preserve">
+    <value>जब ज़रूरत हो बातचीत के लिए विशेषज्ञ चुनें। इंस्टॉल करने पर संपादन योग्य एजेंट बनता है।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Selection" xml:space="preserve">
+    <value>एजेंट चुनें</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.OptionalTools" xml:space="preserve">
+    <value>चुने गए रीड टूल आपकी इंस्टॉलेशन और खाता सेटअप पर निर्भर हैं। एडिटर में टूल और पहुँच जाँचें।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Install" xml:space="preserve">
+    <value>एजेंट इंस्टॉल करें</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Empty" xml:space="preserve">
+    <value>कोई पूर्वनिर्मित एजेंट उपलब्ध नहीं है।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.LoadFailed" xml:space="preserve">
+    <value>कैटलॉग लोड नहीं हो सका। फिर से कोशिश करें।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Installed" xml:space="preserve">
+    <value>एजेंट इंस्टॉल हो गया। अब आप अपनी प्रति संपादित कर सकते हैं।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.RefreshFailed" xml:space="preserve">
+    <value>एजेंट इंस्टॉल हो गया, लेकिन एडिटर लोड नहीं हुआ। अपनी प्रति खोलने के लिए एजेंट पृष्ठ रीफ़्रेश करें।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.InstallFailed" xml:space="preserve">
+    <value>इंस्टॉलेशन की पुष्टि नहीं हो सकी। दोबारा इंस्टॉल करने से पहले एजेंट पृष्ठ रीफ़्रेश करके नई प्रति जाँचें।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Available" xml:space="preserve">
+    <value>अपडेट उपलब्ध है</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Title" xml:space="preserve">
+    <value>एप्लिकेशन अपडेट</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Versions" xml:space="preserve">
+    <value>इंस्टॉल {0}, उपलब्ध {1}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.PluginsOnly" xml:space="preserve">
+    <value>इंस्टॉल {0}। केवल प्लगइन के अपडेट उपलब्ध हैं।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Interruption" xml:space="preserve">
+    <value>पहले महत्वपूर्ण काम पूरा करें। अपडेट और रीस्टार्ट के दौरान Oscova उपलब्ध नहीं होगा।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Start" xml:space="preserve">
+    <value>अपडेट और रीस्टार्ट करें</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Refresh" xml:space="preserve">
+    <value>रीफ्रेश करें</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.BackupLocation" xml:space="preserve">
+    <value>रिकवरी फ़ाइलें: {0}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Preparing" xml:space="preserve">
+    <value>अपडेट तैयार किया जा रहा है</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Restarting" xml:space="preserve">
+    <value>अपडेट हो रहा है। Oscova के पुनः शुरू होने की प्रतीक्षा है...</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Failed" xml:space="preserve">
+    <value>एप्लिकेशन अपडेट विफल रहा।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Unsupported" xml:space="preserve">
+    <value>इस इंस्टॉलेशन को टर्मिनल से अपडेट करना होगा।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailable" xml:space="preserve">
+    <value>रिलीज़ जांच उपलब्ध नहीं है। रीफ्रेश करें या टर्मिनल से अपडेट करें।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RecoveryHint" xml:space="preserve">
+    <value>प्रगति या पुनर्प्राप्ति संबंधी निर्देशों के लिए Host कंप्यूटर पर 'oscova update status' चलाएँ।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.FailedOnVersion" xml:space="preserve">
+    <value>अपडेट विफल रहा। Oscova अभी भी {0} पर है।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RetryGuidance" xml:space="preserve">
+    <value>आपका डेटा नहीं बदला है। फिर से प्रयास करने के लिए पुनः प्रयास करें चुनें। यदि यह फिर विफल हो, तो Host कंप्यूटर पर 'oscova update status' चलाएँ।</value>
+  </data>
+  <data name="PluginsPendingReplacement" xml:space="preserve">
+    <value>पुनः आरंभ करने के बाद: {0} {1}</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesAction" xml:space="preserve">
+    <value>श्रेय और लाइसेंस</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesTitle" xml:space="preserve">
+    <value>श्रेय और लाइसेंस</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesDescription" xml:space="preserve">
+    <value>Oscova में शामिल तृतीय-पक्ष सॉफ़्टवेयर की लाइसेंस सूचनाएँ स्थानीय रूप से संग्रहीत हैं और ऑफ़लाइन उपलब्ध हैं।</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesLoading" xml:space="preserve">
+    <value>लाइसेंस सूचनाएँ लोड हो रही हैं...</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesUnavailable" xml:space="preserve">
+    <value>बंडल की गई लाइसेंस सूचनाएँ लोड नहीं की जा सकीं।</value>
+  </data>
+  <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>बाल</value></data>
+  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>ऊपरी वस्त्र</value></data>
+  <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>चुने गए अवतार के लिए बाल चुनें।</value></data>
+  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>चुने गए अवतार के लिए ऊपरी वस्त्र चुनें।</value></data>
+  <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>कुछ रूप-रंग विकल्प लोड नहीं हो सके। इंजन कनेक्शन जाँचें और रीफ़्रेश करें।</value></data>
+  <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>{0} लागू नहीं हो सका: {1}। उपलब्ध विकल्प चुनें और फिर कोशिश करें।</value></data>
+  <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">
+    <value>अपडेट जाँचें</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Current" xml:space="preserve">
+    <value>Oscova अद्यतित है।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailableLabel" xml:space="preserve">
+    <value>अपडेट की जाँच उपलब्ध नहीं है</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.TakingLonger" xml:space="preserve">
+    <value>इस अपडेट में अधिक समय लग रहा है। Oscova अभी भी आपके डेटा का बैकअप ले रहा हो सकता है या घटक डाउनलोड कर रहा हो सकता है। आप प्रतीक्षा जारी रख सकते हैं या 'oscova update status' से स्थिति जाँच सकते हैं।</value>
+  </data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>शुरू होने पर कनेक्ट करें</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>चैनल शुरू करने से पहले बदलाव सहेजें।</value></data>
+	<data name="Settings.Plugins.VerifiedBadge"><value>सत्यापित</value></data>
+	<data name="Settings.Plugins.ReplaceButton"><value>प्लगइन बदलें</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmTitle"><value>{0} को {1} से बदलें?</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmMessage"><value>इस बदलाव में प्लगइन की पहचान, सेटिंग और क्रेडेंशियल बने रहते हैं।</value></data>
+  <data name="Settings.General.FollowUpModeLabel" xml:space="preserve"><value>अगले संदेश का व्यवहार</value></data>
+  <data name="Settings.General.FollowUpModeSteer" xml:space="preserve"><value>निर्देश दें</value></data>
+  <data name="Settings.General.FollowUpModeQueue" xml:space="preserve"><value>कतार में रखें</value></data>
+  <data name="Settings.General.FollowUpModeDescription" xml:space="preserve"><value>एजेंट के काम करते समय Enter इस विकल्प का उपयोग करता है। निर्देश दें वर्तमान उत्तर को दिशा देता है। कतार में रखें उत्तर पूरा होने के बाद आपका संदेश भेजता है। Ctrl+Enter एक बार दूसरे विकल्प का उपयोग करता है।</value></data>
+  <data name="Settings.Agents.ContextUsage.Initial" xml:space="preserve">
+    <value>अनुमानित शुरुआती इनपुट टोकन</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Deferred" xml:space="preserve">
+    <value>बाद में लोड होने वाले टूल</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Assembly" xml:space="preserve">
+    <value>टूल संयोजन समायोजन</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Runtime" xml:space="preserve">
+    <value>रनटाइम और कार्यक्षेत्र</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Memory" xml:space="preserve">
+    <value>मेमोरी</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Todo" xml:space="preserve">
+    <value>कार्य सूची</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Vision" xml:space="preserve">
+    <value>छवि विश्लेषण</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Scope" xml:space="preserve">
+    <value>इन सेटिंग के लिए स्थानीय अनुमान। बातचीत के इनपुट, बाद में लोड होने वाली स्किल सामग्री और टूल के परिणाम शामिल नहीं हैं। मॉडल का प्रारूप और टोकन विभाजन अलग हो सकता है।</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.DeferredHelp" xml:space="preserve">
+    <value>खोजे जा सकने वाले टूल के विवरण ज़रूरत पड़ने पर लोड होते हैं और शुरुआती कुल में शामिल नहीं हैं।</value>
+  </data>
+<data name="Settings.LowBatteryProtection.Label" xml:space="preserve"><value>बैटरी कम होने पर निर्धारित कार्य छोड़ें</value></data>
+<data name="Settings.LowBatteryProtection.Description" xml:space="preserve"><value>इस सर्वर कंप्यूटर का चार्ज तय सीमा से कम होने और बाहरी बिजली न जुड़े होने पर स्वचालित कार्य छोड़ें। आपको सूचना मिलेगी और आप छोड़ा गया कार्य स्वयं चला सकेंगे।</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdLabel" xml:space="preserve"><value>बैटरी की सीमा (%)</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdInvalid" xml:space="preserve"><value>1 से 100 तक की पूर्ण संख्या दर्ज करें।</value></data>
+<data name="Settings.LowBatteryProtection.Checking" xml:space="preserve"><value>Oscova चलाने वाले कंप्यूटर की बैटरी जानकारी जाँची जा रही है।</value></data>
+<data name="Settings.LowBatteryProtection.NotDetected" xml:space="preserve"><value>Oscova चलाने वाले कंप्यूटर में सिस्टम बैटरी नहीं मिली।</value></data>
+<data name="Settings.LowBatteryProtection.Unavailable" xml:space="preserve"><value>Oscova चलाने वाले कंप्यूटर की बैटरी या बिजली कनेक्शन की जानकारी उपलब्ध नहीं है।</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderLabel"><value>कौशल फ़ोल्डर (वैकल्पिक)</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderHint"><value>उदाहरण: skills। पूरे रिपॉज़िटरी में खोजने के लिए खाली छोड़ें।</value></data>
+  <data name="Settings.Prompts.ChatContinuationInstructionLabel"><value>चैट फिर शुरू करने का निर्देश</value></data>
+  <data name="Settings.Prompts.ChatContinuationDescription"><value>बाधित चैट को उसके अंतिम अनुरोध से आगे बढ़ने का मार्गदर्शन देता है।</value></data>
+  <data name="Settings.Prompts.ChatTitleInstructionLabel"><value>चैट शीर्षक का निर्देश</value></data>
+  <data name="Settings.Prompts.ChatTitleDescription"><value>चैट के लिए स्वचालित शीर्षक बनाने का मार्गदर्शन देता है।</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryInstructionLabel"><value>टूल विफलता से उबरने का निर्देश</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryDescription"><value>टूल की बार-बार विफलता के बाद एजेंट को उबरने का मार्गदर्शन देता है।</value></data>
+  <data name="Settings.Prompts.WorkspaceHasAliasesVariableDescription"><value>जब कार्यस्थान का फ़ाइल टूल उपनाम हो तो सही।</value></data>
+  <data name="Settings.Prompts.UsesHostPathsVariableDescription"><value>जब शेल कमांड होस्ट पथों का उपयोग करें तो सही।</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationSummary"><value>कौशल स्रोत: {1} में से {0} पूरे हुए।</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCheckingCache"><value>कैश की जाँच हो रही है</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationWaiting"><value>तैयारी के लिए प्रतीक्षा हो रही है</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationConnecting"><value>कनेक्ट हो रहा है</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationIndexing"><value>डाउनलोड की अनुक्रमणिका बन रही है</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPreparingFiles"><value>फ़ाइलें तैयार हो रही हैं</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationScanning"><value>कौशल खोजे जा रहे हैं</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCached"><value>कैश में उपलब्ध</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReady"><value>तैयार: {0} कौशल</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReadyCached"><value>तैयार: {0} कौशल (कैश से)</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationFailed"><value>विफल</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReceivedBytes"><value>{0} प्राप्त हुए</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPartialResults"><value>तैयार स्रोतों के परिणाम। अन्य स्रोत अभी तैयार हो रहे हैं।</value></data>
+  <data name="Settings.Avatar.Presentation.Heading" xml:space="preserve"><value>प्रस्तुति</value></data>
+  <data name="Settings.Avatar.Presentation.ModeLabel" xml:space="preserve"><value>लेआउट मोड</value></data>
+  <data name="Settings.Avatar.Presentation.AutoLabel" xml:space="preserve"><value>स्वचालित</value></data>
+  <data name="Settings.Avatar.Presentation.SubtitleLabel" xml:space="preserve"><value>उपशीर्षक</value></data>
+  <data name="Settings.Avatar.Presentation.SideLabel" xml:space="preserve"><value>किनारा</value></data>
+  <data name="Settings.Avatar.Presentation.ApplyPresentationButton" xml:space="preserve"><value>प्रस्तुति लागू करें</value></data>
+  <data name="Settings.Avatar.Presentation.TestButton" xml:space="preserve"><value>लेआउट जाँचें</value></data>
+  <data name="Settings.Avatar.Presentation.EndTestButton" xml:space="preserve"><value>परीक्षण समाप्त करें</value></data>
+  <data name="Settings.Avatar.Presentation.TestDescription" xml:space="preserve"><value>परीक्षण ऊपर दी गई अवधि का उपयोग करता है, फिर चयनित लेआउट मोड बहाल करता है। परीक्षण के लिए शून्य से अधिक अवधि सेट करें।</value></data>
+  <data name="Settings.Avatar.Presentation.FailedToast" xml:space="preserve"><value>प्रस्तुति सेटिंग लागू नहीं हो सकीं।</value></data>
+  <data name="Settings.Mcp.Governance.McpEnabled" xml:space="preserve"><value>सक्षम</value></data>
+  <data name="Settings.Mcp.Governance.McpShared" xml:space="preserve"><value>उपयोगकर्ताओं के साथ साझा करें</value></data>
+  <data name="Skills.UpdateForUsers" xml:space="preserve"><value>उपयोगकर्ताओं के लिए अपडेट करें</value></data>
+  <data name="Skills.ShareWithUsers" xml:space="preserve"><value>उपयोगकर्ताओं के साथ साझा करें</value></data>
+  <data name="Skills.ManagedByOperator" xml:space="preserve"><value>ऑपरेटर द्वारा प्रबंधित</value></data>
+  <data name="Settings.Mcp.Device" xml:space="preserve"><value>डिवाइस</value></data>
+  <data name="Settings.Mcp.SelectDevice" xml:space="preserve"><value>डिवाइस चुनें</value></data>
+  <data name="Settings.Mcp.CentralServer" xml:space="preserve"><value>सर्वर</value></data>
+  <data name="Settings.Mcp.DeviceOnline" xml:space="preserve"><value>ऑनलाइन</value></data>
+  <data name="Settings.Mcp.DeviceOffline" xml:space="preserve"><value>ऑफ़लाइन</value></data>
+  <data name="Settings.Mcp.SavedDeviceOffline" xml:space="preserve"><value>सहेजा गया। डिवाइस ऑफ़लाइन है। इस MCP सर्वर की जाँच के लिए इसे कनेक्ट करें।</value></data>
+  <data name="Skills.IncludedForAll" xml:space="preserve"><value>सभी उपयोगकर्ताओं के लिए शामिल</value></data>
+  <data name="Skills.PublicationResult" xml:space="preserve"><value>साझा करना चालू है। जोड़ी या अपडेट की गई प्रतियाँ: {0}। रखी गई निजी प्रतियाँ: {1}।</value></data>
+  <data name="Plugins.DeviceReady" xml:space="preserve"><value>{0} पर तैयार</value></data>
+  <data name="Plugins.DevicePreparing" xml:space="preserve"><value>{0} पर तैयारी हो रही है</value></data>
+  <data name="Plugins.DeviceUnavailable" xml:space="preserve"><value>{0} पर अस्थायी रूप से अनुपलब्ध</value></data>
+  <data name="Settings.PromptsBrowserUseLabel" xml:space="preserve"><value>ब्राउज़र का उपयोग</value></data>
+  <data name="Settings.PromptsBrowserUseDescription" xml:space="preserve"><value>वेबसाइट पर काम, लॉगिन सहायता और संवेदनशील कार्रवाइयों से पहले पुष्टि के लिए निर्देश। ये मॉडल का मार्गदर्शन करते हैं, पहचान की गारंटी नहीं देते।</value></data>
+  <data name="Settings.ModelProviders.DownloadFailedMessage" xml:space="preserve"><value>मॉडल '{0}' डाउनलोड नहीं हो सका: {1}</value></data>
+  <data name="Settings.Prompts.RestoreDefaultButton" xml:space="preserve">
+    <value>डिफ़ॉल्ट बहाल करें</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmTitle" xml:space="preserve">
+    <value>डिफ़ॉल्ट निर्देश बहाल करें?</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmMessage" xml:space="preserve">
+    <value>{0} के लिए अपना कस्टम निर्देश हटाकर डिफ़ॉल्ट का उपयोग करें? बदलाव लागू करने के लिए इसके बाद सहेजें पर क्लिक करें।</value>
+  </data>
+  <data name="Settings.Execution.UnavailableDescription" xml:space="preserve">
+    <value>यह वातावरण उपलब्ध नहीं है। इसका प्लगइन सक्षम करके पुनः प्रारंभ करें, या दूसरा वातावरण चुनकर सहेजें।</value>
+  </data>
+  <data name="Settings.Execution.Description" xml:space="preserve">
+    <value>शेल कमांड और कौशल स्क्रिप्ट चलाने का स्थान चुनें।</value>
+  </data>
+  <data name="Settings.Execution.EnvironmentLabel" xml:space="preserve">
+    <value>निष्पादन वातावरण</value>
+  </data>
+  <data name="Settings.Execution.Label" xml:space="preserve">
+    <value>निष्पादन</value>
+  </data>
+  <data name="Settings.Execution.ScriptsDescription" xml:space="preserve">
+    <value>स्क्रिप्ट के लिए चुने गए वातावरण में रनटाइम और उसके शेल के लिए मान्य आह्वान आवश्यक है।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Completed" xml:space="preserve"><value>{0} में अपडेट किया गया</value></data>
+  <data name="Settings.ApplicationUpdate.PluginsCompleted" xml:space="preserve"><value>प्लगइन अपडेट हो गए। Oscova {0} पर ही है।</value></data>
+  <data name="Settings.ApplicationUpdate.NotStarted" xml:space="preserve"><value>अपडेट शुरू नहीं हुआ, इसलिए Oscova में कोई बदलाव नहीं हुआ। Host कंप्यूटर पर अपडेट विंडो देखें, फिर दोबारा कोशिश करें।</value></data>
+  <data name="Settings.ApplicationUpdate.FilesKept" xml:space="preserve"><value>इसकी फ़ाइलें और सेटिंग्स सुरक्षित रखी गई हैं।</value></data>
+  <data name="Settings.ApplicationUpdate.OpenPlugins" xml:space="preserve"><value>प्लगइन खोलें</value></data>
+  <data name="Settings.ApplicationUpdate.Compatibility" xml:space="preserve"><value>नए संस्करण का समर्थन नहीं करने वाले प्लगइन निष्क्रिय किए जाएँगे। उनकी फ़ाइलें और सेटिंग्स सुरक्षित रखी जाएँगी।</value></data>
+  <data name="Settings.ApplicationUpdate.PluginUpdated" xml:space="preserve"><value>अपडेट किया गया</value></data>
+  <data name="Settings.ApplicationUpdate.PluginDisabled" xml:space="preserve"><value>निष्क्रिय</value></data>
+  <data name="Settings.ApplicationUpdate.PluginRetained" xml:space="preserve"><value>रखा गया</value></data>
+  <data name="Settings.Execution.Checking" xml:space="preserve"><value>जाँच जारी है…</value></data>
+  <data name="Settings.Execution.Available" xml:space="preserve"><value>इस मशीन पर उपलब्ध</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLabel" xml:space="preserve"><value>खोज का तरीका</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodApi" xml:space="preserve"><value>GitHub API</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocal" xml:space="preserve"><value>स्थानीय रिपॉज़िटरी डाउनलोड</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodHint" xml:space="preserve"><value>यह इस होस्ट का उपयोग करने वाले सभी लोगों पर लागू होता है।</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocalNotice" xml:space="preserve"><value>स्क्रिप्ट सहित पूरी रिपॉज़िटरी Oscova चलाने वाले कंप्यूटर पर डाउनलोड करता है।</value></data>
+  <data name="Settings.Skills.FindOnlinePreparationReadingMetadata" xml:space="preserve"><value>रिपॉज़िटरी मेटाडेटा पढ़ा जा रहा है</value></data>
+  <data name="Settings.Goal.MaxIterations" xml:space="preserve">
+    <value>लक्ष्य की अधिकतम पुनरावृत्तियाँ</value>
+  </data>
+  <data name="Settings.Goal.Default" xml:space="preserve">
+    <value>डिफ़ॉल्ट</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsInvalid" xml:space="preserve">
+    <value>1 से 2147483647 तक पूर्णांक दर्ज करें।</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsHelp" xml:space="preserve">
+    <value>कार्य चक्र सीमित करता है। खाली रखने पर डिफ़ॉल्ट लागू होता है।</value>
+  </data>
+  <data name="Settings.Goal.JudgeInstruction" xml:space="preserve">
+    <value>लक्ष्य मूल्यांकन निर्देश</value>
+  </data>
+  <data name="Settings.Goal.JudgeDescription" xml:space="preserve">
+    <value>कार्य चक्र के बाद जाँचता है कि लक्ष्य पूरा हुआ है या नहीं।</value>
+  </data>
+  <data name="Settings.Goal.ContinuationInstruction" xml:space="preserve">
+    <value>लक्ष्य जारी रखने का टेम्पलेट</value>
+  </data>
+  <data name="Settings.Goal.ContinuationDescription" xml:space="preserve">
+    <value>मूल्यांकनकर्ता के शेष कार्य विश्लेषण को एजेंट के अगले निर्देश में बदलता है।</value>
+  </data>
+  <data name="Settings.Goal.GapAnalysis" xml:space="preserve">
+    <value>मूल्यांकनकर्ता के अनुसार अभी बाकी काम।</value>
+  </data>
+  <data name="Settings.Prompts.PrivateDirectoriesVariableDescription" xml:space="preserve">
+    <value>एजेंट के निजी फ़ोल्डर की सूची।</value>
+  </data>
+  <data name="Settings.Prompts.HasPrivateDirectoryVariableDescription" xml:space="preserve">
+    <value>एजेंट के पास निजी फ़ोल्डर होने पर सत्य।</value>
+  </data>
+  <data name="Settings.Prompts.ShellRootVariablesVariableDescription" xml:space="preserve">
+    <value>शेल परिवेश चर के नाम और उनके फ़ोल्डर उपनाम।</value>
+  </data>
+  <data name="Settings.Prompts.HasShellRootsVariableDescription" xml:space="preserve">
+    <value>शेल मूल फ़ोल्डर चर उपलब्ध होने पर सत्य।</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsLabel" xml:space="preserve">
+    <value>किसी अन्य एजेंट की चैट में शामिल होने पर चैट मॉडल का उपयोग करें</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsDescription" xml:space="preserve">
+    <value>केवल वेब चैट में उल्लेख और परामर्श के लिए। बंद होने पर ऊपर चुना गया प्रदाता उपयोग होता है।</value>
+  </data>
+  <data name="Settings.Prompts.InstructionModeLabel" xml:space="preserve"><value>निर्देश मोड</value></data>
+  <data name="Settings.Prompts.InstructionUseDefault" xml:space="preserve"><value>डिफ़ॉल्ट का उपयोग करें</value></data>
+  <data name="Settings.Prompts.InstructionAppend" xml:space="preserve"><value>डिफ़ॉल्ट में जोड़ें</value></data>
+  <data name="Settings.Prompts.InstructionReplace" xml:space="preserve"><value>डिफ़ॉल्ट बदलें</value></data>
+  <data name="Settings.Prompts.InstructionDefaultReference" xml:space="preserve"><value>डिफ़ॉल्ट निर्देश</value></data>
+  <data name="Speech.InstallPluginHelp" xml:space="preserve"><value>सेटिंग्स &gt; प्लगइन में स्पीच प्लगइन इंस्टॉल करें, फिर पुनः आरंभ करें।</value></data>
+  <data name="Speech.ProviderUnavailableHelp" xml:space="preserve"><value>यह प्रदाता उपलब्ध नहीं है। इसका प्लगइन सक्षम करके पुनः आरंभ करें, या इंस्टॉल किया गया प्रदाता चुनें।</value></data>
+  <data name="Settings.Speech.VoiceCatalogFailed" xml:space="preserve"><value>आवाज़ें लोड नहीं हो सकीं। चुने गए क्रेडेंशियल और आवाज़ की अनुमतियाँ जाँचें, फिर क्रेडेंशियल दोबारा चुनें।</value></data>
+  <data name="Settings.Prompts.MetadataError" xml:space="preserve">
+    <value>निर्देश का मेटाडेटा गायब या अमान्य है। इस निर्देश को संपादित नहीं किया जा सकता।</value>
+  </data>
+  <data name="Settings.Prompts.LoadFailed" xml:space="preserve">
+    <value>निर्देश लोड नहीं किए जा सके।</value>
+  </data>
+  <data name="Updates.HarnessUpdateNoticeTitle" xml:space="preserve"><value>हार्नेस अपडेट उपलब्ध है</value></data>
+  <data name="Updates.HarnessUpdateNoticeBody" xml:space="preserve"><value>Oscova {0} उपलब्ध है। इसकी समीक्षा के लिए डैशबोर्ड अपडेट खोलें।</value></data>
+  <data name="Updates.AvatarUpdateNoticeTitle" xml:space="preserve"><value>Avatar Engine उपलब्ध है</value></data>
+  <data name="Updates.AvatarUpdateNoticeBody" xml:space="preserve"><value>Avatar Engine {0} उपलब्ध है। इस कंप्यूटर पर इंस्टॉलेशन की समीक्षा के लिए डैशबोर्ड अपडेट खोलें।</value></data>
+  <data name="Updates.AvatarUpdateTitle" xml:space="preserve"><value>Avatar Engine</value></data>
+  <data name="Updates.AvatarInstall" xml:space="preserve"><value>Avatar इंस्टॉल करें</value></data>
+  <data name="Updates.AvatarUpdateAction" xml:space="preserve"><value>Avatar अपडेट करें</value></data>
+  <data name="Updates.AvatarUpdateVersions" xml:space="preserve"><value>इस कंप्यूटर पर: {0}। उपलब्ध: {1}। डाउनलोड: {2}।</value></data>
+  <data name="Updates.AvatarNotInstalled" xml:space="preserve"><value>इंस्टॉल नहीं है</value></data>
+  <data name="Updates.AvatarUpdateUnknown" xml:space="preserve"><value>अज्ञात संस्करण</value></data>
+  <data name="Updates.AvatarUpdateConfirm" xml:space="preserve"><value>मैं इस कंप्यूटर पर इस रिलीज़ को इंस्टॉल करने की पुष्टि करता हूँ।</value></data>
+  <data name="Updates.AvatarUpdateStopImpact" xml:space="preserve"><value>स्थानीय Avatar Engine बंद होगा और इंस्टॉलेशन के बाद फिर शुरू होगा।</value></data>
+  <data name="Updates.AvatarUpdateUnsupported" xml:space="preserve"><value>Avatar इंस्टॉलेशन और अपडेट के लिए Windows आवश्यक है।</value></data>
+  <data name="Updates.AvatarUpdateUnmanaged" xml:space="preserve"><value>इस कंप्यूटर पर Avatar Engine प्रबंधित करने के लिए 'oscova start' से शुरू करें।</value></data>
+  <data name="Updates.AvatarUpdateCurrent" xml:space="preserve"><value>Avatar Engine अद्यतित है।</value></data>
+  <data name="Updates.AvatarUpdateRunning" xml:space="preserve"><value>चल रहा है</value></data>
+  <data name="Updates.AvatarUpdateStopped" xml:space="preserve"><value>बंद है</value></data>
+  <data name="Updates.AvatarUpdateComputer" xml:space="preserve"><value>कंप्यूटर: {0}</value></data>
+  <data name="Updates.AvatarUpdateDownloading" xml:space="preserve"><value>{1} में से {0} डाउनलोड हो रहा है</value></data>
+  <data name="Updates.AvatarUpdateInstalling" xml:space="preserve"><value>इंस्टॉल हो रहा है...</value></data>
+  <data name="Updates.AvatarUpdateRestarting" xml:space="preserve"><value>Avatar Engine फिर शुरू हो रहा है...</value></data>
+  <data name="Updates.AvatarUpdateStopping" xml:space="preserve"><value>Avatar Engine बंद हो रहा है...</value></data>
+  <data name="Updates.AvatarUpdateCompleted" xml:space="preserve"><value>Avatar Engine इंस्टॉल हो गया।</value></data>
+  <data name="Updates.AvatarUpdateVerifying" xml:space="preserve"><value>डाउनलोड सत्यापित हो रहा है...</value></data>
+  <data name="Updates.AvatarUpdateNotRunning" xml:space="preserve"><value>Avatar Engine इंस्टॉल है लेकिन चल नहीं रहा है। Avatar सेटिंग्स से शुरू करें या 'oscova avatar start' चलाएँ।</value></data>
+  <data name="Updates.ApplicationUpdateReadNotes" xml:space="preserve"><value>रिलीज़ नोट्स पढ़ें</value></data>
+  <data name="Updates.ApplicationUpdateWhatsNew" xml:space="preserve"><value>देखें क्या नया है</value></data>
+  <data name="Updates.ApplicationUpdateAllNotes" xml:space="preserve"><value>सभी रिलीज़ नोट्स</value></data>
+  <data name="Updates.ApplicationUpdateChecking" xml:space="preserve"><value>अपडेट जाँचे जा रहे हैं...</value></data>
+  <data name="Updates.ApplicationUpdatePluginsIncluded" xml:space="preserve"><value>ये प्लगइन अपडेट इस अपडेट के साथ इंस्टॉल होते हैं।</value></data>
+  <data name="Updates.ApplicationUpdateInstalledColumn" xml:space="preserve"><value>इंस्टॉल किया गया</value></data>
+  <data name="Updates.ApplicationUpdateAvailableColumn" xml:space="preserve"><value>उपलब्ध</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLabel" xml:space="preserve"><value>तर्क प्रयास</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLow" xml:space="preserve"><value>कम</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortMedium" xml:space="preserve"><value>मध्यम</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHigh" xml:space="preserve"><value>उच्च</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortExtraHigh" xml:space="preserve"><value>बहुत उच्च</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHelp" xml:space="preserve"><value>डिफ़ॉल्ट विकल्प OpenAI में सोच आउटपुट सक्षम होने पर मध्यम और अन्यथा मॉडल का डिफ़ॉल्ट उपयोग करता है। चुने गए मॉडल को चुने गए प्रयास का समर्थन करना चाहिए।</value></data>
+  <data name="ModelProvidersAnthropicMaxOutputTokensDescription" xml:space="preserve"><value>{0} आउटपुट टोकन उपयोग करने के लिए खाली छोड़ें।</value></data>
+  <data name="Plugins.NotAvailableOnPlatform" xml:space="preserve"><value>यह प्लगइन इस प्लेटफ़ॉर्म पर उपलब्ध नहीं है।</value></data>
+	<data name="Settings.Files.Encrypted"><value>एन्क्रिप्टेड</value></data>
+  <data name="Settings.OAuthConnected" xml:space="preserve"><value>{0} कनेक्ट हो गया।</value></data>
+  <data name="Settings.OAuthCanceled" xml:space="preserve"><value>{0} से कनेक्शन रद्द कर दिया गया।</value></data>
+  <data name="Settings.OAuthUnverified" xml:space="preserve"><value>{0} से कनेक्शन सत्यापित नहीं किया जा सका। प्रक्रिया फिर से शुरू करें।</value></data>
+  <data name="Settings.OAuthMissingCode" xml:space="preserve"><value>{0} ने प्राधिकरण कोड नहीं लौटाया।</value></data>
+  <data name="Settings.OAuthNotConfigured" xml:space="preserve"><value>{0} अभी कॉन्फ़िगर नहीं किया गया है।</value></data>
+  <data name="Settings.OAuthTokenExchangeFailed" xml:space="preserve"><value>{0} का टोकन एक्सचेंज विफल हुआ।</value></data>
+  <data name="Settings.OAuthVaultLocked" xml:space="preserve"><value>{0} को कनेक्ट करने से पहले अपना वॉल्ट पासवर्ड बनाएँ या अनलॉक करें।</value></data>
+  <data name="Settings.OAuthFailed" xml:space="preserve"><value>{0} से कनेक्शन विफल हुआ: {1}।</value></data>
+  <data name="Settings.AdminOnlySettings" xml:space="preserve"><value>{0} की सेटिंग केवल प्रशासकों के लिए उपलब्ध हैं।</value></data>
+  <data name="Settings.ModelProviders.FetchRecovery" xml:space="preserve"><value>मॉडल लोड नहीं हो सके। बेस URL, प्रदाता कनेक्शन और सहेजी गई API कुंजी जाँचें, फिर मॉडल दोबारा प्राप्त करें।</value></data>
+  <data name="Settings.ModelProviders.MemoryFitUnknown" xml:space="preserve"><value>मेमोरी अनुमान उपलब्ध नहीं है। आप सहेज सकते हैं।</value></data>
+  <data name="Settings.ModelProviders.MemoryFitEstimateHelp" xml:space="preserve"><value>यह केवल क्षमता का अनुमान है। सहेजें, फिर परीक्षण करें। अन्य मॉडल लोड रहते हैं, इसलिए अलग जाँच को अतिरिक्त मेमोरी चाहिए।</value></data>
+  <data name="Settings.ModelProviders.ManagedHardware" xml:space="preserve"><value>प्रदाता हार्डवेयर आवंटन संभालता है। होस्ट मेमोरी से रनटाइम का अनुमान नहीं लगता।</value></data>
+  <data name="Settings.ModelProviders.AdvancedOptions" xml:space="preserve"><value>उन्नत विकल्प</value></data>
+  <data name="Settings.ModelProviders.TestSkipped" xml:space="preserve"><value>परीक्षण छोड़ा गया। दूसरा निदान चल रहा हो सकता है या पूर्वापेक्षाएँ उपलब्ध नहीं हैं।</value></data>
+  <data name="Settings.ModelProviders.TestTimedOut" xml:space="preserve"><value>परीक्षण का समय समाप्त हुआ।</value></data>
+  <data name="Settings.ModelProviders.TestCancelled" xml:space="preserve"><value>परीक्षण रद्द या कनेक्शन बाधित। निष्पादन की पुष्टि नहीं हुई।</value></data>
+  <data name="Settings.ModelProviders.TestCleanupUnconfirmed" xml:space="preserve"><value>वर्कर बंद होने की पुष्टि नहीं हुई। उसके समाप्त होने तक दूसरा परीक्षण अवरुद्ध है।</value></data>
+  <data name="Settings.Plugins.HardwareSummary" xml:space="preserve"><value>हार्डवेयर अवलोकन</value></data>
+  <data name="Settings.Plugins.HardwareUnknown" xml:space="preserve"><value>हार्डवेयर जाँच अनुपलब्ध या आवश्यकताएँ अज्ञात हैं।</value></data>
+  <data name="Settings.Plugins.HardwareNotDetected" xml:space="preserve"><value>मिलता हार्डवेयर नहीं मिला। इससे हार्डवेयर या ड्राइवर के अनुपस्थित होने की पुष्टि नहीं होती।</value></data>
+  <data name="Settings.Plugins.RuntimeUnverified" xml:space="preserve"><value>रनटाइम निष्पादन सत्यापित नहीं है। मॉडल प्रदाता का परीक्षण करें।</value></data>
+  <data name="Settings.Plugins.RuntimeRequirements" xml:space="preserve"><value>घोषित आवश्यकताएँ</value></data>
+  <data name="Settings.ModelProviders.MemoryFootprint" xml:space="preserve"><value>अनुमानित वेट और F16 कैश: {0}।</value></data>
+  <data name="Settings.ModelProviders.TestInferencePassed" xml:space="preserve"><value>इनफ़रेंस सफल। लोड: {0} मिलीसेकंड। इनफ़रेंस: {1} मिलीसेकंड।</value></data>
+  <data name="Settings.ModelProviders.TestInferenceFailed" xml:space="preserve"><value>स्थानीय इनफ़रेंस विफल हुआ। कारण के लिए सर्वर लॉग देखें। संदर्भ या GPU लेयर घटाएँ, GPU मेमोरी खाली करें या CPU संस्करण इंस्टॉल करके पुनः शुरू करें।</value></data>
+  <data name="Settings.ModelProviders.TestRuntime" xml:space="preserve"><value>देखा गया बैकएंड: {0}। डिवाइस: {1}। ऑफलोड की गई लेयर: {2}।</value></data>
+  <data name="Settings.ModelProviders.TestPlacementUnknown" xml:space="preserve"><value>हार्डवेयर पर निष्पादन का स्थान सत्यापित नहीं हो सका।</value></data>
+  <data name="Settings.ModelProviders.TestModelUnavailable" xml:space="preserve"><value>उपलब्ध GGUF मॉडल फ़ाइल चुनें, प्रदाता सहेजें और फिर से परीक्षण करें।</value></data>
+</root>

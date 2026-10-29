@@ -1,0 +1,146 @@
+@* System *@
+@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics
+@using System.Globalization
+@using System.Linq
+@using System.Net.Http
+@using System.Net
+@using System.Net.Http.Json
+@using System.Security.Claims
+@using System.Text
+@using System.Text.Json
+@using System.Text.RegularExpressions
+
+@* Microsoft / ASP.NET Core *@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.AI
+@using Microsoft.JSInterop
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+
+@* Third-party *@
+@using Markdig
+
+@* Oscova solution *@
+@using Oscova.Agents
+@using Oscova.Agents.Browsing
+@using Oscova.Agents.Channels
+@using Oscova.Agents.Core.ApiContracts.Channels
+@using Oscova.Agents.Core.Channels
+@using Oscova.Agents.Core.Notifications
+@using Oscova.Agents.Core.ApiContracts.Nodes
+@using Oscova.Agents.Notifications
+@using Oscova.Agents.Host
+@using Oscova.Agents.Host.Achievements
+@using Oscova.Agents.Host.Components
+@using Oscova.Agents.Host.Components.Dialogs
+@using Oscova.Agents.Host.Components.Dialogs.Plugins
+@using Oscova.Agents.Host.Components.Dialogs.Skills
+@using Oscova.Agents.Host.Components.Dialogs.Settings
+@using Oscova.Agents.Host.Components.Reusable.Inputs
+@using Oscova.Agents.Host.Components.Reusable.Inputs.Models
+@using Oscova.Agents.Host.Components.Reusable
+@using Oscova.Agents.Host.Components.Settings
+@using Oscova.Agents.Infrastructure.Auth
+@using Oscova.Agents.Infrastructure.Chat
+@using Oscova.Agents.Infrastructure.Hardware
+@using Oscova.Agents.Infrastructure.Skills
+@using Oscova.Agents.Infrastructure.Users
+@using Oscova.Agents.Host.Utils
+@using Oscova.Agents.Infrastructure.Utils
+@using Oscova.Agents.Core
+@using Oscova.Agents.Definitions
+@using Oscova.Agents.Core.Skills
+@using Oscova.Agents.Core.Skills.Registry
+@using Oscova.Agents.Core.Utils
+@using Oscova.Agents.Core.Users
+@using Oscova.Agents.Host.Services.UI
+@using Oscova.Agents.Host.Components.Shell.Providers
+@using Oscova.Agents.Host.Components.Prompts
+@using Oscova.Agents.Host.Components.Chat
+@using Oscova.Agents.Host.Components.Chat.ArtifactViewer
+@using Oscova.Agents.Host.Components.Chat.Segments
+@using Oscova.Agents.Host.Components.Chat.ToolCards
+@using Oscova.Agents.Host.Components.Pages
+@using Oscova.Agents.Host.Components.Tasks
+@using Oscova.Agents.Host.Components.Shell
+@using Oscova.Agents.Host.Components.Shared
+@using Oscova.Agents.Host.Components.Wizard
+@using Oscova.Agents.Host.Components.Wizard.Steps
+@using Oscova.Agents.Host.Constants
+@using Oscova.Agents.Host.Artifacts
+@using Oscova.Agents.Host.Services
+@using Oscova.Agents.Host.Services.Api
+@using Oscova.Agents.Host.Services.Realtime
+@using Oscova.Agents.Host.Localization
+@using Oscova.Agents.Host.Components.Localization
+@using Oscova.Agents.Host.Help
+
+@using Oscova.Agents.Core.Avatar
+@using Oscova.Agents.Core.Conversation
+@using Oscova.Agents.Core.ApiContracts.Chat
+@using Oscova.Agents.Conversations
+@using Oscova.Agents.Core.Personas
+@using Oscova.Agents.Policies
+@using Oscova.Agents.Middleware
+@using Oscova.Agents.Tasks
+@using Oscova.Agents.Utils
+@using Oscova.Agents.Core.Interfaces
+@using Oscova.Agents.Core.Speech
+@using Oscova.Agents.Llm
+@using Oscova.Agents.Speech
+@using Oscova.Agents.Speech.Contracts
+
+@using Oscova.Agents.Core.ApiContracts
+@using Oscova.Agents.Core.ApiContracts.Achievements
+@using Oscova.Agents.Core.ApiContracts.Admin
+@using Oscova.Agents.Core.ApiContracts.Audit
+@using Oscova.Agents.Core.ApiContracts.CliAuth
+@using Oscova.Agents.Core.ApiContracts.Common
+@using Oscova.Agents.Core.Cli
+@using Oscova.Agents.Core.ApiContracts.Files
+@using Oscova.Agents.Core.ApiContracts.Hooks
+@using Oscova.Agents.Core.ApiContracts.Dashboard
+@using Oscova.Agents.Core.ApiContracts.Environment
+@using Oscova.Agents.Core.ApiContracts.Memory
+@using Oscova.Agents.Core.ApiContracts.OAuth
+@using Oscova.Agents.Core.ApiContracts.Plugins
+@using Oscova.Agents.Core.ApiContracts.Plugins.Registry
+@using Oscova.Agents.Core.ApiContracts.Skills
+@using Oscova.Agents.Core.ApiContracts.Skills.Registry
+@using Oscova.Agents.Core.ApiContracts.Settings
+@using Oscova.Agents.Core.ApiContracts.Tools
+@using Oscova.Agents.Core.ApiContracts.Updates
+@using Oscova.Agents.Core.Backup
+@using Oscova.Agents.Core.Logging
+@using Oscova.Agents.Core.Secrets
+@using Oscova.Agents.Secrets
+@using Oscova.Agents.Core.Secrets.Credentials
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Infrastructure.Agents
+@using Oscova.Agents.Core.Plugins.Registry
+@using Oscova.Agents.Host.Server.Hubs
+@using Oscova.Agents.Host.Server.Security
+@using Oscova.Agents.Host.Server.Hosting
+@using Oscova.Agents.Workspace
+@using Oscova.Agents.Core.ApiContracts.Projects
+@using Oscova.Agents.Host.Components.Dialogs.Chat
+@using Oscova.Agents.Host.Components.Chat.Projects
+
+
+@using Oscova.Agents.Core.Auth
+
+@using Oscova.Agents.Infrastructure.OAuth
+
+@using Oscova.Agents.Credentials
+
+@using Oscova.Agents.Core.ApiContracts.Agents

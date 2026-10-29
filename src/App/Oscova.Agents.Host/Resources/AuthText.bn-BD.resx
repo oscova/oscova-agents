@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+	<resheader name="version"><value>1.3</value></resheader>
+	<resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<data name="Auth.Login.Title"><value>সাইন ইন করুন</value></data>
+	<data name="Auth.Login.Subtitle"><value>সহজ অ্যাক্সেস, সুরক্ষিত সংযোগ: ব্যক্তিগতকৃত অভিজ্ঞতার প্রবেশদ্বার।</value></data>
+	<data name="Auth.ShowPasswordLabel"><value>পাসওয়ার্ড দেখান</value></data>
+	<data name="Auth.LoggingInButton"><value>লগ ইন হচ্ছে...</value></data>
+	<data name="Auth.LoginButton"><value>লগ ইন</value></data>
+	<data name="Auth.InvalidCredentialsError"><value>অবৈধ ব্যবহারকারীর নাম বা পাসওয়ার্ড।</value></data>
+	<data name="Auth.InvalidLoginTicketError"><value>আপনার লগইন সেশনের মেয়াদ শেষ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</value></data>
+	<data name="Auth.InvalidProfileError"><value>সেই প্রোফাইলটি আর উপলব্ধ নেই।</value></data>
+	<data name="Auth.LoginFailedError"><value>লগইন ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</value></data>
+	<data name="Auth.Home.Title"><value>Oscova Agents কে ব্যবহার করছেন?</value></data>
+	<data name="Auth.Home.Subtitle"><value>চালিয়ে যেতে একটি প্রোফাইল নির্বাচন করুন, অথবা পাসওয়ার্ড দিয়ে সাইন ইন করুন।</value></data>
+	<data name="Auth.Home.NoProfilesMessage"><value>এখনও কোনো প্রোফাইল উপলব্ধ নেই।</value></data>
+	<data name="Auth.Home.ProfileFallbackName"><value>ব্যবহারকারী</value></data>
+	<data name="Auth.Home.ProfilesLabel"><value>প্রোফাইলসমূহ</value></data>
+	<data name="Auth.Home.PinHelp"><value>সাইন ইন করতে পিন দিন।</value></data>
+	<data name="Auth.Home.SwitchProfileButton"><value>পরিবর্তন করুন</value></data>
+	<data name="Auth.Home.PinLabel"><value>পিন</value></data>
+	<data name="Auth.Home.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Auth.Home.ShowPinLabel"><value>পিন দেখান</value></data>
+	<data name="Auth.Home.SigningInButton"><value>সাইন ইন হচ্ছে...</value></data>
+	<data name="Auth.Home.ContinueButton"><value>চালিয়ে যান</value></data>
+	<data name="Auth.Home.AdminPasswordSignInButton"><value>পাসওয়ার্ড দিয়ে সাইন ইন</value></data>
+	<data name="Auth.Home.PinSessionExpiredError"><value>আপনার সাইন-ইন সেশনের মেয়াদ শেষ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</value></data>
+	<data name="Auth.Home.ChooseProfileFirstError"><value>প্রথমে একটি প্রোফাইল বেছে নিন।</value></data>
+	<data name="Auth.Home.MissingPinError"><value>এই প্রোফাইলে এখনও পিন সেট করা নেই। অপারেটরকে একটি পিন সেট করতে বলুন।</value></data>
+	<data name="Auth.Home.InvalidPinError"><value>অবৈধ পিন।</value></data>
+	<data name="Auth.Home.PinValidationError"><value>পিনে 6–64টি অঙ্ক (0–9) থাকতে হবে।</value></data>
+	<data name="Auth.AdminLogin.BackButton"><value>প্রোফাইল সাইন-ইনে ফিরে যান</value></data>
+	<data name="Auth.AdminSetup.Title"><value>প্রথম অপারেটর তৈরি করুন</value></data>
+	<data name="Auth.AdminSetup.Subtitle"><value>Oscova Agents ব্যবহার শুরু করতে অপারেটর অ্যাকাউন্ট সেট আপ করুন।</value></data>
+	<data name="Auth.AdminSetup.FullNameLabel"><value>পুরো নাম</value></data>
+	<data name="Auth.AdminSetup.FullNamePlaceholder"><value>রহিম আহমেদ</value></data>
+	<data name="Auth.AdminSetup.FullNameHelp"><value>আপনার পুরো নাম লিখুন।</value></data>
+	<data name="Auth.AdminSetup.EmailLabel"><value>ইমেল</value></data>
+	<data name="Auth.AdminSetup.EmailPlaceholder"><value>name@company.com</value></data>
+	<data name="Auth.AdminSetup.EmailHelp"><value>একটি বৈধ ইমেল ঠিকানা ব্যবহার করুন।</value></data>
+	<data name="Auth.AdminSetup.UsernamePlaceholder"><value>operator</value></data>
+	<data name="Auth.AdminSetup.UsernameHelp"><value>৩ বা তার বেশি অক্ষর। অনন্য হতে হবে।</value></data>
+	<data name="Auth.AdminSetup.NewPasswordPlaceholder"><value>কমপক্ষে ৬টি অক্ষর</value></data>
+	<data name="Auth.AdminSetup.PasswordHelp"><value>অক্ষর, সংখ্যা এবং প্রতীকের মিশ্রণসহ কমপক্ষে ৬টি অক্ষর ব্যবহার করুন।</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordLabel"><value>পাসওয়ার্ড নিশ্চিত করুন</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordPlaceholder"><value>আপনার পাসওয়ার্ড পুনরায় লিখুন</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordHelp"><value>পাসওয়ার্ডের সাথে হুবহু মিলতে হবে।</value></data>
+	<data name="Auth.AdminSetup.CreateAdminButton"><value>অপারেটর তৈরি করুন</value></data>
+	<data name="Auth.AdminSetup.RestoreTitle"><value>ব্যাকআপ থেকে পুনরুদ্ধার করুন</value></data>
+	<data name="Auth.AdminSetup.RestoreDescription"><value>এটি শুধুমাত্র নতুন ইনস্টলেশনে ব্যবহার করুন। একটি এনক্রিপ্ট করা .oscb ব্যাকআপ ফাইল নির্বাচন করুন এবং পাসফ্রেজ দিন।</value></data>
+	<data name="Auth.AdminSetup.RestoreFileLabel"><value>ব্যাকআপ ফাইল</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseLabel"><value>ব্যাকআপ পাসফ্রেজ</value></data>
+	<data name="Auth.AdminSetup.RestorePassphrasePlaceholder"><value>ব্যাকআপ পাসফ্রেজ লিখুন</value></data>
+	<data name="Auth.AdminSetup.RestoreButton"><value>ব্যাকআপ পুনরুদ্ধার করুন</value></data>
+	<data name="Auth.AdminSetup.RestoreChooseFileButton"><value>ব্যাকআপ ফাইল বেছে নিন</value></data>
+	<data name="Auth.AdminSetup.RestoreFileRequired"><value>একটি ব্যাকআপ ফাইল নির্বাচন করুন।</value></data>
+	<data name="Auth.AdminSetup.RestoreUnsupportedFile"><value>শুধুমাত্র .oscb ব্যাকআপ ফাইল সমর্থিত।</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseRequired"><value>ব্যাকআপ পাসফ্রেজ লিখুন।</value></data>
+	<data name="Auth.AdminSetup.RestoreFreshInstallOnly"><value>পুনরুদ্ধার শুধুমাত্র নতুন ইনস্টলেশনে উপলব্ধ।</value></data>
+	<data name="Auth.AdminSetup.RestorePending"><value>একটি পরিবেশ পুনরুদ্ধার অপেক্ষমাণ আছে। অ্যাকাউন্ট তৈরি করার আগে Oscova পুনরায় চালু হওয়া পর্যন্ত অপেক্ষা করুন।</value></data>
+	<data name="Auth.AdminSetup.Created"><value>অপারেটর তৈরি হয়েছে। আপনার নতুন অ্যাকাউন্ট দিয়ে সাইন ইন করুন।</value></data>
+	<data name="Auth.AdminSetup.RestoreFailed"><value>ব্যাকআপ পুনরুদ্ধার করা যায়নি।</value></data>
+	<data name="Auth.AdminSetup.RestoreInProgress"><value>ব্যাকআপ পুনরুদ্ধার করতে এক মিনিট সময় লাগতে পারে। Oscova রিস্টার্টের প্রস্তুতি নেওয়ার সময় এই উইন্ডোটি খোলা রাখুন।</value></data>
+	<data name="Auth.AdminSetup.RestoreRestarting"><value>ব্যাকআপ পুনরুদ্ধার সম্পন্ন হয়েছে। Oscova রিস্টার্ট হচ্ছে...</value></data>
+	<data name="Auth.AdminSetup.PasswordsDoNotMatchError"><value>পাসওয়ার্ড দুটি মেলেনি।</value></data>
+	<data name="Auth.AdminSetup.UsernameExistsError"><value>এই ব্যবহারকারীর নামের একজন ব্যবহারকারী ইতিমধ্যেই বিদ্যমান।</value></data>
+	<data name="Auth.AdminSetup.EmailExistsError"><value>এই ইমেলের একজন ব্যবহারকারী ইতিমধ্যেই বিদ্যমান।</value></data>
+	<data name="Auth.CliAuth.Title"><value>CLI অ্যাক্সেস অনুমোদন করুন</value></data>
+	<data name="Auth.CliAuth.Subtitle"><value>আপনার Oscova অ্যাকাউন্ট ব্যবহার করার জন্য এই টার্মিনালটিকে অনুমোদন দিন।</value></data>
+	<data name="Auth.CliAuth.CodeLabel"><value>কোড</value></data>
+	<data name="Auth.CliAuth.ClientLabel"><value>ক্লায়েন্ট</value></data>
+	<data name="Auth.CliAuth.MachineLabel"><value>মেশিন</value></data>
+	<data name="Auth.CliAuth.ApproveButton"><value>অনুমোদন করুন</value></data>
+	<data name="Auth.CliAuth.DenyButton"><value>প্রত্যাখ্যান করুন</value></data>
+	<data name="Auth.CliAuth.ApprovedMessage"><value>CLI অ্যাক্সেস অনুমোদিত হয়েছে। আপনি আপনার টার্মিনালে ফিরে যেতে পারেন।</value></data>
+	<data name="Auth.CliAuth.DeniedMessage"><value>CLI অ্যাক্সেস প্রত্যাখ্যান করা হয়েছে।</value></data>
+	<data name="Auth.CliAuth.InvalidCodeMessage"><value>এই CLI অনুমোদন কোডটি বৈধ নয়।</value></data>
+	<data name="Auth.CliAuth.ExpiredCodeMessage"><value>এই CLI অনুমোদন কোডের মেয়াদ শেষ হয়েছে।</value></data>
+	<data name="Auth.ToggleThemeLabel"><value>থিম পরিবর্তন করুন</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Title"><value>আপনার এজেন্ট, প্রস্তুত যখনই আপনি প্রস্তুত।</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Description"><value>বাড়ি এবং অফিসের জন্য এজেন্ট ওএস, আপনার নিজস্ব হার্ডওয়্যারে।</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Title"><value>রানটাইমের মালিক হোন। নিয়ন্ত্রণ নিজের হাতে রাখুন।</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Description"><value>স্থায়ী এজেন্ট, স্থানীয় ডেটা এবং কখন কিছু ক্লাউডে যাবে সে বিষয়ে স্পষ্ট পছন্দ।</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Title"><value>যে গোপনীয়তা আপনি যাচাই করতে পারেন।</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Description"><value>কোনো টেলিমেট্রি নয়, ক্লাউড ব্যবহারে স্পষ্ট পছন্দ এবং ডেটা ডিভাইস ছাড়লে পরিষ্কার প্রমাণ।</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Title"><value>শুধু একটি চ্যাট উইন্ডোর চেয়েও বেশি।</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Description"><value>কথোপকথনের মাঝেও এজেন্টদের টুল, মেমরি, সময়সূচি এবং চ্যানেল প্রস্তুত থাকে।</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Title"><value>ছোট মডেল। গুরুত্বপূর্ণ কাজ।</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Description"><value>সংক্ষিপ্ত কনটেক্সট এবং লোকাল-ফার্স্ট ওয়ার্কফ্লো আপনার নিজস্ব হার্ডওয়্যারকে আরও বেশি কাজ করতে সাহায্য করে।</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Title"><value>ইন্টারনেট না থাকলেও উপযোগী।</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Description"><value>মূল এজেন্ট রান এবং স্পিচ আপনার নিজস্ব হার্ডওয়্যারেই স্থানীয় থাকতে পারে।</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Title"><value>ব্যক্তিগত কাজ সুরক্ষিত থাকে।</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Description"><value>মূল এজেন্ট ও উপ-এজেন্টসহ সব এজেন্ট চ্যাট ও টাস্ক রান এনক্রিপ্ট করে সংরক্ষণ করে।</value></data>
+  <data name="Auth.SignIn.Mismatch"><value>মেলেনি। আবার চেষ্টা করুন।</value></data>
+  <data name="Auth.SignIn.RetryCountdown"><value>মেলেনি। {0} সেকেন্ড পরে আবার চেষ্টা করুন।</value></data>
+  <data name="Auth.SignIn.WaitCountdown"><value>{0} সেকেন্ড পরে আবার চেষ্টা করুন।</value></data>
+  <data name="Auth.SignIn.TryAgain"><value>আবার চেষ্টা করুন</value></data>
+</root>

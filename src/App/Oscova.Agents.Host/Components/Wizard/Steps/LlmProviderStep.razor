@@ -1,0 +1,862 @@
+@using Oscova.Agents.Core.Secrets.Credentials
+@using Oscova.Agents.Infrastructure.Chat
+@using Oscova.Agents.Infrastructure.Utils
+@using System.Reflection
+@implements IDisposable
+@inject UserServiceScope UserScope
+@inject ModelDownloadSettings ModelDownloads
+@inject IDownloadService Downloads
+@inject IModelProviderCatalog ModelProviderCatalog
+@inject ICredentialTypeRegistry CredentialTypes
+@inject IDialogService DialogService
+@inject Oscova.Agents.Core.Auth.ExecutionPermissionRegistry Executions
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<WizardText> Loc
+@inject IStringLocalizer<SettingsText> ProviderLoc
+@inject ILogger<LlmProviderStep> Logger
+
+<div class="space-y-5">
+    <div>
+        <h2 class="text-lg font-semibold">@Loc.GetOrDefault(WizardTextKeys.WizardLlmQuestion, "How should Oscova think?")</h2>
+        <p class="text-base-content/65 mt-1 text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardLlmQuestionHint, "Choose a model provider to set up now.")</p>
+    </div>
+
+    <fieldset class="min-w-0">
+        <legend class="sr-only">@Loc.GetOrDefault(WizardTextKeys.WizardLlmProviderLegend, "Model provider")</legend>
+        <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">
+            @foreach (var option in _providerOptions)
+            {
+                <label class="@ChoiceClass(option.Id)">
+                    <span class="flex items-start gap-3">
+                        <input type="radio"
+                               class="radio radio-primary mt-1"
+                               name="wizard-llm-provider"
+                               value="@option.Id"
+                               aria-label="@option.Title"
+                               checked="@(_selected == option.Id)"
+                               disabled="@_isFetchingModels"
+                               @onchange="() => SetSelected(option.Id)" />
+                        <span class="min-w-0">
+                            <span class="flex items-center gap-2 font-medium">
+                                <iconify-icon icon="@option.Icon" class="size-4 shrink-0"></iconify-icon>
+                                <span>@option.Title</span>
+                            </span>
+                            <span class="text-base-content/60 mt-1 block text-xs">@option.Description</span>
+                        </span>
+                    </span>
+                </label>
+            }
+        </div>
+        <p class="text-base-content/50 mt-1 flex items-center gap-1 text-xs">
+            <span class="iconify lucide--move-horizontal size-3.5" aria-hidden="true"></span>
+            @Loc.GetOrDefault(WizardTextKeys.WizardLlmScrollHint, "Scroll to see all available providers.")
+        </p>
+    </fieldset>
+
+    <div class="rounded-box border border-base-300 bg-base-100 p-4">
+        @if (SelectedOption is null)
+        {
+            <div role="alert" class="alert alert-info alert-soft">
+                <iconify-icon icon="lucide:info" width="18" height="18"></iconify-icon>
+                <span>@Loc.GetOrDefault(WizardTextKeys.WizardLlmNoChoiceHint, "Select an option to set up a model provider now, or skip this step and add one later.")</span>
+            </div>
+        }
+        else if (SelectedOption.Kind == SetupKind.LocalGguf)
+        {
+            @if (string.IsNullOrWhiteSpace(ModelDownloads.DefaultLocalModelUrl) || string.IsNullOrWhiteSpace(ModelDownloads.DefaultLocalModelFileName))
+            {
+                <div role="alert" class="alert alert-warning alert-soft">
+                    <iconify-icon icon="lucide:alert-triangle" width="18" height="18"></iconify-icon>
+                    <span>@Loc.GetOrDefault(WizardTextKeys.WizardLlmLocalNotConfigured, "No default local model has been configured. You can add one later in Settings.")</span>
+                </div>
+            }
+            else
+            {
+                <p class="text-base-content/65 mb-3 text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardLlmLocalDownloadHint, "Download the local model now, or continue and download it later from Settings.")</p>
+                <ModelDownloadCard Title="@ModelDownloads.DefaultLocalModelFileName"
+                                   Ready="@_localReady"
+                                   Downloading="@_localDownloadInProgress"
+                                   Percent="@_localPercent"
+                                   OnDownload="StartLocalDownloadAsync"
+                                   OnCancel="CancelLocalDownload" />
+            }
+        }
+        else
+        {
+            @if (SelectedOption.Kind == SetupKind.Credential)
+            {
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">@FormatWizardText(WizardTextKeys.WizardLlmApiKeyLabel, "{0} API key", SelectedOption.Title)</legend>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="label cursor-pointer gap-2">
+                            <input type="radio"
+                                   class="radio radio-sm"
+                                   name="wizard-provider-credential-source"
+                                   checked="@(_credentialSource == CredentialFieldSource.Stored)"
+                                   disabled="@_isFetchingModels"
+                                   @onchange="@(() => SetCredentialSource(CredentialFieldSource.Stored))" />
+                            <span class="label-text">@ProviderLoc.GetOrDefault(SettingsTextKeys.CredentialsStoredValueOption, "Enter a value")</span>
+                        </label>
+                        <label class="label cursor-pointer gap-2">
+                            <input type="radio"
+                                   class="radio radio-sm"
+                                   name="wizard-provider-credential-source"
+                                   checked="@(_credentialSource == CredentialFieldSource.Env)"
+                                   disabled="@_isFetchingModels"
+                                   @onchange="@(() => SetCredentialSource(CredentialFieldSource.Env))" />
+                            <span class="label-text">@ProviderLoc.GetOrDefault(SettingsTextKeys.CredentialsEnvironmentValueOption, "Use an environment variable")</span>
+                        </label>
+                    </div>
+                    @if (_credentialSource == CredentialFieldSource.Env)
+                    {
+                        <AutocompleteInput Suggestions="@_environmentVariableNames"
+                                           @bind-Value="_environmentVariableName"
+                                           @bind-Value:after="ResetFetchedModels"
+                                           AriaLabel="@(ProviderLoc.GetOrDefault(SettingsTextKeys.CredentialsEnvironmentValueOption, "Use an environment variable"))"
+                                           Placeholder="@(ProviderLoc.GetOrDefault(SettingsTextKeys.CredentialsEnvironmentVariablePlaceholder, "ENVIRONMENT_VARIABLE"))"
+                                           Disabled="@_isFetchingModels"
+                                           IconClass="lucide--terminal" />
+                        <p class="label text-xs opacity-70">@ProviderLoc.GetOrDefault(SettingsTextKeys.CredentialsEnvironmentVariableHint, "The value is read from this environment variable at runtime.")</p>
+                    }
+                    else
+                    {
+                        <label class="input w-full focus:outline-0">
+                            <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                            <input id="wizard-provider-api-key"
+                                   aria-label="@FormatWizardText(WizardTextKeys.WizardLlmApiKeyLabel, "{0} API key", SelectedOption.Title)"
+                                   type="password"
+                                   class="grow focus:outline-0"
+                                   disabled="@_isFetchingModels"
+                                   @bind="_apiKey"
+                                   @bind:event="oninput"
+                                   @bind:after="ResetFetchedModels" />
+                        </label>
+                    }
+                    <p class="text-base-content/55 mt-2 text-xs">@Loc.GetOrDefault(WizardTextKeys.WizardLlmSavedOnContinueHint, "This is saved when you continue.")</p>
+                </fieldset>
+            }
+            else if (SelectedOption.Kind == SetupKind.Endpoint)
+            {
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">@FormatWizardText(WizardTextKeys.WizardLlmBaseUrlLabel, "{0} base URL", SelectedOption.Title)</legend>
+                    <label class="input w-full focus:outline-0">
+                        <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                        <input id="wizard-provider-base-url"
+                               aria-label="@FormatWizardText(WizardTextKeys.WizardLlmBaseUrlLabel, "{0} base URL", SelectedOption.Title)"
+                               type="url"
+                               class="grow focus:outline-0"
+                               disabled="@_isFetchingModels"
+                               @bind="_baseUrl"
+                               @bind:event="oninput"
+                               @bind:after="ResetFetchedModels" />
+                    </label>
+                    @if (!string.IsNullOrWhiteSpace(_baseUrl) && !IsValidBaseUrl)
+                    {
+                        <p class="text-error mt-2 text-xs">@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersInvalidDownloadUrl, "Please enter a valid http or https URL.")</p>
+                    }
+                </fieldset>
+            }
+
+            <div class="border-base-300 bg-base-200/40 mt-4 rounded-lg border p-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h5 class="font-medium">@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderModelsTitle, "Provider Models")</h5>
+                        <p class="text-xs opacity-70">@Loc.GetOrDefault(WizardTextKeys.WizardLlmProviderModelsDescription, "Fetch models from this provider, then choose one to continue.")</p>
+                    </div>
+                    <button type="button"
+                            class="btn btn-outline btn-sm"
+                            disabled="@(!CanFetchModels || _isFetchingModels)"
+                            @onclick="FetchAvailableModelsAsync">
+                        @if (_isFetchingModels)
+                        {
+                            <span class="loading loading-spinner loading-sm mr-2"></span>
+                        }
+                        <span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersFetchModelsButton, "Fetch models")
+                    </button>
+                </div>
+
+                @if (_availableModels.Count > 0)
+                {
+                    <div class="mt-3">
+                        <label class="label">
+                            <span class="label-text">@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersChooseFetchedModelLabel, "Choose a fetched model")</span>
+                            <span class="label-text-alt">@string.Format(CultureInfo.CurrentCulture, ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersAvailableModelsLoadedLabel, "{0} loaded"), _availableModels.Count)</span>
+                        </label>
+                        <SearchableSelect Options="@BuildModelOptions(_availableModels)"
+                                          Value="@_selectedModelId"
+                                          ValueChanged="@OnSelectedModelChanged"
+                                          Placeholder="@(ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersSelectFetchedModelPlaceholder, "Select a fetched model..."))"
+                                          AriaLabel="@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersChooseFetchedModelLabel, "Choose a fetched model")" />
+                    </div>
+                }
+
+                @if (SelectedOption.Kind == SetupKind.ProviderDownload && SelectedModel is not null)
+                {
+                    <div class="border-base-300 mt-3 rounded-lg border p-3 text-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="font-medium break-all">@SelectedModel.Id</span>
+                            @if (SelectedModel.IsInstalled == true)
+                            {
+                                <span class="badge badge-success badge-sm">@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersInstalledModelBadge, "Installed")</span>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-primary btn-sm" @onclick="DownloadSelectedProviderModelAsync">
+                                    @ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadFetchedModelButton, "Download model")
+                                </button>
+                            }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(SelectedModel.License))
+                        {
+                            <p class="text-base-content/65 mt-2">
+                                <span class="font-medium">@ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersModelLicenseLabel, "License"):</span>
+                                @SelectedModel.License
+                            </p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(SelectedModel.LicenseDescription))
+                        {
+                            <p class="text-base-content/60 mt-1">@SelectedModel.LicenseDescription</p>
+                        }
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(_modelsMessage))
+                {
+                    <div class="mt-3 text-xs @(_modelsMessageIsError ? "text-error" : "text-success")">@_modelsMessage</div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    // Foundry Local is plugin-defined, so its key stays Host-side instead of becoming a built-in framework allowlist entry.
+    private const string FoundryLocalProviderType = "FoundryLocal";
+
+    private IReadOnlyList<ProviderOption> _providerOptions = [];
+    private string? _selected;
+    private Guid? _selectedConfigId;
+    private readonly IReadOnlyList<string> _environmentVariableNames = EnvironmentUtil.GetEnvironmentVariableNames();
+    private CredentialFieldSource _credentialSource = CredentialFieldSource.Stored;
+    private string _apiKey = string.Empty;
+    private string _environmentVariableName = string.Empty;
+    private string _baseUrl = string.Empty;
+    private bool _hasSavedCredential;
+    private IReadOnlyList<ModelDescriptor> _availableModels = [];
+    private string _selectedModelId = string.Empty;
+    private bool _isFetchingModels;
+    private string? _modelsMessage;
+    private bool _modelsMessageIsError;
+    private bool _localReady;
+    private bool _localDownloadInProgress;
+    private double? _localPercent;
+
+    [Parameter] public bool RestoreCommittedSelection { get; set; }
+
+    internal bool IsDiscoverableSelection => SelectedOption is { Kind: not SetupKind.LocalGguf };
+
+    private ProviderOption? SelectedOption => _providerOptions.FirstOrDefault(option => option.Id == _selected);
+
+    private ModelDescriptor? SelectedModel => _availableModels.FirstOrDefault(model =>
+        string.Equals(model.Id, _selectedModelId, StringComparison.Ordinal));
+
+    protected override void OnInitialized()
+    {
+        _providerOptions = BuildProviderOptions();
+        Downloads.DownloadsChanged += OnDownloadsChanged;
+        InitializeSelection();
+        RefreshLocalState();
+    }
+
+    /// <summary>
+    /// Persists the ready provider choice when the wizard advances from this step.
+    /// </summary>
+    public async Task<bool> CommitAsync()
+    {
+        if (!UserScope.IsInRole("Admin")) { throw new UnauthorizedAccessException("Only the operator can configure model providers."); }
+        var option = SelectedOption;
+        if (option is null)
+        {
+            return false;
+        }
+
+        if (option.Kind == SetupKind.LocalGguf)
+        {
+            return await CommitLocalAsync(option);
+        }
+
+        if (string.IsNullOrWhiteSpace(_selectedModelId))
+        {
+            ShowModelError(Loc.GetOrDefault(WizardTextKeys.WizardLlmFetchedModelRequired, "Fetch models and choose one before continuing."));
+            return false;
+        }
+
+        if (option.Kind == SetupKind.ProviderDownload && SelectedModel?.IsInstalled != true)
+        {
+            ShowModelError(Loc.GetOrDefault(WizardTextKeys.WizardLlmModelDownloadRequired, "Download the selected model before continuing."));
+            return false;
+        }
+
+        var config = CreateDraftConfig(option);
+        config.ModelId = _selectedModelId;
+        if (option.Kind == SetupKind.Endpoint)
+        {
+            config.BaseUrl = _baseUrl.Trim();
+        }
+
+        ModelProviderEditorDefaults.ApplyModelMetadata(config, SelectedModel);
+        var previousSettings = UserScope.ModelProviderSettings.ToYaml();
+        var saveCredential = option.Kind == SetupKind.Credential && HasNewCredential;
+        if (saveCredential)
+        {
+            // Persist the declared slot reference before replacing its credential.
+            config.CredentialKey = option.Id;
+        }
+
+        if (!await ApplyProviderChangeAsync(config, saveCredential, async () =>
+        {
+            UpsertProviderConfig(config);
+            UserScope.ModelProviderSettings.SelectedChatModelProviderId = config.Id;
+            await UserScope.ModelProviderSettings.SaveAsync();
+            try
+            {
+                if (saveCredential)
+                {
+                    await SaveCredentialAsync(option);
+                }
+            }
+            catch
+            {
+                // Keep the prior provider selection when its credential cannot be saved.
+                UserScope.ModelProviderSettings.FromYaml(previousSettings);
+                await UserScope.ModelProviderSettings.SaveAsync();
+                throw;
+            }
+            UserScope.AppService.NotifyModelProviderSettingsChanged();
+        })) { return false; }
+        _selectedConfigId = config.Id;
+        return true;
+    }
+
+    private IReadOnlyList<ProviderOption> BuildProviderOptions()
+    {
+        var endpoint = Loc.GetOrDefault(WizardTextKeys.WizardLlmEndpointChoiceDescription, "Local server endpoint");
+        var hosted = Loc.GetOrDefault(WizardTextKeys.WizardLlmHostedChoiceDescription, "Hosted API key");
+        var local = Loc.GetOrDefault(WizardTextKeys.WizardLlmLocalChoiceDescription, "Local GGUF through LLamaSharp");
+        var catalog = Loc.GetOrDefault(WizardTextKeys.WizardLlmCatalogChoiceDescription, "Local catalog and download");
+
+        // Known providers keep friendly first-run names and a local-first order.
+        ProviderOption[] curated =
+        [
+            new("ollama", ModelProviderKeys.Ollama, "Ollama", "lucide:server", endpoint, SetupKind.Endpoint),
+            new("lm-studio", ModelProviderKeys.OpenAICompatible, "LM Studio", "lucide:monitor", endpoint, SetupKind.Endpoint, "LM Studio"),
+            new("local-gguf", ModelProviderKeys.Local, "Local GGUF", "lucide:hard-drive", local, SetupKind.LocalGguf),
+            new("foundry-local", FoundryLocalProviderType, "Foundry Local", "lucide:package-open", catalog, SetupKind.ProviderDownload),
+            new("openai", ModelProviderKeys.OpenAI, "OpenAI", "lucide:key-round", hosted, SetupKind.Credential),
+            new("anthropic", ModelProviderKeys.Anthropic, "Anthropic", "lucide:key-round", hosted, SetupKind.Credential),
+            new("deepseek", ModelProviderKeys.DeepSeek, "DeepSeek", "lucide:key-round", hosted, SetupKind.Credential),
+            new("google", ModelProviderKeys.Google, "Google Gemini", "lucide:key-round", hosted, SetupKind.Credential),
+            new("groq", ModelProviderKeys.Groq, "Groq", "lucide:key-round", hosted, SetupKind.Credential),
+            new("nvidia-nim", ModelProviderKeys.NvidiaNim, "NVIDIA NIM", "lucide:key-round", hosted, SetupKind.Credential),
+            new("openrouter", ModelProviderKeys.OpenRouter, "OpenRouter", "lucide:key-round", hosted, SetupKind.Credential)
+        ];
+
+        // Every other provider in the catalog Settings uses, such as one a plugin adds, follows with setup read from its contract.
+        var others = ModelProviderCatalog.All
+            .Where(provider => curated.All(option => option.ProviderType != provider.Type))
+            .DistinctBy(provider => provider.Type)
+            .Select(provider => CreateCatalogOption(provider, endpoint, hosted, catalog));
+        return [.. curated.Where(option => ModelProviderCatalog.Find(option.ProviderType) is not null), .. others];
+    }
+
+    private static ProviderOption CreateCatalogOption(IModelProvider provider, string endpoint, string hosted, string catalog)
+    {
+        var title = ModelProviderEditorDefaults.GetChatProviderName(provider.Type);
+        var credentialKey = provider.GetType().GetCustomAttribute<CredentialSlotAttribute>(inherit: false)?.Key;
+        if (credentialKey is not null)
+        {
+            return new(credentialKey, provider.Type, title, "lucide:key-round", hosted, SetupKind.Credential);
+        }
+
+        return provider is IModelDownloadProvider && provider.DefaultEndpoint is null
+            ? new(provider.Type, provider.Type, title, "lucide:package-open", catalog, SetupKind.ProviderDownload)
+            : new(provider.Type, provider.Type, title, "lucide:server", endpoint, SetupKind.Endpoint);
+    }
+
+    private void InitializeSelection()
+    {
+        var selectedConfig = UserScope.ModelProviderSettings.SelectedChatModelProvider;
+
+        // Without a saved provider, Ollama starts selected because Oscova favours local models.
+        var option = selectedConfig is null
+            ? _providerOptions.FirstOrDefault(candidate => candidate.ProviderType == ModelProviderKeys.Ollama)
+            : FindOption(selectedConfig);
+        if (option is null)
+        {
+            return;
+        }
+
+        _selected = option.Id;
+        LoadOptionInputs(option, selectedConfig ?? FindExistingConfig(option));
+        if (selectedConfig is not null)
+        {
+            RestoreModelSelection(option, selectedConfig);
+        }
+    }
+
+    private void SetSelected(string selected)
+    {
+        if (_selected == selected)
+        {
+            return;
+        }
+
+        _selected = selected;
+        var option = SelectedOption;
+        if (option is not null)
+        {
+            LoadOptionInputs(option, FindExistingConfig(option));
+        }
+        ResetFetchedModels();
+    }
+
+    private void LoadOptionInputs(ProviderOption option, ModelProviderConfig? config)
+    {
+        _selectedConfigId = config?.Id;
+        var defaults = CreateOptionConfig(option);
+        config ??= defaults;
+        _baseUrl = string.IsNullOrWhiteSpace(config.BaseUrl)
+            ? defaults.BaseUrl ?? string.Empty
+            : config.BaseUrl;
+        _credentialSource = CredentialFieldSource.Stored;
+        _apiKey = string.Empty;
+        _environmentVariableName = string.Empty;
+        _hasSavedCredential = !string.IsNullOrWhiteSpace(config.CredentialKey);
+    }
+
+    private void SetCredentialSource(CredentialFieldSource source)
+    {
+        if (_credentialSource == source)
+        {
+            return;
+        }
+
+        _credentialSource = source;
+        ResetFetchedModels();
+    }
+
+    private bool HasCredentialInput => _credentialSource == CredentialFieldSource.Env
+        ? !string.IsNullOrWhiteSpace(_environmentVariableName)
+        : _hasSavedCredential || !string.IsNullOrWhiteSpace(_apiKey);
+
+    private bool HasNewCredential => _credentialSource == CredentialFieldSource.Env
+        ? !string.IsNullOrWhiteSpace(_environmentVariableName)
+        : !string.IsNullOrWhiteSpace(_apiKey);
+
+    private bool CanFetchModels => SelectedOption?.Kind switch
+    {
+        SetupKind.Endpoint => IsValidBaseUrl,
+        SetupKind.Credential => HasCredentialInput,
+        SetupKind.ProviderDownload => true,
+        _ => false
+    };
+
+    private bool IsValidBaseUrl =>
+        Uri.TryCreate(_baseUrl, UriKind.Absolute, out var uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps) &&
+        !string.IsNullOrWhiteSpace(uri.Host);
+
+    private async Task FetchAvailableModelsAsync()
+    {
+        var option = SelectedOption;
+        if (option is null || !CanFetchModels)
+        {
+            return;
+        }
+
+        ResetFetchedModels();
+        _isFetchingModels = true;
+        try
+        {
+            var config = CreateDraftConfig(option);
+            var preferredModelId = config.ModelId;
+            config.ModelId = string.Empty;
+            if (option.Kind == SetupKind.Endpoint)
+            {
+                config.BaseUrl = _baseUrl.Trim();
+            }
+
+            string? transientCredential = null;
+            if (option.Kind == SetupKind.Credential)
+            {
+                if (_credentialSource == CredentialFieldSource.Env)
+                {
+                    // Resolve only for the in-memory preview; persistence keeps the variable name.
+                    var variableName = _environmentVariableName.Trim();
+                    transientCredential = Environment.GetEnvironmentVariable(variableName);
+                    if (string.IsNullOrWhiteSpace(transientCredential))
+                    {
+                        ShowModelError(FormatWizardText(
+                            WizardTextKeys.WizardLlmEnvironmentVariableUnavailable,
+                            "The environment variable '{0}' is not available to Oscova.",
+                            variableName));
+                        return;
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(_apiKey))
+                {
+                    transientCredential = _apiKey.Trim();
+                }
+            }
+
+            var result = await UserScope.AppService.GetAvailableModelsAsync(config, transientCredential);
+            _availableModels = [.. result.Models];
+
+            if (!result.Success)
+            {
+                _modelsMessage = result.Message;
+                _modelsMessageIsError = true;
+            }
+            else if (_availableModels.Count == 0)
+            {
+                _modelsMessage = Loc.GetOrDefault(WizardTextKeys.WizardLlmConnectedNoModels, "Connected successfully, but the provider returned no models.");
+            }
+            else
+            {
+                _modelsMessage = string.Format(
+                    CultureInfo.CurrentCulture,
+                    ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersModelsLoadedMessage, "Loaded {0} models."),
+                    _availableModels.Count);
+
+                // The recommended or saved model stays selected when the provider offers it.
+                var preferredModel = _availableModels.FirstOrDefault(model => string.Equals(model.Id, preferredModelId, StringComparison.Ordinal));
+                if (preferredModel is not null)
+                {
+                    _selectedModelId = preferredModel.Id;
+                }
+            }
+        }
+        finally
+        {
+            _isFetchingModels = false;
+        }
+    }
+
+    private async Task DownloadSelectedProviderModelAsync()
+    {
+        var option = SelectedOption;
+        var model = SelectedModel;
+        if (option is null || model is null)
+        {
+            return;
+        }
+
+        var selectedModelId = model.Id;
+        var config = CreateDraftConfig(option);
+        config.ModelId = selectedModelId;
+        var result = await DialogService.ShowAsync<ProviderModelDownloadDialog, string>(new Dictionary<string, object?>
+        {
+            ["Config"] = config
+        });
+        if (!string.IsNullOrWhiteSpace(result.Data))
+        {
+            ShowModelError(string.Format(CultureInfo.CurrentCulture,
+                ProviderLoc.GetOrDefault(SettingsTextKeys.ModelProvidersDownloadFailedMessage,
+                    "Could not download model '{0}': {1}"), selectedModelId, result.Data));
+        }
+        if (!result.IsOk)
+        {
+            return;
+        }
+
+        await FetchAvailableModelsAsync();
+        if (_availableModels.Any(candidate => string.Equals(candidate.Id, selectedModelId, StringComparison.Ordinal)))
+        {
+            _selectedModelId = selectedModelId;
+        }
+    }
+
+    private void OnSelectedModelChanged(string? value)
+    {
+        _selectedModelId = value ?? string.Empty;
+        _modelsMessage = null;
+        _modelsMessageIsError = false;
+    }
+
+    private void ResetFetchedModels()
+    {
+        _availableModels = [];
+        _selectedModelId = string.Empty;
+        _modelsMessage = null;
+        _modelsMessageIsError = false;
+    }
+
+    private void RestoreModelSelection(ProviderOption option, ModelProviderConfig config)
+    {
+        if (!RestoreCommittedSelection || option.Kind == SetupKind.LocalGguf || string.IsNullOrWhiteSpace(config.ModelId))
+        {
+            return;
+        }
+
+        var canRestore = option.Kind switch
+        {
+            SetupKind.Endpoint => IsValidBaseUrl,
+            SetupKind.Credential => _hasSavedCredential,
+            SetupKind.ProviderDownload => true,
+            _ => false
+        };
+        if (!canRestore)
+        {
+            return;
+        }
+
+        _selectedModelId = config.ModelId;
+        _availableModels =
+        [
+            new ModelDescriptor
+            {
+                Id = config.ModelId,
+                ContextWindowSize = config.ContextWindowSize > 0 ? config.ContextWindowSize : null,
+                SupportsImages = config.SupportsImages,
+                SupportsThinking = config.SupportsThinking,
+                IsInstalled = option.Kind == SetupKind.ProviderDownload ? true : null
+            }
+        ];
+    }
+
+    private ProviderOption? FindOption(ModelProviderConfig config) =>
+        _providerOptions.FirstOrDefault(option => OptionMatchesConfig(option, config));
+
+    private ModelProviderConfig? FindExistingConfig(ProviderOption option)
+    {
+        var settings = UserScope.ModelProviderSettings;
+        if (_selectedConfigId is Guid selectedId)
+        {
+            var selected = settings.ModelProviderConfigs.FirstOrDefault(config => config.Id == selectedId);
+            if (selected is not null && OptionMatchesConfig(option, selected))
+            {
+                return selected;
+            }
+        }
+
+        return settings.ModelProviderConfigs.FirstOrDefault(config => OptionMatchesConfig(option, config));
+    }
+
+    private static bool OptionMatchesConfig(ProviderOption option, ModelProviderConfig config)
+    {
+        if (!string.Equals(option.ProviderType, config.Type, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        // LM Studio shares the OpenAI-compatible runtime; its preset name prevents overwriting an unrelated compatible connection.
+        return option.Id != "lm-studio" || string.Equals(config.Name, option.PresetName, StringComparison.Ordinal);
+    }
+
+    private ModelProviderConfig CreateDraftConfig(ProviderOption option) =>
+        FindExistingConfig(option)?.Clone() ?? CreateOptionConfig(option);
+
+    private ModelProviderConfig CreateOptionConfig(ProviderOption option)
+    {
+        // LM Studio has its own preset beside the generic OpenAI-compatible one.
+        if (option.PresetName is not null)
+        {
+            return ModelProviderConfigPresets.GetPresets().First(candidate =>
+                string.Equals(candidate.Name, option.PresetName, StringComparison.Ordinal));
+        }
+
+        if (ModelProviderEditorDefaults.TryGetPreset(option.ProviderType, out var preset))
+        {
+            return preset;
+        }
+
+        var provider = ModelProviderCatalog.Find(option.ProviderType);
+        return new ModelProviderConfig
+        {
+            Name = option.Title,
+            Type = option.ProviderType,
+            BaseUrl = provider?.DefaultEndpoint,
+            ModelId = provider?.DefaultModel ?? string.Empty
+        };
+    }
+
+    private async Task SaveCredentialAsync(ProviderOption option)
+    {
+        var declaration = CredentialTypes.Find(option.Id)
+            ?? throw new InvalidOperationException($"Credential slot '{option.Id}' is not declared.");
+        var field = declaration.Fields.Single();
+        var isEnvironment = _credentialSource == CredentialFieldSource.Env;
+        await UserScope.CredentialService.SaveAsync(new CredentialWrite
+        {
+            CredentialKey = declaration.Key,
+            Alias = declaration.Label,
+            Description = declaration.Description,
+            Fields =
+            [
+                new CredentialFieldWrite
+                {
+                    Name = field.Name,
+                    IsSecret = field.IsSecret,
+                    Source = _credentialSource,
+                    Value = isEnvironment ? null : _apiKey.Trim(),
+                    EnvVariable = isEnvironment ? _environmentVariableName.Trim() : null
+                }
+            ]
+        });
+    }
+
+    private void UpsertProviderConfig(ModelProviderConfig config)
+    {
+        var configs = UserScope.ModelProviderSettings.ModelProviderConfigs;
+        var existing = configs.FirstOrDefault(candidate => candidate.Id == config.Id);
+        if (existing is not null)
+        {
+            configs[configs.IndexOf(existing)] = config;
+            return;
+        }
+
+        configs.Add(config);
+    }
+
+    private void ShowModelError(string message)
+    {
+        _modelsMessage = message;
+        _modelsMessageIsError = true;
+        StateHasChanged();
+    }
+
+    private string ChoiceClass(string value)
+    {
+        var selectedClass = _selected == value
+            ? "border-primary bg-primary/5 ring-primary/25 ring-2"
+            : "border-base-300 bg-base-100 hover:border-primary/50 hover:bg-base-200/50";
+        return $"rounded-box w-52 shrink-0 snap-start cursor-pointer border p-4 text-left transition {selectedClass}";
+    }
+
+    private async Task<bool> CommitLocalAsync(ProviderOption option)
+    {
+        if (string.IsNullOrWhiteSpace(ModelDownloads.DefaultLocalModelFileName)) { return false; }
+        var config = CreateDraftConfig(option);
+        config.ModelId = ModelDownloads.DefaultLocalModelFileName.Trim();
+        if (!await ApplyProviderChangeAsync(config, false, async () =>
+        {
+            UpsertProviderConfig(config);
+            UserScope.ModelProviderSettings.SelectedChatModelProviderId = config.Id;
+            await UserScope.ModelProviderSettings.SaveAsync();
+            UserScope.AppService.NotifyModelProviderSettingsChanged();
+        })) { return false; }
+        _selectedConfigId = config.Id;
+        return true;
+    }
+
+    /// <summary>Stops only runs whose provider definition or captured credential the wizard replaces.</summary>
+    private Task<bool> ApplyProviderChangeAsync(ModelProviderConfig config, bool changesCredential, Func<Task> apply) =>
+        ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
+        {
+            try
+            {
+                await Executions.ChangeConfigurationAsync(
+                    () => UserScope.ModelProviderSettings.ModelProviderConfigs
+                        .Where(current => (current.Id == config.Id && !Oscova.Agents.Core.Llm.ModelProviderExecution.Equivalent(current, config)) ||
+                            (changesCredential && string.Equals(current.CredentialKey, config.CredentialKey, StringComparison.OrdinalIgnoreCase)))
+                        .Select(current => Oscova.Agents.Core.Llm.ModelProviderExecution.Key(current.Id)).ToArray(),
+                    apply, confirmed, CancellationToken.None);
+                return true;
+            }
+            catch (Oscova.Agents.Core.Auth.ExecutionPermissionRegistry.ConfirmationRequiredException)
+            {
+                return false;
+            }
+        });
+
+    private void RefreshLocalState()
+    {
+        var fileName = ModelDownloads.DefaultLocalModelFileName;
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            _localReady = false;
+            _localDownloadInProgress = false;
+            _localPercent = null;
+            return;
+        }
+
+        var target = Path.Combine(PathUtil.GgufModelsPath, fileName);
+        _localReady = File.Exists(target);
+        if (Downloads.TryGet(target, out var progress) && progress is not null)
+        {
+            _localDownloadInProgress = progress.Status is DownloadStatus.Pending or DownloadStatus.Downloading;
+            _localPercent = progress.Percent;
+        }
+        else
+        {
+            _localDownloadInProgress = false;
+            _localPercent = null;
+        }
+    }
+
+    private async Task StartLocalDownloadAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ModelDownloads.DefaultLocalModelUrl) ||
+            string.IsNullOrWhiteSpace(ModelDownloads.DefaultLocalModelFileName))
+        {
+            return;
+        }
+
+        try
+        {
+            var target = Path.Combine(PathUtil.GgufModelsPath, ModelDownloads.DefaultLocalModelFileName);
+            await Downloads.EnsureDownloadAsync("wizard-local-llm", ModelDownloads.DefaultLocalModelUrl, target);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to start local model download from onboarding wizard.");
+        }
+    }
+
+    private void CancelLocalDownload()
+    {
+        if (string.IsNullOrWhiteSpace(ModelDownloads.DefaultLocalModelFileName))
+        {
+            return;
+        }
+
+        Downloads.TryCancel(Path.Combine(PathUtil.GgufModelsPath, ModelDownloads.DefaultLocalModelFileName));
+    }
+
+    private void OnDownloadsChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(() =>
+        {
+            RefreshLocalState();
+            StateHasChanged();
+        });
+    }
+
+    private string FormatWizardText(string key, string fallback, params object?[] args) =>
+        string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+
+    private static IReadOnlyList<SearchableSelectOption> BuildModelOptions(IEnumerable<ModelDescriptor> models) =>
+        [.. models.Select(model => new SearchableSelectOption(model.Id, model.Id))];
+
+    public void Dispose()
+    {
+        Downloads.DownloadsChanged -= OnDownloadsChanged;
+    }
+
+    private enum SetupKind
+    {
+        Endpoint,
+        Credential,
+        LocalGguf,
+        ProviderDownload
+    }
+
+    private sealed record ProviderOption(
+        string Id,
+        string ProviderType,
+        string Title,
+        string Icon,
+        string Description,
+        SetupKind Kind,
+        string? PresetName = null);
+}

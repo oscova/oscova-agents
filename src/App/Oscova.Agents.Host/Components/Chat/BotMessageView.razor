@@ -1,0 +1,130 @@
+@if (Message.HistorySummarized)
+{
+    <p class="my-1 w-full text-center text-xs text-base-content/70">@HistorySummarizedNotice</p>
+}
+@foreach (var item in RenderedItems)
+{
+    if (item.ToolApproval is not null)
+    {
+        <ToolApprovalPrompt Request="@item.ToolApproval"
+                            Compact="@IsAutomaticApproval(item.ToolApproval)"
+                            AssistantInitials="@AssistantInitials"
+                            AssistantPictureUrl="@AssistantPictureUrl"
+                            OnRespond="@OnToolApprovalResponse" />
+    }
+    else if (item.Elicitation is not null)
+    {
+        @switch (item.Elicitation.SchemaType)
+        {
+            case ElicitationSchemaType.Boolean:
+                <BooleanElicitationPrompt Request="@item.Elicitation"
+                                          AssistantPictureUrl="@AssistantPictureUrl"
+                                          AssistantInitials="@AssistantInitials"
+                                          OnRespond="@OnBooleanElicitationResponse" />
+                break;
+            case ElicitationSchemaType.String:
+                <StringElicitationPrompt Request="@item.Elicitation"
+                                         AssistantPictureUrl="@AssistantPictureUrl"
+                                         AssistantInitials="@AssistantInitials"
+                                         OnRespond="@OnStringElicitationResponse" />
+                break;
+            case ElicitationSchemaType.Number:
+                <NumberElicitationPrompt Request="@item.Elicitation"
+                                         AssistantPictureUrl="@AssistantPictureUrl"
+                                         AssistantInitials="@AssistantInitials"
+                                         OnRespond="@OnNumberElicitationResponse" />
+                break;
+            case ElicitationSchemaType.Enum:
+                <EnumElicitationPrompt Request="@item.Elicitation"
+                                       AssistantPictureUrl="@AssistantPictureUrl"
+                                       AssistantInitials="@AssistantInitials"
+                                       OnRespond="@OnEnumElicitationResponse" />
+                break;
+        }
+    }
+    else if (item.Segment is { Type: ChatSegmentType.Think } thinkingSegment)
+    {
+        <ThinkingSegmentDisplay Segment="@thinkingSegment" />
+    }
+    else if (item.Tools is { Count: > 0 } tools)
+    {
+        // Streaming replaces segment instances, so expansion follows the original call identity.
+        var callId = tools[0].FunctionCall?.CallId;
+        var groupKey = string.IsNullOrWhiteSpace(callId) ? $"{Message.MessageId}:{item.StartIndex}" : callId;
+        <div class="w-full min-w-0">
+            <ToolCallGroup @key="groupKey" Segments="@tools" Approvals="@GetAutomaticApprovals(tools)" />
+        </div>
+    }
+    else if (item.Segment is { Type: ChatSegmentType.ToolCall } toolSegment &&
+             UserQuestions.TryRead(Message, toolSegment, out var card))
+    {
+        <UserQuestionPrompt @key="@((card!.MessageId, card.CallId))"
+                            Card="@card" State="@UserQuestions.GetState(Thread, card!)"
+                            IsPreparing="@(IsRunActive && IsLastMessage)"
+                            OnSubmit="@OnSubmitQuestions" OnDismiss="@OnDismissQuestions"
+                            AssistantInitials="@AssistantInitials" AssistantPictureUrl="@AssistantPictureUrl" />
+    }
+    else if (item.Segment is { } visualizationSegment && ChatVisualizationService.TryRead(visualizationSegment, out _))
+    {
+        <InlineVisualization @key="visualizationSegment.FunctionCall!.CallId" Thread="@Thread" Segment="@visualizationSegment" />
+    }
+    else if (item.Segment is { } textSegment)
+    {
+        <ChatBubble IsUser="false"
+                    AssistantName="@Message.AgentName"
+                    AssistantInitials="@AssistantInitials"
+                    AssistantPictureUrl="@AssistantPictureUrl"
+                    Timestamp="@(textSegment.CreatedAt == default ? null : textSegment.CreatedAt)"
+                    ExtraFooterClass="@(IsCopyTarget(textSegment) ? "mt-1" : null)">
+            <ChildContent>
+                <ChatMarkdown Markdown="@DisplayText(textSegment.Text)" Thread="@Thread" AgentId="@Message.AgentId"
+                              Artifacts="@(Artifacts ?? (Thread is null ? [] : ThreadArtifactProjector.Project(Thread.DisplayMessages, Thread.ProjectId is not null).Artifacts))"
+                              IsRunActive="@IsRunActive" />
+            </ChildContent>
+            <FooterContent>
+                @if (IsCopyTarget(textSegment))
+                {
+                    <div class="inline-flex items-center gap-1">
+                        <CopyActionButton Text="@CopyText"
+                                          SizeClass="btn-xs"
+                                          IconSize="14" />
+                        @if (CanBranch)
+                        {
+                            <button type="button" class="btn btn-ghost btn-xs btn-square"
+                                    title="@BranchLabel" aria-label="@BranchLabel" disabled="@IsBranching"
+                                    @onclick="() => OnBranch.InvokeAsync(Message)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="6" x2="6" y1="3" y2="12" />
+                                    <circle cx="6" cy="18" r="3" />
+                                    <circle cx="18" cy="6" r="3" />
+                                    <path d="M18 9a9 9 0 0 1-9 9" />
+                                </svg>
+                            </button>
+                        }
+                        @if (CanRegenerate)
+                        {
+                            <button type="button"
+                                    class="btn btn-ghost btn-xs btn-square"
+                                    title="@RegenerateLabel"
+                                    aria-label="@RegenerateLabel"
+                                    @onclick="() => OnRegenerate.InvokeAsync(Message)">
+                                <iconify-icon icon="lucide:refresh-cw" width="14" height="14"></iconify-icon>
+                            </button>
+                        }
+                    </div>
+                }
+            </FooterContent>
+        </ChatBubble>
+    }
+    else if (item.IsLoading)
+    {
+        <ChatBubble IsUser="false"
+                    AssistantName="@Message.AgentName"
+                    AssistantInitials="@AssistantInitials"
+                    AssistantPictureUrl="@AssistantPictureUrl">
+            <span class="loading loading-dots loading-md"></span>
+        </ChatBubble>
+    }
+}

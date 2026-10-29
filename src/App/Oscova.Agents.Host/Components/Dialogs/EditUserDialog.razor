@@ -1,0 +1,310 @@
+@using Oscova.Agents.Core.Auth
+@inject ManagementApiClient ManagementApiClient
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Keeps profile, password, and PIN changes focused on the selected user. *@
+<AppDialogShell Title="@(CommonLoc.GetOrDefault(CommonTextKeys.AdminUserEditTitleAttribute, "Edit user"))"
+                Icon="lucide:pencil"
+                HelpTopic="@HelpTopics.EditUser"
+                MaxWidthClass="max-w-5xl"
+                BodyClass="custom-scrollbar min-h-0 overflow-y-auto px-5 py-4"
+                CanClose="@(!IsBusy)"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div role="alert" class="alert alert-error alert-soft mb-4">
+                <iconify-icon icon="lucide:alert-circle"></iconify-icon>
+                <span>@_errorMessage</span>
+            </div>
+        }
+
+        <div class="space-y-4">
+            <section class="border-base-300 rounded-box border p-4">
+                <div class="mb-3 flex items-center gap-2">
+                    <iconify-icon icon="lucide:id-card" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                    <h4 class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminProfileTitle, "Profile")</h4>
+                </div>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--at-sign text-base-content/60 size-4.5"></span>
+                            <UsernameInput id="admin-edit-username" class="grow focus:outline-0" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username"))" disabled="@IsBusy" @bind-Value="_userName" />
+                        </label>
+                    </fieldset>
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Email, "Email")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--mail text-base-content/60 size-4.5"></span>
+                            <input id="admin-edit-email" class="grow focus:outline-0" type="email" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Email, "Email"))" disabled="@IsBusy" @bind="_email" />
+                        </label>
+                    </fieldset>
+                    <fieldset class="fieldset sm:col-span-2">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.FullName, "Full name")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--user text-base-content/60 size-4.5"></span>
+                            <input id="admin-edit-full-name" class="grow focus:outline-0" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.FullName, "Full name"))" disabled="@IsBusy" @bind="_fullName" />
+                        </label>
+                    </fieldset>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm mt-4" disabled="@IsBusy" @onclick="SaveProfileAsync">
+                    @ActionIcon(BusyAction.Profile, "lucide--save")
+                    @CommonLoc.GetOrDefault(CommonTextKeys.AdminSaveProfileButton, "Save profile")
+                </button>
+            </section>
+
+            <section class="border-base-300 rounded-box border p-4">
+                <div class="mb-3 flex items-center gap-2">
+                    <iconify-icon icon="lucide:key-round" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                    <h4 class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminPasswordResetTitle, "Password Reset")</h4>
+                </div>
+                <fieldset class="fieldset">
+                    <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.NewPassword, "New password")</legend>
+                    <label class="input w-full">
+                        <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                        <input id="admin-reset-password" class="grow focus:outline-0" type="password" autocomplete="new-password" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.NewPassword, "New password"))" disabled="@IsBusy" placeholder="••••••••" @bind="_resetPassword" />
+                    </label>
+                </fieldset>
+                <button type="button" class="btn btn-primary btn-sm mt-4" disabled="@(IsBusy || _user.IsCurrentUser)" @onclick="ResetPasswordAsync">
+                    @ActionIcon(BusyAction.Password, "lucide--rotate-ccw")
+                    @CommonLoc.GetOrDefault(CommonTextKeys.AdminResetPasswordButton, "Reset password")
+                </button>
+                @if (_user.IsCurrentUser)
+                {
+                    <p class="text-base-content/50 mt-2 text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.AdminResetPasswordCurrentUserHint, "Use the profile dialog to change your own password.")</p>
+                }
+            </section>
+
+            <section class="border-base-300 rounded-box border p-4">
+                <div class="mb-3 flex items-center gap-2">
+                    <iconify-icon icon="lucide:lock-keyhole" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                    <h4 class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminPinLoginTitle, "PIN Login")</h4>
+                </div>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.AdminPinNewLabel, "New PIN")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--lock text-base-content/60 size-4.5"></span>
+                            <input id="admin-new-pin" inputmode="numeric" minlength="@PinPolicy.MinimumLength" maxlength="@PinPolicy.MaximumLength" class="grow focus:outline-0" type="password" autocomplete="new-password" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.AdminPinNewLabel, "New PIN"))" disabled="@IsBusy" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.AdminPinPlaceholder, "6–64 digits")" @bind="_newPin" />
+                        </label>
+                    </fieldset>
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.AdminPinConfirmLabel, "Confirm PIN")</legend>
+                        <label class="input w-full">
+                            <span class="iconify lucide--lock text-base-content/60 size-4.5"></span>
+                            <input id="admin-confirm-pin" inputmode="numeric" minlength="@PinPolicy.MinimumLength" maxlength="@PinPolicy.MaximumLength" class="grow focus:outline-0" type="password" autocomplete="new-password" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.AdminPinConfirmLabel, "Confirm PIN"))" disabled="@IsBusy" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.AdminPinRepeatPlaceholder, "Repeat PIN")" @bind="_confirmPin" />
+                        </label>
+                    </fieldset>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-primary btn-sm" disabled="@IsBusy" @onclick="SavePinAsync">
+                        @ActionIcon(BusyAction.SavePin, "lucide--save")
+                        @(_hasPin ? CommonLoc.GetOrDefault(CommonTextKeys.AdminPinChangeButton, "Change PIN") : CommonLoc.GetOrDefault(CommonTextKeys.AdminPinSetButton, "Set PIN"))
+                    </button>
+                    <button type="button" class="btn btn-ghost btn-sm text-error" disabled="@(IsBusy || !_hasPin)" @onclick="ClearPinAsync">
+                        @ActionIcon(BusyAction.ClearPin, "lucide--trash-2")
+                        @CommonLoc.GetOrDefault(CommonTextKeys.AdminPinClearButton, "Clear PIN")
+                    </button>
+                </div>
+                <p class="text-base-content/50 mt-2 text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.AdminPinHashesHint, "Ordinary sign-in PINs are stored as hashes.")</p>
+            </section>
+            @if (!_user.SelectedRoles.Contains("Admin", StringComparer.Ordinal))
+            {
+                <section class="border-base-300 rounded-box border p-4">
+                    <h4 class="mb-3 font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.AdminExecutionPermissionsTitle, "Execution permissions")</h4>
+                    @foreach (var option in PermissionOptions)
+                    {
+                        <label class="flex items-start gap-3 cursor-pointer select-none py-1.5" @key="option.Key">
+                            <input type="checkbox" class="checkbox checkbox-sm mt-0.5 shrink-0"
+                                   disabled="@(IsBusy || !_permissionsLoaded)"
+                                   checked="@_permissions.Contains(option.Key)"
+                                   @onchange="e => SetPermission(option.Key, e.Value is bool selected && selected)" />
+                            <span class="text-sm">@CommonLoc.GetOrDefault(option.ResourceKey, option.Fallback)</span>
+                        </label>
+                    }
+                    <p class="text-base-content/50 mt-2 text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.AdminExecutionPermissionsHint, "Shell in projects also requires Projects. Server workspace file tools remain available.")</p>
+                    <button type="button" class="btn btn-primary btn-sm mt-3"
+                            disabled="@(IsBusy || !_permissionsLoaded)" @onclick="SavePermissionsAsync">
+                        @ActionIcon(BusyAction.Permissions, "lucide--save")
+                        @CommonLoc.GetOrDefault(CommonTextKeys.DialogSaveChangesButton, "Save changes")
+                    </button>
+                </section>
+            }
+
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@IsBusy" @onclick="Close">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private readonly HashSet<string> _permissions = new(StringComparer.Ordinal);
+
+    private bool _permissionsLoaded;
+
+    private static readonly (string Key, string ResourceKey, string Fallback)[] PermissionOptions =
+    [
+        (UserPermissionKeys.Projects, CommonTextKeys.AdminPermissionProjects, "Projects"),
+        (UserPermissionKeys.WorkspaceShell, CommonTextKeys.AdminPermissionWorkspaceShell, "Shell in server workspaces"),
+        (UserPermissionKeys.ProjectShell, CommonTextKeys.AdminPermissionProjectShell, "Shell in projects"),
+        (UserPermissionKeys.InstallApprovedSkills, CommonTextKeys.AdminPermissionApprovedSkills, "Install skills from approved repositories"),
+        (UserPermissionKeys.ManageCustomSkills, CommonTextKeys.AdminPermissionCustomSkills, "Upload, create and edit custom skills"),
+        (UserPermissionKeys.ManagePersonalMcp, CommonTextKeys.AdminPermissionPersonalMcp, "Manage personal MCP connections"),
+        (UserPermissionKeys.ManagePersonalModelProviders, CommonTextKeys.AdminPermissionPersonalModels, "Manage personal model providers"),
+        (UserPermissionKeys.SharedFolder, CommonTextKeys.AdminPermissionSharedFolder, "Shared folder")
+    ];
+
+    private void SetPermission(string permission, bool selected)
+    {
+        if (selected) { _permissions.Add(permission); }
+        else { _permissions.Remove(permission); }
+    }
+
+    private Task SavePermissionsAsync() => RunActionAsync(BusyAction.Permissions, async () =>
+    {
+        await ManagementApiClient.SaveUserPermissionsAsync(_user.Id, _permissions.ToArray());
+        return new SuccessResult
+        {
+            Message = CommonLoc.GetOrDefault(CommonTextKeys.AdminExecutionPermissionsSaved, "Execution permissions saved.")
+        };
+    });
+
+
+    private UserEntry _user = default!;
+    private string _userName = string.Empty;
+    private string _email = string.Empty;
+    private string _fullName = string.Empty;
+    private string _resetPassword = string.Empty;
+    private string _newPin = string.Empty;
+    private string _confirmPin = string.Empty;
+    private string? _errorMessage;
+    private BusyAction? _busyAction;
+    private bool _hasPin;
+    private bool IsBusy => _busyAction is not null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = DialogInstance.Get<UserEntry>("User", default!);
+        _userName = _user.UserName;
+        _email = _user.Email;
+        _fullName = _user.FullName;
+        _hasPin = _user.HasPin;
+        if (_user.SelectedRoles.Contains("Admin", StringComparer.Ordinal)) { return; }
+
+        _busyAction = BusyAction.LoadPermissions;
+        try
+        {
+            _permissions.UnionWith(await ManagementApiClient.GetUserPermissionsAsync(_user.Id));
+            _permissionsLoaded = true;
+        }
+        catch (Exception ex) { _errorMessage = ex.Message; }
+        finally { _busyAction = null; }
+    }
+
+    private Task SaveProfileAsync() => RunActionAsync(
+        BusyAction.Profile,
+        () => ManagementApiClient.SaveUserProfileAsync(_user.Id, new SaveUserProfileRequest
+        {
+            UserName = _userName.Trim(),
+            Email = _email.Trim(),
+            FullName = _fullName.Trim()
+        }));
+
+    private Task ResetPasswordAsync() => RunActionAsync(
+        BusyAction.Password,
+        () => ManagementApiClient.ResetPasswordAsync(_user.Id, new ResetPasswordRequest
+        {
+            NewPassword = _resetPassword
+        }),
+        () => _resetPassword = string.Empty);
+
+    private Task SavePinAsync() => RunActionAsync(
+        BusyAction.SavePin,
+        () => ManagementApiClient.SaveUserPinAsync(_user.Id, new SaveUserPinRequest
+        {
+            NewPin = _newPin,
+            ConfirmPin = _confirmPin
+        }),
+        () =>
+        {
+            _newPin = string.Empty;
+            _confirmPin = string.Empty;
+            _hasPin = true;
+        });
+
+    private Task ClearPinAsync() => RunActionAsync(
+        BusyAction.ClearPin,
+        () => ManagementApiClient.ClearUserPinAsync(_user.Id),
+        () =>
+        {
+            _newPin = string.Empty;
+            _confirmPin = string.Empty;
+            _hasPin = false;
+        });
+
+    private async Task RunActionAsync(BusyAction action, Func<Task<SuccessResult>> operation, Action? onSuccess = null)
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        _errorMessage = null;
+        _busyAction = action;
+        try
+        {
+            var result = await operation();
+            onSuccess?.Invoke();
+            ToastService.Show(result.Message, ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message switch
+            {
+                "PIN must be 6–64 digits." => CommonLoc.GetOrDefault(CommonTextKeys.AdminPinLengthError, ex.Message),
+                "This PIN cannot be used. Choose a different PIN." => CommonLoc.GetOrDefault(CommonTextKeys.AdminPinNotAllowedError, ex.Message),
+                _ => ex.Message
+            };
+        }
+        finally
+        {
+            _busyAction = null;
+        }
+    }
+
+    private RenderFragment ActionIcon(BusyAction action, string iconClass) => builder =>
+    {
+        if (_busyAction == action)
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", "loading loading-spinner loading-sm");
+            builder.CloseElement();
+            return;
+        }
+
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", $"iconify {iconClass} size-4");
+        builder.AddAttribute(2, "aria-hidden", "true");
+        builder.CloseElement();
+    };
+
+    private void Close() => DialogInstance.Close(DialogResult.Cancel);
+
+    private enum BusyAction
+    {
+        Profile,
+        Password,
+        SavePin,
+        ClearPin,
+        LoadPermissions,
+        Permissions
+    }
+}

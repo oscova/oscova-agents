@@ -1,0 +1,71 @@
+.chat-easter-egg-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    pointer-events: none;
+}
+
+.chat-easter-egg-card {
+    position: relative;
+    visibility: hidden;
+    width: min(18rem, calc(100% - 1rem));
+    text-align: center;
+    box-shadow: 0 1.25rem 3rem color-mix(in oklab, var(--color-primary) 18%, transparent);
+    animation: cozy-conversation 4.2s ease-in-out both;
+}
+
+.chat-easter-egg-card::before,
+.chat-easter-egg-card::after {
+    position: absolute;
+    color: var(--color-warning);
+    content: "✦";
+}
+
+.chat-easter-egg-card::before {
+    top: 1.25rem;
+    left: 1.5rem;
+    font-size: 0.8rem;
+    transform: rotate(-12deg);
+}
+
+.chat-easter-egg-card::after {
+    top: 2.75rem;
+    right: 1.25rem;
+    font-size: 0.65rem;
+    transform: rotate(14deg);
+}
+
+.chat-easter-egg-art {
+    width: 12.5rem;
+    max-width: 100%;
+    margin-inline: auto;
+    filter: drop-shadow(0 0.75rem 1rem color-mix(in oklab, black 16%, transparent));
+}
+
+@keyframes cozy-conversation {
+    0% { visibility: visible; opacity: 0; transform: translateY(0.25rem) scale(0.96); }
+    12% { visibility: visible; opacity: 1; transform: translateY(0) scale(1); }
+    48% { visibility: visible; transform: translateY(-0.2rem) scale(1.01); }
+    58%, 84% { visibility: visible; opacity: 1; transform: translateY(0) scale(1); }
+    100% { visibility: hidden; opacity: 0; transform: scale(0.99); }
+}
+
+@keyframes cozy-conversation-reduced {
+    0% { visibility: visible; opacity: 0; }
+    12%, 84% { visibility: visible; opacity: 1; }
+    100% { visibility: hidden; opacity: 0; }
+}
+
+@media (max-width: 480px) {
+    .chat-easter-egg-card { width: min(16rem, calc(100% - 0.5rem)); }
+    .chat-easter-egg-art { width: 10.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-easter-egg-card {
+        animation-name: cozy-conversation-reduced;
+    }
+}

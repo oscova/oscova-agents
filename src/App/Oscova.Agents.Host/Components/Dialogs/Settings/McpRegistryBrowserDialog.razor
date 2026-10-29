@@ -1,0 +1,173 @@
+@using System.Globalization
+@using Oscova.Agents.Core.ApiContracts.Mcp.Registry
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineDialogTitle, "Find MCP servers online"))"
+                Icon="lucide:search"
+                MaxWidthClass="max-w-4xl"
+                HelpTopic="@HelpTopics.McpRegistryBrowser"
+                TitleClass="truncate text-lg font-bold"
+                CloseResult="@DialogResult.Cancel"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-4">
+            <div class="flex flex-col gap-2 sm:flex-row">
+                <label class="input input-bordered flex w-full items-center gap-2 sm:grow">
+                    <iconify-icon icon="lucide:search"></iconify-icon>
+                    <input type="text"
+                           id="mcp-search-input"
+                           class="grow"
+                           aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineSearchPlaceholder, "Search the official MCP Registry...")"
+                           placeholder="@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineSearchPlaceholder, "Search the official MCP Registry...")"
+                           @bind="_query"
+                           @bind:event="oninput"
+                           @onkeydown="OnSearchKeyDownAsync" />
+                </label>
+                <button type="button"
+                        class="btn btn-primary"
+                        disabled="@_loading"
+                        @onclick="SearchAsync">
+                    @if (_loading)
+                    {
+                        <span class="loading loading-spinner loading-xs"></span>
+                    }
+                    else
+                    {
+                        <span class="iconify lucide--search size-4" aria-hidden="true"></span>
+                    }
+                    @Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineSearchButton, "Search")
+                </button>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <div role="alert" class="alert alert-warning alert-soft">
+                    <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+                    <span class="text-sm">@_error</span>
+                </div>
+            }
+
+            @if (_loading)
+            {
+                <div class="flex items-center gap-2 text-sm opacity-70">
+                    <span class="loading loading-spinner loading-sm"></span>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineSearching, "Searching MCP Registry...")</span>
+                </div>
+            }
+            else if (!_searched)
+            {
+                <div role="alert" class="alert alert-info alert-soft">
+                    <iconify-icon icon="lucide:info"></iconify-icon>
+                    <span class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineSearchPrompt, "Search for a server, then choose a setup method to review in the MCP server editor.")</span>
+                </div>
+            }
+            else if (_entries.Count == 0 && string.IsNullOrWhiteSpace(_error))
+            {
+                <div role="alert" class="alert alert-info alert-soft">
+                    <iconify-icon icon="lucide:info"></iconify-icon>
+                    <span class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineEmptyResults, "No MCP servers matched your search.")</span>
+                </div>
+            }
+            else
+            {
+                <div class="custom-settings-table-container max-h-[60vh] overflow-auto rounded-box border border-base-300 bg-base-100">
+                    <table class="table table-pin-rows custom-settings-adaptive-table custom-dialog-data-table custom-mcp-registry-table">
+                        <thead>
+                            <tr>
+                                <th class="w-[28%]">@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineTableHeaderServer, "Server")</th>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")</th>
+                                <th class="w-[19rem]">@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineTableHeaderSetup, "Setup")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entry in _entries)
+                            {
+                                <tr class="align-top hover:bg-base-200/40" @key="entry.Name">
+                                    <td data-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineTableHeaderServer, "Server")">
+                                        <div class="min-w-0 space-y-2">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span class="min-w-0 break-words font-medium [overflow-wrap:anywhere]">@DisplayTitle(entry)</span>
+                                                @if (!string.IsNullOrWhiteSpace(entry.Version))
+                                                {
+                                                    <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">
+                                                        @FormatSettingsText(SettingsTextKeys.McpServersFindOnlineVersionLabel, "v{0}", entry.Version)
+                                                    </span>
+                                                }
+                                            </div>
+                                            <div class="break-words text-xs opacity-60 [overflow-wrap:anywhere]">@entry.Name</div>
+                                            <div class="flex flex-wrap gap-2">
+                                                @if (!string.IsNullOrWhiteSpace(entry.WebsiteUrl))
+                                                {
+                                                    <a class="btn btn-ghost btn-xs" href="@entry.WebsiteUrl" target="_blank" rel="noopener noreferrer">
+                                                        <span class="iconify lucide--external-link size-3" aria-hidden="true"></span>
+                                                        @Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineWebsiteButton, "Website")
+                                                    </a>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(entry.RepositoryUrl))
+                                                {
+                                                    <a class="btn btn-ghost btn-xs" href="@entry.RepositoryUrl" target="_blank" rel="noopener noreferrer">
+                                                        <span class="iconify lucide--github size-3" aria-hidden="true"></span>
+                                                        @Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineRepositoryButton, "Repository")
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td dir="auto" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")" class="break-words text-sm opacity-80 [overflow-wrap:anywhere]">
+                                        @(string.IsNullOrWhiteSpace(entry.Description)
+                                            ? Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineNoDescription, "No description is available for this server.")
+                                            : entry.Description)
+                                    </td>
+                                    <td data-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineTableHeaderSetup, "Setup")">
+                                        <div class="flex min-w-0 flex-col gap-2">
+                                            @foreach (var option in entry.Options)
+                                            {
+                                                <div class="rounded-box border border-base-300 p-3">
+                                                    <div class="flex min-w-0 items-start justify-between gap-3">
+                                                        <span class="badge badge-ghost badge-sm h-auto min-w-0 max-w-full flex-1 whitespace-normal text-start [overflow-wrap:anywhere]">@DisplayOptionLabel(option)</span>
+                                                        @if (!option.IsManual)
+                                                        {
+                                                            <button type="button"
+                                                                    class="btn btn-primary btn-sm shrink-0"
+                                                                    @onclick="() => Choose(option)">
+                                                                <span class="iconify lucide--plus size-4" aria-hidden="true"></span>
+                                                                @Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineAddButton, "Add")
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                    @if (!string.IsNullOrWhiteSpace(option.Server?.Endpoint))
+                                                    {
+                                                        <p dir="ltr" class="mt-2 break-words text-xs opacity-70 [overflow-wrap:anywhere]">@option.Server.Endpoint</p>
+                                                    }
+                                                    @if (option.RequiredFields.Count > 0)
+                                                    {
+                                                        <p class="mt-2 break-words text-xs opacity-70 [overflow-wrap:anywhere]">
+                                                            @FormatSettingsText(
+                                                                SettingsTextKeys.McpServersFindOnlineRequiredFieldsPrefix,
+                                                                "You'll need to provide: {0}",
+                                                                $"\u2066{string.Join(", ", option.RequiredFields)}\u2069")
+                                                        </p>
+                                                    }
+                                                    @if (option.IsManual)
+                                                    {
+                                                        <p class="mt-2 break-words text-xs opacity-70 [overflow-wrap:anywhere]">
+                                                            @Loc.GetOrDefault(SettingsTextKeys.McpServersFindOnlineManualSetupHint, "This server needs manual setup. Ask your agent to set this up.")
+                                                        </p>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-sm" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>

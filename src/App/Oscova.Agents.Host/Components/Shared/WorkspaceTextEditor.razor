@@ -1,0 +1,147 @@
+@implements IAsyncDisposable
+@inject IDialogService Dialogs
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="flex min-h-0 flex-1 flex-col">
+    @if (File.Snapshot is { State: ProjectReadState.Ready } snapshot)
+    {
+        <div class="custom-workspace-toolbar">
+            @if (snapshot.CanEdit && !File.IsEditing)
+            {
+                <button @ref="_editButton" type="button" class="btn btn-ghost btn-sm" disabled="@State.IsBusy" @onclick="EditAsync">@CommonLoc[CommonTextKeys.Edit]</button>
+            }
+            @if (File.IsEditing && IsMarkdown)
+            {
+                <button type="button" class="btn btn-ghost btn-sm" disabled="@State.IsBusy" @onclick="TogglePreviewAsync">
+                    @(File.ShowSource ? Loc[ChatTextKeys.WorkspacePreview] : CommonLoc[CommonTextKeys.Edit])
+                </button>
+            }
+            @if (File.IsDirty)
+            {
+                <button @ref="_saveButton" type="button" class="btn btn-primary btn-sm" disabled="@State.IsBusy" @onclick="SaveAsync">@CommonLoc[CommonTextKeys.Save]</button>
+            }
+            @if (File.IsEditing)
+            {
+                <button @ref="_cancelButton" type="button" class="btn btn-ghost btn-sm" disabled="@State.IsBusy" @onclick="CancelAsync">@CommonLoc[CommonTextKeys.Cancel]</button>
+            }
+        </div>
+        @if (IsMarkdown && !File.ShowSource)
+        {
+            <div class="artifact-markdown markdown-content custom-scrollbar p-4">
+                @((MarkupString)MarkdownRenderer.ToHtml(File.Text))
+            </div>
+        }
+        else
+        {
+            <CodeEditor @ref="_editor" Value="@File.Text" Baseline="@snapshot.Text" DirtyChanged="@OnDirtyChangedAsync"
+                        FileName="@PresentationName" Disabled="@(!File.IsEditing || State.IsBusy)" Class="h-full min-h-0" />
+        }
+    }
+    else if (File.Snapshot is not null)
+    {
+        <p class="artifact-preview-message" role="status">@Loc[File.Snapshot.State == ProjectReadState.TooLarge ? ChatTextKeys.WorkspaceTooLarge : $"Chat.Project.Read.{File.Snapshot.State}"]</p>
+    }
+    else if (File.ErrorKey is null)
+    {
+        <div class="flex min-h-0 flex-1 items-center justify-center p-4" role="status">
+            <span class="loading loading-spinner shrink-0" aria-label="@CommonLoc[CommonTextKeys.Loading]"></span>
+        </div>
+    }
+    @if (File.ErrorKey is not null)
+    {
+        <p class="px-4 py-3 text-sm text-base-content/70 wrap-anywhere" role="alert">@Loc[File.ErrorKey]</p>
+    }
+</div>
+
+@code {
+    [CascadingParameter] public WorkspaceEditingState State { get; set; } = default!;
+    [Parameter, EditorRequired] public WorkspaceFileDraft File { get; set; } = default!;
+    [Parameter] public long RefreshVersion { get; set; }
+    private WorkspaceFileDraft? _current;
+    private CodeEditor? _editor;
+    private long _refreshVersion;
+    private bool _sourceMounted;
+    private bool _restoreFocus;
+    private ElementReference _editButton;
+    private ElementReference _saveButton;
+    private ElementReference _cancelButton;
+    private Func<Task>? _capture;
+    private string PresentationName => File.Name.EndsWith(".enc", StringComparison.OrdinalIgnoreCase) ? File.Name[..^4] : File.Name;
+    private bool IsMarkdown => Path.GetExtension(PresentationName).ToLowerInvariant() is ".md" or ".markdown";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var refreshChanged = _refreshVersion != RefreshVersion;
+        var fileChanged = !ReferenceEquals(_current, File);
+        _refreshVersion = RefreshVersion;
+        if (fileChanged)
+        {
+            await CaptureAsync();
+            if (_current is not null) { State.Captures.Remove(_current); }
+            _current = File;
+            _editor = null;
+            _sourceMounted = false;
+            _capture = CaptureAsync;
+            State.Captures[File] = _capture;
+        }
+        if (refreshChanged) { await CaptureAsync(); }
+        if ((fileChanged || refreshChanged) && File.RefreshVersion != RefreshVersion && !File.IsDirty && !File.IsBusy)
+        {
+            // Reload completion renders the parent, so mark this generation before its notification.
+            File.RefreshVersion = RefreshVersion;
+            if (!await State.ReloadAsync(File)) { File.RefreshVersion = null; }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _sourceMounted = !IsMarkdown || File.ShowSource;
+
+        if (_restoreFocus && !State.IsBusy)
+        {
+            // Saving disables or removes its opener, so restore focus after the available action renders.
+            _restoreFocus = false;
+            var target = File.IsDirty ? _saveButton : File.IsEditing ? _cancelButton : _editButton;
+            await target.FocusAsync();
+        }
+    }
+
+    private async Task CaptureAsync()
+    {
+        if (_current is null || _editor is null || !_sourceMounted) { return; }
+        _current.Text = await _editor.GetValueAsync();
+        _current.IsDirty = _current.Text.Replace("\r\n", "\n", StringComparison.Ordinal) !=
+            (_current.Snapshot?.Text ?? "").Replace("\r\n", "\n", StringComparison.Ordinal);
+    }
+
+    private async Task OnDirtyChangedAsync(bool dirty)
+    {
+        File.IsDirty = dirty;
+        await State.Changed.InvokeAsync();
+    }
+
+    private async Task EditAsync() { File.IsEditing = true; File.ShowSource = true; await State.Changed.InvokeAsync(); }
+    private async Task TogglePreviewAsync() { await CaptureAsync(); File.ShowSource = !File.ShowSource; }
+    private async Task CancelAsync() { await CaptureAsync(); File.Discard(); await State.Changed.InvokeAsync(); }
+
+    private async Task SaveAsync()
+    {
+        await CaptureAsync();
+        if (!await State.SaveAsync(File) && File.ConflictRevision is not null)
+        {
+            await Dialogs.ShowAsync<WorkspaceFileDecisionDialog>(new Dictionary<string, object?>
+            { ["State"] = State, ["Files"] = new[] { File }, ["ConflictOnly"] = true });
+        }
+
+        _restoreFocus = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try { await CaptureAsync(); }
+        catch (JSDisconnectedException) { }
+        if (_current is not null && State.Captures.TryGetValue(_current, out var capture) && capture == _capture)
+        { State.Captures.Remove(_current); }
+    }
+}

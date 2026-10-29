@@ -1,0 +1,435 @@
+@using System.Net
+@using Oscova.Agents.Core.ApiContracts.Network
+@using Oscova.Agents.Host.Constants
+@inject HttpClient Http
+@inject HostingInfoService HostingInfoService
+@inject IJSRuntime JS
+@inject IToastService ToastService
+@inject ILogger<SettingsNetworkSection> Logger
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IDialogService DialogService
+
+<UnsavedChangesGuard IsDirty="@IsDirty" />
+
+@* Freeze the submitted draft until its save and reload finish. *@
+<fieldset disabled="@_isSaving">
+
+@if (_summary is null)
+{
+    <div class="alert alert-info">
+        <iconify-icon icon="lucide:loader-circle"></iconify-icon>
+        <span>@Loc.GetOrDefault(SettingsTextKeys.NetworkLoadingMessage, "Loading network settings...")</span>
+    </div>
+}
+else
+{
+<div class="space-y-6">
+        <section class="custom-settings-group custom-settings-form">
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.NetworkAccessTitle, "Network Access")</h4>
+            <div class="space-y-4">
+                <label class="label cursor-pointer justify-start gap-3 pl-0">
+                    <input type="checkbox"
+                           class="toggle toggle-primary"
+                           @bind="_draft.EnableNetworkAccess" />
+                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.NetworkEnableAccessLabel, "Allow access from other devices")</span>
+                </label>
+
+                <div class="form-control">
+                    <label class="label block mb-1 pl-0" for="network-port">
+                        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.NetworkPortLabel, "Port")</span>
+                    </label>
+                    <label class="input w-full max-w-xs">
+                        <span class="iconify lucide--unplug text-base-content/60 size-4.5"></span>
+                        <input id="network-port"
+                               type="number"
+                               class="grow focus:outline-0"
+                               min="1"
+                               max="65535"
+                               @bind="_draft.Port"
+                               @bind:event="oninput" />
+                    </label>
+                    <p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.NetworkRestartRequiredHint, "Network access and port changes take effect after restart.")</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="custom-settings-group custom-settings-form">
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.NetworkPrivateFetchTitle, "Web fetch access")</h4>
+            <div class="space-y-2">
+                <label class="label cursor-pointer justify-start gap-3 pl-0">
+                    <input type="checkbox"
+                           class="toggle toggle-primary"
+                           @bind="_draft.AllowPrivateNetworkFetch" />
+                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.NetworkAllowPrivateFetchLabel, "Allow fetching local and private-network URLs")</span>
+                </label>
+                <p class="text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.NetworkAllowPrivateFetchDescription, "Only enable this when agents need to read trusted internal pages. It weakens the default web__fetch protection against malicious URLs.")</p>
+            </div>
+        </section>
+
+
+        <section class="custom-settings-group custom-settings-form">
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.NetworkSandboxAccessTitle, "Sandbox network access")</h4>
+            <SettingsToggleRow Id="sandbox-network-access"
+                               Checked="@_draft.AllowSandboxNetworkAccess"
+                               CheckedChanged="value => _draft.AllowSandboxNetworkAccess = value"
+                               Label="@Loc.GetOrDefault(SettingsTextKeys.NetworkAllowSandboxAccessLabel, "Allow sandboxed scripts to access the network")"
+                               Description="@Loc.GetOrDefault(SettingsTextKeys.NetworkAllowSandboxAccessDescription, "This installation-wide Admin grant applies to every user's ordinary online sandbox run. Offline and local-only runs stay networkless.")" />
+        </section>
+
+
+        <section class="custom-settings-group custom-settings-form">
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.NetworkPublicUrlTitle, "Public App URL")</h4>
+            <div class="space-y-4">
+                <div class="form-control">
+                    <label class="label block mb-1 pl-0" for="public-app-url-mode">
+                        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.NetworkPublicUrlModeLabel, "Mode")</span>
+                    </label>
+                    <select id="public-app-url-mode"
+                            class="select select-bordered w-full max-w-md"
+                            @bind="_draft.PublicAppUrlMode">
+                        <option value="@PublicAppUrlMode.AutoNetwork">@Loc.GetOrDefault(SettingsTextKeys.NetworkPublicUrlModeAuto, "Auto-detected network URL")</option>
+                        <option value="@PublicAppUrlMode.Custom">@Loc.GetOrDefault(SettingsTextKeys.NetworkPublicUrlModeCustom, "Custom URL")</option>
+                    </select>
+                </div>
+
+                @if (_draft.PublicAppUrlMode == PublicAppUrlMode.Custom)
+                {
+                    <div class="form-control">
+                        <label class="label block mb-1 pl-0" for="custom-public-app-url">
+                            <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.NetworkCustomPublicUrlLabel, "Custom Public App URL")</span>
+                        </label>
+                        <label class="input w-full max-w-md">
+                            <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                            <input id="custom-public-app-url"
+                                   class="grow focus:outline-0"
+                                   placeholder="@Loc.GetOrDefault(SettingsTextKeys.NetworkCustomPublicUrlPlaceholder, "https://oscova.company.local")"
+                                   @bind="_draft.CustomPublicAppUrl"
+                                   @bind:event="oninput" />
+                        </label>
+                    </div>
+                }
+            </div>
+        </section>
+
+        @if (_summary.RestartRequired)
+        {
+            <div class="alert alert-warning">
+                <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.NetworkRestartRequiredAlert, "Restart Oscova for network access and port changes to take effect.")</span>
+            </div>
+        }
+
+
+        <section class="custom-settings-group custom-settings-form">
+            <h4 class="font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.NetworkDetectedUrlsTitle, "Detected URLs")</h4>
+            <div class="space-y-3">
+                <div>
+                    <label class="label pb-1 pl-0">
+                        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.NetworkLocalUrlLabel, "Local URL")</span>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <label class="input flex-1">
+                            <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                            <input type="text"
+                                   aria-label="@Loc.GetOrDefault(SettingsTextKeys.NetworkLocalUrlLabel, "Local URL")"
+                                   class="grow focus:outline-0 font-mono text-sm"
+                                   value="@_summary.LocalUrl"
+                                   readonly />
+                        </label>
+                        <button type="button"
+                                class="btn btn-square btn-sm"
+                                title="@Loc.GetOrDefault(SettingsTextKeys.NetworkCopyToClipboardTitle, "Copy to clipboard")"
+                                @onclick="() => CopyToClipboardAsync(_summary.LocalUrl)">
+                            <iconify-icon icon="lucide:copy"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="label pb-1 pl-0">
+                        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.NetworkAutoNetworkUrlLabel, "Auto Network URL")</span>
+                    </label>
+                    @if (string.IsNullOrWhiteSpace(_summary.AutoNetworkUrl))
+                    {
+                        <p class="text-sm opacity-60">@Loc.GetOrDefault(SettingsTextKeys.NetworkAutoNetworkUrlUnavailable, "Auto network URL unavailable.")</p>
+                    }
+                    else
+                    {
+                        <div class="flex items-center gap-2">
+                            <label class="input flex-1">
+                                <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                                <input id="network-auto-url"
+                                       aria-label="@Loc.GetOrDefault(SettingsTextKeys.NetworkAutoNetworkUrlLabel, "Auto Network URL")"
+                                       type="text"
+                                       class="grow focus:outline-0 font-mono text-sm"
+                                       value="@_summary.AutoNetworkUrl"
+                                       readonly />
+                            </label>
+                            <button type="button"
+                                    class="btn btn-square btn-sm"
+                                    title="@Loc.GetOrDefault(SettingsTextKeys.NetworkCopyToClipboardTitle, "Copy to clipboard")"
+                                    @onclick="() => CopyToClipboardAsync(_summary.AutoNetworkUrl!)">
+                                <iconify-icon icon="lucide:copy"></iconify-icon>
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <div>
+                    <label class="label pb-1 pl-0">
+                        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.NetworkEffectivePublicUrlLabel, "Effective Public App URL")</span>
+                    </label>
+                    @if (string.IsNullOrWhiteSpace(_summary.EffectivePublicAppUrl))
+                    {
+                        <p class="text-sm opacity-60">@Loc.GetOrDefault(SettingsTextKeys.NetworkEffectivePublicUrlUnavailable, "Effective public URL unavailable.")</p>
+                    }
+                    else
+                    {
+                        <div class="flex items-center gap-2">
+                            <label class="input flex-1">
+                                <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                                <input id="network-effective-url"
+                                       aria-label="@Loc.GetOrDefault(SettingsTextKeys.NetworkEffectivePublicUrlLabel, "Effective Public App URL")"
+                                       type="text"
+                                       class="grow focus:outline-0 font-mono text-sm"
+                                       value="@_summary.EffectivePublicAppUrl"
+                                       readonly />
+                            </label>
+                            <button type="button"
+                                    class="btn btn-square btn-sm"
+                                    title="@Loc.GetOrDefault(SettingsTextKeys.NetworkCopyToClipboardTitle, "Copy to clipboard")"
+                                    @onclick="() => CopyToClipboardAsync(_summary.EffectivePublicAppUrl!)">
+                                <iconify-icon icon="lucide:copy"></iconify-icon>
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <div>
+                    <label class="label pb-1 pl-0">
+                        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.NetworkActiveUrlsLabel, "Active Server URLs")</span>
+                    </label>
+                    @if (_summary.ActiveUrls.Length == 0)
+                    {
+                        <p class="text-sm opacity-60">@Loc.GetOrDefault(SettingsTextKeys.NetworkNoActiveUrls, "No active listener URLs were reported during startup.")</p>
+                    }
+                    else
+                    {
+                        <div class="space-y-2">
+                            @foreach (var activeUrl in _summary.ActiveUrls)
+                            {
+                                <div class="font-mono text-sm rounded-box border border-base-300 px-3 py-2 break-all">@activeUrl</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        @if (!string.IsNullOrWhiteSpace(_summary.EffectivePublicAppUrl))
+        {
+            <div class="collapse collapse-arrow bg-base-200 rounded-box">
+                <input type="checkbox" @bind="_showQrCode" />
+                <div class="collapse-title font-medium">
+                    @Loc.GetOrDefault(SettingsTextKeys.NetworkQrCodeTitle, "QR Code")
+                </div>
+                <div class="collapse-content">
+                    @if (_showQrCode && !string.IsNullOrEmpty(_qrCodeBase64))
+                    {
+                        <div class="flex flex-col items-center gap-3">
+                            <img src="data:image/png;base64,@_qrCodeBase64"
+                                   alt="@Loc.GetOrDefault(SettingsTextKeys.NetworkQrCodeAlt, "Effective Public App URL QR Code")"
+                                 class="w-64 h-64" />
+                            <button type="button"
+                                    class="btn btn-sm btn-primary"
+                                    @onclick="DownloadQrCodeAsync">
+                                <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                                @Loc.GetOrDefault(SettingsTextKeys.NetworkDownloadQrCodeButton, "Download QR Code")
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="flex flex-wrap justify-end gap-2">
+            <button type="button"
+                    class="btn btn-outline btn-sm"
+                    disabled="@(!IsDirty || _isSaving)"
+                    @onclick="ResetDraft">
+                @Loc.GetOrDefault(SettingsTextKeys.NetworkResetButton, "Reset")
+            </button>
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!IsDirty || _isSaving)"
+                    @onclick="SaveAsync">
+                <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+                @Loc.GetOrDefault(SettingsTextKeys.NetworkSaveButton, "Save Network Settings")
+            </button>
+        </div>
+    </div>
+}
+
+</fieldset>
+
+@code {
+    private NetworkSettingsSummary? _summary;
+    private UpdateNetworkSettingsRequest _saved = new();
+    private UpdateNetworkSettingsRequest _draft = new();
+    private string _qrCodeBase64 = string.Empty;
+    private bool _showQrCode;
+    private bool _isSaving;
+
+    private bool IsDirty => !AreSettingsEqual(_saved, _draft);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettingsAsync();
+    }
+
+    private async Task LoadSettingsAsync()
+    {
+        try
+        {
+            _summary = await Http.GetFromJsonAsync<NetworkSettingsSummary>(ApiRoutes.NetworkSettings.Configuration);
+            _saved = CreateRequest(_summary);
+            _draft = CreateRequest(_summary);
+            UpdateQrCode();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load network settings.");
+            ToastService.Show(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Loc.GetOrDefault(SettingsTextKeys.NetworkLoadErrorToast, "Network settings load error: {0}"),
+                    ex.Message),
+                ToastType.Error);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (!IsDirty || _isSaving)
+        {
+            return;
+        }
+
+        _isSaving = true;
+        try
+        {
+            var saved = await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
+            {
+                _draft.ConfirmInterruptions = confirmed;
+                using var response = await Http.PutAsJsonAsync(ApiRoutes.NetworkSettings.Configuration, _draft);
+                if (response.StatusCode == HttpStatusCode.Conflict) { return false; }
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException(string.IsNullOrWhiteSpace(error) ? Loc.GetOrDefault(SettingsTextKeys.NetworkSaveFailedToast, "Network settings could not be saved.") : error);
+                }
+                return true;
+            });
+            if (!saved) { return; }
+
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.NetworkSaveSuccessToast, "Network settings saved"), ToastType.Success);
+            await LoadSettingsAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save network settings.");
+            ToastService.Show(
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Loc.GetOrDefault(SettingsTextKeys.NetworkSaveFailedWithMessageToast, "Failed to save network settings: {0}"),
+                    ex.Message),
+                ToastType.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    // Reset button only renders when _summary is non-null, so the cast is safe.
+    private void ResetDraft()
+    {
+        _draft = CreateRequest(_summary);
+    }
+
+    private void UpdateQrCode()
+    {
+        _qrCodeBase64 = string.IsNullOrWhiteSpace(_summary?.EffectivePublicAppUrl)
+            ? string.Empty
+            : HostingInfoService.GenerateQrCodeBase64(_summary.EffectivePublicAppUrl);
+    }
+
+    private static UpdateNetworkSettingsRequest CreateRequest(NetworkSettingsSummary? summary)
+    {
+        return summary is null
+            ? new UpdateNetworkSettingsRequest()
+            : new UpdateNetworkSettingsRequest
+            {
+                EnableNetworkAccess = summary.EnableNetworkAccess,
+                AllowPrivateNetworkFetch = summary.AllowPrivateNetworkFetch,
+                AllowSandboxNetworkAccess = summary.AllowSandboxNetworkAccess,
+                Port = summary.Port,
+                PublicAppUrlMode = summary.PublicAppUrlMode,
+                CustomPublicAppUrl = summary.CustomPublicAppUrl
+            };
+    }
+
+    private static bool AreSettingsEqual(UpdateNetworkSettingsRequest a, UpdateNetworkSettingsRequest b)
+    {
+        return a.EnableNetworkAccess == b.EnableNetworkAccess &&
+               a.AllowPrivateNetworkFetch == b.AllowPrivateNetworkFetch &&
+               a.AllowSandboxNetworkAccess == b.AllowSandboxNetworkAccess &&
+               a.Port == b.Port &&
+               a.PublicAppUrlMode == b.PublicAppUrlMode &&
+               string.Equals(a.CustomPublicAppUrl, b.CustomPublicAppUrl, StringComparison.Ordinal);
+    }
+
+    private async Task CopyToClipboardAsync(string text)
+    {
+        try
+        {
+            var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            var success = await utilsModule.InvokeAsync<bool>("copyToClipboard", text);
+            await utilsModule.DisposeAsync();
+
+            ToastService.Show(
+                success
+                    ? Loc.GetOrDefault(SettingsTextKeys.NetworkCopySuccessToast, "Copied to clipboard")
+                    : Loc.GetOrDefault(SettingsTextKeys.NetworkCopyFailedToast, "Failed to copy to clipboard"),
+                success ? ToastType.Success : ToastType.Error);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to copy to clipboard.");
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.NetworkCopyFailedToast, "Failed to copy to clipboard"), ToastType.Error);
+        }
+    }
+
+    private async Task DownloadQrCodeAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_qrCodeBase64))
+            {
+                return;
+            }
+
+            var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            await utilsModule.InvokeVoidAsync("downloadFile", "oscova-assistant-qr.png", _qrCodeBase64);
+            await utilsModule.DisposeAsync();
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.NetworkQrCodeDownloadedToast, "QR code downloaded"), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to download QR code.");
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.NetworkQrCodeDownloadFailedToast, "Failed to download QR code"), ToastType.Error);
+        }
+    }
+}

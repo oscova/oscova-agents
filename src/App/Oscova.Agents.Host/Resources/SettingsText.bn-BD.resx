@@ -1,0 +1,1710 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Settings.Label"><value>সেটিংস</value></data>
+	<data name="Settings.Category.Workspace.Label"><value>পছন্দসমূহ</value></data>
+	<data name="Settings.Category.Workspace.Description"><value>চেহারা, ভাষা, বিজ্ঞপ্তি, ব্যক্তিত্ব এবং ভয়েস।</value></data>
+	<data name="Settings.Category.Intelligence.Label"><value>এজেন্টস এবং AI</value></data>
+	<data name="Settings.Category.Intelligence.Description"><value>এজেন্টস, মডেল প্রদানকারী, নির্দেশনা, স্কিলস এবং টুলস।</value></data>
+	<data name="Settings.Category.Connections.Label"><value>অ্যাকাউন্ট ও অ্যাক্সেস</value></data>
+	<data name="Settings.Category.Connections.Description"><value>সংযুক্ত অ্যাকাউন্ট, ক্রেডেনশিয়াল, নেটওয়ার্ক অ্যাক্সেস এবং ওয়েবহুক।</value></data>
+	<data name="Settings.Category.Data.Label"><value>ফাইল ও ব্যাকআপ</value></data>
+	<data name="Settings.Category.Data.Description"><value>ফাইল, আমদানি, রপ্তানি এবং ব্যাকআপ।</value></data>
+	<data name="Settings.Section.General.Label"><value>সাধারণ</value></data>
+	<data name="Settings.Section.General.Description"><value>সাধারণ অ্যাপ্লিকেশন পছন্দসমূহ এবং চেহারা কনফিগার করুন।</value></data>
+	<data name="Settings.Section.Notifications.Description"><value>বিজ্ঞপ্তি প্রদান এবং সূক্ষ্ম UI সাউন্ড সংকেত নিয়ন্ত্রণ করুন।</value></data>
+	<data name="Settings.Section.Avatar.Label"><value>অ্যাভাটার</value></data>
+	<data name="Settings.Section.Avatar.Description"><value>সহকারীর ভিজ্যুয়াল অ্যাভাটারের চেহারা কাস্টমাইজ করুন।</value></data>
+	<data name="Settings.Section.Speech.Label"><value>ভয়েস</value></data>
+	<data name="Settings.Section.Speech.Description"><value>টেক্সট-টু-স্পিচ এবং ভয়েস রিকগনিশন বিকল্পগুলি কনফিগার করুন।</value></data>
+	<data name="Settings.Section.Providers.Label"><value>মডেল প্রদানকারী</value></data>
+	<data name="Settings.Section.Providers.Description"><value>মডেল প্রদানকারী সংযোগ এবং API কী পরিচালনা করুন।</value></data>
+	<data name="Settings.Section.Agent.Label"><value>মূল এজেন্ট</value></data>
+	<data name="Settings.Section.Agent.Description"><value>মূল AI সহকারীর আচরণ এবং নির্দেশনা কনফিগার করুন।</value></data>
+	<data name="Settings.Section.Agents.Label"><value>এজেন্টস</value></data>
+	<data name="Settings.Section.Agents.Description"><value>অতিরিক্ত AI এজেন্টস এবং তাদের কনফিগারেশন পরিচালনা করুন।</value></data>
+	<data name="Settings.Section.Compaction.Label"><value>নির্দেশনা</value></data>
+	<data name="Settings.Section.Compaction.Description"><value>কম্প্যাকশন এবং মেমরির জন্য ব্যবহৃত সংরক্ষিত নির্দেশনা সম্পাদনা করুন।</value></data>
+	<data name="Settings.Section.Skills.Label"><value>স্কিলস</value></data>
+	<data name="Settings.Section.Skills.Description"><value>এজেন্টের দক্ষতা খুঁজুন, ইনস্টল করুন, ভাগ করুন এবং সরান।</value></data>
+	<data name="Settings.Section.Tools.Label"><value>টুলস</value></data>
+	<data name="Settings.Section.Tools.Description"><value>AI সহকারীর জন্য উপলব্ধ টুলস সক্ষম বা নিষ্ক্রিয় করুন।</value></data>
+	<data name="Settings.Section.Plugins.Label"><value>প্লাগইন</value></data>
+	<data name="Settings.Section.Plugins.Description"><value>পুনরায় চালু করার পরে চালানোর অনুমতিপ্রাপ্ত ইনস্টল করা এক্সটেনশনগুলি পরিচালনা করুন।</value></data>
+	<data name="Settings.Section.Mcp.Label"><value>MCP সার্ভার</value></data>
+	<data name="Settings.Section.Mcp.Description"><value>মডেল কনটেক্সট প্রোটোকল (Model Context Protocol) ব্যবহারকারী বহিরাগত টুল সার্ভার সংযুক্ত করুন।</value></data>
+	<data name="Settings.Section.Network.Label"><value>নেটওয়ার্ক</value></data>
+	<data name="Settings.Section.Network.Description"><value>নেটওয়ার্ক, প্রক্সি এবং সংযোগ সেটিংস সমন্বয় করুন।</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Label"><value>সংযুক্ত অ্যাকাউন্ট</value></data>
+	<data name="Settings.Section.ConnectedAccounts.Description"><value>OAuth-ভিত্তিক ইন্টিগ্রেশনের জন্য Google এবং Microsoft অ্যাকাউন্ট সংযুক্ত করুন।</value></data>
+	<data name="Settings.Section.Credentials.Label"><value>ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Section.Credentials.Description"><value>সংরক্ষিত API কী এবং টোকেন পরিচালনা করুন।</value></data>
+	<data name="Settings.Channels.CredentialsTitle"><value>বট ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Channels.AgentHint"><value>এই চ্যানেলে উত্তর দেবে এমন এজেন্ট বেছে নিন।</value></data>
+	<data name="Settings.Channels.EnableAtStartupHint"><value>সক্ষম করা হলে, অ্যাপ্লিকেশন শুরুতে বট স্বয়ংক্রিয়ভাবে সংযুক্ত হবে</value></data>
+	<data name="Settings.Channels.NewCredentialButton"><value>ক্রেডেনশিয়াল পরিচালনা করুন</value></data>
+	<data name="Settings.Channels.SavedTokenHeading"><value>সংরক্ষিত বট টোকেন</value></data>
+	<data name="Settings.Channels.SaveSettingsButton"><value>সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Settings.Channels.StartBotButton"><value>বট চালু করুন</value></data>
+	<data name="Settings.Channels.StopBotButton"><value>বট বন্ধ করুন</value></data>
+	<data name="Settings.Channels.StatusTitle"><value>বট স্থিতি</value></data>
+	<data name="Settings.Channels.TokensManagedDescription"><value>বট টোকেনগুলি ক্রেডেনশিয়াল ট্যাবে কেন্দ্রীয়ভাবে পরিচালিত হয়।</value></data>
+	<data name="Settings.Discord.ConfigurationTitle"><value>Discord বট কনফিগারেশন</value></data>
+	<data name="Settings.Discord.ConfigurationDescription"><value>বার্তা পাঠানো এবং গ্রহণের জন্য আপনার Discord বট কনফিগার করুন।</value></data>
+	<data name="Settings.Discord.EnableAtStartupLabel"><value>স্টার্টআপে Discord বট সক্ষম করুন</value></data>
+	<data name="Settings.Discord.CredentialsDescription"><value>অনুমোদিত Discord ব্যবহারকারী ID সেট করুন। বট টোকেন ক্রেডেনশিয়াল ট্যাবে পরিচালিত হয়।</value></data>
+	<data name="Settings.Discord.CredentialSelectLabel"><value>Discord বট ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Discord.CredentialTypeHint"><value>Discord-এর জন্য একটি `BotToken` ক্রেডেনশিয়াল ব্যবহার করুন।</value></data>
+	<data name="Settings.Discord.StatusDescription"><value>আপনার Discord বট সংযোগের বর্তমান স্থিতি।</value></data>
+	<data name="Settings.Discord.CredentialValidStatus"><value>নির্বাচিত ক্রেডেনশিয়ালে একটি সংরক্ষিত টোকেন রয়েছে।</value></data>
+	<data name="Settings.Discord.CredentialInvalidStatus"><value>কোনো বৈধ Discord বট ক্রেডেনশিয়াল নির্বাচিত নেই।</value></data>
+	<data name="Settings.Discord.UserIdRequiredError"><value>ব্যবহারকারী ID আবশ্যক।</value></data>
+	<data name="Settings.Discord.UserIdInvalidFormatError"><value>অবৈধ ব্যবহারকারী ID বিন্যাস। অবশ্যই একটি সংখ্যাসূচক Discord ব্যবহারকারী ID হতে হবে।</value></data>
+	<data name="Settings.Discord.CredentialRequiredWarning"><value>বট শুরু করার আগে একটি Discord বট ক্রেডেনশিয়াল নির্বাচন এবং সংরক্ষণ করুন।</value></data>
+	<data name="Settings.Discord.UserIdSaveWarning"><value>বট শুরু করার আগে অনুগ্রহ করে আপনার ব্যবহারকারী ID সংরক্ষণ করুন।</value></data>
+	<data name="Settings.Discord.UserIdRequiredForStartup"><value>স্টার্টআপে বট সক্ষম করার আগে Discord ব্যবহারকারী ID আবশ্যক।</value></data>
+	<data name="Settings.Discord.CredentialRequiredForStartup"><value>স্টার্টআপে বট সক্ষম করার আগে একটি বট টোকেন ক্রেডেনশিয়াল নির্বাচন করুন।</value></data>
+	<data name="Settings.Section.ImportExport.Label"><value>ব্যাকআপ</value></data>
+	<data name="Settings.Section.ImportExport.Description"><value>একটি এনক্রিপ্ট করা ব্যাকআপ রপ্তানি করুন বা পুনরুদ্ধারযোগ্য অ্যাপ ডেটা রিসেট করুন।</value></data>
+	<data name="Settings.ImportExport.ExportTitle"><value>পরিবেশ রপ্তানি করুন</value></data>
+	<data name="Settings.ImportExport.ExportDescription"><value>আপনার পুনরুদ্ধারযোগ্য পরিবেশকে একটি এনক্রিপ্ট করা .oscb ব্যাকআপ হিসেবে ডাউনলোড করুন। মডেল, ভয়েস, লগ এবং মুলতুবি ক্রিয়াকলাপ অন্তর্ভুক্ত নয়।</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseLabel"><value>পাসফ্রেজ</value></data>
+	<data name="Settings.ImportExport.ExportPassphraseHint"><value>এমন একটি পাসফ্রেজ ব্যবহার করুন যা আপনি নিরাপদে রাখতে পারেন। এই ব্যাকআপটি পুনরুদ্ধার করতে একই পাসফ্রেজের প্রয়োজন হবে।</value></data>
+	<data name="Settings.ImportExport.ExportButton"><value>রপ্তানি করুন</value></data>
+	<data name="Settings.ImportExport.ExportDialogTitle"><value>পরিবেশ রপ্তানি করুন</value></data>
+	<data name="Settings.ImportExport.ExportDialogDescription"><value>পুনরুদ্ধারযোগ্য অ্যাপ ডেটার একটি এনক্রিপ্ট করা .oscb ব্যাকআপ তৈরি করুন। মডেল এবং ভয়েস অন্তর্ভুক্ত নয়।</value></data>
+	<data name="Settings.ImportExport.PassphraseLabel"><value>পাসফ্রেজ</value></data>
+	<data name="Settings.ImportExport.PassphrasePlaceholder"><value>একটি রপ্তানি পাসফ্রেজ লিখুন</value></data>
+	<data name="Settings.ImportExport.PassphraseRequiredError"><value>চালিয়ে যেতে একটি পাসফ্রেজ লিখুন।</value></data>
+	<data name="Settings.ImportExport.ExportFinishButton"><value>রপ্তানি শুরু করুন</value></data>
+	<data name="Settings.ImportExport.ExportStartedToast"><value>পরিবেশ রপ্তানি শুরু হয়েছে।</value></data>
+	<data name="Settings.EnvironmentReset.Title"><value>পরিবেশ রিসেট করুন</value></data>
+	<data name="Settings.EnvironmentReset.Description"><value>বর্তমান পরিবেশ সংরক্ষণ করুন, তারপর নতুন অ্যাপ ডেটা দিয়ে Oscova পুনরায় চালু করুন।</value></data>
+	<data name="Settings.EnvironmentReset.Scope"><value>ব্যবহারকারী, কথোপকথন, সেটিংস, ফাইল, পরিচয়পত্র, প্লাগইন এবং কীগুলি একটি সংরক্ষিত পাশের ডিরেক্টরিতে সরানো হয়। মডেল, ভয়েস, লগ, CLI ফাইল, ইনস্টল করা টুল এবং Avatar ফাইলগুলি একই স্থানে থাকে।</value></data>
+	<data name="Settings.EnvironmentReset.StopWriters"><value>গুরুত্বপূর্ণ কাজ শেষ করুন, 'oscova avatar mcp stop' চালান এবং এগিয়ে যাওয়ার আগে বাহ্যিক রাইটার বন্ধ করুন। সবাই সাইন আউট হয়ে যাবে।</value></data>
+	<data name="Settings.EnvironmentReset.TemporaryAddress"><value>বর্তমান ঠিকানাটি সেটআপের জন্য উপলভ্য থাকে। রিসেট নেটওয়ার্ক সেটিংস পরবর্তী পুনরারম্ভে প্রযোজ্য হয়, তাই LAN অ্যাক্সেস বা কাস্টম পোর্ট আবার কনফিগার করুন।</value></data>
+	<data name="Settings.EnvironmentReset.ConfirmationLabel"><value>নিশ্চিত করতে RESET লিখুন</value></data>
+	<data name="Settings.EnvironmentReset.BackupLocation"><value>আগের পরিবেশ সংরক্ষিত হয়েছে এখানে</value></data>
+	<data name="Settings.EnvironmentReset.Restarting"><value>Oscova পুনরায় চালু হচ্ছে এবং ডিফল্ট প্লাগইন পুনরায় ইনস্টল করছে...</value></data>
+	<data name="Settings.EnvironmentReset.Rejected"><value>Oscova পরিবেশ রিসেট প্রত্যাখ্যান করেছে।</value></data>
+	<data name="Settings.EnvironmentReset.Uncertain"><value>Oscova গ্রহণ নিশ্চিত করার আগে সংযোগ বন্ধ হয়েছে। আবার চেষ্টা করবেন না। Oscova আবার খুলুন এবং স্টার্টআপ থেমে গেলে অফলাইন পুনরুদ্ধার নির্দেশনা ব্যবহার করুন।</value></data>
+	<data name="Settings.EnvironmentReset.Timeout"><value>রিসেট গৃহীত হয়েছে, কিন্তু সম্পূর্ণ হওয়া যাচাই করা যায়নি। Oscova আবার খুলুন। স্টার্টআপ থেমে গেলে একই OSCOVA_APP_DATA_DIR দিয়ে 'oscova environment recover --yes' চালান।</value></data>
+	<data name="Settings.EnvironmentReset.Reopen"><value>Oscova আবার খুলুন</value></data>
+	<data name="Settings.Section.Files.Label"><value>ফাইল</value></data>
+	<data name="Settings.Section.Files.Description"><value>ফাইল স্টোরেজ অবস্থান এবং আপলোড পছন্দসমূহ পরিচালনা করুন।</value></data>
+	<data name="Settings.Files.HomeBreadcrumb"><value>হোম</value></data>
+	<data name="Settings.Files.SharedBreadcrumb"><value>শেয়ার করা</value></data>
+	<data name="Settings.Files.NewFolder"><value>নতুন ফোল্ডার</value></data>
+	<data name="Settings.Files.NewFile"><value>নতুন ফাইল</value></data>
+	<data name="Settings.Files.EmptyDirectoryMessage"><value>এই ডিরেক্টরিটি খালি।</value></data>
+	<data name="Settings.Files.ColumnSize"><value>আকার</value></data>
+	<data name="Settings.Files.ColumnModified"><value>পরিবর্তিত</value></data>
+	<data name="Settings.Files.FolderNamePlaceholder"><value>ফোল্ডারের নাম</value></data>
+	<data name="Settings.Files.FileNamePlaceholder"><value>filename.md</value></data>
+	<data name="Settings.Files.AllowedExtensionsHint"><value>অনুমোদিত: {0}</value></data>
+	<data name="Settings.Files.BackupHistoryButton"><value>ইতিহাস</value></data>
+	<data name="Settings.Files.BackupHistoryTitle"><value>ইতিহাস: {0}</value></data>
+	<data name="Settings.Files.BackupCurrentVersionLabel"><value>বর্তমান</value></data>
+	<data name="Settings.Files.BackupNoVersions"><value>এই ফাইলের জন্য এখনও কোনো পুনরুদ্ধার পয়েন্ট উপলব্ধ নেই।</value></data>
+	<data name="Settings.Files.BackupRestoreButton"><value>পুনরুদ্ধার করুন</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmTitle"><value>সংস্করণ পুনরুদ্ধার করুন</value></data>
+	<data name="Settings.Files.BackupRestoreConfirmMessage"><value>এই সংস্করণটি পুনরুদ্ধার করবেন? বর্তমান ফাইলটি প্রথমে ব্যাকআপ করা হবে।</value></data>
+	<data name="Settings.Files.BackupRestoreSuccessToast"><value>সংস্করণ পুনরুদ্ধার করা হয়েছে।</value></data>
+	<data name="Settings.Files.BackupVersionSize"><value>{0}</value></data>
+	<data name="Settings.Files.BackupLoadError"><value>ব্যাকআপ ইতিহাস লোড করা যায়নি।</value></data>
+	<data name="Settings.Files.BackupRestoreError"><value>সংস্করণটি পুনরুদ্ধার করা যায়নি।</value></data>
+	<data name="Settings.Files.FolderCreatedToast"><value>ফোল্ডার '{0}' তৈরি হয়েছে।</value></data>
+	<data name="Settings.Files.FileCreatedToast"><value>ফাইল '{0}' তৈরি হয়েছে।</value></data>
+	<data name="Settings.Files.DeleteConfirmTitle"><value>মুছে ফেলা নিশ্চিত করুন</value></data>
+	<data name="Settings.Files.DeleteConfirmMessage"><value>আপনি কি নিশ্চিতভাবে "{0}" মুছে ফেলতে চান?{1}</value></data>
+	<data name="Settings.Files.DeleteDirectoryWarning"><value> এটি সমস্ত বিষয়বস্তু মুছে ফেলবে।</value></data>
+	<data name="Settings.Files.DeletedToast"><value>'{0}' মুছে ফেলা হয়েছে।</value></data>
+	<data name="Settings.Files.FileTooLargeToast"><value>'{0}' {1} সীমা অতিক্রম করেছে।</value></data>
+	<data name="Settings.Files.UploadFailedToast"><value>'{0}' আপলোড করতে ব্যর্থ: {1}</value></data>
+	<data name="Settings.Files.UploadCompleteToast"><value>আপলোড সম্পন্ন হয়েছে।</value></data>
+	<data name="Settings.Files.AgentsFolderTitle"><value>পরিচালিত এজেন্ট ফোল্ডার</value></data>
+	<data name="Settings.Files.AgentsFolderDescription"><value>মূল এজেন্ট, কাস্টম এজেন্ট সংজ্ঞা, শেয়ার্ড-এজেন্ট প্রসঙ্গ এবং প্রতিটি এজেন্টের স্থায়ী ডেটা ধারণ করে।</value></data>
+	<data name="Settings.Files.MainAgentFolderTitle"><value>মূল এজেন্ট ফোল্ডার</value></data>
+	<data name="Settings.Files.MainAgentFolderDescription"><value>বিল্ট-ইন মূল এজেন্টের সংজ্ঞা এবং এর ব্যক্তিগত স্থায়ী ডেটা সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.CustomAgentFolderTitle"><value>কাস্টম এজেন্ট ফোল্ডার</value></data>
+	<data name="Settings.Files.CustomAgentFolderDescription"><value>এই কাস্টম এজেন্টের সংজ্ঞা, টুল নীতি এবং ব্যক্তিগত স্থায়ী ডেটা সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.SharedAgentsFolderTitle"><value>শেয়ার্ড-এজেন্ট প্রসঙ্গ</value></data>
+	<data name="Settings.Files.SharedAgentsFolderDescription"><value>শেয়ার্ড এজেন্টের জন্য আপনার ব্যক্তিগত প্রসঙ্গ ফাইলগুলি ধারণ করে।</value></data>
+	<data name="Settings.Files.SharedAgentFolderTitle"><value>শেয়ার্ড-এজেন্ট ব্যক্তিগত প্রসঙ্গ</value></data>
+	<data name="Settings.Files.SharedAgentFolderDescription"><value>এই শেয়ার্ড এজেন্টের জন্য আপনার ব্যক্তিগত প্রসঙ্গ সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.AgentPrivateFolderTitle"><value>এজেন্টের ব্যক্তিগত ফোল্ডার</value></data>
+	<data name="Settings.Files.AgentPrivateFolderDescription"><value>নোট, অগ্রগতির রেকর্ড এবং অন্যান্য ফাইলের জন্য এই এজেন্টের স্থায়ী ব্যক্তিগত ফোল্ডার প্রদান করে।</value></data>
+	<data name="Settings.Files.AgentNotesFolderTitle"><value>ব্যক্তিগত এজেন্ট নোট</value></data>
+	<data name="Settings.Files.AgentNotesFolderDescription"><value>এই এজেন্টের ব্যক্তিগত উন্নতির নোট সংরক্ষণ করে, যা ভবিষ্যতের রানে লোড করা যেতে পারে।</value></data>
+	<data name="Settings.Files.WorkspaceRootTitle"><value>পরিচালিত ওয়ার্কস্পেস</value></data>
+	<data name="Settings.Files.WorkspaceRootDescription"><value>ওয়ার্কস্পেস ফোল্ডারগুলি ধারণ করে যা এজেন্টসকে বরাদ্দ করা যেতে পারে।</value></data>
+	<data name="Settings.Files.DefaultWorkspaceTitle"><value>ডিফল্ট ওয়ার্কস্পেস</value></data>
+	<data name="Settings.Files.DefaultWorkspaceDescription"><value>স্বয়ংক্রিয়ভাবে তৈরি সাধারণ ওয়ার্কস্পেস সরবরাহ করে যা প্রাথমিকভাবে মূল এজেন্টকে বরাদ্দ করা হয়।</value></data>
+	<data name="Settings.Files.LibraryWorkspaceTitle"><value>লাইব্রেরি ওয়ার্কস্পেস</value></data>
+	<data name="Settings.Files.LibraryWorkspaceDescription"><value>লাইব্রেরি অনুসন্ধানের জন্য সূচীকৃত এবং বরাদ্দকৃত এজেন্টসকে শুধুমাত্র পাঠযোগ্য ফাইল হিসেবে উন্মুক্ত রেফারেন্স নথি সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.SharedFolderTitle"><value>শেয়ার করা ফোল্ডার</value></data>
+	<data name="Settings.Files.SharedFolderDescription"><value>শেয়ার করা ফোল্ডার অনুমতি থাকা প্রত্যেক ব্যবহারকারী এই ফাইলগুলো খুলতে, বদলাতে ও মুছতে পারেন, এনক্রিপ্ট করা ফাইলসহ।</value></data>
+	<data name="Settings.Files.WorkspaceFolderTitle"><value>ওয়ার্কস্পেস ফোল্ডার</value></data>
+	<data name="Settings.Files.WorkspaceFolderDescription"><value>ব্যবহারকারী-পরিচালিত একটি ওয়ার্কস্পেস সরবরাহ করে যা এজেন্টসকে বরাদ্দ করা যেতে পারে।</value></data>
+	<data name="Settings.Files.SettingsFolderTitle"><value>পরিচালিত সেটিংস</value></data>
+	<data name="Settings.Files.SettingsFolderDescription"><value>আপনার সেটিংস ডোমেনগুলিকে YAML ফাইল হিসেবে সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.PromptsFolderTitle"><value>রানটাইম নির্দেশনা</value></data>
+	<data name="Settings.Files.PromptsFolderDescription"><value>ভবিষ্যতের এজেন্ট রান দ্বারা ব্যবহৃত সম্পাদনাযোগ্য নির্দেশনা সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.SkillsFolderTitle"><value>পরিচালিত স্কিলস</value></data>
+	<data name="Settings.Files.SkillsFolderDescription"><value>বরাদ্দের জন্য উপলব্ধ আমদানি করা এবং এজেন্ট-রচিত স্কিলস ধারণ করে।</value></data>
+	<data name="Settings.Files.SkillFolderTitle"><value>স্কিল ফোল্ডার</value></data>
+	<data name="Settings.Files.SkillFolderDescription"><value>মূল ফাইল হিসেবে SKILL.md থাকা একটি স্কিল প্যাকেজ এবং এতে ব্যবহৃত সংস্থান, স্ক্রিপ্ট বা অ্যাসেট ধারণ করে।</value></data>
+	<data name="Settings.Files.TasksFolderTitle"><value>পরিচালিত কাজসমূহ</value></data>
+	<data name="Settings.Files.TasksFolderDescription"><value>নির্ধারিত এবং বহিরাগতভাবে ট্রিগার হওয়া কাজের সংজ্ঞা ধারণ করে।</value></data>
+	<data name="Settings.Files.TaskFolderTitle"><value>কাজের ফোল্ডার</value></data>
+	<data name="Settings.Files.TaskFolderDescription"><value>একটি কাজের সংজ্ঞা এবং এর রান ইতিহাস সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.TaskRunsFolderTitle"><value>কাজ চালানোর ইতিহাস</value></data>
+	<data name="Settings.Files.TaskRunsFolderDescription"><value>এই কাজের জন্য পরিচালিত রান ইনডেক্স, ট্রান্সক্রিপ্ট এবং সেশন আর্টিফ্যাক্ট সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.MemoryFolderTitle"><value>ব্যবহারকারী মেমরি</value></data>
+	<data name="Settings.Files.MemoryFolderDescription"><value>দীর্ঘমেয়াদী, বিষয়ভিত্তিক, দৈনিক এবং কথোপকথন মেমরি ডেটা সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.DailyMemoryFolderTitle"><value>দৈনিক মেমরি</value></data>
+	<data name="Settings.Files.DailyMemoryFolderDescription"><value>মেমরি রুটিন দ্বারা ব্যবহৃত তারিখযুক্ত Markdown মেমরি লগ সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.ChatFolderTitle"><value>সংরক্ষিত কথোপকথন</value></data>
+	<data name="Settings.Files.ChatFolderDescription"><value>সংরক্ষিত কথোপকথনের সূচী, প্রতিলিপি, সেশনের মেটাডেটা এবং সংযুক্তির অবস্থা সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderTitle"><value>চ্যাট সংযুক্তি</value></data>
+	<data name="Settings.Files.ChatAttachmentsFolderDescription"><value>কথোপকথন অনুসারে গোষ্ঠীভুক্ত ফোল্ডারে আপলোড করা সংযুক্তি সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.LogsFolderTitle"><value>অ্যাপ্লিকেশন লগ</value></data>
+	<data name="Settings.Files.LogsFolderDescription"><value>এই ব্যবহারকারীর অ্যাপ্লিকেশন লগ ফাইল সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.MetricsFolderTitle"><value>ব্যবহারের মেট্রিক্স</value></data>
+	<data name="Settings.Files.MetricsFolderDescription"><value>এই ব্যবহারকারীর রানটাইম মেট্রিক্স ইভেন্ট স্ট্রিম সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.AuditFolderTitle"><value>বহির্গমন অডিট</value></data>
+	<data name="Settings.Files.AuditFolderDescription"><value>বহির্গামী সরবরাহকারী কার্যকলাপের অডিট রেকর্ড সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.NotificationsFolderTitle"><value>বিজ্ঞপ্তি ইনবক্স</value></data>
+	<data name="Settings.Files.NotificationsFolderDescription"><value>এই ব্যবহারকারীর স্থায়ী বিজ্ঞপ্তি ইনবক্স সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderTitle"><value>টুল ব্যবহারের অবস্থা</value></data>
+	<data name="Settings.Files.ToolGovernanceFolderDescription"><value>নিয়ন্ত্রিত টুল-কল সীমা দ্বারা ব্যবহৃত কোটা কাউন্টার সংরক্ষণ করে।</value></data>
+	<data name="Settings.Files.LibraryIndexingColumn"><value>ইনডেক্সিং</value></data>
+	<data name="Settings.Files.LibraryLocalOnlyBlockedMessage"><value>আপনি একটি স্থানীয় এম্বেডিং প্রদানকারী নির্বাচন না করা পর্যন্ত লাইব্রেরি ইনডেক্সিং অবরুদ্ধ থাকবে।</value></data>
+	<data name="Settings.Files.LibraryCloudProviderWarning"><value>ক্লাউড এম্বেডিং প্রদানকারী ব্যবহৃত হচ্ছে। লাইব্রেরির ফাইল থেকে নিষ্কাশিত পাঠ্য ইনডেক্সিং এবং অনুসন্ধানের জন্য {0}-এ পাঠানো হয়। ব্যক্তিগত নথির জন্য একটি স্থানীয় এম্বেডিং প্রদানকারী সুপারিশ করা হয়।</value></data>
+	<data name="Settings.Files.LibraryNoProviderMessage"><value>একটি এম্বেডিং প্রদানকারী কনফিগার না করা পর্যন্ত লাইব্রেরি ইনডেক্সিং এবং অনুসন্ধান শুরু হবে না। একটি প্রদানকারী নির্বাচিত হওয়ার পরে লাইব্রেরিতে ইতিমধ্যে থাকা ফাইলগুলি সনাক্ত করা হবে।</value></data>
+	<data name="Settings.Files.LibraryLocalProviderMessage"><value>লাইব্রেরি অনুসন্ধান স্থানীয় এম্বেডিং প্রদানকারী {0} ব্যবহার করে।</value></data>
+	<data name="Settings.Files.LibraryReadyStatus"><value>প্রস্তুত</value></data>
+	<data name="Settings.Files.LibraryQueuedStatus"><value>সারিবদ্ধ</value></data>
+	<data name="Settings.Files.LibraryIndexingStatus"><value>ইনডেক্স হচ্ছে</value></data>
+	<data name="Settings.Files.LibrarySkippedStatus"><value>বাদ দেওয়া হয়েছে</value></data>
+	<data name="Settings.Files.LibraryFailedStatus"><value>ব্যর্থ</value></data>
+	<data name="Settings.Notifications.Title"><value>বিজ্ঞপ্তি</value></data>
+	<data name="Settings.Notifications.LoadingMessage"><value>বিজ্ঞপ্তি সেটিংস লোড হচ্ছে...</value></data>
+	<data name="Settings.Notifications.DeliveryTitle"><value>বিজ্ঞপ্তি বিতরণ</value></data>
+	<data name="Settings.Notifications.DeliveryDescription"><value>লাইভ সতর্কতা বেছে নিন এবং ইনবক্সে সংরক্ষিত বিজ্ঞপ্তি দেখুন।</value></data>
+	<data name="Settings.Notifications.MutedDescription"><value>ঘণ্টার লাইভ সতর্কতা থামান। নতুন বিজ্ঞপ্তি আপনার ইনবক্সে থেকে যায়।</value></data>
+	<data name="Settings.Notifications.ShowLogWarnings"><value>লগ সতর্কতা দেখান</value></data>
+	<data name="Settings.Notifications.ShowSystemErrors"><value>সিস্টেম ত্রুটি দেখান</value></data>
+	<data name="Settings.SoundEffects.Title"><value>শব্দ প্রভাব</value></data>
+	<data name="Settings.SoundEffects.Description"><value>গুরুত্বপূর্ণ UI মুহূর্তগুলি নিশ্চিত করে এমন সংক্ষিপ্ত অডিও সংকেতগুলি নিয়ন্ত্রণ করুন।</value></data>
+	<data name="Settings.SoundEffects.MasterLabel"><value>UI শব্দ প্লে করুন</value></data>
+	<data name="Settings.SoundEffects.VolumeLabel"><value>ভলিউম</value></data>
+	<data name="Settings.SoundEffects.VolumeDescription"><value>একটি ভলিউম সেটিং প্রতিটি সংকেতে প্রযোজ্য হয়।</value></data>
+	<data name="Settings.SoundEffects.CueGroupLabel"><value>শব্দ সংকেত</value></data>
+	<data name="Settings.SoundEffects.Cue.Send"><value>বার্তা পাঠান</value></data>
+	<data name="Settings.SoundEffects.Cue.Enter"><value>চ্যাটে প্রবেশ করুন</value></data>
+	<data name="Settings.SoundEffects.Cue.Receive"><value>প্রতিক্রিয়া সম্পন্ন</value></data>
+	<data name="Settings.SoundEffects.Cue.Error"><value>প্রতিক্রিয়া ত্রুটি</value></data>
+	<data name="Settings.SoundEffects.Cue.Notify"><value>বিজ্ঞপ্তি আগমন</value></data>
+	<data name="Settings.SoundEffects.Cue.Tap"><value>স্টার্টার প্রম্পট ট্যাপ</value></data>
+	<data name="Settings.SoundEffects.Cue.Complete"><value>অনবোর্ডিং সম্পন্ন</value></data>
+	<data name="Settings.Network.LoadingMessage"><value>নেটওয়ার্ক সেটিংস লোড হচ্ছে...</value></data>
+	<data name="Settings.Network.AccessTitle"><value>নেটওয়ার্ক অ্যাক্সেস</value></data>
+	<data name="Settings.Network.EnableAccessLabel"><value>অন্যান্য ডিভাইস থেকে অ্যাক্সেসের অনুমতি দিন</value></data>
+	<data name="Settings.Network.PortLabel"><value>পোর্ট</value></data>
+	<data name="Settings.Network.RestartRequiredHint"><value>পুনরায় চালু করার পরে নেটওয়ার্ক অ্যাক্সেস এবং পোর্ট পরিবর্তনগুলি কার্যকর হয়।</value></data>
+	<data name="Settings.Network.PrivateFetchTitle"><value>ওয়েব ফেচ অ্যাক্সেস</value></data>
+	<data name="Settings.Network.AllowPrivateFetchLabel"><value>স্থানীয় এবং ব্যক্তিগত-নেটওয়ার্ক URL ফেচ করার অনুমতি দিন</value></data>
+	<data name="Settings.Network.AllowPrivateFetchDescription"><value>এজেন্টদের নির্ভরযোগ্য অভ্যন্তরীণ পৃষ্ঠাগুলি পড়ার প্রয়োজন হলেই কেবল এটি সক্ষম করুন। অনির্ধারিত, লিঙ্ক-লোকাল, মাল্টিকাস্ট এবং অন্যান্য অ-রুটযোগ্য ঠিকানাগুলি অবরুদ্ধ থাকবে।</value></data>
+	<data name="Settings.Network.SandboxAccessTitle"><value>স্যান্ডবক্স নেটওয়ার্ক অ্যাক্সেস</value></data>
+	<data name="Settings.Network.AllowSandboxAccessLabel"><value>স্যান্ডবক্সযুক্ত স্ক্রিপ্টগুলিকে নেটওয়ার্ক অ্যাক্সেস করার অনুমতি দিন</value></data>
+	<data name="Settings.Network.AllowSandboxAccessDescription"><value>এই ইনস্টলেশন-ব্যাপী অ্যাডমিন অনুমতি প্রতিটি ব্যবহারকারীর সাধারণ অনলাইন স্যান্ডবক্স চালনায় প্রযোজ্য। অফলাইন এবং কেবল স্থানীয় চালনা নেটওয়ার্কহীন থাকে।</value></data>
+	<data name="Settings.Network.PublicUrlTitle"><value>পাবলিক অ্যাপ URL</value></data>
+	<data name="Settings.Network.PublicUrlModeLabel"><value>মোড</value></data>
+	<data name="Settings.Network.PublicUrlModeAuto"><value>স্বয়ংক্রিয়ভাবে সনাক্ত করা নেটওয়ার্ক URL</value></data>
+	<data name="Settings.Network.PublicUrlModeCustom"><value>কাস্টম URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlLabel"><value>কাস্টম পাবলিক অ্যাপ URL</value></data>
+	<data name="Settings.Network.CustomPublicUrlPlaceholder"><value>https://oscova.company.local</value></data>
+	<data name="Settings.Network.RestartRequiredAlert"><value>নেটওয়ার্ক অ্যাক্সেস এবং পোর্ট পরিবর্তন কার্যকর করার জন্য Oscova Agents পুনরায় চালু করুন।</value></data>
+	<data name="Settings.Network.DetectedUrlsTitle"><value>সনাক্ত করা URL সমূহ</value></data>
+	<data name="Settings.Network.LocalUrlLabel"><value>স্থানীয় URL</value></data>
+	<data name="Settings.Network.CopyToClipboardTitle"><value>ক্লিপবোর্ডে অনুলিপি করুন</value></data>
+	<data name="Settings.Network.AutoNetworkUrlLabel"><value>স্বয়ংক্রিয় নেটওয়ার্ক URL</value></data>
+	<data name="Settings.Network.AutoNetworkUrlUnavailable"><value>স্বয়ংক্রিয় নেটওয়ার্ক URL অনুপলব্ধ।</value></data>
+	<data name="Settings.Network.EffectivePublicUrlLabel"><value>কার্যকর পাবলিক অ্যাপ URL</value></data>
+	<data name="Settings.Network.EffectivePublicUrlUnavailable"><value>কার্যকর পাবলিক URL অনুপলব্ধ।</value></data>
+	<data name="Settings.Network.ActiveUrlsLabel"><value>সক্রিয় সার্ভার URL সমূহ</value></data>
+	<data name="Settings.Network.NoActiveUrls"><value>স্টার্টআপের সময় কোনো সক্রিয় লিসেনার URL রিপোর্ট করা হয়নি।</value></data>
+	<data name="Settings.Network.QrCodeTitle"><value>QR কোড</value></data>
+	<data name="Settings.Network.QrCodeAlt"><value>কার্যকর পাবলিক অ্যাপ URL QR কোড</value></data>
+	<data name="Settings.Network.DownloadQrCodeButton"><value>QR কোড ডাউনলোড করুন</value></data>
+	<data name="Settings.Network.ResetButton"><value>রিসেট</value></data>
+	<data name="Settings.Network.SaveButton"><value>নেটওয়ার্ক সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Settings.Network.LoadErrorToast"><value>নেটওয়ার্ক সেটিংস লোড ত্রুটি: {0}</value></data>
+	<data name="Settings.Network.SaveFailedToast"><value>নেটওয়ার্ক সেটিংস সংরক্ষণ করা যায়নি।</value></data>
+	<data name="Settings.Network.SaveSuccessToast"><value>নেটওয়ার্ক সেটিংস সংরক্ষিত হয়েছে</value></data>
+	<data name="Settings.Network.SaveFailedWithMessageToast"><value>নেটওয়ার্ক সেটিংস সংরক্ষণ করতে ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.Network.CopySuccessToast"><value>ক্লিপবোর্ডে অনুলিপি করা হয়েছে</value></data>
+	<data name="Settings.Network.CopyFailedToast"><value>ক্লিপবোর্ডে অনুলিপি করতে ব্যর্থ হয়েছে</value></data>
+	<data name="Settings.Network.QrCodeDownloadedToast"><value>QR কোড ডাউনলোড হয়েছে</value></data>
+	<data name="Settings.Network.QrCodeDownloadFailedToast"><value>QR কোড ডাউনলোড করতে ব্যর্থ হয়েছে</value></data>
+	<data name="Settings.ConnectedAccounts.AvailableBadge"><value>উপলব্ধ</value></data>
+	<data name="Settings.ConnectedAccounts.NoProvidersMessage"><value>সক্রিয় প্লাগইনগুলো থেকে কোনো অ্যাকাউন্ট সংযোগ উপলব্ধ নেই।</value></data>
+	<data name="Settings.ConnectedAccounts.UnavailableBadge"><value>অনুপলব্ধ</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredMessage"><value>উপলব্ধ নয়। এই সরবরাহকারী কনফিগার করতে প্রশাসকের সাথে যোগাযোগ করুন।</value></data>
+	<data name="Settings.ConnectedAccounts.NotConfiguredAdminMessage"><value>এখনও সেট আপ করা হয়নি। এর OAuth অ্যাপ যোগ করতে "প্রদানকারী পরিচালনা করুন" ব্যবহার করুন।</value></data>
+	<data name="Settings.ConnectedAccounts.AuthenticatedAccountFallback"><value>একটি প্রমাণীকৃত অ্যাকাউন্ট</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectedAsMessage"><value>{0} হিসেবে সংযুক্ত।</value></data>
+	<data name="Settings.ConnectedAccounts.NotConnectedMessage"><value>সংযুক্ত নয়।</value></data>
+	<data name="Settings.ConnectedAccounts.DisconnectButton"><value>সংযোগ বিচ্ছিন্ন করুন</value></data>
+	<data name="Settings.ConnectedAccounts.ConnectButton"><value>সংযোগ করুন</value></data>
+	<data name="Settings.Credentials.SavedCredentialsTitle"><value>সংরক্ষিত ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Credentials.SavedCredentialsDescription"><value>API কী এবং বট টোকেনগুলি কেন্দ্রীয়ভাবে পরিচালনা করুন, তারপর প্রদানকারী এবং Discord সেটিংস থেকে সেগুলি লিঙ্ক করুন।</value></data>
+	<data name="Settings.Credentials.AddCredentialButton"><value>ক্রেডেনশিয়াল যোগ করুন</value></data>
+	<data name="Settings.Credentials.LangsearchInfo"><value>`web_search` টুল সক্ষম করতে `langsearch` কী সহ একটি `ApiKey` ক্রেডেনশিয়াল তৈরি করুন।</value></data>
+	<data name="Settings.Credentials.IntegrationCredentialsHeading"><value>একত্রীকরণ ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Credentials.NoIntegrationCredentialsMessage"><value>কোনো একত্রীকরণ ক্রেডেনশিয়ালের প্রয়োজন নেই।</value></data>
+	<data name="Settings.Credentials.UserCredentialsHeading"><value>আপনার ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Credentials.NoCredentialsEmpty"><value>এখনও কোনো ক্রেডেনশিয়াল সংরক্ষিত হয়নি।</value></data>
+	<data name="Settings.Credentials.ColumnAlias"><value>উপনাম</value></data>
+	<data name="Settings.Credentials.ColumnKind"><value>ধরন</value></data>
+	<data name="Settings.Credentials.ColumnKey"><value>কী</value></data>
+	<data name="Settings.Credentials.ColumnValue"><value>মান</value></data>
+	<data name="Settings.Credentials.ValueSetBadge"><value>সেট করা হয়েছে</value></data>
+	<data name="Settings.Credentials.ValueNotSetBadge"><value>সেট করা হয়নি</value></data>
+	<data name="Settings.Credentials.AddCredentialTitle"><value>ক্রেডেনশিয়াল যোগ করুন</value></data>
+	<data name="Settings.Credentials.EditCredentialTitle"><value>ক্রেডেনশিয়াল সম্পাদনা করুন</value></data>
+	<data name="Settings.Credentials.NewCredentialLabel"><value>নতুন ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Credentials.EncryptionDescription"><value>গোপন মানগুলি সঞ্চিত অবস্থায় এনক্রিপ্ট করা থাকে এবং সংরক্ষণের পরে কখনই প্রদর্শিত হয় না।</value></data>
+	<data name="Settings.Credentials.AliasLabel"><value>নাম</value></data>
+	<data name="Settings.Credentials.AliasPlaceholder"><value>LangSearch API</value></data>
+	<data name="Settings.Credentials.KeyLabel"><value>ক্রেডেনশিয়ালের কী</value></data>
+	<data name="Settings.Credentials.KeyPlaceholder"><value>langsearch</value></data>
+	<data name="Settings.Credentials.KeyHint"><value>কেবল ছোট হাতের অক্ষর, সংখ্যা এবং ড্যাশ। তৈরির পরে কীটি কেবল-পঠনযোগ্য হয়ে যায়।</value></data>
+	<data name="Settings.Credentials.KindLabel"><value>ধরন</value></data>
+	<data name="Settings.Credentials.DescriptionPlaceholder"><value>এই ক্রেডেনশিয়ালটি কী কাজে ব্যবহৃত হয়</value></data>
+	<data name="Settings.Credentials.SecretValueLabel"><value>গোপন মান</value></data>
+	<data name="Settings.Credentials.SecretValueNewPlaceholder"><value>গোপন মানটি পেস্ট করুন</value></data>
+	<data name="Settings.Credentials.SecretValueEditPlaceholder"><value>বর্তমান মান রাখতে ফাঁকা রাখুন</value></data>
+	<data name="Settings.Credentials.SecretValueNewHint"><value>নতুন ক্রেডেনশিয়ালের জন্য আবশ্যক।</value></data>
+	<data name="Settings.Credentials.SecretValueEditHint"><value>আপনি যদি কেবল মেটাডেটা আপডেট করতে চান তবে ফাঁকা রাখুন।</value></data>
+	<data name="Settings.Credentials.ValueFieldLabel"><value>মান</value></data>
+	<data name="Settings.Credentials.StoredValueOption"><value>একটি মান লিখুন</value></data>
+	<data name="Settings.Credentials.EnvironmentValueOption"><value>একটি পরিবেশ পরিবর্তনশীল ব্যবহার করুন</value></data>
+	<data name="Settings.Credentials.EnvironmentVariablePlaceholder"><value>ENVIRONMENT_VARIABLE</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableHint"><value>রানটাইমে এই পরিবেশ পরিবর্তনশীল থেকে মানটি পড়া হয়।</value></data>
+	<data name="Settings.Credentials.EnvironmentVariableRequiredError"><value>{0}-এর জন্য পরিবেশ পরিবর্তনশীলের নাম লিখুন।</value></data>
+	<data name="Settings.Credentials.ValueRequiredError"><value>{0}-এর জন্য একটি মান লিখুন।</value></data>
+	<data name="Settings.Credentials.SaveButton"><value>ক্রেডেনশিয়াল সংরক্ষণ করুন</value></data>
+	<data name="Settings.Credentials.NotFoundToast"><value>ক্রেডেনশিয়াল পাওয়া যায়নি।</value></data>
+	<data name="Settings.Credentials.AliasRequiredError"><value>একটি ক্রেডেনশিয়ালের নাম আবশ্যক।</value></data>
+	<data name="Settings.Credentials.KeyRequiredError"><value>ক্রেডেনশিয়ালের কী আবশ্যক।</value></data>
+	<data name="Settings.Credentials.KeyInvalidFormatError"><value>ক্রেডেনশিয়ালের কীতে কেবল ছোট হাতের অক্ষর, সংখ্যা এবং ড্যাশ ব্যবহার করতে হবে।</value></data>
+	<data name="Settings.Credentials.KeyAlreadyExistsError"><value>ক্রেডেনশিয়ালের কী ইতিমধ্যে বিদ্যমান।</value></data>
+	<data name="Settings.Credentials.SecretRequiredError"><value>নতুন ক্রেডেনশিয়ালের জন্য গোপন মান আবশ্যক।</value></data>
+	<data name="Settings.Credentials.CreatedToast"><value>ক্রেডেনশিয়াল তৈরি হয়েছে।</value></data>
+	<data name="Settings.Credentials.UpdatedToast"><value>ক্রেডেনশিয়াল আপডেট হয়েছে।</value></data>
+	<data name="Settings.Credentials.DeleteConfirmTitle"><value>ক্রেডেনশিয়াল মুছুন</value></data>
+	<data name="Settings.Credentials.DeleteConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি '{0}' মুছতে চান?</value></data>
+	<data name="Settings.Credentials.StillLinkedWarning"><value>এই ক্রেডেনশিয়ালটি এখনও {0}-এর সাথে সংযুক্ত। এটি মুছে ফেলার আগে সেই উল্লেখগুলি সরান।</value></data>
+	<data name="Settings.Credentials.DeletedToast"><value>ক্রেডেনশিয়াল মুছে ফেলা হয়েছে।</value></data>
+	<data name="Settings.Avatar.ConnectionHeading"><value>সংযোগ</value></data>
+	<data name="Settings.Avatar.BridgeUrlLabel"><value>ব্রিজ URL</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsTitle"><value>লাইভ অবতারে প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.ApplySavedAvatarSettingsButton"><value>লাইভ অবতারে প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.StartEngineButton"><value>Avatar Engine চালু করুন</value></data>
+	<data name="Settings.Avatar.EngineCheckingStatus"><value>পরীক্ষা করা হচ্ছে</value></data>
+	<data name="Settings.Avatar.EngineConnectedStatus"><value>সংযুক্ত</value></data>
+	<data name="Settings.Avatar.EngineOfflineStatus"><value>অফলাইন</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorStatus"><value>ক্যাটালগ সমস্যা</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedStatus"><value>পরীক্ষা করা হয়নি</value></data>
+	<data name="Settings.Avatar.EngineCheckingDescription"><value>Avatar Engine-এ সংযুক্ত হচ্ছে এবং লাইভ পছন্দগুলি লোড করছে।</value></data>
+	<data name="Settings.Avatar.EngineConnectedDescription"><value>Avatar Engine {0}-এ উপলভ্য।</value></data>
+	<data name="Settings.Avatar.EngineOfflineDescription"><value>{0}-এ Avatar Engine-এ পৌঁছানো যায়নি। সংরক্ষিত সেটিংস সম্পাদনাযোগ্য থাকবে।</value></data>
+	<data name="Settings.Avatar.EngineCatalogErrorDescription"><value>ইঞ্জিনটি উপলব্ধ, তবে এক বা একাধিক লাইভ পছন্দের তালিকা লোড করা যায়নি।</value></data>
+	<data name="Settings.Avatar.EngineNotCheckedDescription"><value>লাইভ অবতার এবং অভিব্যক্তি লোড করতে সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.BridgeUrlDescription"><value>শেয়ার করা অবতার রানটাইম দ্বারা ব্যবহৃত সংরক্ষিত ব্রিজ এন্ডপয়েন্ট।</value></data>
+	<data name="Settings.Avatar.SaveChangesWarning"><value>অবতার ইঞ্জিনে প্রয়োগ করার আগে পরিবর্তনগুলি সংরক্ষণ করুন।</value></data>
+	<data name="Settings.Avatar.AvatarHeading"><value>অবতার</value></data>
+	<data name="Settings.Avatar.SelectedAvatarLabel"><value>নির্বাচিত অবতার</value></data>
+	<data name="Settings.Avatar.LoadingAvatarsOption"><value>অবতার লোড হচ্ছে...</value></data>
+	<data name="Settings.Avatar.LoadingEmotionsOption"><value>অভিব্যক্তি লোড হচ্ছে...</value></data>
+	<data name="Settings.Avatar.SavedUnverifiedOption"><value>সংরক্ষিত: {0} (যাচাই করা হয়নি)</value></data>
+	<data name="Settings.Avatar.SavedUnavailableOption"><value>সংরক্ষিত: {0} (অনুপলব্ধ)</value></data>
+	<data name="Settings.Avatar.CatalogCheckingHint"><value>Avatar Engine থেকে লাইভ পছন্দগুলি লোড হচ্ছে।</value></data>
+	<data name="Settings.Avatar.CatalogOfflineHint"><value>Avatar Engine সংযুক্ত হওয়ার পরে লাইভ পছন্দগুলি উপলব্ধ হবে।</value></data>
+	<data name="Settings.Avatar.SavedValueUnverifiedHint"><value>সংরক্ষিত মান '{0}' দেখানো হয়েছে কিন্তু চলমান ইঞ্জিনের সাথে যাচাই করা হয়নি।</value></data>
+	<data name="Settings.Avatar.SavedValueUnavailableHint"><value>সংরক্ষিত মান '{0}' চলমান ইঞ্জিনে উপলব্ধ নেই।</value></data>
+	<data name="Settings.Avatar.RefreshAvatarsTitle"><value>অ্যাভাটার রিফ্রেশ করুন</value></data>
+<data name="Settings.Avatar.ApplyAvatarButton"><value>সাজসজ্জা প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.ChooseAvatarDescription"><value>প্রদর্শনের জন্য একটি অ্যাভাটার বেছে নিন</value></data>
+	<data name="Settings.Avatar.ExpressionHeading"><value>অভিব্যক্তি</value></data>
+	<data name="Settings.Avatar.SelectedEmotionLabel"><value>নির্বাচিত অনুভূতি</value></data>
+	<data name="Settings.Avatar.ChooseEmotionDescription"><value>চলমান ইঞ্জিন থেকে একটি অভিব্যক্তি বেছে নিন।</value></data>
+	<data name="Settings.Avatar.RefreshEmotionsTitle"><value>অনুভূতি রিফ্রেশ করুন</value></data>
+	<data name="Settings.Avatar.BlendSpeedLabel"><value>ব্লেন্ডের গতি</value></data>
+	<data name="Settings.Avatar.CueBlendInLabel"><value>আবেগ ফুটে ওঠার সময় (সেকেন্ড)</value></data>
+	<data name="Settings.Avatar.CueRestoreAfterLabel"><value>আবেগ ফেরার অপেক্ষা (সেকেন্ড)</value></data>
+	<data name="Settings.Avatar.CueTimingDescription"><value>কথিত উত্তরের আবেগ ধীরে ফুটে ওঠে, কিছুক্ষণ থাকে, তারপর উপরের ব্লেন্ড গতিতে নির্বাচিত আবেগে ফিরে যায়।</value></data>
+	<data name="Settings.Avatar.ApplyExpressionButton"><value>অভিব্যক্তি প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.WindowHeading"><value>উইন্ডো</value></data>
+	<data name="Settings.Avatar.ResolutionLabel"><value>রেজোলিউশন</value></data>
+	<data name="Settings.Avatar.Resolution1920x1080"><value>1920x1080 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1440"><value>2560x1440 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution3840x2160"><value>3840x2160 (16:9)</value></data>
+	<data name="Settings.Avatar.Resolution2560x1080"><value>2560x1080 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution3440x1440"><value>3440x1440 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution5120x2160"><value>5120x2160 (21:9)</value></data>
+	<data name="Settings.Avatar.Resolution1280x720"><value>1280x720 (16:9)</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLabel"><value>গ্রাফিক্স প্রিসেট</value></data>
+	<data name="Settings.Avatar.GraphicsPresetLow"><value>কম</value></data>
+	<data name="Settings.Avatar.GraphicsPresetMedium"><value>মাঝারি</value></data>
+	<data name="Settings.Avatar.GraphicsPresetHigh"><value>উচ্চ</value></data>
+	<data name="Settings.Avatar.GraphicsPresetEpic"><value>এপিক</value></data>
+	<data name="Settings.Avatar.GraphicsPresetCinematic"><value>সিনেম্যাটিক</value></data>
+	<data name="Settings.Avatar.RayTracingLabel"><value>রে ট্রেসিং</value></data>
+	<data name="Settings.Avatar.RayTracingDescription"><value>সমর্থিত রে-ট্রেসড ইফেক্টগুলোকে গুণমান প্রিসেট থেকে স্বাধীনভাবে চালু করে। ডিফল্টভাবে বন্ধ থাকে এবং কর্মক্ষমতা কমাতে পারে।</value></data>
+	<data name="Settings.Avatar.FullscreenLabel"><value>পূর্ণ পর্দা</value></data>
+	<data name="Settings.Avatar.BackgroundColorLabel"><value>পটভূমির রঙ</value></data>
+	<data name="Settings.Avatar.ApplyWindowButton"><value>উইন্ডো প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.MessageAppearanceHeading"><value>বার্তার প্রদর্শনশৈলী</value></data>
+	<data name="Settings.Avatar.MessageFontSizeLabel"><value>বার্তার ফন্টের আকার</value></data>
+	<data name="Settings.Avatar.MessageColorLabel"><value>রঙ</value></data>
+	<data name="Settings.Avatar.MessageColorOpacityLabel"><value>অস্বচ্ছতা</value></data>
+	<data name="Settings.Avatar.ApplyMessageAppearanceButton"><value>প্রদর্শনশৈলী প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.MessageBoxHeading"><value>বার্তা বাক্স</value></data>
+	<data name="Settings.Avatar.EditMessageLayoutButton"><value>লেআউট সম্পাদনা করুন</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogTitle"><value>বার্তার লেআউট</value></data>
+	<data name="Settings.Avatar.MessageLayoutDialogSubtitle"><value>{0} x {1} অবতার স্ক্রিনে বার্তা বাক্সটি স্থাপন করুন।</value></data>
+	<data name="Settings.Avatar.MessageLayoutInstructions"><value>বার্তা বাক্সটি সরাতে টেনে নিন, কোণ থেকে আকার পরিবর্তন করুন অথবা নিচে সঠিক শতাংশ লিখুন।</value></data>
+	<data name="Settings.Avatar.MessageLayoutScreenLabel"><value>অবতার স্ক্রিন</value></data>
+	<data name="Settings.Avatar.MessageLayoutBoxLabel"><value>বার্তা বাক্স</value></data>
+	<data name="Settings.Avatar.MessageLayoutLeftLabel"><value>বাম</value></data>
+	<data name="Settings.Avatar.MessageLayoutTopLabel"><value>উপরে</value></data>
+	<data name="Settings.Avatar.MessageLayoutInvalid"><value>বার্তা বাক্সটি স্ক্রিনের মধ্যে রাখুন এবং এর প্রস্থ ও উচ্চতা অন্তত 1% রাখুন।</value></data>
+	<data name="Settings.Avatar.TransformWidthLabel"><value>প্রস্থ (%)</value></data>
+	<data name="Settings.Avatar.TransformHeightLabel"><value>উচ্চতা (%)</value></data>
+	<data name="Settings.Avatar.MessageDisplayDurationLabel"><value>প্রদর্শনের সময়কাল</value></data>
+	<data name="Settings.Avatar.SecondsUnit"><value>সেকেন্ড</value></data>
+	<data name="Settings.Avatar.ApplyMessageBoxButton"><value>বার্তা বাক্স প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.MessagePreviewHeading"><value>বার্তা প্রাকদর্শন</value></data>
+	<data name="Settings.Avatar.PreviewTextLabel"><value>প্রাকদর্শন টেক্সট</value></data>
+	<data name="Settings.Avatar.PreviewTextPlaceholder"><value>অ্যাভাটার বার্তা বাক্সে দেখতে একটি বার্তা লিখুন</value></data>
+	<data name="Settings.Avatar.SendPreviewButton"><value>প্রাকদর্শন পাঠান</value></data>
+	<data name="Settings.Avatar.ClearPreviewButton"><value>সাফ করুন</value></data>
+	<data name="Settings.Avatar.CameraHeading"><value>ক্যামেরা</value></data>
+	<data name="Settings.Avatar.CameraYawLabel"><value>ক্যামেরা ইয়াও (Yaw)</value></data>
+	<data name="Settings.Avatar.ApplyCameraButton"><value>ক্যামেরা প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.AudioHeading"><value>অডিও</value></data>
+	<data name="Settings.Avatar.SpeechVolumeLabel"><value>স্পিচ ভলিউম</value></data>
+	<data name="Settings.Avatar.ApplyAudioButton"><value>অডিও প্রয়োগ করুন</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarTitle"><value>অ্যাভাটার বন্ধ করুন</value></data>
+	<data name="Settings.Avatar.ShutdownAvatarButton"><value>অ্যাভাটার বন্ধ করুন</value></data>
+	<data name="Settings.Avatar.ResetToDefaultsButton"><value>ডিফল্টে রিসেট করুন</value></data>
+	<data name="Settings.Avatar.SaveSettingsButton"><value>সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmTitle"><value>অ্যাভাটার বন্ধের বিষয়টি নিশ্চিত করুন</value></data>
+	<data name="Settings.Avatar.ShutdownConfirmMessage"><value>এই ব্রিজ URL-এর সাথে সংযুক্ত অ্যাভাটারটি কি বন্ধ করতে চান? এটি নেটওয়ার্কের অন্য কোনো মেশিনে চলমান অ্যাভাটারকে প্রভাবিত করতে পারে।</value></data>
+	<data name="Settings.Avatar.DefaultPreviewMessage"><value>এটি একটি পরীক্ষামূলক বার্তা।</value></data>
+	<data name="Settings.Avatar.SettingsLoadErrorToast"><value>অ্যাভাটার সেটিংস লোড করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.SavedSettingsAppliedToast"><value>সংরক্ষিত অ্যাভাটার সেটিংস প্রয়োগ করা হয়েছে</value></data>
+	<data name="Settings.Avatar.ApplySavedSettingsFailedToast"><value>অ্যাভাটার সেটিংস প্রয়োগ করা যায়নি।</value></data>
+	<data name="Settings.Avatar.SyncErrorToast"><value>অ্যাভাটার সিঙ্ক ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.LoadedAvatarsToast"><value>{0} টি অ্যাভাটার লোড হয়েছে</value></data>
+	<data name="Settings.Avatar.LoadAvatarsFailedToast"><value>অ্যাভাটার লোড করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.LoadAvatarsErrorToast"><value>অ্যাভাটার লোড করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.LoadedEmotionsToast"><value>{0} টি অনুভূতি লোড হয়েছে</value></data>
+	<data name="Settings.Avatar.LoadEmotionsFailedToast"><value>অনুভূতি লোড করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.LoadEmotionsErrorToast"><value>অনুভূতি লোড করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.EngineOfflineToast"><value>Avatar Engine-এ পৌঁছানো যাচ্ছে না।</value></data>
+	<data name="Settings.Avatar.EngineRefreshFailedToast"><value>Avatar Engine রিফ্রেশ ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.Avatar.StartEngineStartedToast"><value>Avatar Engine চালু হয়েছে। এর উইন্ডো আসা পর্যন্ত অপেক্ষা করুন, তারপর সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.StartEngineLocalUrlToast"><value>স্থানীয় Avatar Engine চালু করতে http://localhost বা http://127.0.0.1 Bridge URL ব্যবহার করুন।</value></data>
+	<data name="Settings.Avatar.StartEngineFailedToast"><value>Avatar Engine চালু করা যায়নি।</value></data>
+	<data name="Settings.Avatar.EngineConnectedToast"><value>Avatar Engine সংযুক্ত হয়েছে এবং লাইভ বিকল্পগুলি লোড হয়েছে।</value></data>
+	<data name="Settings.Avatar.AppliedToast"><value>'{0}'-এ সাজসজ্জা প্রয়োগ করা হয়েছে</value></data>
+	<data name="Settings.Avatar.ApplyFailedToast"><value>অ্যাভাটার প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.ApplyErrorToast"><value>অ্যাভাটার প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionAppliedToast"><value>অভিব্যক্তি '{0}' প্রয়োগ করা হয়েছে</value></data>
+	<data name="Settings.Avatar.ExpressionFailedToast"><value>অভিব্যক্তি প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.ExpressionErrorToast"><value>অভিব্যক্তি প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.WindowApplyFailedToast"><value>উইন্ডো প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.WindowSettingsAppliedToast"><value>উইন্ডো সেটিংস প্রয়োগ করা হয়েছে</value></data>
+	<data name="Settings.Avatar.WindowApplyErrorToast"><value>উইন্ডো প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyFailedToast"><value>বার্তার প্রদর্শনশৈলী প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.MessageAppearanceAppliedToast"><value>বার্তার প্রদর্শনশৈলী প্রয়োগ করা হয়েছে</value></data>
+	<data name="Settings.Avatar.MessageAppearanceApplyErrorToast"><value>বার্তার প্রদর্শনশৈলী প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyFailedToast"><value>বার্তা বাক্স প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.MessageBoxAppliedToast"><value>বার্তা বাক্স প্রয়োগ করা হয়েছে</value></data>
+	<data name="Settings.Avatar.MessageBoxApplyErrorToast"><value>বার্তা বাক্স প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawAppliedToast"><value>ক্যামেরা ইয়াও {0} ডিগ্রিতে সেট করা হয়েছে</value></data>
+	<data name="Settings.Avatar.CameraYawApplyFailedToast"><value>ক্যামেরা ইয়াও প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.CameraYawApplyErrorToast"><value>ক্যামেরা ইয়াও প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.AudioSettingsAppliedToast"><value>অডিও সেটিংস প্রয়োগ করা হয়েছে ({0}%)</value></data>
+	<data name="Settings.Avatar.AudioApplyFailedToast"><value>অডিও প্রয়োগ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.AudioApplyErrorToast"><value>অডিও প্রয়োগ করার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageSentToast"><value>প্রাকদর্শন বার্তা পাঠানো হয়েছে</value></data>
+	<data name="Settings.Avatar.PreviewMessageFailedToast"><value>প্রাকদর্শন বার্তা পাঠাতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageErrorToast"><value>বার্তা প্রাকদর্শন ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearedToast"><value>প্রাকদর্শন বার্তা মুছে ফেলা হয়েছে</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearFailedToast"><value>প্রাকদর্শন বার্তা মুছে ফেলতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.PreviewMessageClearErrorToast"><value>বার্তা মুছে ফেলার সময় ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownInitiatedToast"><value>অ্যাভাটার বন্ধ করার প্রক্রিয়া শুরু হয়েছে</value></data>
+	<data name="Settings.Avatar.ShutdownFailedToast"><value>বন্ধ করার প্রক্রিয়া শুরু করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Avatar.ShutdownErrorToast"><value>বন্ধ করার ত্রুটি: {0}</value></data>
+	<data name="Settings.Avatar.SettingsSavedToast"><value>অ্যাভাটার সেটিংস সংরক্ষিত হয়েছে</value></data>
+	<data name="Settings.Avatar.SaveSettingsFailedToast"><value>অ্যাভাটার সেটিংস সংরক্ষণ করতে ব্যর্থ: {0}</value></data>
+	<data name="Settings.Speech.VoiceLabel"><value>ভয়েস</value></data>
+	<data name="Settings.Speech.NoVoicesOption"><value>(কোনো ভয়েস পাওয়া যায়নি)</value></data>
+	<data name="Settings.Speech.TestVoiceButton"><value>ভয়েস পরীক্ষা করুন</value></data>
+	<data name="Settings.Speech.TestingButton"><value>পরীক্ষা করা হচ্ছে</value></data>
+	<data name="Settings.Speech.VoiceHelperText"><value>এই ভয়েসটি প্রয়োগ করতে 'ভয়েস সেটিংস সংরক্ষণ করুন'-এ ক্লিক করুন।</value></data>
+	<data name="Settings.Speech.SampleTextLabel"><value>নমুনা টেক্সট</value></data>
+	<data name="Settings.Speech.SampleTextPlaceholder"><value>নির্বাচিত ভয়েস প্রাকদর্শন করতে কিছু লিখুন...</value></data>
+	<data name="Settings.Speech.DefaultSampleText"><value>এটি একটি দ্রুত ভয়েস প্রাকদর্শন।</value></data>
+	<data name="Settings.Speech.OutputModeLabel"><value>সহকারীর স্পিচ আউটপুট</value></data>
+	<data name="Settings.Speech.OutputModeBrowserOnly"><value>শুধুমাত্র ব্রাউজার</value></data>
+	<data name="Settings.Speech.OutputModeBrowserAndAvatar"><value>ব্রাউজার এবং অ্যাভাটার</value></data>
+	<data name="Settings.Speech.OutputModeAvatarOnly"><value>শুধুমাত্র অ্যাভাটার</value></data>
+	<data name="Settings.Speech.RecognitionSectionTitle"><value>স্পিচ রিকগনিশন</value></data>
+	<data name="Settings.Speech.SynthesisSectionTitle"><value>স্পিচ সিন্থেসিস</value></data>
+	<data name="Settings.Speech.DownloadModelButton"><value>মডেল ডাউনলোড করুন</value></data>
+	<data name="Settings.Speech.DownloadingLabel"><value>ডাউনলোড হচ্ছে {0:0}%</value></data>
+	<data name="Settings.Speech.ModelReadyLabel"><value>প্রস্তুত</value></data>
+	<data name="Settings.Speech.ModelMissingLabel"><value>ডাউনলোড করা হয়নি</value></data>
+	<data name="Settings.Speech.CancelDownloadButton"><value>বাতিল করুন</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderTitle"><value>ডিফল্ট প্রদানকারী</value></data>
+	<data name="Settings.ModelProviders.DefaultProviderDescription"><value>আপনার প্রদানকারীদের যোগ করুন এবং ডিফল্ট হিসেবে কোনটি ব্যবহার করা উচিত তা বাছুন।</value></data>
+	<data name="Settings.ModelProviders.SelectPlaceholder"><value>শুরু করতে একটি প্রদানকারী যোগ করুন</value></data>
+	<data name="Settings.ModelProviders.SelectDefaultPlaceholder"><value>একটি প্রদানকারী নির্বাচন করুন</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderTitle"><value>ফলব্যাক প্রদানকারী</value></data>
+	<data name="Settings.ModelProviders.FallbackProviderDescription"><value>ডিফল্ট প্রদানকারী ব্যর্থ হলে স্বয়ংক্রিয়ভাবে ব্যবহৃত হয়।</value></data>
+	<data name="Settings.ModelProviders.FallbackNoneOption"><value>কোনোটিই নয়</value></data>
+	<data name="Settings.ModelProviders.AddButton"><value>কাস্টম প্রদানকারী যোগ করুন</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderTitle"><value>এমবেডিং প্রদানকারী</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderDescription"><value>এজেন্ট মেমরি অনুসন্ধানের জন্য একটি এমবেডিং মডেল কনফিগার করুন।</value></data>
+	<data name="Settings.ModelProviders.NoEmbeddingConfiguredMessage"><value>কোনো এমবেডিং প্রদানকারী কনফিগার করা নেই। এজেন্ট মেমরি ফিচারের জন্য একটি এমবেডিং মডেল প্রয়োজন।</value></data>
+	<data name="Settings.ModelProviders.AddEmbeddingButton"><value>এমবেডিং প্রদানকারী যোগ করুন</value></data>
+	<data name="Settings.ModelProviders.ConfiguredProvidersTitle"><value>কনফিগার করা প্রদানকারীসমূহ</value></data>
+	<data name="Settings.ModelProviders.SelectedProviderLabel"><value>নির্বাচিত প্রদানকারী: {0}</value></data>
+	<data name="Settings.ModelProviders.NoProvidersMessage"><value>চ্যাট শুরু করতে একটি মডেল প্রদানকারী যোগ করুন।</value></data>
+	<data name="Settings.ModelProviders.TableHeaderProvider"><value>প্রদানকারী</value></data>
+	<data name="Settings.ModelProviders.TableHeaderModel"><value>মডেল</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCredential"><value>ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.ModelProviders.TableHeaderCapabilities"><value>সক্ষমতা</value></data>
+	<data name="Settings.ModelProviders.TableHeaderLastTest"><value>সর্বশেষ পরীক্ষা</value></data>
+	<data name="Settings.ModelProviders.OpenDetailsTitle"><value>প্রদানকারীর বিবরণ খুলুন</value></data>
+	<data name="Settings.ModelProviders.DefaultBadge"><value>ডিফল্ট</value></data>
+	<data name="Settings.ModelProviders.FallbackBadge"><value>ফলব্যাক</value></data>
+	<data name="Settings.ModelProviders.CapabilityText"><value>{0:N0} কনটেক্সট</value></data>
+	<data name="Settings.ModelProviders.NoCapabilities"><value>কোনো অতিরিক্ত সক্ষমতা নেই</value></data>
+	<data name="Settings.ModelProviders.NoTestRun"><value>পরীক্ষা করা হয়নি</value></data>
+	<data name="Settings.ModelProviders.DetailsDialogTitle"><value>প্রদানকারীর বিবরণ</value></data>
+	<data name="Settings.ModelProviders.EndpointDefault"><value>ডিফল্ট এন্ডপয়েন্ট</value></data>
+	<data name="Settings.ModelProviders.TestButton"><value>পরীক্ষা</value></data>
+	<data name="Settings.ModelProviders.ModelNotSet"><value>মডেল সেট করা নেই</value></data>
+	<data name="Settings.ModelProviders.NoCredentialLinked"><value>কোনো সংরক্ষিত ক্রেডেনশিয়াল লিঙ্ক করা নেই</value></data>
+	<data name="Settings.ModelProviders.CredentialSummary"><value>ক্রেডেনশিয়াল: {0} [{1}]</value></data>
+	<data name="Settings.ModelProviders.CredentialMissing"><value>ক্রেডেনশিয়াল লিঙ্ক করা আছে কিন্তু মান অনুপস্থিত: [{0}]</value></data>
+	<data name="Settings.ModelProviders.CredentialNotFound"><value>ক্রেডেনশিয়াল পাওয়া যায়নি: [{0}]</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmTitle"><value>প্রদানকারী সরান</value></data>
+	<data name="Settings.ModelProviders.RemoveProviderConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি {0} সরাতে চান?</value></data>
+	<data name="Settings.ModelProviders.CopyNameSuffix"><value>{0} (কপি)</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmTitle"><value>এমবেডিং প্রদানকারী সরান</value></data>
+	<data name="Settings.ModelProviders.RemoveEmbeddingConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি {0} সরাতে চান?</value></data>
+	<data name="Settings.ModelProviders.EditProviderDialogTitle"><value>প্রদানকারী সম্পাদনা করুন</value></data>
+	<data name="Settings.ModelProviders.AddProviderDialogTitle"><value>প্রদানকারী যোগ করুন</value></data>
+	<data name="Settings.ModelProviders.DialogTabProvider"><value>প্রদানকারী</value></data>
+	<data name="Settings.ModelProviders.DialogTabChatOptions"><value>চ্যাট বিকল্পসমূহ</value></data>
+	<data name="Settings.ModelProviders.ProviderTypeLabel"><value>প্রদানকারীর ধরন</value></data>
+	<data name="Settings.ModelProviders.ProviderNameLabel"><value>প্রদানকারীর নাম</value></data>
+	<data name="Settings.ModelProviders.ProviderNamePlaceholder"><value>যেমন, কাজের OpenAI</value></data>
+	<data name="Settings.ModelProviders.ProviderNameRequired"><value>প্রদানকারীর নাম আবশ্যক</value></data>
+	<data name="Settings.ModelProviders.ModelFileLabel"><value>মডেল ফাইল</value></data>
+	<data name="Settings.ModelProviders.NoGgufFilesOption"><value>কোনো GGUF ফাইল পাওয়া যায়নি</value></data>
+	<data name="Settings.ModelProviders.SelectModelPlaceholder"><value>একটি মডেল নির্বাচন করুন...</value></data>
+	<data name="Settings.ModelProviders.GgufFilesLocation"><value>{0}-এ GGUF ফাইলসমূহ</value></data>
+	<data name="Settings.ModelProviders.DownloadSectionTitle"><value>একটি GGUF মডেল ডাউনলোড করুন</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlLabel"><value>ডাউনলোড URL</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlPlaceholder"><value>https://huggingface.co/.../model.gguf</value></data>
+	<data name="Settings.ModelProviders.DownloadUrlHelp"><value>একটি GGUF ফাইলের সরাসরি লিঙ্ক পেস্ট করুন (যেমন HuggingFace থেকে)</value></data>
+	<data name="Settings.ModelProviders.BaseUrlLabel"><value>বেস URL</value></data>
+	<data name="Settings.ModelProviders.BaseUrlInvalid"><value>অনুগ্রহ করে একটি বৈধ URL লিখুন</value></data>
+	<data name="Settings.ModelProviders.ModelIdLabel"><value>মডেল ID</value></data>
+	<data name="Settings.ModelProviders.ModelIdRequired"><value>মডেল ID আবশ্যক</value></data>
+	<data name="Settings.ModelProviders.ModelIdHelp"><value>যেকোনো মডেল ID ম্যানুয়ালি লিখুন, অথবা নিচে প্রদানকারী মডেলগুলি আনুন।</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsTitle"><value>প্রদানকারী মডেল</value></data>
+	<data name="Settings.ModelProviders.ProviderModelsDescription"><value>উপলব্ধ বা প্রস্তাবিত মডেলগুলি আনুন, তারপর একটি মডেল ID ক্ষেত্রে অনুলিপি করুন।</value></data>
+	<data name="Settings.ModelProviders.FetchModelsButton"><value>মডেল আনুন</value></data>
+	<data name="Settings.ModelProviders.DownloadFetchedModelButton"><value>মডেল ডাউনলোড করুন</value></data>
+	<data name="Settings.ModelProviders.DownloadUnsupportedMessage"><value>নির্বাচিত প্রদানকারী মডেল ডাউনলোড সমর্থন করে না।</value></data>
+	<data name="Settings.ModelProviders.InstalledModelBadge"><value>ইনস্টল করা</value></data>
+	<data name="Settings.ModelProviders.ModelLicenseLabel"><value>লাইসেন্স</value></data>
+	<data name="Settings.ModelProviders.ChooseFetchedModelLabel"><value>আনা মডেলগুলির মধ্য থেকে একটি বেছে নিন</value></data>
+	<data name="Settings.ModelProviders.AvailableModelsLoadedLabel"><value>{0} লোড হয়েছে</value></data>
+	<data name="Settings.ModelProviders.SelectFetchedModelPlaceholder"><value>আনা মডেল নির্বাচন করুন...</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLabel"><value>এন্ডপয়েন্ট স্কোপ</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeAuto"><value>স্বয়ংক্রিয় সনাক্তকরণ</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeLocal"><value>লোকাল হিসেবে গণ্য করুন</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeCloud"><value>ক্লাউড হিসেবে গণ্য করুন</value></data>
+	<data name="Settings.ModelProviders.EndpointScopeDescription"><value>যখন কোনো কাস্টম এন্ডপয়েন্ট অফলাইন মোড দ্বারা ভুল শ্রেণিবদ্ধ হয়, যেমন একটি LAN গেটওয়ে বা ক্লাউড প্রক্সি, তখন এটি ব্যবহার করুন।</value></data>
+	<data name="Settings.ModelProviders.CredentialSectionTitle"><value>ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.ModelProviders.CredentialDescription"><value>প্রদানকারীতে সরাসরি গোপন তথ্য সংরক্ষণ করার পরিবর্তে এই প্রদানকারীকে একটি সংরক্ষিত API কী-এর সাথে লিঙ্ক করুন।</value></data>
+	<data name="Settings.ModelProviders.NewCredentialButton"><value>ক্রেডেনশিয়াল পরিচালনা করুন</value></data>
+	<data name="Settings.ModelProviders.SavedApiKeyLabel"><value>সংরক্ষিত API কী</value></data>
+	<data name="Settings.ModelProviders.ModelConfigurationTitle"><value>মডেল কনফিগারেশন</value></data>
+	<data name="Settings.ModelProviders.SupportsImagesLabel"><value>ছবি সমর্থন করে</value></data>
+	<data name="Settings.ModelProviders.SupportsThinkingLabel"><value>চিন্তা আউটপুট সমর্থন করে</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeLabel"><value>প্রসঙ্গ উইন্ডোর আকার</value></data>
+	<data name="Settings.ModelProviders.ContextWindowSizeInvalid"><value>প্রসঙ্গ উইন্ডোর আকার অবশ্যই ধনাত্মক হতে হবে</value></data>
+	<data name="Settings.ModelProviders.MemoryFitFits"><value>Oscova চালানো কম্পিউটারের জন্য আনুমানিক মেমরি সামঞ্জস্য: উপযুক্ত।</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTight"><value>Oscova চালানো কম্পিউটারের জন্য আনুমানিক মেমরি সামঞ্জস্য: সীমিত। ছোট প্রসঙ্গ উইন্ডো অনুমান কমায়।</value></data>
+	<data name="Settings.ModelProviders.MemoryFitTooLarge"><value>Oscova চালানো কম্পিউটারের জন্য আনুমানিক মেমরি সামঞ্জস্য: খুব বড়। ছোট মডেল বা ছোট প্রসঙ্গ উইন্ডো চেষ্টা করুন।</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveLabel"><value>সক্রিয় রাখুন</value></data>
+	<data name="Settings.ModelProviders.OllamaKeepAliveHelp"><value>ঐচ্ছিক Ollama সময়কাল। উদাহরণ: 5m মডেলটিকে পাঁচ মিনিটের জন্য লোড রাখে, -1 এটিকে অনির্দিষ্টকালের জন্য লোড রাখে এবং 0 প্রতিক্রিয়ার পরে এটি আনলোড করে। ফাঁকা রাখলে Ollama সার্ভারের ডিফল্ট মান ব্যবহৃত হয়।</value></data>
+	<data name="Settings.ModelProviders.InputCostLabel"><value>ইনপুট মূল্য, প্রতি ১০ লাখ টোকেনে USD</value></data>
+	<data name="Settings.ModelProviders.OutputCostLabel"><value>আউটপুট মূল্য, প্রতি ১০ লাখ টোকেনে USD</value></data>
+	<data name="Settings.ModelProviders.CostEstimateHelp"><value>ড্যাশবোর্ডের অনুমানের জন্য ঐচ্ছিক সাধারণ হার। ক্যাশ করা ইনপুটে ইনপুট হার প্রযোজ্য। অন্যান্য খরচ ধরা হয় না।</value></data>
+	<data name="Settings.ModelProviders.CostPerMillionTokensInvalid"><value>একটি অ-ঋণাত্মক পরিমাণ লিখুন বা ফাঁকা রাখুন।</value></data>
+	<data name="Settings.ModelProviders.CostNotSet"><value>খরচ সেট করা নেই</value></data>
+	<data name="Settings.ModelProviders.TemperatureLabel"><value>তাপমাত্রা</value></data>
+	<data name="Settings.ModelProviders.ClearButton"><value>সাফ করুন</value></data>
+	<data name="Settings.ModelProviders.TemperatureDescription"><value>উচ্চ মান এলোমেলোতা বৃদ্ধি করে; কম মান প্রতিক্রিয়াগুলিকে আরও নির্দিষ্ট করে।</value></data>
+	<data name="Settings.ModelProviders.TopPLabel"><value>Top P</value></data>
+	<data name="Settings.ModelProviders.TopPDescription"><value>নিউক্লিয়াস স্যাম্পলিং নিয়ন্ত্রণ করে। কম মান টোকেন পছন্দ সীমাবদ্ধ করে।</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyLabel"><value>ফ্রিকোয়েন্সি পেনাল্টি</value></data>
+	<data name="Settings.ModelProviders.FrequencyPenaltyDescription"><value>ইতিবাচক মান পুনরাবৃত্তি নিরুৎসাহিত করে; নেতিবাচক মান এটি বৃদ্ধি করে।</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyLabel"><value>প্রেজেন্স পেনাল্টি</value></data>
+	<data name="Settings.ModelProviders.PresencePenaltyDescription"><value>ইতিবাচক হলে মডেলটিকে নতুন বিষয় উপস্থাপন করতে উৎসাহিত করে।</value></data>
+	<data name="Settings.ModelProviders.TopKLabel"><value>Top K</value></data>
+	<data name="Settings.ModelProviders.TopKDescription"><value>সম্ভাব্য টোকেন সীমাবদ্ধ করে। প্রদানকারীর ডিফল্টের উপর নির্ভর করতে 0 এ সেট করুন।</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensLabel"><value>সর্বোচ্চ আউটপুট টোকেন</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensInvalid"><value>একটি ধনাত্মক সংখ্যা লিখুন বা ফাঁকা রাখুন।</value></data>
+	<data name="Settings.ModelProviders.MaxOutputTokensDescription"><value>প্রতিক্রিয়াটির দৈর্ঘ্য প্রদানকারীকে নির্ধারণ করতে দিতে ফাঁকা রাখুন।</value></data>
+	<data name="Settings.ModelProviders.SeedLabel"><value>সীড (Seed)</value></data>
+	<data name="Settings.ModelProviders.SeedInvalid"><value>একটি অ-ঋণাত্মক সংখ্যা লিখুন বা ফাঁকা রাখুন।</value></data>
+	<data name="Settings.ModelProviders.SeedDescription"><value>মডেল দ্বারা সমর্থিত হলে পুনরুৎপাদনযোগ্য প্রতিক্রিয়ার জন্য ব্যবহার করুন।</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorLabel"><value>টুল কল আচরণ</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAuto"><value>স্বয়ংক্রিয়</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorAllowMultiple"><value>একাধিক টুল কলের অনুমতি দিন</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorSingle"><value>শুধুমাত্র একক টুল কল</value></data>
+	<data name="Settings.ModelProviders.ToolCallBehaviorDescription"><value>মডেলটি প্রতি অনুরোধে কতগুলি টুল কল করতে পারবে তা চয়ন করুন।</value></data>
+	<data name="Settings.ModelProviders.ResetToDefaultsButton"><value>ডিফল্টে রিসেট করুন</value></data>
+	<data name="Settings.ModelProviders.ConnectedNoModelsMessage"><value>সফলভাবে সংযুক্ত হয়েছে, কিন্তু প্রদানকারী কোনো মডেল ফেরত দেয়নি। আপনি এখনও ম্যানুয়ালি একটি মডেল ID টাইপ করতে পারেন।</value></data>
+	<data name="Settings.ModelProviders.ModelsLoadedMessage"><value>{0} টি মডেল লোড হয়েছে।</value></data>
+	<data name="Settings.ModelProviders.ModelDetailsPrefilledMessage"><value>নির্বাচিত মডেল থেকে ক্ষেত্রগুলি স্বয়ংক্রিয়ভাবে পূরণ করা হয়েছে। পর্যালোচনা করুন এবং প্রয়োজন অনুসারে সামঞ্জস্য করুন।</value></data>
+	<data name="Settings.ModelProviders.InvalidDownloadUrl"><value>অনুগ্রহ করে একটি বৈধ http বা https URL লিখুন।</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOllama"><value>লোকাল Ollama যদি ডিফল্ট ঠিকানায় না চলে তবে লোকাল Ollama এন্ডপয়েন্ট ওভাররাইড করুন</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpGroq"><value>আপনি যদি প্রক্সি বা গেটওয়ের মাধ্যমে রাউটিং করেন কেবল তখনই Groq এন্ডপয়েন্ট ওভাররাইড করুন</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenAICompatible"><value>আপনার উপযুক্ত API, প্রক্সি বা গেটওয়ের জন্য এন্ডপয়েন্ট সেট করুন</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpOpenRouter"><value>আপনি যদি প্রক্সি বা গেটওয়ের মাধ্যমে রাউটিং করেন কেবল তখনই OpenRouter এন্ডপয়েন্ট ওভাররাইড করুন</value></data>
+	<data name="Settings.ModelProviders.BaseUrlHelpDefault"><value>ডিফল্ট API এন্ডপয়েন্ট ওভাররাইড করুন</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpNoCredentials"><value>প্রমাণীকৃত প্রদানকারী ব্যবহার করতে সেটিংস > ক্রেডেনশিয়াল-এ একটি ক্রেডেনশিয়াল তৈরি করুন।</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpGoogle"><value>Google Gemini-এর জন্য একটি API কী ক্রেডেনশিয়াল প্রয়োজন।</value></data>
+	<data name="Settings.ModelProviders.CredentialHelpDefault"><value>এই প্রদানকারী যদি API কী ছাড়াই ব্যবহার করা যায় কেবল তখনই ফাঁকা রাখুন।</value></data>
+	<data name="Settings.ModelProviders.AutoValue"><value>স্বয়ংক্রিয়</value></data>
+	<data name="Settings.ModelProviders.AllowValue"><value>অনুমতি দিন</value></data>
+	<data name="Settings.ModelProviders.SingleValue"><value>একক</value></data>
+	<data name="Settings.ModelProviders.EmbeddingEditDialogTitle"><value>এমবেডিং প্রদানকারী সম্পাদনা করুন</value></data>
+	<data name="Settings.ModelProviders.EmbeddingAddDialogTitle"><value>এমবেডিং প্রদানকারী যোগ করুন</value></data>
+	<data name="Settings.ModelProviders.EmbeddingProviderNamePlaceholder"><value>যেমন, Ollama এমবেডিংস</value></data>
+	<data name="Settings.ModelProviders.EmbeddingModelIdPlaceholder"><value>যেমন, nomic-embed-text</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsLabel"><value>ভেক্টর ডাইমেনশন</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsRequired"><value>ভেক্টর ডাইমেনশন আবশ্যক</value></data>
+	<data name="Settings.ModelProviders.VectorDimensionsHelp"><value>মডেলটির আউটপুটের সাথে মিল থাকতে হবে (যেমন nomic-embed-text-এর জন্য 768, text-embedding-3-small-এর জন্য 1536)। পরিবর্তিত এমবেডিং মডেল বা ডাইমেনশন সংরক্ষণ করলে বিদ্যমান মেমরি সূচক মুছে যায় যাতে Oscova এটি পুনর্নির্মাণ করতে পারে।</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialDescription"><value>এই এমবেডিং প্রদানকারীকে একটি সংরক্ষিত API কী ক্রেডেনশিয়ালের সাথে লিঙ্ক করুন।</value></data>
+	<data name="Settings.ModelProviders.EmbeddingCredentialHelp"><value>একটি সংরক্ষিত ক্রেডেনশিয়াল নির্বাচন করুন, অথবা যে সমস্ত প্রদানকারীর প্রয়োজন নেই তাদের জন্য ফাঁকা রাখুন।</value></data>
+	<data name="Settings.Agents.SectionDescription"><value>চ্যাটে ব্যবহারের জন্য কাস্টম এজেন্ট তৈরি ও পরিচালনা করুন।</value></data>
+	<data name="Settings.Agents.NewAgentButton"><value>নতুন এজেন্ট</value></data>
+	<data name="Settings.Agents.EmptyStateMessage"><value>এখনও কোনো কাস্টম এজেন্ট নেই। শুরু করতে একটি তৈরি করুন।</value></data>
+	<data name="Settings.Agents.SharedBadge"><value>শেয়ার করা</value></data>
+	<data name="Settings.Agents.DeleteButtonTitle"><value>এজেন্ট মুছুন</value></data>
+	<data name="Settings.Agents.ExportButtonTitle"><value>এজেন্ট রপ্তানি করুন</value></data>
+	<data name="Settings.Agents.ExportFailedToast"><value>এজেন্ট রপ্তানি করা যায়নি।</value></data>
+	<data name="Settings.Agents.ImportDialogTitle"><value>এজেন্ট আমদানি করুন</value></data>
+	<data name="Settings.Agents.ImportDialogDescription"><value>একটি .oscagent ফাইল থেকে এজেন্ট আমদানি করুন। এজেন্ট সর্বদা একটি নতুন এজেন্ট হিসাবে যুক্ত হয় এবং কখনোই কোনো বিদ্যমান এজেন্টকে প্রতিস্থাপন করে না।</value></data>
+	<data name="Settings.Agents.ChooseFileButton"><value>এজেন্ট ফাইল চয়ন করুন</value></data>
+	<data name="Settings.Agents.ImporterLimitInfo"><value>আমদানিকারক 5 MB পর্যন্ত একটি .oscagent প্যাকেজ গ্রহণ করে। চ্যাট, মেমরি এবং ব্যক্তিগত এজেন্ট নোট অন্তর্ভুক্ত নয়।</value></data>
+	<data name="Settings.Agents.ImportNameLabel"><value>নাম (ঐচ্ছিক)</value></data>
+	<data name="Settings.Agents.ImportNameHint"><value>ফাইলে সংরক্ষিত নামটি ধরে রাখতে এটি ফাঁকা রাখুন। যদি সেই নামটি ইতিমধ্যেই ব্যবহৃত হয়, তবে একটি সংখ্যা যোগ করা হয়।</value></data>
+	<data name="Settings.Agents.UnsupportedImportFileError"><value>শুধুমাত্র .oscagent ফাইল সমর্থিত।</value></data>
+	<data name="Settings.Agents.InvalidImportFileError"><value>এজেন্ট ফাইল আমদানি করা যায়নি।</value></data>
+	<data name="Settings.Agents.ImportedToast"><value>এজেন্ট '{0}' আমদানি করা হয়েছে।</value></data>
+	<data name="Settings.Agents.ImportedWithRemovedToast"><value>এজেন্ট '{0}' আমদানি করা হয়েছে। এই মেশিনে অনুপলব্ধ {1} টি রেফারেন্স সরানো হয়েছে।</value></data>
+	<data name="Settings.Agents.BackButton"><value>পিছনে</value></data>
+	<data name="Settings.Agents.EditingLabel"><value>সম্পাদনা: {0}</value></data>
+	<data name="Settings.Agents.DeleteConfirmTitle"><value>এজেন্ট মুছুন</value></data>
+	<data name="Settings.Agents.DeleteConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি "{0}" মুছতে চান?</value></data>
+	<data name="Settings.Agents.CustomizeButton"><value>কাস্টমাইজ করুন</value></data>
+	<data name="Settings.Agents.SharedAgentWarning"><value>শেয়ার করা এজেন্ট সংজ্ঞাগুলি কেবলমাত্র অ্যাডমিন বা মডারেটর ব্যবহারকারীরা সম্পাদনা করতে পারেন।</value></data>
+	<data name="Settings.Agents.SaveFirstTitle"><value>প্রথমে এজেন্ট সংরক্ষণ করুন</value></data>
+	<data name="Settings.Agents.NamePlaceholder"><value>সহকারী</value></data>
+	<data name="Settings.Agents.CallableNameCollisionMessage"><value>এজেন্টের নাম "{0}" কল করার যোগ্য নাম "{1}"-এ রূপান্তরিত হয়, যা ইতিমধ্যে অন্য এজেন্টের দ্বারা ব্যবহৃত। একটি ভিন্ন এজেন্টের নাম চয়ন করুন।</value></data>
+	<data name="Settings.Agents.DescriptionPlaceholder"><value>এই এজেন্টের একটি সংক্ষিপ্ত বিবরণ...</value></data>
+	<data name="Settings.Agents.SystemInstructionLabel"><value>সিস্টেম নির্দেশাবলী</value></data>
+	<data name="Settings.Agents.SystemInstructionPlaceholder"><value>সহকারীকে পরিচালনা করতে একটি সিস্টেম নির্দেশ লিখুন...</value></data>
+	<data name="Settings.Agents.PreviewInstructionButton"><value>পূর্বরূপ</value></data>
+	<data name="Settings.Agents.PreviewInstructionTitle"><value>মান বসানোর পর প্রস্তুত সিস্টেম নির্দেশাবলী</value></data>
+	<data name="Settings.Agents.PreviewInstructionGeneratedAt"><value>তৈরি করা হয়েছে {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionFailed"><value>প্রসঙ্গের ব্যবহার অনুমান করা যায়নি: {0}</value></data>
+	<data name="Settings.Agents.PreviewInstructionTokenCount"><value>{0} টি টোকেন</value></data>
+	<data name="Settings.PromptVariables.AgentName"><value>বর্তমান এজেন্টের নাম।</value></data>
+	<data name="Settings.PromptVariables.CurrentDate"><value>বর্তমান স্থানীয় তারিখ।</value></data>
+	<data name="Settings.PromptVariables.UserName"><value>বর্তমান ব্যবহারকারীর প্রদর্শনের নাম।</value></data>
+	<data name="Settings.PromptVariables.UserNickname"><value>বর্তমান ব্যবহারকারীর পছন্দের নাম।</value></data>
+	<data name="Settings.PromptVariables.UserUsername"><value>বর্তমান ব্যবহারকারীর লগইন ব্যবহারকারীর নাম।</value></data>
+	<data name="Settings.PromptVariables.UserEmail"><value>বর্তমান ব্যবহারকারীর অ্যাকাউন্ট ইমেল।</value></data>
+	<data name="Settings.PromptVariables.UserTimezone"><value>বর্তমান ব্যবহারকারীর সময় অঞ্চল।</value></data>
+	<data name="Settings.PromptVariables.UserContext"><value>ব্যক্তিগত প্রসঙ্গ যা বর্তমান ব্যবহারকারী এই শেয়ার করা এজেন্টের জন্য সংরক্ষণ করেছেন।</value></data>
+	<data name="Settings.Agents.ModelProviderLabel"><value>ডিফল্ট মডেল প্রদানকারী</value></data>
+	<data name="Settings.Agents.ModelProviderDefaultOption"><value>অ্যাপের ডিফল্ট প্রদানকারী ব্যবহার করুন</value></data>
+	<data name="Settings.Agents.ModelProviderDescription"><value>কাজ, মেসেজিং চ্যানেল ও অর্পিত কাজের ডিফল্ট। এই এজেন্টের সঙ্গে আপনার নিজস্ব চ্যাট বা কাজের জন্য স্পষ্টভাবে নির্বাচিত প্রদানকারী এটি বদলাতে পারে। অ্যাপের ডিফল্ট ব্যবহার করতে ফাঁকা রাখুন।</value></data>
+	<data name="Settings.Agents.EnableCompactionLabel"><value>কম্প্যাকশন সক্ষম করুন</value></data>
+	<data name="Settings.Agents.EnableCompactionDescription"><value>প্রসঙ্গ উইন্ডোর সীমাতে পৌঁছালে কথোপকথনের ইতিহাস স্বয়ংক্রিয়ভাবে সংক্ষিপ্ত করুন।</value></data>
+	<data name="Settings.Agents.EnableMemoryLabel"><value>মেমরি সক্ষম করুন</value></data>
+	<data name="Settings.Agents.EnableMemoryDescription"><value>সংরক্ষিত মেমরি প্রসঙ্গে লোড করুন এবং এজেন্টকে একাধিক সেশন জুড়ে মেমরি সংরক্ষণ এবং পুনরুদ্ধার করার অনুমতি দিন।</value></data>
+	<data name="Settings.Agents.EnableTodoLabel"><value>টাস্ক তালিকা সক্ষম করুন</value></data>
+	<data name="Settings.Agents.EnableTodoDescription"><value>এই এজেন্টকে একটি সেশন টাস্ক তালিকায় বহু-পদক্ষেপের কাজ ট্র্যাক করতে দিন। জটিল, দীর্ঘমেয়াদী কাজের জন্য সবচেয়ে উপযুক্ত।</value></data>
+	<data name="Settings.Agents.SubagentDelegationLabel"><value>সাবএজেন্ট ব্যবহার করুন</value></data>
+	<data name="Settings.Agents.SubagentDelegationDescription"><value>এই এজেন্টকে নিজের আলাদা ইনস্ট্যান্সে কাজ অর্পণ করতে দিন।</value></data>
+	<data name="Settings.Agents.LocalOnlyLabel"><value>কেবল লোকাল</value></data>
+	<data name="Settings.Agents.LocalOnlyDescription"><value>অ্যাপজুড়ে অফলাইন মোড বন্ধ থাকলেও এই এজেন্টকে ক্লাউড মডেল প্রদানকারী এবং ইন্টারনেট টুল ব্যবহার করা থেকে বিরত রাখুন।</value></data>
+	<data name="Settings.Agents.ToolSearchToggleLabel"><value>টুল আবিষ্কার</value></data>
+	<data name="Settings.Agents.ToolSearchToggleHelp"><value>শুরুতে শুধুমাত্র পিন করা সরঞ্জামগুলি দেখান; প্রয়োজন হলে এজেন্ট বাকিগুলি অনুসন্ধান করতে পারে।</value></data>
+	<data name="Settings.Agents.PinnedColumnLabel"><value>পিন করা</value></data>
+	<data name="Settings.Agents.PinToolLabel"><value>টুল {0} পিন করুন</value></data>
+	<data name="Settings.Agents.ToolSearchSummary"><value>{0} টি পিন করা - {1} টি অনুসন্ধানযোগ্য</value></data>
+	<data name="Settings.Agents.ExposeAsToolLabel"><value>টুল হিসাবে উন্মোচন করুন</value></data>
+	<data name="Settings.Agents.ExposeAsToolDescription"><value>অন্যান্য এজেন্টদের এই এজেন্টকে একটি সরঞ্জাম হিসাবে ব্যবহার করার অনুমতি দিন।</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersLabel"><value>সমস্ত ব্যবহারকারীর সাথে শেয়ার করুন</value></data>
+	<data name="Settings.Agents.ShareWithAllUsersDescription"><value>এই এজেন্টটিকে অন্যান্য ব্যবহারকারীদের কাছে দৃশ্যমান করে। সিস্টেম নির্দেশাবলীতে {{ user_context }} অন্তর্ভুক্ত থাকতে পারে যা প্রতিটি ব্যবহারকারী ব্যক্তিগতকৃত করে।</value></data>
+	<data name="Settings.Agents.RestrictUsersTitle"><value>নির্দিষ্ট ব্যবহারকারীদের মধ্যে সীমাবদ্ধ করুন</value></data>
+	<data name="Settings.Agents.RestrictUsersDescription"><value>সবার সাথে শেয়ার করতে সমস্ত আনচেক রাখুন।</value></data>
+	<data name="Settings.Agents.NoUsersMessage"><value>কোনো ব্যবহারকারী পাওয়া যায়নি।</value></data>
+	<data name="Settings.Agents.AllowedToolsTitle"><value>অনুমোদিত সরঞ্জাম</value></data>
+	<data name="Settings.Agents.NoToolsAvailableMessage"><value>কোনো সরঞ্জাম উপলব্ধ নেই। বহিরাগত সরঞ্জাম যোগ করতে সেটিংস -> MCP সার্ভার-এ MCP সার্ভার কনফিগার করুন।</value></data>
+	<data name="Settings.Agents.AgentToolsTitle"><value>এজেন্ট সরঞ্জাম</value></data>
+	<data name="Settings.Agents.NoAgentToolsAvailableMessage"><value>সরঞ্জাম হিসাবে কোনো এজেন্ট উপলব্ধ নেই। এটি এখানে ব্যবহার করতে একটি কাস্টম এজেন্টে "টুল হিসাবে উন্মোচন করুন" সক্রিয় করুন।</value></data>
+	<data name="Settings.Agents.SkillsTitle"><value>দক্ষতা</value></data>
+	<data name="Settings.Agents.NoSkillsFoundMessage"><value>কোনো দক্ষতা পাওয়া যায়নি। সেটিংস -> ফাইল -> skills ফোল্ডারে দক্ষতা যোগ করুন।</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersTitle"><value>ওয়ার্কস্পেস ফোল্ডার</value></data>
+	<data name="Settings.Agents.WorkspaceFoldersDescription"><value>পরিচালিত ওয়ার্কস্পেসগুলি হল workspace/-এর অধীনে থাকা ফোল্ডার। সেটিংস -> ফাইল-এ সেগুলি তৈরি করুন, তারপর সেগুলি এখানে নির্বাচন করুন।</value></data>
+	<data name="Settings.Agents.NoWorkspacesMessage"><value>এখনও কোনো ওয়ার্কস্পেস ফোল্ডার পাওয়া যায়নি। সেটিংস -> ফাইল-এ ওয়ার্কস্পেস তৈরি করুন, তারপর সেগুলি এখানে নির্বাচন করুন।</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceLabel"><value>লাইব্রেরি</value></data>
+	<data name="Settings.Agents.LibraryWorkspaceDescription"><value>লাইব্রেরি নির্বাচন করলে ফাইলের শুধুমাত্র পড়ার অনুমতি প্রদান করে এবং লাইব্রেরি অনুসন্ধান সরঞ্জাম যোগ করে।</value></data>
+	<data name="Settings.Agents.SharedFolderLabel"><value>শেয়ার করা ফোল্ডার</value></data>
+	<data name="Settings.Agents.SharedFolderDescription"><value>এই সার্ভারের সব অনুমোদিত ব্যবহারকারীর শেয়ার করা ফোল্ডার /shared-এ পড়া ও লেখার অ্যাক্সেস দেয়।</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessTitle"><value>অতিরিক্ত ফোল্ডার অ্যাক্সেস</value></data>
+	<data name="Settings.Agents.AdditionalFolderAccessDescription"><value>সুস্পষ্ট /mnt অ্যাক্সেসের জন্য বহিরাগত হোস্ট ফোল্ডার বা পরিচালিত ব্যবহারকারী ফোল্ডার যোগ করুন।</value></data>
+	<data name="Settings.Agents.AutomaticDataRootLabel"><value>স্বয়ংক্রিয় ডেটা রুট</value></data>
+	<data name="Settings.Agents.AutomaticDataRootDescription"><value>এই এজেন্টের জন্য সর্বদা উপলব্ধ; ব্যক্তিগত নোটগুলি /data/notes-এর অধীনে থাকে।</value></data>
+	<data name="Settings.Agents.AddDirectoryButton"><value>ডিরেক্টরি যোগ করুন</value></data>
+	<data name="Settings.Agents.NoDirectoriesMessage"><value>কোনো অতিরিক্ত ফোল্ডার কনফিগার করা হয়নি।</value></data>
+	<data name="Settings.Agents.DirectorySourceLabel"><value>উৎস</value></data>
+	<data name="Settings.Agents.DirectorySourceExternal"><value>বাহ্যিক</value></data>
+	<data name="Settings.Agents.DirectorySourceManaged"><value>পরিচালিত</value></data>
+	<data name="Settings.Agents.DirectoryPathLabel"><value>বিদ্যমান ফোল্ডার পাথ</value></data>
+	<data name="Settings.Agents.DirectoryPathPlaceholder"><value>প্রজেক্ট ফোল্ডার পাথ</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathLabel"><value>ব্যবহারকারী ফোল্ডার পাথ</value></data>
+	<data name="Settings.Agents.ManagedDirectoryPathPlaceholder"><value>agents/main/data/notes</value></data>
+	<data name="Settings.Agents.DirectoryLabelLabel"><value>লেবেল</value></data>
+	<data name="Settings.Agents.DirectoryLabelPlaceholder"><value>Obsidian ভল্ট</value></data>
+	<data name="Settings.Agents.DirectoryAccessLabel"><value>অ্যাক্সেস</value></data>
+	<data name="Settings.Agents.AccessModeReadOnly"><value>কেবল পঠনযোগ্য</value></data>
+	<data name="Settings.Agents.AccessModeReadWrite"><value>পড়া এবং লেখা</value></data>
+	<data name="Settings.Agents.RemoveDirectoryTitle"><value>ডিরেক্টরি সরান</value></data>
+	<data name="Settings.Agents.MountNameCollisionMessage"><value>ওয়ার্কস্পেসের নাম এবং ফোল্ডার লেবেল অবশ্যই অনন্য মাউন্ট নামে রূপান্তর হতে হবে। বিরোধ: {0}।</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdatedToast"><value>প্রোফাইল ছবি আপডেট হয়েছে।</value></data>
+	<data name="Settings.Agents.ProfilePictureUpdateFailedToast"><value>প্রোফাইল ছবি আপডেট করা যায়নি: {0}</value></data>
+	<data name="Settings.Prompts.CatalogTitle"><value>কাস্টম প্রম্পট</value></data>
+	<data name="Settings.Prompts.CatalogDescription"><value>মেমরি, লাইব্রেরি সার্চ, কম্প্যাকশন, স্কিলস এবং রানটাইম কনটেক্সট বৈশিষ্ট্যগুলির জন্য ব্যবহৃত প্রম্পট টেমপ্লেটগুলি পর্যালোচনা ও সম্পাদনা করুন।</value></data>
+	<data name="Settings.Prompts.CatalogCountBadge"><value>{0}টি প্রম্পট</value></data>
+	<data name="Settings.Prompts.CompactionInstructionLabel"><value>কম্প্যাকশন নির্দেশিকা</value></data>
+	<data name="Settings.Prompts.CompactionDescription"><value>কনটেক্সট উইন্ডোতে স্থানের প্রয়োজন হলে দীর্ঘ কথোপকথন কীভাবে সংক্ষিপ্ত করা হয় তা নিয়ন্ত্রণ করে।</value></data>
+	<data name="Settings.Prompts.StoredAsLabel"><value>সংরক্ষণ করা হয়েছে</value></data>
+	<data name="Settings.Prompts.OpenInFileEditorLink"><value>ফাইল এডিটর-এ খুলুন</value></data>
+	<data name="Settings.Prompts.CompactionPlaceholder"><value>কথোপকথনের ইতিহাস সংক্ষিপ্ত করার জন্য একটি নির্দেশিকা লিখুন...</value></data>
+	<data name="Settings.Prompts.MemorySystemPromptLabel"><value>মেমরি সিস্টেম প্রম্পট</value></data>
+	<data name="Settings.Prompts.MemorySystemDescription"><value>সংরক্ষিত মেমরি কীভাবে এজেন্টের কাছে কনটেক্সট হিসেবে উপস্থাপন করা হয় তা নির্ধারণ করে।</value></data>
+	<data name="Settings.Prompts.MemorySystemPlaceholder"><value>মেমরি কনটেক্সট প্রদানকারীর জন্য সিস্টেম প্রম্পট লিখুন...</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptLabel"><value>পরিবেশ প্রম্পট</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptDescription"><value>এজেন্টের নির্দেশিকায় যুক্ত রানটাইম পরিবেশের কনটেক্সট তৈরি করে।</value></data>
+	<data name="Settings.Prompts.EnvironmentPromptPlaceholder"><value>রানটাইম পরিবেশ কনটেক্সটের জন্য প্রম্পট টেমপ্লেট লিখুন...</value></data>
+	<data name="Settings.Prompts.LibraryPromptLabel"><value>লাইব্রেরি নির্দেশিকা</value></data>
+	<data name="Settings.Prompts.LibraryPromptDescription"><value>এজেন্টরা কীভাবে স্থায়ী লাইব্রেরি ফাইলগুলিতে অনুসন্ধান করে এবং সেগুলিকে কথোপকথনের মেমরি থেকে আলাদা করে তা নির্দেশ করে।</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptLabel"><value>টুল আবিষ্কার নির্দেশিকা</value></data>
+	<data name="Settings.Prompts.ToolSearchPromptDescription"><value>বড় টুল সেট স্থগিত থাকলে এজেন্টরা কীভাবে টুল অনুসন্ধান করে তা নির্দেশ করে।</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptLabel"><value>টাস্ক তালিকা নির্দেশিকা</value></data>
+	<data name="Settings.Prompts.TodoProviderPromptDescription"><value>জটিল কাজের সময় অপ্ট-ইন করা এজেন্টরা কীভাবে তাদের কাজের তালিকা তৈরি এবং পরিচালনা করে তা নির্দেশ করে।</value></data>
+	<data name="Settings.Prompts.SubagentsPromptLabel"><value>সাবএজেন্ট নির্দেশিকা</value></data>
+	<data name="Settings.Prompts.SubagentsPromptDescription"><value>সাবএজেন্ট চালু থাকা এজেন্টরা কীভাবে নিজেদের আলাদা ইনস্ট্যান্সে কাজ অর্পণ করে তা নির্দেশ করে।</value></data>
+	<data name="Settings.Prompts.SkillsPromptLabel"><value>স্কিলস নির্দেশিকা</value></data>
+	<data name="Settings.Prompts.SkillsPromptDescription"><value>এজেন্টরা কীভাবে নির্ধারিত স্কিলগুলি আবিষ্কার করে, লোড করে এবং ব্যবহার করে তা নির্দেশ করে।</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptLabel"><value>অবতার আবেগ নির্দেশনা</value></data>
+	<data name="Settings.Prompts.AvatarMarkupPromptDescription"><value>অবতার উত্তর বলার সময় এজেন্ট কখন আবেগ ট্যাগ দিয়ে অনুভূতি চিহ্নিত করবে তা নির্দেশ করে।</value></data>
+	<data name="Settings.Prompts.VariablesBadge"><value>{0}টি ভেরিয়েবল</value></data>
+	<data name="Settings.Prompts.NoVariablesBadge"><value>কোনো ভেরিয়েবল নেই</value></data>
+	<data name="Settings.Prompts.VariablePickerHelperText"><value>কার্সারে সন্নিবেশ করতে একটি ভেরিয়েবলে ক্লিক করুন।</value></data>
+	<data name="Settings.Skills.ScriptExecutionTitle"><value>শেল ও স্কিল স্ক্রিপ্ট এক্সিকিউশন</value></data>
+	<data name="Settings.Skills.ScriptExecutionDescription"><value>অপারেটর সব অ্যাকাউন্টের জন্য শেল কমান্ড ও দক্ষতার স্ক্রিপ্ট চালানোর পরিবেশ বেছে নেন। হোস্ট ডিফল্ট। পরিবেশ পরিবর্তনের পর নতুন রান শুরু করুন।</value></data>
+	<data name="Settings.Skills.ExecutionModeLabel"><value>এক্সিকিউশন মোড</value></data>
+	<data name="Settings.Skills.SaveExecutionModeButton"><value>কার্যকরকরণের পরিবেশ সংরক্ষণ করুন</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesTitle"><value>সমর্থিত বান্ডিল স্ক্রিপ্টের ধরন</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesDescription"><value>কন্টেইনার স্যান্ডবক্সড সরাসরি .py, .js, এবং .sh ফাইল চালায়; প্রতিটির জন্য ইমেজে ইনস্টল করা রানটাইমের জন্য একটি বৈধ #! প্রথম লাইন প্রয়োজন।</value></data>
+	<data name="Settings.Skills.SupportedScriptTypesHostDescription"><value>হোস্ট মোড হোস্ট শেলের মাধ্যমে ফাইল চালায় এবং PATH-এ মিলে যাওয়া রানটাইম প্রয়োজন।</value></data>
+	<data name="Settings.Skills.InstalledSkillsTitle"><value>ইনস্টল করা স্কিলস</value></data>
+	<data name="Settings.Skills.InstalledSkillsDescription"><value>আপনার এজেন্টদের জন্য বরাদ্দ করার উপলব্ধ স্কিল প্যাকেজ পরিচালনা করুন।</value></data>
+	<data name="Settings.Skills.ImportSkillButton"><value>স্কিল আমদানি করুন</value></data>
+	<data name="Settings.Skills.NoSkillsInstalledMessage"><value>এখনও কোনো স্কিল ইনস্টল করা হয়নি। আপনার এজেন্টদের জন্য উপলব্ধ করতে একটি SKILL.md ফাইল বা প্যাকেজ করা .zip আমদানি করুন।</value></data>
+	<data name="Settings.Skills.InstalledBadge"><value>ইনস্টল করা হয়েছে</value></data>
+	<data name="Settings.Skills.DeleteButton"><value>স্কিল আনইনস্টল করুন</value></data>
+	<data name="Settings.Skills.DeleteConfirmTitle"><value>স্কিল আনইনস্টল করুন</value></data>
+	<data name="Settings.Skills.DeleteConfirmMessage"><value>আপনি কি নিশ্চিত যে আপনি "{0}" আনইনস্টল করতে চান? এটি আপনার সমস্ত এজেন্ট থেকে এটি সরিয়ে দেবে।</value></data>
+	<data name="Settings.Skills.DeletedToast"><value>স্কিল আনইনস্টল করা হয়েছে।</value></data>
+	<data name="Settings.Skills.ImportedSkillsInfoNote"><value>আমদানি করা স্কিলগুলি আপনার skills/ ডিরেক্টরিতে থাকে এবং বর্তমানে ফাইল পৃষ্ঠা থেকে ম্যানুয়ালি সরানো যেতে পারে।</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabled"><value>নিষ্ক্রিয়</value></data>
+	<data name="Settings.Skills.ExecutionModeHost"><value>হোস্ট</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxed"><value>কন্টেইনার স্যান্ডবক্সড</value></data>
+	<data name="Settings.Skills.ExecutionModeDisabledDescription"><value>শেল কমান্ড এবং বান্ডিল করা স্কিল স্ক্রিপ্ট চলতে পারে না।</value></data>
+	<data name="Settings.Skills.ExecutionModeHostDescription"><value>কমান্ডগুলি Oscova চালানো মেশিনে সরাসরি তার অপারেটিং-সিস্টেম অ্যাকাউন্টের অনুমতি নিয়ে চলে। অনুমোদন এজেন্ট ও রান সেটিংস অনুসরণ করে।</value></data>
+	<data name="Settings.Skills.ExecutionModeContainerSandboxedDescription"><value>কমান্ডগুলি Docker-এর ভিতরে আপনার অনুমোদিত ফোল্ডার মাউন্ট করে চলে। শুধু কন্টেইনারে ইনস্টল করা টুল সেটি অপসারণ করলে হারিয়ে যায়। হোস্টে ইনস্টল করা টুল স্বয়ংক্রিয়ভাবে পাওয়া যায় না।</value></data>
+	<data name="Settings.Skills.ExecutionModeSavedToast"><value>পরিবেশ সংরক্ষিত হয়েছে। এটি ব্যবহার করতে নতুন রান শুরু করুন।</value></data>
+	<data name="Settings.Tools.AutoApproveHostWarning"><value>হোস্ট এক্সিকিউশন চালু থাকলে স্বয়ংক্রিয়ভাবে অনুমোদিত শেল কমান্ড Oscova চলমান মেশিনটি পরিবর্তন করতে পারে।</value></data>
+	<data name="Settings.Skills.ImportDialogTitle"><value>স্কিল আমদানি করুন</value></data>
+	<data name="Settings.Skills.ImportDialogDescription"><value>একটি স্কিল সরাসরি SKILL.md ফাইল হিসেবে অথবা একটি প্যাকেজ করা .zip আর্কাইভ হিসেবে আমদানি করুন।</value></data>
+	<data name="Settings.Skills.ChooseFileButton"><value>স্কিল ফাইল চয়ন করুন</value></data>
+	<data name="Settings.Skills.ImporterLimitInfo"><value>আমদানিকারক একটি SKILL.md নথি বা 10 MB পর্যন্ত একটি .zip প্যাকেজ গ্রহণ করে।</value></data>
+	<data name="Settings.Skills.ImporterZipInfo"><value>জিপ আমদানিতে scripts/, references/, এবং assets/ অন্তর্ভুক্ত থাকতে পারে।</value></data>
+	<data name="Settings.Skills.ImportWarningsTitle"><value>আমদানি সংক্রান্ত সতর্কতা</value></data>
+	<data name="Settings.Skills.UnsupportedFileTypeError"><value>কেবল .md এবং .zip ফাইলগুলি সমর্থিত।</value></data>
+	<data name="Settings.Skills.InvalidImportFileError"><value>ফাইলটি একটি বৈধ স্কিল ফাইল বলে মনে হচ্ছে না। একটি SKILL.md ফাইল বা একটি .zip প্যাকেজ আমদানি করুন যাতে একটি স্কিল রয়েছে।</value></data>
+	<data name="Settings.Skills.ImportedToast"><value>স্কিল '{0}' আমদানি করা হয়েছে।</value></data>
+	<data name="Settings.Tools.AvailableToolsTitle"><value>উপলব্ধ সরঞ্জাম</value></data>
+	<data name="Settings.Tools.AvailableToolsDescription"><value>এগুলি আপনার এজেন্টদের জন্য উপলব্ধ টুল, যার মধ্যে অন্তর্নির্মিত টুলসেট এবং MCP সার্ভার টুল অন্তর্ভুক্ত রয়েছে।</value></data>
+	<data name="Settings.Tools.NoToolsAvailableMessage"><value>কোনো টুল উপলব্ধ নেই। বাহ্যিক টুল যোগ করতে সেটিংস -> MCP সার্ভার-এ MCP সার্ভার কনফিগার করুন।</value></data>
+	<data name="Settings.Tools.SearchPlaceholder"><value>টুল অনুসন্ধান করুন</value></data>
+	<data name="Settings.Tools.SearchLabel"><value>টুল অনুসন্ধান করুন</value></data>
+	<data name="Settings.Tools.SelectedCountLabel"><value>{1}টির মধ্যে {0}টি নির্বাচিত</value></data>
+
+  <data name="Settings.Tools.ShowEnabledOnlyLabel" xml:space="preserve"><value>শুধু সক্রিয় টুল দেখান</value></data>
+	<data name="Settings.Tools.ServerNameLabel"><value>সার্ভারের নাম</value></data>
+	<data name="Settings.Tools.AllServersOption"><value>সমস্ত</value></data>
+	<data name="Settings.Tools.SelectVisibleToolsLabel"><value>দৃশ্যমান টুল নির্বাচন করুন</value></data>
+	<data name="Settings.Tools.SelectToolLabel"><value>টুল {0} নির্বাচন করুন</value></data>
+	<data name="Settings.Tools.TableHeaderTool"><value>টুল</value></data>
+	<data name="Settings.Tools.TableHeaderQualifiedName"><value>পূর্ণ টুল নাম</value></data>
+	<data name="Settings.Tools.TableHeaderServer"><value>সার্ভার</value></data>
+	<data name="Settings.Tools.TableHeaderNetwork"><value>ইন্টারনেট</value></data>
+	<data name="Settings.Tools.TableHeaderApproval"><value>অনুমোদন</value></data>
+	<data name="Settings.Tools.ApprovalDefault"><value>ডিফল্ট</value></data>
+	<data name="Settings.Tools.ApprovalDefaultRequire"><value>ডিফল্ট (অনুমোদন প্রয়োজন)</value></data>
+	<data name="Settings.Tools.ApprovalDefaultAutoApprove"><value>ডিফল্ট (স্বয়ংক্রিয় অনুমোদন)</value></data>
+	<data name="Settings.Tools.ApprovalRequire"><value>অনুমোদন প্রয়োজন</value></data>
+	<data name="Settings.Tools.ApprovalAutoApprove"><value>স্বয়ংক্রিয় অনুমোদন</value></data>
+	<data name="Settings.Tools.ApprovalDeny"><value>অস্বীকার করুন</value></data>
+	<data name="Settings.Tools.ApprovalUnavailable"><value>নির্বাচিত নয়</value></data>
+	<data name="Settings.Tools.NetworkYes"><value>ইন্টারনেট</value></data>
+	<data name="Settings.Tools.NetworkNo"><value>কেবল স্থানীয়</value></data>
+	<data name="Settings.Tools.NoMatchesMessage"><value>বর্তমান ফিল্টারগুলির সাথে কোনো টুল মিলছে না।</value></data>
+	<data name="Settings.Plugins.LoadingMessage"><value>প্লাগইন সেটিংস লোড হচ্ছে...</value></data>
+	<data name="Settings.Plugins.SecurityTitle"><value>কেবল বিশ্বস্ত কোড</value></data>
+	<data name="Settings.Plugins.SecurityDescription"><value>প্লাগইনগুলি Oscova Agents-এর ভিতরে চলে এবং সমস্ত ব্যবহারকারীর জন্য ক্ষমতা যোগ করতে পারে। কেবল আপনার বিশ্বস্ত প্লাগইনগুলি সক্রিয় করুন৷</value></data>
+	<data name="Settings.Plugins.RestartRequiredAlert"><value>প্লাগইন সক্রিয়করণ পরিবর্তন কার্যকর করতে Oscova Agents পুনরায় চালু করুন।</value></data>
+	<data name="Settings.Plugins.InstalledTitle"><value>ইনস্টল করা প্লাগইন</value></data>
+	<data name="Settings.Plugins.InstalledDescription"><value>পরবর্তী সময়ে Oscova Agents শুরু হলে প্রতিটি ব্যবহারকারীর জন্য কোন ইনস্টল করা প্লাগইনগুলি লোড হতে পারে তা বেছে নিন।</value></data>
+	<data name="Settings.Plugins.RestartHint"><value>ইনস্টল করা প্লাগইনগুলি সক্রিয় করা এবং অ্যাপ্লিকেশনটি পুনরায় চালু না করা পর্যন্ত নিষ্ক্রিয় থাকে।</value></data>
+	<data name="Settings.Plugins.SearchPlaceholder"><value>প্লাগইন অনুসন্ধান করুন</value></data>
+	<data name="Settings.Plugins.SearchLabel"><value>প্লাগইন অনুসন্ধান করুন</value></data>
+	<data name="Settings.Plugins.TableHeaderPlugin"><value>প্লাগইন</value></data>
+	<data name="Settings.Plugins.TableHeaderStatus"><value>বর্তমান স্থিতি</value></data>
+	<data name="Settings.Plugins.TableHeaderNextStart"><value>পরবর্তী রিস্টার্টে লোড করুন</value></data>
+	<data name="Settings.Plugins.TableHeaderActions"><value>ক্রিয়াকলাপ</value></data>
+	<data name="Settings.Plugins.NoPluginsMessage"><value>কোনো ইনস্টল করা প্লাগইন পাওয়া যায়নি।</value></data>
+	<data name="Settings.Plugins.NoMatchesMessage"><value>কোনো প্লাগইন বর্তমান অনুসন্ধানের সাথে মিলছে না।</value></data>
+	<data name="Settings.Plugins.EnableLabel"><value>পরবর্তী রিস্টার্টে {0} লোড করুন</value></data>
+	<data name="Settings.Plugins.DetailsButton"><value>প্লাগইন বিবরণ দেখুন</value></data>
+	<data name="Settings.Plugins.DetailsLabel"><value>{0}-এর বিবরণ দেখুন</value></data>
+	<data name="Settings.Plugins.ResetButton"><value>রিসেট করুন</value></data>
+	<data name="Settings.Plugins.SaveButton"><value>প্লাগইন সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Settings.Plugins.LoadErrorToast"><value>প্লাগইন সেটিংস প্রতিক্রিয়া খালি ছিল।</value></data>
+	<data name="Settings.Plugins.SavedToast"><value>প্লাগইন সেটিংস সংরক্ষণ করা হয়েছে।</value></data>
+	<data name="Settings.Plugins.UninstallLabel"><value>{0} আনইনস্টল করুন</value></data>
+	<data name="Settings.Plugins.UninstallDisableRequiredTooltip"><value>প্রথমে নিষ্ক্রিয় এবং সংরক্ষণ করুন।</value></data>
+	<data name="Settings.Plugins.UninstallRestartRequiredTooltip"><value>প্রথমে নিষ্ক্রিয় করুন, সংরক্ষণ করুন এবং পুনরায় চালু করুন।</value></data>
+	<data name="Settings.Plugins.UninstallConfirmTitle"><value>প্লাগইন আনইনস্টল করুন</value></data>
+	<data name="Settings.Plugins.UninstallConfirmMessage"><value>'{0}' আনইনস্টল করবেন? এতে সব ব্যবহারকারীর জন্য ইনস্টল করা ফাইল, সংরক্ষিত শংসাপত্র এবং সংযুক্ত অ্যাকাউন্টের টোকেন মুছে যাবে। প্লাগইনের তৈরি অন্যান্য ডেটা এবং সেটিংস রাখা হবে।</value></data>
+	<data name="Settings.Plugins.UninstalledToast"><value>প্লাগইন আনইনস্টল করা হয়েছে।</value></data>
+	<data name="Settings.Plugins.EnabledLabel"><value>সক্রিয়</value></data>
+	<data name="Settings.Plugins.DisabledLabel"><value>নিষ্ক্রিয়</value></data>
+	<data name="Settings.Plugins.InvalidManifestName"><value>অবৈধ প্লাগইন ম্যানিফেস্ট</value></data>
+	<data name="Settings.Plugins.StatusActive"><value>সক্রিয়</value></data>
+	<data name="Settings.Plugins.StatusInactive"><value>নিষ্ক্রিয়</value></data>
+	<data name="Settings.Plugins.StatusLoadFailed"><value>লোড ব্যর্থ হয়েছে</value></data>
+	<data name="Settings.Plugins.StatusInvalidManifest"><value>অবৈধ ম্যানিফেস্ট</value></data>
+	<data name="Settings.Plugins.DetailsTitle"><value>প্লাগইনের বিবরণ</value></data>
+	<data name="Settings.Plugins.DetailsTrustNotice"><value>সক্ষম প্লাগইনগুলি Oscova Agents-এর ভিতরে বিশ্বস্ত কোড চালায়। কেবল আপনার বিশ্বস্ত প্লাগইনগুলি সক্রিয় করুন৷</value></data>
+	<data name="Settings.Plugins.NameLabel"><value>নাম</value></data>
+	<data name="Settings.Plugins.IdLabel"><value>প্লাগইন আইডি</value></data>
+	<data name="Settings.Plugins.VersionLabel"><value>সংস্করণ</value></data>
+	<data name="Settings.Plugins.AssemblyLabel"><value>অ্যাসেম্বলি</value></data>
+	<data name="Settings.Plugins.EntryTypeLabel"><value>এন্ট্রি প্রকার</value></data>
+	<data name="Settings.Plugins.CurrentStatusLabel"><value>বর্তমান স্থিতি</value></data>
+	<data name="Settings.Plugins.NextStartLabel"><value>পরবর্তী রিস্টার্টে লোড করুন</value></data>
+	<data name="Settings.Plugins.DiagnosticLabel"><value>ডায়াগনস্টিক</value></data>
+	<data name="Settings.McpServers.SectionTitle"><value>MCP সার্ভার</value></data>
+	<data name="Settings.McpServers.FindOnlineButton"><value>অনলাইনে সন্ধান করুন</value></data>
+	<data name="Settings.McpServers.FindOnlineDialogTitle"><value>অনলাইনে MCP সার্ভার সন্ধান করুন</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPlaceholder"><value>অফিসিয়াল MCP রেজিস্ট্রি অনুসন্ধান করুন...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchButton"><value>অনুসন্ধান</value></data>
+	<data name="Settings.McpServers.FindOnlineSearching"><value>MCP রেজিস্ট্রি অনুসন্ধান করা হচ্ছে...</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchPrompt"><value>একটি সার্ভার খুঁজুন, তারপর MCP সার্ভার সম্পাদকে পর্যালোচনা করার জন্য একটি সেটআপ পদ্ধতি নির্বাচন করুন।</value></data>
+	<data name="Settings.McpServers.FindOnlineEmptyResults"><value>আপনার অনুসন্ধানের সাথে কোনো MCP সার্ভার মেলেনি।</value></data>
+	<data name="Settings.McpServers.FindOnlineSearchFailed"><value>MCP রেজিস্ট্রি অনুসন্ধান ব্যর্থ হয়েছে।</value></data>
+	<data name="Settings.McpServers.FindOnlineNoDescription"><value>এই সার্ভারের জন্য কোনো বিবরণ উপলব্ধ নেই।</value></data>
+	<data name="Settings.McpServers.FindOnlineVersionLabel"><value>v{0}</value></data>
+	<data name="Settings.McpServers.FindOnlineWebsiteButton"><value>ওয়েবসাইট</value></data>
+	<data name="Settings.McpServers.FindOnlineRepositoryButton"><value>রিপোজিটরি</value></data>
+	<data name="Settings.McpServers.FindOnlineAddButton"><value>যোগ করুন</value></data>
+	<data name="Settings.McpServers.FindOnlineRequiredFieldsPrefix"><value>আপনাকে প্রদান করতে হবে: {0}</value></data>
+	<data name="Settings.McpServers.FindOnlineManualSetupHint"><value>এই সার্ভারটির জন্য ম্যানুয়াল সেটআপ প্রয়োজন। এটি সেট আপ করতে আপনার এজেন্টকে বলুন।</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderServer"><value>সার্ভার</value></data>
+	<data name="Settings.McpServers.FindOnline.TableHeaderSetup"><value>সেটআপ</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteHttpOption"><value>রিমোট (HTTP)</value></data>
+	<data name="Settings.McpServers.FindOnlineRemoteSseOption"><value>রিমোট (SSE)</value></data>
+	<data name="Settings.McpServers.FindOnlineNpxOption"><value>লোকাল (npx)</value></data>
+	<data name="Settings.McpServers.FindOnlineUvxOption"><value>লোকাল (uvx)</value></data>
+	<data name="Settings.McpServers.FindOnlineDockerOption"><value>লোকাল (docker)</value></data>
+	<data name="Settings.McpServers.FindOnlineDnxOption"><value>লোকাল (dnx)</value></data>
+	<data name="Settings.McpServers.FindOnlineManualOption"><value>ম্যানুয়াল সেটআপ</value></data>
+	<data name="Settings.McpServers.ImportJsonButton"><value>JSON আমদানি করুন</value></data>
+	<data name="Settings.McpServers.AddServerButton"><value>সার্ভার যোগ করুন</value></data>
+	<data name="Settings.McpServers.NoServersMessage"><value>কোনো MCP সার্ভার কনফিগার করা হয়নি।</value></data>
+	<data name="Settings.McpServers.UnnamedServerLabel"><value>(নামহীন সার্ভার)</value></data>
+	<data name="Settings.McpServers.NamePlaceholder"><value>যেমন: আমার MCP সার্ভার</value></data>
+	<data name="Settings.McpServers.NameRequired"><value>নাম আবশ্যক।</value></data>
+	<data name="Settings.McpServers.TransportLabel"><value>ট্রান্সপোর্ট</value></data>
+	<data name="Settings.McpServers.TransportHttp"><value>HTTP</value></data>
+	<data name="Settings.McpServers.TransportStdio"><value>STDIO</value></data>
+	<data name="Settings.McpServers.NetworkScopeLabel"><value>নেটওয়ার্ক ব্যবহার</value></data>
+	<data name="Settings.McpServers.NetworkScopeHelp"><value>এয়ার-গ্যাপড রান কেবল ইন্টারনেট হিসেবে শ্রেণীবদ্ধ সার্ভারগুলিকে বাদ দেয়। সার্ভারের আসল নেটওয়ার্ক শ্রেণীবিভাগ বেছে নিন।</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentLabel"><value>এক্সিকিউশন পরিবেশ</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHost"><value>হোস্ট প্রসেস</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainer"><value>ডকার স্যান্ডবক্স</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentHostHint"><value>কনফিগার করা ডিভাইসে অ্যাপের অনুমতি নিয়ে চলে।</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentContainerHint"><value>কনফিগার করা ডিভাইসের Docker-এ চলে। প্রজেক্ট /project এবং কেন্দ্রীয় রান /workspace/&lt;name> মাউন্ট করে।</value></data>
+	<data name="Settings.McpServers.ExecutionEnvironmentBadge"><value>স্যান্ডবক্সযুক্ত</value></data>
+	<data name="Settings.McpServers.EndpointLabel"><value>এন্ডপয়েন্ট</value></data>
+	<data name="Settings.McpServers.EndpointPlaceholder"><value>http://127.0.0.1:8811/mcp</value></data>
+	<data name="Settings.McpServers.EndpointRequired"><value>পুনরায় সংযোগ করার আগে এন্ডপয়েন্ট আবশ্যক।</value></data>
+	<data name="Settings.McpServers.HeadersLabel"><value>হেডার (প্রতি লাইনে key=value)</value></data>
+	<data name="Settings.McpServers.HeadersPlaceholder"><value>Authorization=Bearer sk-xxx</value></data>
+	<data name="Settings.McpServers.CommandLabel"><value>কমান্ড</value></data>
+	<data name="Settings.McpServers.CommandPlaceholder"><value>npx</value></data>
+	<data name="Settings.McpServers.CommandRequired"><value>পুনরায় সংযোগ করার আগে কমান্ড আবশ্যক।</value></data>
+	<data name="Settings.McpServers.WorkingDirectoryLabel"><value>ওয়ার্কিং ডিরেক্টরি (ঐচ্ছিক)</value></data>
+	<data name="Settings.McpServers.ArgumentsLabel"><value>আর্গুমেন্ট (প্রতি লাইনে একটি)</value></data>
+	<data name="Settings.McpServers.ArgumentsPlaceholder"><value>-y
+@modelcontextprotocol/server-everything</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesLabel"><value>পরিবেশ ভেরিয়েবল (প্রতি লাইনে KEY=VALUE বা KEY)</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesPlaceholder"><value>API_KEY
+NODE_ENV=production</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesHelp"><value>কোনো মান সরাসরি সংরক্ষণ করতে KEY=VALUE ব্যবহার করুন। হোস্ট প্রসেসে লঞ্চের সময় Oscova থেকে মান পড়তে শুধু KEY লিখুন; অনুপস্থিত কীগুলি বাদ দেওয়া হয়, এবং পড়ে নেওয়া মানগুলি কখনও সংরক্ষণ বা প্রদর্শন করা হয় না।</value></data>
+	<data name="Settings.McpServers.SaveAndReconnectButton"><value>সংরক্ষণ ও সবগুলো পুনরায় সংযোগ করুন</value></data>
+	<data name="Settings.McpServers.CompleteRequiredFieldsToast"><value>সংরক্ষণ করার আগে প্রতিটি MCP সার্ভারের প্রয়োজনীয় ক্ষেত্রগুলি পূরণ করুন।</value></data>
+	<data name="Settings.McpServers.SavedReconnectStartedToast"><value>MCP সার্ভারগুলি সংরক্ষিত হয়েছে এবং পুনরায় সংযোগ শুরু হয়েছে।</value></data>
+	<data name="Settings.McpServers.SaveFailedToast"><value>MCP সার্ভার সংরক্ষণ করতে ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.McpServers.ImportedToast"><value>{0}টি MCP সার্ভার আমদানি করা হয়েছে।</value></data>
+	<data name="Settings.McpServers.ImportFailedToast"><value>MCP সার্ভার আমদানি করতে ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.McpServers.ReconnectAllButton"><value>সবগুলো পুনরায় সংযোগ করুন</value></data>
+	<data name="Settings.McpServers.ServerAddedToast"><value>MCP সার্ভার "{0}" যোগ করা হয়েছে এবং সংযুক্ত হয়েছে। এর সরঞ্জাম ব্যবহার করতে, কোনো এজেন্টের সেটিংসে অনুমোদিত সরঞ্জাম অংশে সেগুলি নির্বাচন করুন।</value></data>
+	<data name="Settings.McpServers.ServerUpdatedToast"><value>MCP সার্ভার "{0}" আপডেট করা হয়েছে এবং পুনরায় সংযুক্ত হয়েছে।</value></data>
+	<data name="Settings.McpServers.ServerRemovedToast"><value>MCP সার্ভার "{0}" সরিয়ে ফেলা হয়েছে।</value></data>
+	<data name="Settings.McpServers.ReconnectedAllToast"><value>সমস্ত MCP সার্ভার পুনরায় সংযুক্ত হয়েছে।</value></data>
+	<data name="Settings.McpServers.ServerAddedConnectionFailedToast"><value>MCP সার্ভার "{0}" সংরক্ষিত হয়েছিল, কিন্তু সংযোগ ব্যর্থ হয়েছে: {1}</value></data>
+	<data name="Settings.McpServers.ServerUpdatedConnectionFailedToast"><value>MCP সার্ভার "{0}" সংরক্ষিত হয়েছিল, কিন্তু পুনরায় সংযোগ ব্যর্থ হয়েছে: {1}</value></data>
+	<data name="Settings.McpServers.ReconnectAllFailedToast"><value>{0}টি MCP সার্ভার সংরক্ষিত হয়েছে কিন্তু পুনরায় সংযোগ করা যায়নি।</value></data>
+	<data name="Settings.McpServers.OperationFailedToast"><value>MCP সার্ভার অপারেশন ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.McpServers.CopyNameSuffix"><value>{0} (অনুলিপি)</value></data>
+	<data name="Settings.McpServers.ImportDialogTitle"><value>MCP সার্ভার কনফিগারেশন আমদানি করুন</value></data>
+	<data name="Settings.McpServers.ImportDialogDescription"><value>VS Code, Cursor বা Claude Desktop ফরম্যাট থেকে JSON পেস্ট করুন।</value></data>
+	<data name="Settings.McpServers.NoServersFoundError"><value>প্রদত্ত JSON-এ কোনো সার্ভার পাওয়া যায়নি।</value></data>
+	<data name="Settings.McpServers.InvalidJsonError"><value>অবৈধ JSON: {0}</value></data>
+	<data name="Settings.McpServers.TableHeaderServer"><value>সার্ভার</value></data>
+	<data name="Settings.McpServers.TableHeaderConnection"><value>সংযোগ</value></data>
+	<data name="Settings.McpServers.TableHeaderOptions"><value>বিকল্পসমূহ</value></data>
+	<data name="Settings.McpServers.OpenDetailsTitle"><value>সার্ভারের বিবরণ খুলুন</value></data>
+	<data name="Settings.McpServers.DetailsDialogTitle"><value>সার্ভার কনফিগারেশন</value></data>
+	<data name="Settings.McpServers.AddDialogTitle"><value>MCP সার্ভার যোগ করুন</value></data>
+	<data name="Settings.McpServers.EditDialogTitle"><value>MCP সার্ভার সম্পাদনা করুন</value></data>
+	<data name="Settings.McpServers.SaveServerButton"><value>সার্ভার সংরক্ষণ করুন</value></data>
+	<data name="Settings.McpServers.ConfiguredBadge"><value>কনফিগার করা হয়েছে</value></data>
+	<data name="Settings.McpServers.IncompleteBadge"><value>অসম্পূর্ণ</value></data>
+	<data name="Settings.McpServers.HeadersCountLabel"><value>{0}টি হেডার</value></data>
+	<data name="Settings.McpServers.ArgumentsCountLabel"><value>{0}টি আর্গুমেন্ট</value></data>
+	<data name="Settings.McpServers.EnvironmentVariablesCountLabel"><value>{0}টি ভেরিয়েবল</value></data>
+	<data name="Settings.McpServers.NoHeaders"><value>কোনো হেডার নেই</value></data>
+	<data name="Settings.McpServers.NoArguments"><value>কোনো আর্গুমেন্ট নেই</value></data>
+	<data name="Settings.McpServers.NoEnvironmentVariables"><value>কোনো পরিবেশ ভেরিয়েবল নেই</value></data>
+	<data name="Settings.Section.Hooks.Label"><value>হুক</value></data>
+	<data name="Settings.Section.Hooks.Description"><value>আউটবাউন্ড লাইফসাইকেল হুক এবং ইনবাউন্ড টাস্ক ওয়েবহুক কনফিগার করুন।</value></data>
+	<data name="Settings.Hooks.LoadingMessage"><value>হুক সেটিংস লোড হচ্ছে...</value></data>
+	<data name="Settings.Hooks.SectionTitle"><value>হুক হ্যান্ডলার</value></data>
+	<data name="Settings.Hooks.SectionDescription"><value>এজেন্ট এবং টাস্ক ইভেন্ট ঘটলে কমান্ড বা HTTP এন্ডপয়েন্ট চালান।</value></data>
+	<data name="Settings.Hooks.AddHookButton"><value>হুক যোগ করুন</value></data>
+	<data name="Settings.Hooks.VisualTab"><value>ভিজ্যুয়াল</value></data>
+	<data name="Settings.Hooks.JsonTab"><value>JSON</value></data>
+	<data name="Settings.Hooks.NoHooksMessage"><value>কোনো আউটবাউন্ড হুক কনফিগার করা হয়নি।</value></data>
+	<data name="Settings.Hooks.UnnamedHookLabel"><value>নামহীন হুক</value></data>
+	<data name="Settings.Hooks.NewHookDefaultName"><value>নতুন হুক</value></data>
+	<data name="Settings.Hooks.AddHookDialogTitle"><value>হুক যোগ করুন</value></data>
+	<data name="Settings.Hooks.EditHookDialogTitle"><value>হুক সম্পাদনা করুন</value></data>
+	<data name="Settings.Hooks.SaveHookButton"><value>হুক সংরক্ষণ করুন</value></data>
+	<data name="Settings.Hooks.CopyNameSuffix"><value>{0} (অনুলিপি)</value></data>
+	<data name="Settings.Hooks.NamePlaceholder"><value>যেমন: ঝুঁকিপূর্ণ সরঞ্জাম ব্লক করুন</value></data>
+	<data name="Settings.Hooks.EnabledLabel"><value>এই হুক সক্ষম করুন</value></data>
+	<data name="Settings.Hooks.EnabledStatus"><value>সক্ষম</value></data>
+	<data name="Settings.Hooks.DisabledStatus"><value>অক্ষম</value></data>
+	<data name="Settings.Hooks.EventsLabel"><value>ইভেন্টস</value></data>
+	<data name="Settings.Hooks.HandlerTypeLabel"><value>হ্যান্ডলারের ধরন</value></data>
+	<data name="Settings.Hooks.HandlerCommand"><value>কমান্ড</value></data>
+	<data name="Settings.Hooks.HandlerHttp"><value>HTTP</value></data>
+	<data name="Settings.Hooks.FailureModeLabel"><value>ব্যর্থতা মোড</value></data>
+	<data name="Settings.Hooks.FailureFailClosed"><value>ব্যর্থ হলে ব্লক করুন</value></data>
+	<data name="Settings.Hooks.FailureFailOpen"><value>ব্যর্থ হলে অনুমতি দিন</value></data>
+	<data name="Settings.Hooks.TimeoutLabel"><value>টাইমআউট সেকেন্ড</value></data>
+	<data name="Settings.Hooks.TargetLabel"><value>টার্গেট</value></data>
+	<data name="Settings.Hooks.CommandFileNameLabel"><value>কমান্ড</value></data>
+	<data name="Settings.Hooks.CommandArgumentsLabel"><value>আর্গুমেন্ট, প্রতি লাইনে একটি</value></data>
+	<data name="Settings.Hooks.CommandWorkingDirectoryLabel"><value>ওয়ার্কিং ডিরেক্টরি</value></data>
+	<data name="Settings.Hooks.HttpUrlLabel"><value>URL</value></data>
+	<data name="Settings.Hooks.StaticHeadersLabel"><value>স্ট্যাটিক হেডার</value></data>
+	<data name="Settings.Hooks.SecretHeadersLabel"><value>গোপন হেডার</value></data>
+	<data name="Settings.Hooks.HeaderNamePlaceholder"><value>হেডারের নাম</value></data>
+	<data name="Settings.Hooks.HeaderValuePlaceholder"><value>হেডারের মান</value></data>
+	<data name="Settings.Hooks.CredentialSelectPlaceholder"><value>আউটবাউন্ড HTTP সিক্রেট নির্বাচন করুন</value></data>
+	<data name="Settings.Hooks.AddHeaderButton"><value>হেডার যোগ করুন</value></data>
+	<data name="Settings.Hooks.AddSecretHeaderButton"><value>গোপন হেডার যোগ করুন</value></data>
+	<data name="Settings.Hooks.ResetButton"><value>রিসেট করুন</value></data>
+	<data name="Settings.Hooks.SaveButton"><value>হুক সংরক্ষণ করুন</value></data>
+	<data name="Settings.Hooks.JsonLabel"><value>হুক সেটিংস JSON</value></data>
+	<data name="Settings.Hooks.CopyJsonButton"><value>JSON কপি করুন</value></data>
+	<data name="Settings.Hooks.ApplyJsonButton"><value>JSON প্রয়োগ করুন</value></data>
+	<data name="Settings.Hooks.SavedToast"><value>হুক সেটিংস সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.Hooks.LoadFailedToast"><value>হুক সেটিংস লোড করতে ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.Hooks.SaveFailedToast"><value>হুক সেটিংস সংরক্ষণ করতে ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.Hooks.JsonAppliedToast"><value>হুক JSON প্রয়োগ করা হয়েছে।</value></data>
+	<data name="Settings.Hooks.InvalidJsonToast"><value>অবৈধ হুক JSON: {0}</value></data>
+	<data name="Settings.Hooks.Event.TaskStart"><value>টাস্ক শুরু</value></data>
+	<data name="Settings.Hooks.Event.TaskComplete"><value>টাস্ক সম্পন্ন</value></data>
+	<data name="Settings.Hooks.Event.TaskFailed"><value>টাস্ক ব্যর্থ</value></data>
+	<data name="Settings.Hooks.Event.SessionStart"><value>সেশন শুরু</value></data>
+	<data name="Settings.Hooks.Event.UserPromptSubmit"><value>ব্যবহারকারীর প্রম্পট জমা</value></data>
+	<data name="Settings.Hooks.Event.PreToolUse"><value>সরঞ্জাম ব্যবহারের আগে</value></data>
+	<data name="Settings.Hooks.Event.PostToolUse"><value>সরঞ্জাম ব্যবহারের পরে</value></data>
+	<data name="Settings.Hooks.ApiKeysTitle"><value>টাস্ক ওয়েবহুক API কীসমূহ</value></data>
+	<data name="Settings.Hooks.ApiKeysDescription"><value>অনুমোদিত কাজগুলি ট্রিগার করে এমন বাহ্যিক সিস্টেমের জন্য বিয়ারার টোকেন তৈরি করুন।</value></data>
+	<data name="Settings.Hooks.NewApiKeyNameLabel"><value>API কী-এর নাম</value></data>
+	<data name="Settings.Hooks.AllowedTaskSlugsLabel"><value>অনুমোদিত টাস্ক স্লাগ, কমা দ্বারা পৃথক</value></data>
+	<data name="Settings.Hooks.CreateApiKeyButton"><value>API কী তৈরি করুন</value></data>
+	<data name="Settings.Hooks.CreateApiKeyDialogTitle"><value>টাস্ক ওয়েবহুক API কী তৈরি করুন</value></data>
+	<data name="Settings.Hooks.NoApiKeysMessage"><value>এখনও কোনো টাস্ক ওয়েবহুক API কী নেই।</value></data>
+	<data name="Settings.Hooks.CreatedTokenTitle"><value>এই টোকেনটি এখনই কপি করুন</value></data>
+	<data name="Settings.Hooks.CopyTokenButton"><value>কপি করুন</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedLabel"><value>তৈরি হয়েছে {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyLastUsedLabel"><value>সর্বশেষ ব্যবহার {0}</value></data>
+	<data name="Settings.Hooks.ApiKeyNeverUsed"><value>কখনও ব্যবহার করা হয়নি</value></data>
+	<data name="Settings.Hooks.ApiKeyScopesLabel"><value>স্কোপসমূহ</value></data>
+	<data name="Settings.Hooks.ApiKeyAllowedSlugsLabel"><value>অনুমোদিত স্লাগ</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmTitle"><value>টাস্ক ওয়েবহুক API কী মুছুন</value></data>
+	<data name="Settings.Hooks.DeleteApiKeyConfirmMessage"><value>টাস্ক ওয়েবহুক API কী "{0}" মুছে ফেলবেন?</value></data>
+	<data name="Settings.Hooks.ApiKeyCreatedToast"><value>টাস্ক ওয়েবহুক API কী তৈরি হয়েছে।</value></data>
+	<data name="Settings.Hooks.ApiKeyUpdatedToast"><value>টাস্ক ওয়েবহুক API কী আপডেট করা হয়েছে।</value></data>
+	<data name="Settings.Hooks.ApiKeyDeletedToast"><value>টাস্ক ওয়েবহুক API কী মুছে ফেলা হয়েছে।</value></data>
+	<data name="Settings.Hooks.SecretsTitle"><value>আউটবাউন্ড HTTP হুক সিক্রেট</value></data>
+	<data name="Settings.Hooks.SecretsDescription"><value>হেডার মান সংরক্ষণ করুন যা Oscova বাহ্যিক HTTP হুক এন্ডপয়েন্টে পাঠায়।</value></data>
+	<data name="Settings.Hooks.NewSecretButton"><value>নতুন</value></data>
+	<data name="Settings.Hooks.NewSecretDialogTitle"><value>নতুন আউটবাউন্ড HTTP হুক সিক্রেট</value></data>
+	<data name="Settings.Hooks.EditSecretDialogTitle"><value>আউটবাউন্ড HTTP হুক সিক্রেট সম্পাদনা করুন</value></data>
+	<data name="Settings.Hooks.SecretNameLabel"><value>সিক্রেটের নাম</value></data>
+	<data name="Settings.Hooks.SecretKeyLabel"><value>সিক্রেট রেফারেন্স কী</value></data>
+	<data name="Settings.Hooks.SecretValueLabel"><value>সিক্রেট মান</value></data>
+	<data name="Settings.Hooks.SecretDescriptionLabel"><value>বিবরণ</value></data>
+	<data name="Settings.Hooks.SecretValueEditHint"><value>বর্তমান মান রাখতে খালি রাখুন।</value></data>
+	<data name="Settings.Hooks.SaveSecretButton"><value>সিক্রেট সংরক্ষণ করুন</value></data>
+	<data name="Settings.Hooks.NoSecretsMessage"><value>এখনও কোনো আউটবাউন্ড HTTP হুক সিক্রেট সংরক্ষণ করা হয়নি।</value></data>
+	<data name="Settings.Hooks.SecretSetStatus"><value>সেট করা আছে</value></data>
+	<data name="Settings.Hooks.SecretUpdatedLabel"><value>{0}-এ আপডেট করা হয়েছে</value></data>
+	<data name="Settings.Hooks.SecretSavedToast"><value>আউটবাউন্ড HTTP হুক গোপনীয় তথ্য সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.Hooks.SecretDeletedToast"><value>আউটবাউন্ড HTTP হুক গোপনীয় তথ্য মুছে ফেলা হয়েছে।</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmTitle"><value>আউটবাউন্ড HTTP হুক গোপনীয় তথ্য মুছুন</value></data>
+	<data name="Settings.Hooks.DeleteSecretConfirmMessage"><value>আউটবাউন্ড HTTP হুক গোপনীয় তথ্য "{0}" কি মুছে ফেলবেন?</value></data>
+	<data name="Settings.Hooks.DeleteSecretReferencedConfirmMessage"><value>আউটবাউন্ড HTTP হুক গোপনীয় তথ্য "{0}" কি মুছে ফেলবেন? এক বা একাধিক HTTP হুক এখনও এই ক্রেডেনশিয়ালের উল্লেখ করছে।</value></data>
+	<data name="Settings.General.AssistantNameLabel"><value>সহকারীর নাম</value></data>
+	<data name="Settings.General.AssistantNamePlaceholder"><value>সহকারীর নাম লিখুন...</value></data>
+	<data name="Settings.General.SaveNameTitle"><value>নাম সংরক্ষণ করুন</value></data>
+	<data name="Settings.General.UnsavedChangesHint"><value>পরিবর্তনগুলি স্বয়ংক্রিয়ভাবে সংরক্ষিত হয় না।</value></data>
+	<data name="Settings.General.ShowTopBarProfileLabel"><value>শীর্ষ বারে প্রোফাইল দেখান</value></data>
+	<data name="Settings.General.ShowTopBarProfileDescription"><value>শীর্ষ বারে আপনার অবতার, নাম এবং ব্যবহারকারীর নাম প্রদর্শন করুন</value></data>
+	<data name="Settings.General.GamificationLabel"><value>অর্জন এবং XP</value></data>
+	<data name="Settings.General.GamificationDescription"><value>অর্জন এবং XP প্রদর্শন করুন এবং আনলক বিজ্ঞপ্তি পাঠান</value></data>
+	<data name="Settings.General.TimeZoneLabel"><value>সময় অঞ্চল</value></data>
+	<data name="Settings.General.SearchTimeZonesPlaceholder"><value>সময় অঞ্চল খুঁজুন...</value></data>
+	<data name="Settings.General.ServerDefault"><value>সার্ভার ডিফল্ট</value></data>
+	<data name="Settings.General.TimeZoneDescription"><value>UI-তে টাইমস্ট্যাম্প এই সময় অঞ্চলে প্রদর্শিত হবে।</value></data>
+	<data name="Settings.General.LanguageLabel"><value>ভাষা</value></data>
+	<data name="Settings.General.LanguageReloadHint"><value>পৃষ্ঠাটি পুনরায় লোড করার পরে পরিবর্তনগুলি প্রয়োগ হয়।</value></data>
+	<data name="Settings.General.DeleteConversationsLabel"><value>কথোপকথন মুছুন</value></data>
+	<data name="Settings.General.DeleteConversationsDescription"><value>অ্যাপ্লিকেশনের প্রতিটি চ্যাট কথোপকথন স্থায়ীভাবে মুছে ফেলে। এটি পূর্বাবস্থায় ফিরিয়ে আনা যাবে না।</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmTitle"><value>মোছার বিষয়টি নিশ্চিত করুন</value></data>
+	<data name="Settings.General.DeleteConversationsConfirmMessage"><value>স্থায়ীভাবে সমস্ত {0} কথোপকথন মুছে ফেলতে চান? এটি পূর্বাবস্থায় ফিরিয়ে আনা যাবে না।</value></data>
+	<data name="Settings.Shared.SaveSettingsToast"><value>সেটিংস সফলভাবে সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Back"><value>পিছনে</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Customize"><value>কাস্টমাইজ করুন: {0}</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Description"><value>ব্যক্তিগত প্রসঙ্গ যোগ করুন যা আপনার সেশনগুলির জন্য এই ভাগ করা এজেন্টের নির্দেশাবলীতে প্রবেশ করানো হবে, যেমন পছন্দের নাম বা ডাকার পছন্দ।</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Label"><value>ব্যক্তিগত প্রসঙ্গ</value></data>
+	<data name="Settings.SharedAgentPersonalContext.Placeholder"><value>এই ভাগ করা এজেন্টের জন্য নোট, পছন্দ, পটভূমি বা অন্যান্য ব্যক্তিগত প্রসঙ্গ যোগ করুন...</value></data>
+	<data name="Settings.Category.Channels.Label"><value>চ্যানেল</value></data>
+	<data name="Settings.Category.Channels.Description"><value>চ্যাট চ্যানেল এবং বট ইন্টিগ্রেশন।</value></data>
+	<data name="Settings.General.ChatTitleGenerationLabel"><value>চ্যাট শিরোনাম তৈরি করুন</value></data>
+	<data name="Settings.General.ChatTitleGenerationDescription"><value>কয়েকটি বার্তার পরে কথোপকথনের নাম পরিবর্তন করতে আপনার নির্বাচিত চ্যাট মডেল ব্যবহার করুন</value></data>
+	<data name="Settings.General.ChatResumeWindowLabel"><value>সাম্প্রতিক চ্যাট আবার শুরু করুন</value></data>
+	<data name="Settings.General.ChatResumeWindowDescription"><value>আপনার শেষ বার্তাটি এই সংখ্যক মিনিটের বা তার চেয়ে নতুন হলে সাম্প্রতিক বর্তমান চ্যাটে ফিরে যান। সর্বদা শুরুর স্ক্রিন দেখাতে 0 ব্যবহার করুন।</value></data>
+	<data name="Settings.General.ChatResumeWindowInvalid"><value>মিনিটের একটি পূর্ণ সংখ্যা লিখুন, 0 বা তার বেশি।</value></data>
+	<data name="Settings.General.AboutTitle"><value>সম্পর্কে</value></data>
+	<data name="Settings.General.AboutDescription"><value>এই অ্যাপ এবং এর এজেন্ট ফ্রেমওয়ার্কের সংস্করণের বিবরণ।</value></data>
+	<data name="Settings.General.HostVersionLabel"><value>Oscova Agents</value></data>
+	<data name="Settings.General.FrameworkVersionLabel"><value>ফ্রেমওয়ার্ক</value></data>
+	<data name="Settings.Skills.FindOnlineButton"><value>অনলাইনে দক্ষতা খুঁজুন</value></data>
+	<data name="Settings.Skills.ManageSourcesButton"><value>উৎস পরিচালনা করুন</value></data>
+	<data name="Settings.Skills.FindOnlineDialogTitle"><value>অনলাইনে দক্ষতা খুঁজুন</value></data>
+	<data name="Settings.Skills.FindOnlineSearchPlaceholder"><value>নাম দিয়ে অনুসন্ধান করুন...</value></data>
+	<data name="Settings.Skills.FindOnlineInstallButton"><value>ইনস্টল করুন</value></data>
+	<data name="Settings.Skills.FindOnlineDescriptionLoading"><value>বিবরণ লোড হচ্ছে...</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsUnavailable"><value>বিবরণ লোড করা যায়নি।</value></data>
+	<data name="Settings.Skills.FindOnlineNoDescription"><value>এই দক্ষতার জন্য কোন বিবরণ উপলব্ধ নেই।</value></data>
+	<data name="Settings.Skills.FindOnlineInstalledToast"><value>দক্ষতা ইনস্টল করা হয়েছে।</value></data>
+	<data name="Settings.Skills.FindOnlineNoSourcesMessage"><value>কোনো দক্ষতা উৎস কনফিগার করা নেই। প্রশাসককে একটি যোগ করতে বলুন।</value></data>
+	<data name="Settings.Skills.FindOnlineEmptyResults"><value>আপনার অনুসন্ধানের সাথে কোনো দক্ষতা মেলেনি।</value></data>
+	<data name="Settings.Skills.FindOnlineDetailsButton"><value>বিবরণ</value></data>
+	<data name="Settings.Skills.FindOnlineHideButton"><value>লুকান</value></data>
+	<data name="Settings.Skills.FindOnlineRetryButton"><value>আবার চেষ্টা করুন</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSkill"><value>দক্ষতা</value></data>
+	<data name="Settings.Skills.FindOnline.TableHeaderSource"><value>উৎস</value></data>
+	<data name="Settings.Skills.RegistrySourcesDialogTitle"><value>দক্ষতা উৎস</value></data>
+	<data name="Settings.Skills.RegistrySourcesDescription"><value>"অনলাইনে দক্ষতা খুঁজুন" দ্বারা ব্যবহৃত GitHub সংগ্রহস্থলগুলি কনফিগার করুন।</value></data>
+	<data name="Settings.Skills.RegistrySourcesAddRow"><value>উৎস যোগ করুন</value></data>
+	<data name="Settings.Skills.RegistrySourcesOwnerLabel"><value>মালিক</value></data>
+	<data name="Settings.Skills.RegistrySourcesRepoLabel"><value>সংগ্রহস্থল</value></data>
+	<data name="Settings.Skills.RegistrySourcesBranchLabel"><value>শাখা</value></data>
+	<data name="Settings.Skills.RegistryPatHint"><value>প্রমাণীকরণের মাধ্যমে রিপোজিটরি ব্যবহারের জন্য অ্যাডমিন পৃষ্ঠায় GitHub Skill Search-এর অধীনে একজন অ্যাডমিন ব্যক্তিগত অ্যাক্সেস টোকেন যোগ করতে পারেন।</value></data>
+	<data name="Settings.Skills.RegistrySavedToast"><value>দক্ষতা উৎস সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.Skills.InstallStageResolving"><value>ফাইলগুলি শনাক্ত করা হচ্ছে</value></data>
+	<data name="Settings.Skills.InstallStageDownloading"><value>ডাউনলোড হচ্ছে</value></data>
+	<data name="Settings.Skills.InstallStageImporting"><value>আমদানি করা হচ্ছে</value></data>
+	<data name="Settings.Skills.InstallStageInstalled"><value>ইনস্টল করা হয়েছে</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialTitle"><value>GitHub Skill Search</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialDescription"><value>"অনলাইনে দক্ষতা খুঁজুন" দ্বারা ব্যবহৃত ঐচ্ছিক ব্যক্তিগত অ্যাক্সেস টোকেন। পুরো হোস্টের জন্য GitHub API রেট সীমা প্রতি ঘন্টায় ৬০ থেকে ৫,০০০ অনুরোধে বাড়ায়।</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialHint"><value>একটি বিদ্যমান টোকেন রাখতে ক্ষেত্রটি ফাঁকা রাখুন। এটি সরাতে পরিষ্কার করুন ব্যবহার করুন।</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialFieldLabel"><value>ব্যক্তিগত অ্যাক্সেস টোকেন</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialLoading"><value>বর্তমান অবস্থা লোড হচ্ছে...</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderExists"><value>বর্তমান টোকেন রাখতে ফাঁকা রাখুন</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialPlaceholderNew"><value>GitHub ব্যক্তিগত অ্যাক্সেস টোকেন পেস্ট করুন</value></data>
+	<data name="Settings.Skills.GitHubSkillsCredentialSavedToast"><value>GitHub দক্ষতা অনুসন্ধান টোকেন সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.Plugins.FindOnlineButton"><value>অনলাইনে প্লাগইন খুঁজুন</value></data>
+	<data name="Settings.Plugins.FindOnlineDialogTitle"><value>অনলাইনে প্লাগইন খুঁজুন</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPlaceholder"><value>NuGet প্যাকেজ অনুসন্ধান করুন...</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchButton"><value>অনুসন্ধান করুন</value></data>
+	<data name="Settings.Plugins.FindOnlineSearchPrompt"><value>NuGet.org-এ OscovaPlugin প্যাকেজ অনুসন্ধান করতে একটি প্যাকেজের নাম লিখুন।</value></data>
+	<data name="Settings.Plugins.FindOnlineSearching"><value>NuGet.org অনুসন্ধান করা হচ্ছে...</value></data>
+	<data name="Settings.Plugins.FindOnlineEmptyResults"><value>আপনার অনুসন্ধানের সাথে কোনো প্লাগইন মেলেনি।</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsButton"><value>বিবরণ</value></data>
+	<data name="Settings.Plugins.FindOnlineHideButton"><value>লুকান</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallButton"><value>ইনস্টল বা আপডেট করুন</value></data>
+	<data name="Settings.Plugins.FindOnlineRetryButton"><value>আবার চেষ্টা করুন</value></data>
+	<data name="Settings.Plugins.FindOnlineRequiresNewerOscova"><value>নতুন Oscova প্রয়োজন</value></data>
+	<data name="Settings.Plugins.FindOnlineIncompatible"><value>এই Oscova-এর সাথে সামঞ্জস্যপূর্ণ নয়</value></data>
+	<data name="Settings.Plugins.FindOnlinePrereleaseOnly"><value>শুধু প্রিরিলিজ</value></data>
+	<data name="Settings.Plugins.FindOnlineDescriptionLoading"><value>বিবরণ লোড হচ্ছে...</value></data>
+	<data name="Settings.Plugins.FindOnlineDetailsUnavailable"><value>বিবরণ লোড করা যায়নি।</value></data>
+	<data name="Settings.Plugins.FindOnlineNoDescription"><value>এই প্লাগইনের জন্য কোন বিবরণ উপলব্ধ নেই।</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledToast"><value>প্লাগইন প্যাকেজ প্রস্তুত। পরবর্তী পুনরায় চালুর সময় লোড নিশ্চিত করুন, তারপর পুনরায় চালু করুন।</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallNotice"><value>প্লাগইন প্যাকেজ প্রস্তুত। পরবর্তী পুনরায় চালুর সময় লোড নিশ্চিত করুন, তারপর পুনরায় চালু করুন।</value></data>
+	<data name="Settings.Plugins.FindOnlineDownloadsLabel"><value>{0:N0}টি ডাউনলোড</value></data>
+	<data name="Settings.Plugins.FindOnlineVersionLabel"><value>সংস্করণ {0}</value></data>
+	<data name="Settings.Plugins.FindOnlineUnknownAuthor"><value>অজানা লেখক</value></data>
+	<data name="Settings.Plugins.FindOnlineLicenseLabel"><value>লাইসেন্স</value></data>
+	<data name="Settings.Plugins.FindOnlineProjectButton"><value>প্রকল্প</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderPackage"><value>প্যাকেজ</value></data>
+	<data name="Settings.Plugins.FindOnline.TableHeaderMetadata"><value>মেটাডেটা</value></data>
+	<data name="Settings.Plugins.FindOnlineInstallingButton"><value>ইনস্টল হচ্ছে...</value></data>
+	<data name="Settings.Plugins.FindOnlineInstalledButton"><value>ইনস্টল করা হয়েছে</value></data>
+	<data name="Settings.Speech.RecognitionProviderDescription"><value>হ্যান্ডস-ফ্রি ক্যাপচারের পরে কীভাবে মাইক্রোফোন অডিও প্রতিলিপি করা হবে তা চয়ন করুন। ভাষা: স্বয়ংক্রিয় শনাক্তকরণ।</value></data>
+	<data name="Settings.Speech.SynthesisProviderDescription"><value>সহকারী পাঠ্য কীভাবে অডিওতে রূপান্তরিত হবে তা চয়ন করুন।</value></data>
+	<data name="Settings.Speech.ProviderLabel"><value>প্রদানকারী</value></data>
+	<data name="Settings.Speech.ProviderLocal"><value>স্থানীয়</value></data>
+	<data name="Settings.Speech.ProviderOpenAI"><value>OpenAI</value></data>
+	<data name="Settings.Speech.CredentialLabel"><value>ক্রেডেনশিয়াল</value></data>
+	<data name="Settings.Speech.CredentialPlaceholder"><value>সংরক্ষিত ক্রেডেনশিয়াল নির্বাচন করুন</value></data>
+	<data name="Settings.Speech.CredentialHelp"><value>ক্রেডেনশিয়াল সেটিংস > ক্রেডেনশিয়ালে পরিচালিত হয়।</value></data>
+	<data name="Settings.Speech.ModelLabel"><value>মডেল</value></data>
+	<data name="Settings.Speech.SaveProviderButton"><value>ভয়েস সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Settings.Speech.SettingsSavedToast"><value>ভয়েস সেটিংস সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.Credentials.ConfiguredStatus"><value>কনফিগার করা হয়েছে</value></data>
+	<data name="Settings.Credentials.MissingStatus"><value>অনুপস্থিত মান</value></data>
+	<data name="Settings.Section.Privacy.Label"><value>গোপনীয়তা</value></data>
+	<data name="Settings.Section.Privacy.Description"><value>অফলাইন মোড, স্বয়ংক্রিয় সাইন-আউট এবং আপনার এজেন্ট কী পাঠাতে পারে তা নিয়ন্ত্রণ করুন।</value></data>
+	<data name="Settings.Privacy.LoadingMessage"><value>গোপনীয়তা সেটিংস লোড হচ্ছে...</value></data>
+	<data name="Settings.Privacy.OfflineModeTitle"><value>অফলাইন মোড</value></data>
+	<data name="Settings.Privacy.OfflineModeLabel"><value>এজেন্ট চালানো অফলাইনে রাখুন</value></data>
+	<data name="Settings.Privacy.OfflineModeDescription"><value>সক্রিয় থাকলে, আপনার এজেন্ট স্থানীয় মডেল, স্থানীয় টুল এবং LAN এন্ডপয়েন্ট ব্যবহার করতে পারে, তবে সর্বজনীন ইন্টারনেট প্রদানকারী এবং ইন্টারনেটে তথ্য পাঠানোর টুলগুলি অবরুদ্ধ থাকে।</value></data>
+	<data name="Settings.Privacy.OfflineModeOffBadge"><value>বন্ধ</value></data>
+	<data name="Settings.Privacy.OfflineModeOnBadge"><value>চালু</value></data>
+	<data name="Settings.Privacy.EffectsTitle"><value>লাইভ প্রভাব</value></data>
+	<data name="Settings.Privacy.EffectsOff"><value>অফলাইন সীমা নিষ্ক্রিয়। আপনার কনফিগার করা প্রদানকারী এবং সরঞ্জামগুলি তাদের স্বাভাবিক নেটওয়ার্ক অ্যাক্সেস ব্যবহার করতে পারে।</value></data>
+	<data name="Settings.Privacy.DisabledToolsCount"><value>{0}টি সরঞ্জাম নিষ্ক্রিয়</value></data>
+	<data name="Settings.Privacy.CloudProvidersTitle"><value>ক্লাউড প্রদানকারী অবরুদ্ধ</value></data>
+	<data name="Settings.Privacy.NoCloudProviders"><value>বর্তমানে কোনো কনফিগার করা ক্লাউড প্রদানকারী অবরুদ্ধ নেই।</value></data>
+	<data name="Settings.Privacy.LocalNetworkTitle"><value>স্থানীয় নেটওয়ার্ক</value></data>
+	<data name="Settings.Privacy.LocalNetworkDescription"><value>লুপব্যাক এবং স্থানীয়-নেটওয়ার্ক ঠিকানা উপলব্ধ থাকে, যার মধ্যে স্থানীয় Ollama বা অন্য মেশিনের অবতার ইঞ্জিন অন্তর্ভুক্ত।</value></data>
+	<data name="Settings.Privacy.RedactionTitle"><value>তথ্য গোপনকরণ</value></data>
+	<data name="Settings.Privacy.RedactionBadge"><value>সর্বদা চালু</value></data>
+	<data name="Settings.Privacy.RedactionDescription"><value>সংরক্ষিত গোপনীয় তথ্যগুলি এজেন্ট লগ, অনুমোদন এবং ক্যাপচার করা অনুরোধের বিবরণে মাস্ক করা হয়। এই সুরক্ষা বন্ধ করা যাবে না।</value></data>
+	<data name="Settings.Privacy.ChannelsTitle"><value>সংযুক্ত চ্যানেল</value></data>
+	<data name="Settings.Privacy.ChannelsDescription"><value>এই চ্যানেলগুলি সক্ষম থাকলে Discord, Telegram এবং Slack এখনও তাদের নিজস্ব সার্ভারের মাধ্যমে আপনার বার্তা রিলে করে।</value></data>
+	<data name="Settings.Privacy.AutoLogout.Title"><value>স্বয়ংক্রিয় সাইন-আউট</value></data>
+	<data name="Settings.Privacy.AutoLogout.Description"><value>খোলা Oscova ট্যাবগুলির কোনোটিতেই মাউস, স্পর্শ, কীবোর্ড, স্ক্রোলিং বা বার্তা পাঠানোর কার্যকলাপ না থাকলে নির্বাচিত সময় পরে এই ব্রাউজার থেকে সাইন আউট করুন।</value></data>
+	<data name="Settings.Privacy.AutoLogout.Label"><value>এর পরে সাইন আউট করুন</value></data>
+	<data name="Settings.Privacy.AutoLogout.OffOption"><value>বন্ধ</value></data>
+	<data name="Settings.Privacy.AutoLogout.MinutesOption"><value>{0} মিনিট</value></data>
+	<data name="Settings.Privacy.ResetButton"><value>রিসেট</value></data>
+	<data name="Settings.Privacy.SaveButton"><value>গোপনীয়তা সেটিংস সংরক্ষণ করুন</value></data>
+	<data name="Settings.Privacy.LoadErrorToast"><value>গোপনীয়তা সেটিংস লোড ত্রুটি: {0}</value></data>
+	<data name="Settings.Privacy.SaveSuccessToast"><value>গোপনীয়তা সেটিংস সংরক্ষিত হয়েছে</value></data>
+	<data name="Settings.Privacy.SaveFailedToast"><value>গোপনীয়তা সেটিংস সংরক্ষণ করা যায়নি।</value></data>
+	<data name="Settings.Privacy.SaveFailedWithMessageToast"><value>গোপনীয়তা সেটিংস সংরক্ষণ করতে ব্যর্থ হয়েছে: {0}</value></data>
+	<data name="Settings.Tools.NetworkEgress"><value>ইন্টারনেট</value></data>
+	<data name="Settings.Tools.NetworkIncidental"><value>নেটওয়ার্কে পৌঁছাতে পারে</value></data>
+	<data name="Settings.Tools.EgressDisabledNotice"><value>ইন্টারনেট সরঞ্জামগুলি বর্তমান শুধুমাত্র-স্থানীয় সেটিং দ্বারা অবরুদ্ধ।</value></data>
+	<data name="Settings.Tools.EgressDisabledBadge"><value>অবরুদ্ধ</value></data>
+	<data name="Settings.Tools.EgressDisabledTooltip"><value>এই ইন্টারনেট সরঞ্জামটি নির্বাচন করতে সক্রিয় শুধুমাত্র-স্থানীয় সেটিংটি বন্ধ করুন।</value></data>
+	<data name="Settings.Tools.TableHeaderPolicy"><value>নীতি</value></data>
+	<data name="Settings.Tools.ConfigurePolicyTooltip"><value>সরঞ্জাম নীতি কনফিগার করুন</value></data>
+	<data name="Settings.Tools.ConfigurePolicyLabel"><value>{0}-এর জন্য নীতি কনফিগার করুন</value></data>
+	<data name="Settings.Tools.Governance.OverrideBadge"><value>ওভাররাইড করা হয়েছে</value></data>
+	<data name="Settings.Tools.Governance.DefaultBadge"><value>ডিফল্ট</value></data>
+	<data name="Settings.Tools.Governance.CustomBadge"><value>কাস্টম</value></data>
+	<data name="Settings.Tools.Governance.QuotaBadge"><value>{0} / {1}</value></data>
+	<data name="Settings.Tools.Governance.DialogTitle"><value>সরঞ্জাম নীতি</value></data>
+	<data name="Settings.Tools.Governance.NetworkLabel"><value>নেটওয়ার্ক অ্যাক্সেস</value></data>
+	<data name="Settings.Tools.Governance.UseDeclaredOption"><value>ঘোষিত স্কোপ ব্যবহার করুন</value></data>
+	<data name="Settings.Tools.Governance.NetworkHint"><value>এই শ্রেণিবিন্যাস নিয়ন্ত্রণ করে যে শুধুমাত্র-স্থানীয় মোড সরঞ্জামটি লুকায় কিনা।</value></data>
+	<data name="Settings.Tools.Governance.LocalOnlyWarning"><value>শুধুমাত্র-স্থানীয় মোড সক্রিয় থাকা অবস্থায় এই সরঞ্জামটি অনুপলব্ধ থাকবে।</value></data>
+	<data name="Settings.Tools.Governance.LimitEnabledLabel"><value>কল সীমাবদ্ধ করুন</value></data>
+	<data name="Settings.Tools.Governance.MaxCallsLabel"><value>সর্বোচ্চ কল</value></data>
+	<data name="Settings.Tools.Governance.WindowHint"><value>নির্দিষ্ট ২৪ ঘন্টার সময়ের মধ্যে সীমা প্রযোজ্য।</value></data>
+	<data name="Settings.Tools.Governance.InvalidLimitMessage"><value>১ থেকে ১০০০০০০ পর্যন্ত কলের সীমা লিখুন।</value></data>
+	<data name="Settings.Tools.Governance.SavedToast"><value>সরঞ্জাম নীতি সংরক্ষিত হয়েছে।</value></data>
+	<data name="Settings.Tools.Governance.SaveFailedToast"><value>সরঞ্জাম নীতি সংরক্ষণ করা যায়নি: {0}</value></data>
+	<data name="Settings.Avatar.ConnectEngineTitle"><value>অ্যাভাটার ইঞ্জিনে সংযোগ করুন</value></data>
+	<data name="Settings.Avatar.ConnectEngineButton"><value>সংযোগ</value></data>
+	<data name="Settings.Avatar.AccessModeLabel"><value>অ্যাক্সেস মোড</value></data>
+	<data name="Settings.Avatar.AccessModeShared"><value>শেয়ার্ড</value></data>
+	<data name="Settings.Avatar.AccessModeExclusive"><value>এক্সক্লুসিভ</value></data>
+	<data name="Settings.Avatar.AccessModeHelp"><value>শেয়ার্ড মোড অন্য পেয়ার করা ক্লায়েন্টকে অনুমতি দেয়। এক্সক্লুসিভ মোড ইঞ্জিন পুনরায় চালু হওয়া পর্যন্ত তাদের বাধা দেয়।</value></data>
+	<data name="Settings.Avatar.PairingDialogTitle"><value>অ্যাভাটার ইঞ্জিন পেয়ার করুন</value></data>
+	<data name="Settings.Avatar.PairingCodeLabel"><value>পেয়ারিং কোড</value></data>
+	<data name="Settings.Avatar.PairingCodeHelp"><value>অ্যাভাটার ইঞ্জিনে দেখানো ছয় সংখ্যার কোড লিখুন।</value></data>
+	<data name="Settings.Avatar.PairingLifetime"><value>কোডটি প্রায় {0} সেকেন্ডের মধ্যে মেয়াদোত্তীর্ণ হবে।</value></data>
+	<data name="Settings.Avatar.PairingButton"><value>পেয়ার</value></data>
+	<data name="Settings.Avatar.PairingBusy"><value>পেয়ার হচ্ছে...</value></data>
+	<data name="Settings.Avatar.PairingFailed"><value>পেয়ারিং ব্যর্থ হয়েছে। নতুন কোড চেয়ে আবার চেষ্টা করুন।</value></data>
+	<data name="Settings.Avatar.PairingExpired"><value>কোডটির মেয়াদ শেষ হয়েছে। এই ডায়ালগটি বন্ধ করে নতুন কোডের জন্য আবার সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.PairingInvalidResponse"><value>অ্যাভাটার ইঞ্জিন একটি অবৈধ প্রতিক্রিয়া দিয়েছে। এই ডায়ালগটি বন্ধ করে আবার চেষ্টা করতে সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredStatus"><value>পেয়ারিং প্রয়োজন</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictStatus"><value>অ্যাক্সেস দ্বন্দ্ব</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedStatus"><value>হার সীমিত</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorStatus"><value>কনফিগারেশন সমস্যা</value></data>
+	<data name="Settings.Avatar.EngineErrorStatus"><value>ইঞ্জিন ত্রুটি</value></data>
+	<data name="Settings.Avatar.EnginePairingRequiredDescription"><value>এই Oscova ইনস্টলেশন পেয়ার করতে সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.EngineAccessConflictDescription"><value>অন্য একটি ক্লায়েন্টের কাছে বর্তমানে অসঙ্গত রানটাইম অ্যাক্সেস রয়েছে।</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedDescription"><value>আবার সংযোগ নির্বাচন করার আগে অপেক্ষা করুন।</value></data>
+	<data name="Settings.Avatar.EngineRateLimitedRetryDescription"><value>{0} সেকেন্ড অপেক্ষা করে আবার সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.EngineConfigurationErrorDescription"><value>স্থানীয় সেটিংস স্টোরেজ ঠিক করে আবার সংযোগ নির্বাচন করুন।</value></data>
+	<data name="Settings.Avatar.EngineErrorDescription"><value>অ্যাভাটার ইঞ্জিন একটি অপ্রত্যাশিত প্রতিক্রিয়া দিয়েছে। আবার চেষ্টা করতে সংযোগ নির্বাচন করুন।</value></data>
+  <data name="Settings.Agents.Prebuilt.Browse" xml:space="preserve">
+    <value>প্রস্তুত এজেন্ট দেখুন</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Summary" xml:space="preserve">
+    <value>প্রয়োজনমতো কথোপকথনের জন্য বিশেষজ্ঞ বেছে নিন। ইনস্টল করলে সম্পাদনাযোগ্য এজেন্ট তৈরি হয়।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Selection" xml:space="preserve">
+    <value>এজেন্ট বেছে নিন</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.OptionalTools" xml:space="preserve">
+    <value>নির্বাচিত পড়ার টুল আপনার ইনস্টলেশন ও অ্যাকাউন্ট সেটআপের ওপর নির্ভর করে। এডিটরে টুল ও প্রবেশাধিকার দেখুন।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Install" xml:space="preserve">
+    <value>এজেন্ট ইনস্টল করুন</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Empty" xml:space="preserve">
+    <value>কোনো প্রস্তুত এজেন্ট পাওয়া যাচ্ছে না।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.LoadFailed" xml:space="preserve">
+    <value>ক্যাটালগ লোড করা যায়নি। আবার চেষ্টা করুন।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.Installed" xml:space="preserve">
+    <value>এজেন্ট ইনস্টল হয়েছে। এখন আপনার কপি সম্পাদনা করতে পারেন।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.RefreshFailed" xml:space="preserve">
+    <value>এজেন্ট ইনস্টল হয়েছে, কিন্তু এডিটর লোড হয়নি। কপি খুলতে এজেন্ট পৃষ্ঠা রিফ্রেশ করুন।</value>
+  </data>
+  <data name="Settings.Agents.Prebuilt.InstallFailed" xml:space="preserve">
+    <value>ইনস্টলেশন নিশ্চিত করা যায়নি। আবার ইনস্টল করার আগে এজেন্ট পৃষ্ঠা রিফ্রেশ করে নতুন কপি আছে কি না দেখুন।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Available" xml:space="preserve">
+    <value>আপডেট উপলভ্য</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Title" xml:space="preserve">
+    <value>অ্যাপ্লিকেশন আপডেট</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Versions" xml:space="preserve">
+    <value>ইনস্টল করা {0}, উপলভ্য {1}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.PluginsOnly" xml:space="preserve">
+    <value>ইনস্টল করা {0}। শুধু প্লাগইনের আপডেট আছে।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Interruption" xml:space="preserve">
+    <value>আগে গুরুত্বপূর্ণ কাজ শেষ করুন। আপডেট ও পুনরায় চালুর সময় Oscova উপলভ্য থাকবে না।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Start" xml:space="preserve">
+    <value>আপডেট ও পুনরায় চালু করুন</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Refresh" xml:space="preserve">
+    <value>রিফ্রেশ</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.BackupLocation" xml:space="preserve">
+    <value>পুনরুদ্ধার ফাইল: {0}</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Preparing" xml:space="preserve">
+    <value>আপডেট প্রস্তুত হচ্ছে</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Restarting" xml:space="preserve">
+    <value>আপডেট হচ্ছে। Oscova পুনরায় চালু হওয়ার অপেক্ষা চলছে...</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Failed" xml:space="preserve">
+    <value>অ্যাপ্লিকেশন আপডেট ব্যর্থ হয়েছে।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Unsupported" xml:space="preserve">
+    <value>এই ইনস্টলেশন টার্মিনাল থেকে আপডেট করতে হবে।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailable" xml:space="preserve">
+    <value>রিলিজ পরীক্ষা উপলভ্য নয়। রিফ্রেশ করুন বা টার্মিনাল থেকে আপডেট করুন।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RecoveryHint" xml:space="preserve">
+    <value>অগ্রগতি বা পুনরুদ্ধারের নির্দেশনার জন্য Host কম্পিউটারে 'oscova update status' চালান।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.FailedOnVersion" xml:space="preserve">
+    <value>আপডেট ব্যর্থ হয়েছে। Oscova এখনও {0} সংস্করণে আছে।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.RetryGuidance" xml:space="preserve">
+    <value>আপনার ডেটা অপরিবর্তিত আছে। আবার চেষ্টা করতে আবার চেষ্টা করুন নির্বাচন করুন। আবার ব্যর্থ হলে Host কম্পিউটারে 'oscova update status' চালান।</value>
+  </data>
+  <data name="PluginsPendingReplacement" xml:space="preserve">
+    <value>পুনরায় চালু করার পর: {0} {1}</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesAction" xml:space="preserve">
+    <value>স্বীকৃতি ও লাইসেন্স</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesTitle" xml:space="preserve">
+    <value>স্বীকৃতি ও লাইসেন্স</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesDescription" xml:space="preserve">
+    <value>Oscova-র সঙ্গে অন্তর্ভুক্ত তৃতীয় পক্ষের সফ্টওয়্যারের লাইসেন্স বিজ্ঞপ্তি স্থানীয়ভাবে সংরক্ষিত এবং অফলাইনে পাওয়া যায়।</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesLoading" xml:space="preserve">
+    <value>লাইসেন্স বিজ্ঞপ্তি লোড হচ্ছে...</value>
+  </data>
+  <data name="Settings.General.ThirdPartyLicensesUnavailable" xml:space="preserve">
+    <value>অন্তর্ভুক্ত লাইসেন্স বিজ্ঞপ্তিগুলি লোড করা যায়নি।</value>
+  </data>
+  <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>চুল</value></data>
+  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>উপরের পোশাক</value></data>
+  <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>নির্বাচিত অ্যাভাটারের জন্য চুল বেছে নিন।</value></data>
+  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>নির্বাচিত অ্যাভাটারের জন্য উপরের পোশাক বেছে নিন।</value></data>
+  <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>কিছু সাজসজ্জার বিকল্প লোড করা যায়নি। ইঞ্জিন সংযোগ পরীক্ষা করে রিফ্রেশ করুন।</value></data>
+  <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>{0} প্রয়োগ করা যায়নি: {1}। উপলব্ধ বিকল্প বেছে আবার চেষ্টা করুন।</value></data>
+  <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">
+    <value>আপডেট পরীক্ষা করুন</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Current" xml:space="preserve">
+    <value>Oscova হালনাগাদ আছে।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.CheckUnavailableLabel" xml:space="preserve">
+    <value>আপডেট পরীক্ষা করা যাচ্ছে না</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.TakingLonger" xml:space="preserve">
+    <value>এই আপডেটে বেশি সময় লাগছে। Oscova হয়তো এখনও আপনার ডেটার ব্যাকআপ নিচ্ছে বা উপাদান ডাউনলোড করছে। আপনি অপেক্ষা করতে পারেন অথবা 'oscova update status' দিয়ে অবস্থা দেখতে পারেন।</value>
+  </data>
+  <data name="Settings.Channels.EnableAtStartupLabel" xml:space="preserve"><value>চালু হলে সংযোগ করুন</value></data>
+  <data name="Settings.Channels.SaveBeforeStartHint" xml:space="preserve"><value>চ্যানেল চালু করার আগে পরিবর্তনগুলি সংরক্ষণ করুন।</value></data>
+	<data name="Settings.Plugins.VerifiedBadge"><value>যাচাইকৃত</value></data>
+	<data name="Settings.Plugins.ReplaceButton"><value>প্লাগইন প্রতিস্থাপন করুন</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmTitle"><value>{0} এর পরিবর্তে {1} ব্যবহার করবেন?</value></data>
+	<data name="Settings.Plugins.ReplaceConfirmMessage"><value>এই প্রতিস্থাপনে প্লাগইনের পরিচয়, সেটিংস এবং শংসাপত্র অক্ষত থাকে।</value></data>
+  <data name="Settings.General.FollowUpModeLabel" xml:space="preserve"><value>পরবর্তী বার্তার আচরণ</value></data>
+  <data name="Settings.General.FollowUpModeSteer" xml:space="preserve"><value>নির্দেশ দিন</value></data>
+  <data name="Settings.General.FollowUpModeQueue" xml:space="preserve"><value>সারিতে রাখুন</value></data>
+  <data name="Settings.General.FollowUpModeDescription" xml:space="preserve"><value>এজেন্ট কাজ করার সময় Enter এই বিকল্প ব্যবহার করে। নির্দেশ দিন বর্তমান উত্তরকে দিকনির্দেশ দেয়। সারিতে রাখুন উত্তর শেষ হলে আপনার বার্তা পাঠায়। Ctrl+Enter একবার অন্য বিকল্প ব্যবহার করে।</value></data>
+  <data name="Settings.Agents.ContextUsage.Initial" xml:space="preserve">
+    <value>আনুমানিক প্রাথমিক ইনপুট টোকেন</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Deferred" xml:space="preserve">
+    <value>পরে লোড হওয়া টুল</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Assembly" xml:space="preserve">
+    <value>টুল সমন্বয়ের সংশোধন</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Runtime" xml:space="preserve">
+    <value>রানটাইম ও কর্মক্ষেত্র</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Memory" xml:space="preserve">
+    <value>মেমরি</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Todo" xml:space="preserve">
+    <value>কাজের তালিকা</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Vision" xml:space="preserve">
+    <value>ছবি বিশ্লেষণ</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.Scope" xml:space="preserve">
+    <value>এই সেটিংয়ের জন্য স্থানীয় অনুমান। কথোপকথনের ইনপুট, পরে লোড হওয়া স্কিলের বিষয়বস্তু ও টুলের ফলাফল অন্তর্ভুক্ত নয়। মডেলের বিন্যাস ও টোকেন বিভাজন আলাদা হতে পারে।</value>
+  </data>
+  <data name="Settings.Agents.ContextUsage.DeferredHelp" xml:space="preserve">
+    <value>অনুসন্ধানযোগ্য টুলের বিবরণ প্রয়োজন হলে লোড হয় এবং প্রাথমিক মোটে অন্তর্ভুক্ত নয়।</value>
+  </data>
+<data name="Settings.LowBatteryProtection.Label" xml:space="preserve"><value>ব্যাটারি কম থাকলে নির্ধারিত কাজ এড়িয়ে যান</value></data>
+<data name="Settings.LowBatteryProtection.Description" xml:space="preserve"><value>এই সার্ভার কম্পিউটারে বাইরের বিদ্যুৎ সংযোগ না থাকলে এবং চার্জ নির্ধারিত সীমার কম হলে স্বয়ংক্রিয় কাজ এড়িয়ে যান। আপনি বিজ্ঞপ্তি পাবেন এবং কাজটি নিজে চালাতে পারবেন।</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdLabel" xml:space="preserve"><value>ব্যাটারির সীমা (%)</value></data>
+<data name="Settings.LowBatteryProtection.ThresholdInvalid" xml:space="preserve"><value>1 থেকে 100-এর মধ্যে একটি পূর্ণসংখ্যা লিখুন।</value></data>
+<data name="Settings.LowBatteryProtection.Checking" xml:space="preserve"><value>Oscova চালানো কম্পিউটারের ব্যাটারির তথ্য পরীক্ষা করা হচ্ছে।</value></data>
+<data name="Settings.LowBatteryProtection.NotDetected" xml:space="preserve"><value>Oscova চালানো কম্পিউটারে কোনো সিস্টেম ব্যাটারি পাওয়া যায়নি।</value></data>
+<data name="Settings.LowBatteryProtection.Unavailable" xml:space="preserve"><value>Oscova চালানো কম্পিউটারের ব্যাটারি বা বিদ্যুৎ সংযোগের তথ্য পাওয়া যাচ্ছে না।</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderLabel"><value>দক্ষতার ফোল্ডার (ঐচ্ছিক)</value></data>
+  <data name="Settings.Skills.RegistrySourcesFolderHint"><value>উদাহরণ: skills। পুরো রিপোজিটরিতে খুঁজতে খালি রাখুন।</value></data>
+  <data name="Settings.Prompts.ChatContinuationInstructionLabel"><value>চ্যাট আবার শুরুর নির্দেশনা</value></data>
+  <data name="Settings.Prompts.ChatContinuationDescription"><value>বাধাপ্রাপ্ত চ্যাট কীভাবে শেষ অনুরোধ থেকে এগোবে তা নির্দেশ করে।</value></data>
+  <data name="Settings.Prompts.ChatTitleInstructionLabel"><value>চ্যাট শিরোনামের নির্দেশনা</value></data>
+  <data name="Settings.Prompts.ChatTitleDescription"><value>চ্যাটের স্বয়ংক্রিয় শিরোনাম তৈরির নির্দেশনা দেয়।</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryInstructionLabel"><value>টুল ব্যর্থতা থেকে পুনরুদ্ধারের নির্দেশনা</value></data>
+  <data name="Settings.Prompts.ToolFailureRecoveryDescription"><value>টুল বারবার ব্যর্থ হলে এজেন্ট কীভাবে পুনরুদ্ধার করবে তা নির্দেশ করে।</value></data>
+  <data name="Settings.Prompts.WorkspaceHasAliasesVariableDescription"><value>কর্মক্ষেত্রে ফাইল টুলের উপনাম থাকলে সত্য।</value></data>
+  <data name="Settings.Prompts.UsesHostPathsVariableDescription"><value>শেল কমান্ড হোস্ট পাথ ব্যবহার করলে সত্য।</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationSummary"><value>দক্ষতার উৎস: {1}টির মধ্যে {0}টি সম্পন্ন।</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCheckingCache"><value>ক্যাশ পরীক্ষা করা হচ্ছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationWaiting"><value>প্রস্তুতির জন্য অপেক্ষা করা হচ্ছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationConnecting"><value>সংযোগ করা হচ্ছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationIndexing"><value>ডাউনলোডের সূচি তৈরি করা হচ্ছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPreparingFiles"><value>ফাইল প্রস্তুত করা হচ্ছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationScanning"><value>দক্ষতা খোঁজা হচ্ছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationCached"><value>ক্যাশে আছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReady"><value>প্রস্তুত: {0}টি দক্ষতা</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReadyCached"><value>প্রস্তুত: {0}টি দক্ষতা (ক্যাশ থেকে)</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationFailed"><value>ব্যর্থ</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationReceivedBytes"><value>{0} গ্রহণ করা হয়েছে</value></data>
+	<data name="Settings.Skills.FindOnlinePreparationPartialResults"><value>প্রস্তুত উৎসগুলোর ফলাফল। আরও উৎস এখনও প্রস্তুত করা হচ্ছে।</value></data>
+  <data name="Settings.Avatar.Presentation.Heading" xml:space="preserve"><value>উপস্থাপনা</value></data>
+  <data name="Settings.Avatar.Presentation.ModeLabel" xml:space="preserve"><value>বিন্যাস মোড</value></data>
+  <data name="Settings.Avatar.Presentation.AutoLabel" xml:space="preserve"><value>স্বয়ংক্রিয়</value></data>
+  <data name="Settings.Avatar.Presentation.SubtitleLabel" xml:space="preserve"><value>সাবটাইটেল</value></data>
+  <data name="Settings.Avatar.Presentation.SideLabel" xml:space="preserve"><value>পাশে</value></data>
+  <data name="Settings.Avatar.Presentation.ApplyPresentationButton" xml:space="preserve"><value>উপস্থাপনা প্রয়োগ করুন</value></data>
+  <data name="Settings.Avatar.Presentation.TestButton" xml:space="preserve"><value>বিন্যাস পরীক্ষা করুন</value></data>
+  <data name="Settings.Avatar.Presentation.EndTestButton" xml:space="preserve"><value>পরীক্ষা শেষ করুন</value></data>
+  <data name="Settings.Avatar.Presentation.TestDescription" xml:space="preserve"><value>পরীক্ষায় উপরের প্রদর্শনের সময়কাল ব্যবহৃত হয়, তারপর নির্বাচিত বিন্যাস মোড ফিরিয়ে আনা হয়। পরীক্ষার জন্য শূন্যের চেয়ে বেশি সময়কাল নির্ধারণ করুন।</value></data>
+  <data name="Settings.Avatar.Presentation.FailedToast" xml:space="preserve"><value>উপস্থাপনার সেটিংস প্রয়োগ করা যায়নি।</value></data>
+  <data name="Settings.Mcp.Governance.McpEnabled" xml:space="preserve"><value>সক্রিয়</value></data>
+  <data name="Settings.Mcp.Governance.McpShared" xml:space="preserve"><value>ব্যবহারকারীদের সঙ্গে শেয়ার করুন</value></data>
+  <data name="Skills.UpdateForUsers" xml:space="preserve"><value>ব্যবহারকারীদের জন্য আপডেট করুন</value></data>
+  <data name="Skills.ShareWithUsers" xml:space="preserve"><value>ব্যবহারকারীদের সাথে শেয়ার করুন</value></data>
+  <data name="Skills.ManagedByOperator" xml:space="preserve"><value>অপারেটর দ্বারা পরিচালিত</value></data>
+  <data name="Settings.Mcp.Device" xml:space="preserve"><value>ডিভাইস</value></data>
+  <data name="Settings.Mcp.SelectDevice" xml:space="preserve"><value>একটি ডিভাইস নির্বাচন করুন</value></data>
+  <data name="Settings.Mcp.CentralServer" xml:space="preserve"><value>সার্ভার</value></data>
+  <data name="Settings.Mcp.DeviceOnline" xml:space="preserve"><value>অনলাইন</value></data>
+  <data name="Settings.Mcp.DeviceOffline" xml:space="preserve"><value>অফলাইন</value></data>
+  <data name="Settings.Mcp.SavedDeviceOffline" xml:space="preserve"><value>সংরক্ষিত। ডিভাইস অফলাইন। এই MCP সার্ভার যাচাই করতে এটি সংযুক্ত করুন।</value></data>
+  <data name="Skills.IncludedForAll" xml:space="preserve"><value>সকল ব্যবহারকারীর জন্য অন্তর্ভুক্ত</value></data>
+  <data name="Skills.PublicationResult" xml:space="preserve"><value>শেয়ারিং চালু। যোগ বা হালনাগাদ করা কপি: {0}। রাখা ব্যক্তিগত কপি: {1}।</value></data>
+  <data name="Plugins.DeviceReady" xml:space="preserve"><value>{0}-এ প্রস্তুত</value></data>
+  <data name="Plugins.DevicePreparing" xml:space="preserve"><value>{0}-এ প্রস্তুত হচ্ছে</value></data>
+  <data name="Plugins.DeviceUnavailable" xml:space="preserve"><value>{0}-এ সাময়িকভাবে অনুপলব্ধ</value></data>
+  <data name="Settings.PromptsBrowserUseLabel" xml:space="preserve"><value>ব্রাউজার ব্যবহার</value></data>
+  <data name="Settings.PromptsBrowserUseDescription" xml:space="preserve"><value>ওয়েবসাইটে কাজ, লগইন সহায়তা এবং সংবেদনশীল কাজের আগে অনুমতি চাওয়ার নির্দেশনা। এগুলো মডেলকে পথ দেখায়, শনাক্তকরণ নিশ্চিত করে না।</value></data>
+  <data name="Settings.ModelProviders.DownloadFailedMessage" xml:space="preserve"><value>মডেল '{0}' ডাউনলোড করা যায়নি: {1}</value></data>
+  <data name="Settings.Prompts.RestoreDefaultButton" xml:space="preserve">
+    <value>ডিফল্ট ফিরিয়ে আনুন</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmTitle" xml:space="preserve">
+    <value>ডিফল্ট নির্দেশ ফিরিয়ে আনবেন?</value>
+  </data>
+  <data name="Settings.Prompts.RestoreDefaultConfirmMessage" xml:space="preserve">
+    <value>{0}-এর জন্য আপনার কাস্টম নির্দেশনা মুছে ডিফল্ট ব্যবহার করবেন? পরিবর্তন প্রয়োগ করতে এরপর সংরক্ষণ করুন ক্লিক করুন।</value>
+  </data>
+  <data name="Settings.Execution.UnavailableDescription" xml:space="preserve">
+    <value>এই পরিবেশটি অনুপলব্ধ। এর প্লাগইন সক্রিয় করে পুনরায় শুরু করুন, অথবা অন্য পরিবেশ বেছে সংরক্ষণ করুন।</value>
+  </data>
+  <data name="Settings.Execution.Description" xml:space="preserve">
+    <value>শেল কমান্ড এবং দক্ষতার স্ক্রিপ্ট চালানোর স্থান বেছে নিন।</value>
+  </data>
+  <data name="Settings.Execution.EnvironmentLabel" xml:space="preserve">
+    <value>কার্যকরকরণের পরিবেশ</value>
+  </data>
+  <data name="Settings.Execution.Label" xml:space="preserve">
+    <value>কার্যকরকরণ</value>
+  </data>
+  <data name="Settings.Execution.ScriptsDescription" xml:space="preserve">
+    <value>স্ক্রিপ্টের জন্য নির্বাচিত পরিবেশে রানটাইম এবং তার শেলের উপযুক্ত আহ্বান প্রয়োজন।</value>
+  </data>
+  <data name="Settings.ApplicationUpdate.Completed" xml:space="preserve"><value>{0} সংস্করণে আপডেট হয়েছে</value></data>
+  <data name="Settings.ApplicationUpdate.PluginsCompleted" xml:space="preserve"><value>প্লাগইন আপডেট হয়েছে। Oscova {0} সংস্করণেই আছে।</value></data>
+  <data name="Settings.ApplicationUpdate.NotStarted" xml:space="preserve"><value>আপডেট শুরু হয়নি, তাই Oscova পরিবর্তন হয়নি। Host কম্পিউটারে আপডেট উইন্ডোটি দেখুন, তারপর আবার চেষ্টা করুন।</value></data>
+  <data name="Settings.ApplicationUpdate.FilesKept" xml:space="preserve"><value>এর ফাইল ও সেটিংস রাখা হয়েছে।</value></data>
+  <data name="Settings.ApplicationUpdate.OpenPlugins" xml:space="preserve"><value>প্লাগইন খুলুন</value></data>
+  <data name="Settings.ApplicationUpdate.Compatibility" xml:space="preserve"><value>নতুন সংস্করণ সমর্থন করে না এমন প্লাগইন নিষ্ক্রিয় হবে। তাদের ফাইল ও সেটিংস রাখা হবে।</value></data>
+  <data name="Settings.ApplicationUpdate.PluginUpdated" xml:space="preserve"><value>আপডেট হয়েছে</value></data>
+  <data name="Settings.ApplicationUpdate.PluginDisabled" xml:space="preserve"><value>নিষ্ক্রিয়</value></data>
+  <data name="Settings.ApplicationUpdate.PluginRetained" xml:space="preserve"><value>রাখা হয়েছে</value></data>
+  <data name="Settings.Execution.Checking" xml:space="preserve"><value>যাচাই করা হচ্ছে…</value></data>
+  <data name="Settings.Execution.Available" xml:space="preserve"><value>এই মেশিনে উপলভ্য</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLabel" xml:space="preserve"><value>অনুসন্ধান পদ্ধতি</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodApi" xml:space="preserve"><value>GitHub API</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocal" xml:space="preserve"><value>স্থানীয় রিপোজিটরি ডাউনলোড</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodHint" xml:space="preserve"><value>এই হোস্ট ব্যবহারকারী সবার জন্য প্রযোজ্য।</value></data>
+  <data name="Settings.Skills.RegistrySearchMethodLocalNotice" xml:space="preserve"><value>স্ক্রিপ্টসহ সম্পূর্ণ রিপোজিটরি Oscova চালানো কম্পিউটারে ডাউনলোড করে।</value></data>
+  <data name="Settings.Skills.FindOnlinePreparationReadingMetadata" xml:space="preserve"><value>রিপোজিটরির মেটাডেটা পড়া হচ্ছে</value></data>
+  <data name="Settings.Goal.MaxIterations" xml:space="preserve">
+    <value>লক্ষ্যের সর্বোচ্চ পুনরাবৃত্তি</value>
+  </data>
+  <data name="Settings.Goal.Default" xml:space="preserve">
+    <value>ডিফল্ট</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsInvalid" xml:space="preserve">
+    <value>1 থেকে 2147483647 পর্যন্ত পূর্ণসংখ্যা লিখুন।</value>
+  </data>
+  <data name="Settings.Goal.MaxIterationsHelp" xml:space="preserve">
+    <value>কাজের চক্র সীমিত করে। খালি রাখলে ডিফল্ট ব্যবহৃত হয়।</value>
+  </data>
+  <data name="Settings.Goal.JudgeInstruction" xml:space="preserve">
+    <value>লক্ষ্য মূল্যায়নের নির্দেশনা</value>
+  </data>
+  <data name="Settings.Goal.JudgeDescription" xml:space="preserve">
+    <value>কাজের চক্রের পরে লক্ষ্য পূর্ণ হয়েছে কি না যাচাই করে।</value>
+  </data>
+  <data name="Settings.Goal.ContinuationInstruction" xml:space="preserve">
+    <value>লক্ষ্য চালিয়ে যাওয়ার টেমপ্লেট</value>
+  </data>
+  <data name="Settings.Goal.ContinuationDescription" xml:space="preserve">
+    <value>মূল্যায়নকারীর বাকি কাজের বিশ্লেষণকে এজেন্টের পরবর্তী নির্দেশনায় বদলায়।</value>
+  </data>
+  <data name="Settings.Goal.GapAnalysis" xml:space="preserve">
+    <value>মূল্যায়নকারীর মতে এখনও যে কাজ বাকি।</value>
+  </data>
+  <data name="Settings.Prompts.PrivateDirectoriesVariableDescription" xml:space="preserve">
+    <value>এজেন্টের ব্যক্তিগত ফোল্ডারের তালিকা।</value>
+  </data>
+  <data name="Settings.Prompts.HasPrivateDirectoryVariableDescription" xml:space="preserve">
+    <value>এজেন্টের ব্যক্তিগত ফোল্ডার থাকলে সত্য।</value>
+  </data>
+  <data name="Settings.Prompts.ShellRootVariablesVariableDescription" xml:space="preserve">
+    <value>শেল পরিবেশ চলকের নাম ও সংশ্লিষ্ট ফোল্ডারের বিকল্প নাম।</value>
+  </data>
+  <data name="Settings.Prompts.HasShellRootsVariableDescription" xml:space="preserve">
+    <value>শেলের মূল ফোল্ডারের চলক উপলব্ধ থাকলে সত্য।</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsLabel" xml:space="preserve">
+    <value>অন্য এজেন্টের চ্যাটে যোগ দিলে চ্যাটের মডেল ব্যবহার করুন</value>
+  </data>
+  <data name="Settings.Agents.UseCallerModelForConsultationsDescription" xml:space="preserve">
+    <value>শুধু ওয়েব চ্যাটে উল্লেখ ও পরামর্শের জন্য। বন্ধ থাকলে উপরে নির্বাচিত প্রদানকারী ব্যবহার করা হয়।</value>
+  </data>
+  <data name="Settings.Prompts.InstructionModeLabel" xml:space="preserve"><value>নির্দেশনার মোড</value></data>
+  <data name="Settings.Prompts.InstructionUseDefault" xml:space="preserve"><value>ডিফল্ট ব্যবহার করুন</value></data>
+  <data name="Settings.Prompts.InstructionAppend" xml:space="preserve"><value>ডিফল্টে যোগ করুন</value></data>
+  <data name="Settings.Prompts.InstructionReplace" xml:space="preserve"><value>ডিফল্ট প্রতিস্থাপন করুন</value></data>
+  <data name="Settings.Prompts.InstructionDefaultReference" xml:space="preserve"><value>ডিফল্ট নির্দেশনা</value></data>
+  <data name="Speech.InstallPluginHelp" xml:space="preserve"><value>সেটিংস &gt; প্লাগইন থেকে একটি স্পিচ প্লাগইন ইনস্টল করুন, তারপর পুনরায় চালু করুন।</value></data>
+  <data name="Speech.ProviderUnavailableHelp" xml:space="preserve"><value>এই প্রদানকারী উপলব্ধ নেই। এর প্লাগইন সক্রিয় করে পুনরায় চালু করুন, অথবা ইনস্টল করা প্রদানকারী বেছে নিন।</value></data>
+  <data name="Settings.Speech.VoiceCatalogFailed" xml:space="preserve"><value>ভয়েস লোড করা যায়নি। নির্বাচিত শংসাপত্র ও ভয়েসের অনুমতি পরীক্ষা করে শংসাপত্রটি আবার নির্বাচন করুন।</value></data>
+  <data name="Settings.Prompts.MetadataError" xml:space="preserve">
+    <value>নির্দেশনার মেটাডেটা অনুপস্থিত বা অবৈধ। এই নির্দেশনাটি সম্পাদনা করা যাবে না।</value>
+  </data>
+  <data name="Settings.Prompts.LoadFailed" xml:space="preserve">
+    <value>নির্দেশনাগুলি লোড করা যায়নি।</value>
+  </data>
+  <data name="Updates.HarnessUpdateNoticeTitle" xml:space="preserve"><value>হার্নেস আপডেট উপলব্ধ</value></data>
+  <data name="Updates.HarnessUpdateNoticeBody" xml:space="preserve"><value>Oscova {0} উপলব্ধ। পর্যালোচনার জন্য ড্যাশবোর্ড আপডেট খুলুন।</value></data>
+  <data name="Updates.AvatarUpdateNoticeTitle" xml:space="preserve"><value>Avatar Engine উপলব্ধ</value></data>
+  <data name="Updates.AvatarUpdateNoticeBody" xml:space="preserve"><value>Avatar Engine {0} উপলব্ধ। এই কম্পিউটারে ইনস্টলেশন পর্যালোচনার জন্য ড্যাশবোর্ড আপডেট খুলুন।</value></data>
+  <data name="Updates.AvatarUpdateTitle" xml:space="preserve"><value>Avatar Engine</value></data>
+  <data name="Updates.AvatarInstall" xml:space="preserve"><value>Avatar ইনস্টল করুন</value></data>
+  <data name="Updates.AvatarUpdateAction" xml:space="preserve"><value>Avatar আপডেট করুন</value></data>
+  <data name="Updates.AvatarUpdateVersions" xml:space="preserve"><value>এই কম্পিউটারে: {0}। উপলব্ধ: {1}। ডাউনলোড: {2}।</value></data>
+  <data name="Updates.AvatarNotInstalled" xml:space="preserve"><value>ইনস্টল করা নেই</value></data>
+  <data name="Updates.AvatarUpdateUnknown" xml:space="preserve"><value>অজানা সংস্করণ</value></data>
+  <data name="Updates.AvatarUpdateConfirm" xml:space="preserve"><value>আমি এই কম্পিউটারে এই রিলিজ ইনস্টল করার বিষয়টি নিশ্চিত করছি।</value></data>
+  <data name="Updates.AvatarUpdateStopImpact" xml:space="preserve"><value>স্থানীয় Avatar Engine বন্ধ হবে এবং ইনস্টলেশনের পরে আবার চালু হবে।</value></data>
+  <data name="Updates.AvatarUpdateUnsupported" xml:space="preserve"><value>Avatar ইনস্টলেশন এবং আপডেটের জন্য Windows প্রয়োজন।</value></data>
+  <data name="Updates.AvatarUpdateUnmanaged" xml:space="preserve"><value>এই কম্পিউটারে Avatar Engine পরিচালনা করতে 'oscova start' দিয়ে চালু করুন।</value></data>
+  <data name="Updates.AvatarUpdateCurrent" xml:space="preserve"><value>Avatar Engine হালনাগাদ আছে।</value></data>
+  <data name="Updates.AvatarUpdateRunning" xml:space="preserve"><value>চলছে</value></data>
+  <data name="Updates.AvatarUpdateStopped" xml:space="preserve"><value>বন্ধ</value></data>
+  <data name="Updates.AvatarUpdateComputer" xml:space="preserve"><value>কম্পিউটার: {0}</value></data>
+  <data name="Updates.AvatarUpdateDownloading" xml:space="preserve"><value>{1} এর মধ্যে {0} ডাউনলোড হচ্ছে</value></data>
+  <data name="Updates.AvatarUpdateInstalling" xml:space="preserve"><value>ইনস্টল হচ্ছে...</value></data>
+  <data name="Updates.AvatarUpdateRestarting" xml:space="preserve"><value>Avatar Engine পুনরায় চালু হচ্ছে...</value></data>
+  <data name="Updates.AvatarUpdateStopping" xml:space="preserve"><value>Avatar Engine বন্ধ হচ্ছে...</value></data>
+  <data name="Updates.AvatarUpdateCompleted" xml:space="preserve"><value>Avatar Engine ইনস্টল হয়েছে।</value></data>
+  <data name="Updates.AvatarUpdateVerifying" xml:space="preserve"><value>ডাউনলোড যাচাই করা হচ্ছে...</value></data>
+  <data name="Updates.AvatarUpdateNotRunning" xml:space="preserve"><value>Avatar Engine ইনস্টল হয়েছে তবে চলছে না। Avatar সেটিংস থেকে চালু করুন বা 'oscova avatar start' চালান।</value></data>
+  <data name="Updates.ApplicationUpdateReadNotes" xml:space="preserve"><value>রিলিজ নোট পড়ুন</value></data>
+  <data name="Updates.ApplicationUpdateWhatsNew" xml:space="preserve"><value>নতুন কী আছে দেখুন</value></data>
+  <data name="Updates.ApplicationUpdateAllNotes" xml:space="preserve"><value>সব রিলিজ নোট</value></data>
+  <data name="Updates.ApplicationUpdateChecking" xml:space="preserve"><value>আপডেট খোঁজা হচ্ছে...</value></data>
+  <data name="Updates.ApplicationUpdatePluginsIncluded" xml:space="preserve"><value>এই প্লাগইন আপডেটগুলো এই আপডেটের সঙ্গে ইনস্টল হয়।</value></data>
+  <data name="Updates.ApplicationUpdateInstalledColumn" xml:space="preserve"><value>ইনস্টল করা</value></data>
+  <data name="Updates.ApplicationUpdateAvailableColumn" xml:space="preserve"><value>উপলব্ধ</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLabel" xml:space="preserve"><value>যুক্তির প্রচেষ্টা</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortLow" xml:space="preserve"><value>কম</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortMedium" xml:space="preserve"><value>মাঝারি</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHigh" xml:space="preserve"><value>উচ্চ</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortExtraHigh" xml:space="preserve"><value>অতি উচ্চ</value></data>
+  <data name="Settings.ModelProviders.ReasoningEffortHelp" xml:space="preserve"><value>ডিফল্ট বিকল্প OpenAI-তে চিন্তার আউটপুট চালু থাকলে মাঝারি এবং অন্য ক্ষেত্রে মডেলের ডিফল্ট ব্যবহার করে। নির্বাচিত মডেলকে বেছে নেওয়া প্রচেষ্টা সমর্থন করতে হবে।</value></data>
+  <data name="ModelProvidersAnthropicMaxOutputTokensDescription" xml:space="preserve"><value>{0} আউটপুট টোকেন ব্যবহার করতে ফাঁকা রাখুন।</value></data>
+  <data name="Plugins.NotAvailableOnPlatform" xml:space="preserve"><value>এই প্লাগইনটি এই প্ল্যাটফর্মে উপলব্ধ নয়।</value></data>
+	<data name="Settings.Files.Encrypted"><value>এনক্রিপ্ট করা</value></data>
+  <data name="Settings.OAuthConnected" xml:space="preserve"><value>{0} সংযুক্ত হয়েছে।</value></data>
+  <data name="Settings.OAuthCanceled" xml:space="preserve"><value>{0}-এর সংযোগ বাতিল করা হয়েছে।</value></data>
+  <data name="Settings.OAuthUnverified" xml:space="preserve"><value>{0}-এর সংযোগ যাচাই করা যায়নি। প্রক্রিয়াটি আবার শুরু করুন।</value></data>
+  <data name="Settings.OAuthMissingCode" xml:space="preserve"><value>{0} কোনো অনুমোদন কোড ফেরত দেয়নি।</value></data>
+  <data name="Settings.OAuthNotConfigured" xml:space="preserve"><value>{0} এখনও কনফিগার করা হয়নি।</value></data>
+  <data name="Settings.OAuthTokenExchangeFailed" xml:space="preserve"><value>{0}-এর টোকেন বিনিময় ব্যর্থ হয়েছে।</value></data>
+  <data name="Settings.OAuthVaultLocked" xml:space="preserve"><value>{0} সংযুক্ত করার আগে আপনার ভল্ট পাসওয়ার্ড তৈরি করুন বা আনলক করুন।</value></data>
+  <data name="Settings.OAuthFailed" xml:space="preserve"><value>{0}-এর সংযোগ ব্যর্থ হয়েছে: {1}।</value></data>
+  <data name="Settings.AdminOnlySettings" xml:space="preserve"><value>{0}-এর সেটিংস শুধু প্রশাসকদের জন্য উপলব্ধ।</value></data>
+  <data name="Settings.ModelProviders.FetchRecovery" xml:space="preserve"><value>মডেল লোড করা যায়নি। বেস URL, প্রদানকারীর সংযোগ এবং সংরক্ষিত API কী পরীক্ষা করে আবার মডেল আনুন নির্বাচন করুন।</value></data>
+  <data name="Settings.ModelProviders.MemoryFitUnknown" xml:space="preserve"><value>মেমরির অনুমান পাওয়া যায়নি। তবুও সংরক্ষণ করতে পারেন।</value></data>
+  <data name="Settings.ModelProviders.MemoryFitEstimateHelp" xml:space="preserve"><value>এটি শুধু ধারণক্ষমতার অনুমান। সংরক্ষণ করে পরীক্ষা করুন। অন্য মডেল লোড থাকা অবস্থায় আলাদা পরীক্ষার জন্য অতিরিক্ত মেমরি লাগে।</value></data>
+  <data name="Settings.ModelProviders.ManagedHardware" xml:space="preserve"><value>প্রদানকারী হার্ডওয়্যার বরাদ্দ পরিচালনা করে। হোস্ট মেমরি থেকে রানটাইম অনুমান করা যায় না।</value></data>
+  <data name="Settings.ModelProviders.AdvancedOptions" xml:space="preserve"><value>উন্নত বিকল্প</value></data>
+  <data name="Settings.ModelProviders.TestSkipped" xml:space="preserve"><value>পরীক্ষা এড়ানো হয়েছে। অন্য নির্ণয় চলতে পারে বা পূর্বশর্ত অনুপলব্ধ।</value></data>
+  <data name="Settings.ModelProviders.TestTimedOut" xml:space="preserve"><value>পরীক্ষার সময় শেষ।</value></data>
+  <data name="Settings.ModelProviders.TestCancelled" xml:space="preserve"><value>পরীক্ষা বাতিল বা সংযোগ বিচ্ছিন্ন। নির্বাহ নিশ্চিত হয়নি।</value></data>
+  <data name="Settings.ModelProviders.TestCleanupUnconfirmed" xml:space="preserve"><value>ওয়ার্কার বন্ধ হওয়া নিশ্চিত নয়। এটি শেষ না হওয়া পর্যন্ত অন্য পরীক্ষা বন্ধ থাকবে।</value></data>
+  <data name="Settings.Plugins.HardwareSummary" xml:space="preserve"><value>হার্ডওয়্যার পর্যবেক্ষণ</value></data>
+  <data name="Settings.Plugins.HardwareUnknown" xml:space="preserve"><value>হার্ডওয়্যার পরীক্ষা অনুপলব্ধ বা চাহিদা অজানা।</value></data>
+  <data name="Settings.Plugins.HardwareNotDetected" xml:space="preserve"><value>মেলা হার্ডওয়্যার শনাক্ত হয়নি। এটি হার্ডওয়্যার বা ড্রাইভার অনুপস্থিতির প্রমাণ নয়।</value></data>
+  <data name="Settings.Plugins.RuntimeUnverified" xml:space="preserve"><value>রানটাইম নির্বাহ যাচাই হয়নি। মডেল প্রদানকারীর পরীক্ষা ব্যবহার করুন।</value></data>
+  <data name="Settings.Plugins.RuntimeRequirements" xml:space="preserve"><value>ঘোষিত চাহিদা</value></data>
+  <data name="Settings.ModelProviders.MemoryFootprint" xml:space="preserve"><value>আনুমানিক ওজন ও F16 ক্যাশ: {0}।</value></data>
+  <data name="Settings.ModelProviders.TestInferencePassed" xml:space="preserve"><value>ইনফারেন্স সফল। লোড: {0} মিলিসেকেন্ড। ইনফারেন্স: {1} মিলিসেকেন্ড।</value></data>
+  <data name="Settings.ModelProviders.TestInferenceFailed" xml:space="preserve"><value>স্থানীয় ইনফারেন্স ব্যর্থ হয়েছে। কারণ জানতে সার্ভার লগ দেখুন। কনটেক্সট বা GPU স্তর কমান, GPU মেমরি খালি করুন অথবা CPU সংস্করণ ইনস্টল করে পুনরায় চালু করুন।</value></data>
+  <data name="Settings.ModelProviders.TestRuntime" xml:space="preserve"><value>পর্যবেক্ষিত ব্যাকএন্ড: {0}। ডিভাইস: {1}। অফলোড করা স্তর: {2}।</value></data>
+  <data name="Settings.ModelProviders.TestPlacementUnknown" xml:space="preserve"><value>হার্ডওয়্যারে কাজের বণ্টন যাচাই করা যায়নি।</value></data>
+  <data name="Settings.ModelProviders.TestModelUnavailable" xml:space="preserve"><value>একটি উপলব্ধ GGUF মডেল ফাইল বেছে নিন, প্রোভাইডারটি সংরক্ষণ করুন এবং আবার পরীক্ষা করুন।</value></data>
+</root>

@@ -1,0 +1,118 @@
+@using Oscova.Agents.Core.ApiContracts.Chat
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningDialogTitle, "Context window warning")"
+                Subtitle="@FormatSummary()"
+                Icon="lucide:triangle-alert"
+                MaxWidthClass="max-w-3xl"
+                HelpTopic="@HelpTopics.ContextWindowWarning"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <div class="space-y-4">
+            <div class="alert alert-warning items-start text-sm">
+                <span class="iconify lucide--triangle-alert mt-0.5 size-4 shrink-0"></span>
+                <div>
+                    <div class="font-medium">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningDialogLead, "This draft may be too large for the selected model.")</div>
+                    <div class="text-base-content/75">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningDialogBody, "You can still send it, but the model may fail, truncate context, or miss earlier details.")</div>
+                </div>
+            </div>
+
+            <dl class="grid gap-3 sm:grid-cols-2">
+                <div class="rounded-box bg-base-200 p-3">
+                    <dt class="text-xs text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningProviderLabel, "Provider")</dt>
+                    <dd class="mt-1 truncate text-sm font-medium">@ProviderDisplayName</dd>
+                </div>
+                <div class="rounded-box bg-base-200 p-3">
+                    <dt class="text-xs text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningContextWindowLabel, "Context window")</dt>
+                    <dd class="mt-1 text-sm font-medium">@FormatTokenCount(Preflight.ContextWindowSize)</dd>
+                </div>
+                <div class="rounded-box bg-base-200 p-3">
+                    <dt class="text-xs text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningEstimatedInputLabel, "Estimated input")</dt>
+                    <dd class="mt-1 text-sm font-medium">@FormatTokenCount(Preflight.EstimatedInputTokens)</dd>
+                </div>
+                <div class="rounded-box bg-base-200 p-3">
+                    <dt class="text-xs text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningOutputReserveLabel, "Reserved output")</dt>
+                    <dd class="mt-1 text-sm font-medium">@FormatTokenCount(Preflight.ReservedOutputTokens)</dd>
+                </div>
+                <div class="rounded-box border border-warning bg-base-200 p-3 sm:col-span-2">
+                    <dt class="text-xs text-base-content/60">@Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningOverageLabel, "Estimated overage")</dt>
+                    <dd class="mt-1 text-sm font-medium">@FormatTokenCount(Preflight.OverageTokens)</dd>
+                </div>
+            </dl>
+
+            <div class="rounded-box border border-base-300">
+                <div class="border-base-300 border-b px-3 py-2 text-sm font-medium">
+                    @Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownTitle, "Estimate breakdown")
+                </div>
+                <div class="divide-base-300 divide-y">
+                    @foreach (var item in Preflight.Breakdown)
+                    {
+                        <div class="flex items-center justify-between gap-3 px-3 py-2 text-sm" @key="item.Key">
+                            <span class="text-base-content/75">@GetBreakdownLabel(item.Key)</span>
+                            <span class="font-medium">@FormatTokenCount(item.EstimatedTokens)</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-warning" @onclick="ContinueAnyway">
+            @Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningContinueButton, "Continue anyway")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter]
+    public ChatContextPreflightResponse Preflight { get; set; } = new();
+
+    private string ProviderDisplayName => string.IsNullOrWhiteSpace(Preflight.ModelId)
+        ? Preflight.ProviderName
+        : $"{Preflight.ProviderName} ({Preflight.ModelId})";
+
+    protected override void OnInitialized()
+    {
+        Preflight = DialogInstance.Get("Preflight", Preflight);
+    }
+
+    private string FormatSummary()
+    {
+        return string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningSummaryFormat, "{0} estimates {1:N0} input tokens plus {2:N0} reserved output tokens for a {3:N0}-token window, about {4:N0} tokens over."),
+            Preflight.ProviderName,
+            Preflight.EstimatedInputTokens,
+            Preflight.ReservedOutputTokens,
+            Preflight.ContextWindowSize,
+            Preflight.OverageTokens);
+    }
+
+    private string GetBreakdownLabel(string key) => key switch
+    {
+        "instructions" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownInstructions, "Instructions"),
+        "prior-history" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownPriorHistory, "Prior history"),
+        "current-draft" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownCurrentDraft, "Current draft"),
+        "attachments" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownAttachments, "Attachments"),
+        "context-providers" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownContextProviders, "Context providers"),
+        "tools" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownTools, "Tools"),
+        "output-reserve" => Loc.GetOrDefault(ChatTextKeys.ContextWindowWarningBreakdownOutputReserve, "Output reserve"),
+        _ => key
+    };
+
+    private static string FormatTokenCount(int tokens)
+    {
+        return string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0:N0}", tokens);
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+
+    private void ContinueAnyway() => DialogInstance.Close(DialogResult.Ok);
+}

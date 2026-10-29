@@ -1,0 +1,316 @@
+@implements IAsyncDisposable
+@inject ManagementApiClient ApiClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject ILogger<ApplicationUpdateDialog> Logger
+@inject IDialogService DialogService
+
+<AppDialogShell Title="@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateTitle, "Application update")"
+                Icon="lucide:download"
+                MaxWidthClass="max-w-xl"
+                HelpTopic="@HelpTopics.ApplicationUpdate"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_starting)">
+    <ChildContent>
+        <div class="space-y-4">
+            <div class="flex justify-end border-b border-base-200 pb-3">
+                <button type="button" class="btn btn-ghost btn-sm" @onclick="OpenAvatarAsync">
+                    <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                    @Loc.GetOrDefault(SettingsTextKeys.AvatarUpdateTitle, "Avatar Engine")
+                </button>
+            </div>
+            @if (_checking)
+            {
+                <p role="status" aria-live="polite" class="flex items-center gap-2">
+                    <span class="loading loading-spinner loading-sm"></span>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateChecking, "Checking for updates...")</span>
+                </p>
+            }
+            else if (IsCompletion)
+            {
+                <p class="font-semibold">@(_status!.PluginsOnly
+                    ? Format(SettingsTextKeys.ApplicationUpdatePluginsCompleted, "Plugins updated. Oscova stays on {0}.", _status.CurrentVersion)
+                    : Format(SettingsTextKeys.ApplicationUpdateCompleted, "Updated to {0}", _status.CurrentVersion))</p>
+                @ReleaseLinks
+                @* Unchanged plugins are noise. A kept plugin with a reason is a failed plugin update, which the operator needs to see. *@
+                @foreach (var outcome in _status.PluginOutcomes.Where(outcome => outcome.State != "Retained" || outcome.Reason is not null))
+                {
+                    <div class="@(outcome.State == "Disabled" ? "alert alert-warning alert-soft" : "text-sm")">
+                        <span class="min-w-0 break-words">@outcome.Name: @Loc.GetOrDefault(OutcomeKey(outcome.State), outcome.State)
+                            @if (outcome.State == "Disabled")
+                            {
+                                <span class="block">@outcome.Reason @Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateFilesKept, "Its files and settings have been kept.")</span>
+                            }
+                            else if (outcome.Reason is not null)
+                            {
+                                <span class="block">@outcome.Reason</span>
+                            }
+                        </span>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>@VersionsDescription</p>
+                @ReleaseLinks
+                @if (IsFailure)
+                {
+                    <div role="alert" class="alert alert-error alert-soft">
+                        <div class="min-w-0 space-y-1 break-words whitespace-normal">
+                            <p class="font-semibold">@Format(SettingsTextKeys.ApplicationUpdateFailedOnVersion, "Update failed. Oscova is still on {0}.", _status!.CurrentVersion)</p>
+                            @if (!string.IsNullOrWhiteSpace(_status.Diagnostic)) { <p class="whitespace-pre-wrap">@_status.Diagnostic</p> }
+                            <p>@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateRetryGuidance, "Your data is unchanged. Select Retry to try again. If it fails again, run 'oscova update status' on the Host computer.")</p>
+                        </div>
+                    </div>
+                }
+                @if (_status?.PluginUpdates.Count > 0)
+                {
+                    <div class="overflow-x-auto">
+                        <p class="mb-2 text-sm">@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdatePluginsIncluded, "These plugin updates are installed with the update.")</p>
+                        <table class="table table-sm">
+                            <thead><tr>
+                                <th scope="col" class="px-2">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</th>
+                                <th scope="col" class="px-2">@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateInstalledColumn, "Installed")</th>
+                                <th scope="col" class="px-2">@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateAvailableColumn, "Available")</th>
+                            </tr></thead>
+                            <tbody>
+                        @foreach (var update in _status.PluginUpdates)
+                        {
+                            <tr>
+                                <td class="px-2 break-words">@update.Name</td>
+                                <td class="px-2 break-all">@update.InstalledVersion</td><td class="px-2 break-all">@update.Version</td>
+                            </tr>
+                        }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(_status?.BackupDirectory))
+                {
+                    <p class="text-sm break-words">@Format(SettingsTextKeys.ApplicationUpdateBackupLocation, "Recovery files: {0}", _status.BackupDirectory)</p>
+                }
+
+                <div role="alert" class="alert alert-info alert-soft">
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateInterruption, "Finish important work first. Oscova will be unavailable while it updates and restarts.")</span>
+                </div>
+                @if (!IsPluginOnly)
+                {
+                    <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateCompatibility, "Plugins that do not support the new version will be disabled. Their files and settings will be kept.")</p>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(_error))
+                {
+                    <div role="alert" class="alert alert-error alert-soft">
+                        <span class="min-w-0 break-words whitespace-normal">@_error</span>
+                    </div>
+                }
+
+                @if (_status?.CanUpdate != true && !IsFailure)
+                {
+                    <div role="alert" class="alert alert-warning alert-soft">
+                        <span>@UnsupportedDescription</span>
+                    </div>
+                }
+
+                @if (IsPending)
+                {
+                    <p role="status" aria-live="polite" class="flex items-center gap-2">
+                        <span class="loading loading-spinner loading-sm"></span>
+                        <span>@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateRestarting, "Updating. Waiting for Oscova to restart...")</span>
+                    </p>
+                }
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        @if (IsCompletion && !_checking)
+        {
+            <button type="button" class="btn btn-ghost btn-sm" @onclick="CancelAsync">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+            @if (_status!.PluginOutcomes.Any(outcome => outcome.State == "Disabled"))
+            {
+                <button type="button" class="btn btn-primary btn-sm" @onclick="OpenPlugins">@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateOpenPlugins, "Open Plugins")</button>
+            }
+        }
+        else
+        {
+            <button type="button" class="btn btn-ghost btn-sm" disabled="@_starting" @onclick="CancelAsync">
+                @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" disabled="@(_starting || _checking)" @onclick="RefreshAsync">
+                @Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateRefresh, "Refresh")
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" disabled="@(!CanSubmit)" @onclick="StartAsync">
+                @(IsFailure ? CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry") : Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateStart, "Update and restart"))
+            </button>
+        }
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+    [Parameter] public ApplicationUpdateStatus? InitialStatus { get; set; }
+    [Parameter] public EventCallback<ApplicationUpdateStatus> StatusChanged { get; set; }
+
+    private readonly CancellationTokenSource _disposal = new();
+    private IJSObjectReference? _module;
+    private ApplicationUpdateStatus? _status;
+    private bool _starting;
+    private string? _error;
+    private bool _submissionUncertain;
+    private bool _checking;
+    private bool IsCompletion => _status?.State == "Succeeded";
+    private string? NotesUrl => ReleaseNotesLinks.ForVersion(
+        !IsCompletion && !IsFailure ? _status?.AvailableVersion ?? _status?.CurrentVersion : _status?.CurrentVersion);
+    private RenderFragment ReleaseLinks => @<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        @if (NotesUrl is { } url)
+        {
+            <a class="link link-primary" href="@url" target="_blank" rel="noopener noreferrer">@(IsCompletion
+                ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateWhatsNew, "See what's new")
+                : Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateReadNotes, "Read release notes"))</a>
+        }
+        <a class="link" href="@ReleaseNotesLinks.History" target="_blank" rel="noopener noreferrer">@Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateAllNotes, "All release notes")</a>
+    </div>;
+    private bool IsFailure => !_starting && _status is { State: "Failed", ReasonCode: not ("operation-pending" or "console-unavailable") };
+    private bool IsPending => _starting || _status is { ReasonCode: "operation-pending" or "console-unavailable", State: not "Failed" };
+    private static string OutcomeKey(string state) => state switch
+    {
+        "Updated" => SettingsTextKeys.ApplicationUpdatePluginUpdated,
+        "Disabled" => SettingsTextKeys.ApplicationUpdatePluginDisabled,
+        _ => SettingsTextKeys.ApplicationUpdatePluginRetained
+    };
+    private void OpenPlugins() => DialogInstance.Close(DialogResult.Ok);
+    private Task OpenAvatarAsync() => DialogService.ShowAsync<AvatarUpdateDialog>();
+    private bool CanSubmit => !_checking && !_starting && !_submissionUncertain && _status?.CanUpdate == true;
+
+    private bool IsPluginOnly => _status?.PluginUpdates.Count > 0 && _status.AvailableVersion == _status.CurrentVersion;
+
+    private string VersionsDescription => _status is null ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateCheckUnavailable, "The release check is unavailable. Try Refresh or update from the terminal.") :
+        IsPluginOnly ? Format(SettingsTextKeys.ApplicationUpdatePluginsOnly, "Installed {0}. Only plugins have updates.", _status.CurrentVersion) : Format(
+        SettingsTextKeys.ApplicationUpdateVersions,
+        "Installed {0}, available {1}",
+        _status.CurrentVersion,
+        _status.AvailableVersion ?? _status.CurrentVersion);
+
+    private string RecoveryHint => Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateRecoveryHint, "Run 'oscova update status' on the Host computer for progress or recovery guidance.");
+    private string UnsupportedDescription => _status?.ReasonCode == "invalid-release-metadata" ? _status.Diagnostic ?? RecoveryHint :
+        _status?.ReasonCode is "operation-pending" or "console-unavailable" ?
+        (_status.State == "Failed" ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateFailed, "The application update did not complete.") + " " + RecoveryHint : RecoveryHint) :
+        _status is null || _status.ReasonCode == "check-unavailable"
+            ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateCheckUnavailable, "The release check is unavailable. Try Refresh or update from the terminal.")
+            : _status.State == "Current" ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateCurrent, "Oscova is up to date.")
+            : Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateUnsupported, "This installation must be updated from the terminal.");
+
+    protected override void OnInitialized()
+    {
+        // DialogProvider passes service inputs through the instance bag.
+        _status = InitialStatus ?? DialogInstance.Get<ApplicationUpdateStatus>(nameof(InitialStatus));
+        if (!StatusChanged.HasDelegate)
+        {
+            StatusChanged = DialogInstance.Get<EventCallback<ApplicationUpdateStatus>>(nameof(StatusChanged));
+        }
+    }
+
+    // The dialog opens at once and checks the release feed while it shows the checking state.
+    // A completion result is already final, so it shows without a check.
+    protected override Task OnInitializedAsync() => IsCompletion ? Task.CompletedTask : RefreshAsync();
+
+    private async Task RefreshAsync()
+    {
+        _checking = true;
+        _error = null;
+        try
+        {
+            _status = await ApiClient.GetApplicationUpdateStatusAsync(true, _disposal.Token);
+            _submissionUncertain = false;
+            await StatusChanged.InvokeAsync(_status);
+        }
+        catch (OperationCanceledException) when (_disposal.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not refresh application update status.");
+            _error = RecoveryHint;
+        }
+        finally { _checking = false; }
+    }
+
+    private async Task StartAsync()
+    {
+        if (!CanSubmit || string.IsNullOrWhiteSpace(_status?.AvailableVersion))
+        {
+            return;
+        }
+
+        _starting = true;
+        _submissionUncertain = true;
+        _error = null;
+        ApplicationUpdateStatus? accepted = null;
+        try
+        {
+            accepted = await ApiClient.StartApplicationUpdateAsync(
+                new StartApplicationUpdateRequest(_status.AvailableVersion),
+                _disposal.Token);
+            _status = accepted with { PluginUpdates = _status.PluginUpdates };
+            await StatusChanged.InvokeAsync(_status);
+
+            _module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            await _module.InvokeVoidAsync(
+                "waitForApplicationUpdate",
+                NavigationManager.ToAbsoluteUri(ApiRoutes.HostControl.Version).ToString(),
+                NavigationManager.ToAbsoluteUri(ApiRoutes.ApplicationUpdate.Status).ToString(),
+                accepted.AvailableVersion,
+                NavigationManager.Uri,
+                ApplicationUpdateButton.ClientStatusElementId,
+                Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateRestarting, "Updating. Waiting for Oscova to restart..."),
+                Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateTakingLonger, "This update is taking longer. Oscova may still be backing up your data or downloading components. You can keep waiting or check 'oscova update status'."),
+                Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateNotStarted, "The update did not start, so Oscova was not changed. Check the update window on the Host computer, then try again."));
+            // The browser now waits for the restart and reloads the page when it ends, so the dialog stays locked.
+            return;
+        }
+        catch (JSDisconnectedException)
+        {
+            _error = RecoveryHint;
+        }
+        catch (InvalidOperationException ex) when (accepted is null)
+        {
+            // The Host answered with a refusal, so nothing started and the operator can correct it and retry.
+            Logger.LogWarning(ex, "Application update start was refused.");
+            _submissionUncertain = false;
+            _error = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Application update submission or browser monitoring could not be confirmed.");
+            _error = RecoveryHint;
+        }
+
+        _starting = false;
+    }
+
+    private Task CancelAsync()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+        return Task.CompletedTask;
+    }
+
+    private string Format(string key, string fallback, params object[] values) =>
+        string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), values);
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposal.Cancel();
+        _disposal.Dispose();
+        if (_module is not null)
+        {
+            try
+            {
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+}

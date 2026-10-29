@@ -1,0 +1,54 @@
+@namespace Oscova.Agents.Host.Components.Reusable.Inputs
+
+<div class="dropdown w-full @Class @(_isOpen ? "dropdown-open" : null)">
+    <input type="text"
+           class="input input-bordered w-full"
+           value="@DisplayText"
+           placeholder="@FieldPlaceholder"
+           disabled="@Disabled"
+           autocomplete="off"
+           aria-label="@AriaLabel"
+           role="combobox"
+           aria-autocomplete="list"
+           aria-expanded="@(_isOpen ? "true" : "false")"
+           aria-controls="@_listboxId"
+           aria-activedescendant="@ActiveOptionId"
+           @oninput="OnSearchInput"
+           @onkeydown="OnKeyDownAsync"
+           @onfocus="Open"
+           @onclick="Open"
+           @onfocusout="Close" />
+
+    @if (_isOpen)
+    {
+        var filtered = FilteredOptions();
+
+        @* Exclude the scroll container from Tab navigation so closing it cannot discard focus. *@
+        <ul id="@_listboxId" role="listbox" tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box border-base-300 z-[1] mt-1 max-h-60 w-full flex-nowrap overflow-y-auto border p-2 shadow-lg">
+            @* Keep focus on the input so blur does not close the menu before the click selects an option. *@
+            @for (var index = 0; index < filtered.Count; index++)
+            {
+                var option = filtered[index];
+                var optionIndex = index;
+                <li @key="option.Value">
+                    <button type="button"
+                            id="@GetOptionId(optionIndex)"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="@(option.Value == Value ? "true" : "false")"
+                            class="@(_activeIndex == optionIndex || (_activeIndex < 0 && option.Value == Value) ? "menu-active" : null)"
+                            @onmousedown:preventDefault="true"
+                            @onclick="() => SelectAsync(option)">
+                        @option.Label
+                    </button>
+                </li>
+            }
+            @if (filtered.Count == 0)
+            {
+                <li class="menu-disabled">
+                    <span class="opacity-60">@CommonLoc.GetOrDefault(CommonTextKeys.NoResults, "No results")</span>
+                </li>
+            }
+        </ul>
+    }
+</div>

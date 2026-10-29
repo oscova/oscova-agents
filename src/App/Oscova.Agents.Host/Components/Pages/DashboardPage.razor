@@ -1,0 +1,84 @@
+@page "/"
+@attribute [Authorize]
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<ChatText> Loc
+
+<DashboardShell ActiveView="ActiveView.Chat" IsChatListCollapsed="@_chatListCollapsed" OnToggleChatList="@(() => _chatListCollapsed = !_chatListCollapsed)">
+    <div id="@DashboardRevealOverlayId" class="dashboard-reveal-overlay" aria-hidden="true"></div>
+
+    <input type="checkbox" id="chat-threads-drawer-toggle" class="peer hidden" aria-hidden="true" />
+
+    <div @ref="_dashboardRoot" class="chat-dashboard-root @DashboardLayoutClass @(_chatListCollapsed ? "chat-list-collapsed" : null) grid flex-1 min-h-0 grid-rows-[minmax(0,1fr)]">
+        <div id="workspace-chat-list" class="chat-thread-column h-full min-w-0">
+            <ChatThreadList CanAddProjects="@_nodeCatalog.CanCreateProjects" ProjectsEnabled="@_nodeCatalog.ProjectsEnabled"
+AvailableProjectIds="@AvailableProjectIds" Threads="@_threads" Projects="@_projects" OnAddProject="@AddProjectAsync" OnNewProjectChat="@NewProjectChatAsync" OnRemoveProject="RemoveProjectAsync"
+                            OnHide="@(() => _chatListCollapsed = true)" CurrentThreadId="@_currentChatThread.Id"
+                            OnLoadConversation="LoadConversationAsync"
+                            OnRenameThread="RenameConversationAsync"
+                            OnDeleteThread="DeleteConversationAsync" />
+            <div class="dashboard-column-resizer dashboard-thread-resizer absolute top-0 bottom-0 z-10 hidden w-3 select-none"
+                 data-dashboard-resizer="thread" role="separator" tabindex="0"
+                 aria-orientation="vertical"
+                 aria-valuemax="30" aria-valuenow="18"
+                 aria-label="@Loc[ChatTextKeys.ResizeThreadListLabel]"></div>
+        </div>
+        <div class="chat-column flex h-full min-w-0 flex-col">
+            <ChatPanel @ref="_chatPanel" ChatThread="@_currentChatThread"
+                       ThreadView="@_currentThreadView" IsConversationLoading="@_isConversationLoading"
+                       Project="@CurrentProject" OnRunFinished="OnRunFinishedAsync" MainAgent="@MainAgent"
+                       CustomAgents="@CustomAgents"
+                       ModelProviders="@ModelProviders"
+                       SelectedAgentId="@_selectedAgentId"
+                       SelectedModelProviderId="@SelectedModelProviderId"
+                       DefaultModelProviderId="@DefaultModelProviderId"
+                       OnSelectAgent="SelectAgentAsync"
+                       OnBeforeSelectAgent="ConfirmWorkspaceAsync"
+                       OnSelectProvider="SelectProviderAsync"
+                       OnCurrentThreadChanged="OnCurrentThreadChangedAsync"
+                       OnStartNewChat="StartNewChatAsync"
+                       OnRenameThread="RenameConversationAsync"
+                       OnToolActivityChanged="@OnToolActivityChangedAsync"
+                       OnOpenArtifact="@OpenArtifactAsync"
+                       IsServiceRunning="@_isServiceRunning"
+                       IsCheckingService="@_isCheckingService"
+                       ServiceStatusMessage="@_serviceStatusMessage"
+                       OnRetryServiceCheck="CheckServiceStatusAsync"
+                       CanChangeIncognitoMode="@CanChangeIncognitoMode"
+                       ThreadDrawerToggleId="chat-threads-drawer-toggle"
+                       OnShowChats="@(() => SetThreadsDrawerAsync(true))"
+                       IsFirstChat="@(_threads.Count == 0)"
+                       IsWorkspaceOpen="@IsActivityOpen"
+                       OnToggleWorkspace="@(() => IsActivityOpen ? CollapseActivityAsync(restoreFocus: true) : OpenActivityAsync())" />
+        </div>
+        <div class="activity-column min-w-0">
+            <div class="dashboard-column-resizer dashboard-details-resizer absolute top-0 bottom-0 z-10 hidden w-3 select-none"
+                 data-dashboard-resizer="details" role="separator" tabindex="0"
+                 aria-orientation="vertical"
+                 aria-valuemax="40" aria-valuenow="32"
+                 aria-label="@Loc[ChatTextKeys.ResizeDetailsPanelLabel]"></div>
+            <DetailsSidePanel @ref="_workspace" Thread="@_currentChatThread"
+                               Project="@CurrentProject" IsDraft="@CanChangeIncognitoMode" RefreshVersion="@_fileRefreshVersion" IsOpen="@IsActivityOpen"
+                               IsWide="@IsActivityWide"
+                               OnToggleWide="@ToggleActivityWideAsync"
+                               OnCollapse="@(() => CollapseActivityAsync(restoreFocus: true))" OnAddToChat="@AddFileToChatAsync" />
+        </div>
+    </div>
+
+    @* Mobile-only thread drawer — toggled by the chat header's "show chats" label. *@
+    <label for="chat-threads-drawer-toggle"
+           class="dashboard-thread-drawer-backdrop fixed inset-0 z-40 hidden bg-black/50 peer-checked:block lg:hidden"
+           aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")"></label>
+    <aside class="dashboard-thread-drawer bg-base-100 fixed inset-y-0 left-0 z-50 w-[85vw] max-w-sm -translate-x-full transform transition-transform peer-checked:translate-x-0 lg:hidden">
+        <ChatThreadList CanAddProjects="@_nodeCatalog.CanCreateProjects" ProjectsEnabled="@_nodeCatalog.ProjectsEnabled"
+AvailableProjectIds="@AvailableProjectIds" Threads="@_threads" Projects="@_projects" OnAddProject="@AddProjectAsync" OnNewProjectChat="@NewProjectChatAsync" OnRemoveProject="RemoveProjectAsync"
+                        CurrentThreadId="@_currentChatThread.Id"
+                        OnHide="@CloseThreadsDrawerAsync"
+                        OnLoadConversation="LoadConversationFromDrawerAsync"
+                        OnRenameThread="RenameConversationAsync"
+                        OnDeleteThread="DeleteConversationAsync" />
+    </aside>
+</DashboardShell>
+
+@code {
+    private bool _chatListCollapsed;
+}

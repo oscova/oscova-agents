@@ -1,0 +1,225 @@
+OSCOVA.AGENTS END-USER LICENSE AGREEMENT
+Version 1.1 | Effective 29 October 2026
+
+Please read this agreement before installing or using Oscova.Agents.
+
+This agreement covers the official compiled Oscova.Agents.App packages. The
+source code of the Application is published under the GNU Affero General
+Public License version 3 with a plugin exception, as explained in section 5.
+
+1. PARTIES, APPLICATION AND ACCEPTANCE
+
+This agreement is between you and Oscova AI, the trade name used by the
+individual proprietor who publishes the Application through https://oscova.ai
+("Oscova AI" or "Licensor"). Oscova AI identifies that proprietor, not a
+separate incorporated entity. "You" means the individual or organization
+accepting this agreement. If you act for an organization, you must have
+authority to bind it. You must be legally capable of entering this agreement.
+
+"Application" means the proprietary compiled Oscova.Agents end-user product
+distributed with this agreement, including its Host, the oscova launcher and
+command-line tool, and its accompanying proprietary assets and documentation.
+The Application is distributed through the Oscova.Agents.App package and its
+platform packages. The open-source Oscova.Agents framework has the same name
+as the product, but is governed separately as explained in section 5.
+
+By downloading, installing, copying, redistributing or using the Application
+after having an opportunity to review this agreement, you accept its terms.
+If you do not accept, do not install, use or redistribute the Application,
+and delete any copies you have obtained. This does not require you to give
+up independent rights in open-source components under their own licenses.
+
+2. FREE USE
+
+In return for your agreement to these terms, Oscova AI grants you a worldwide,
+non-exclusive, royalty-free license to install, run and make copies of the
+Application for your own personal, household, educational, nonprofit,
+government or business activities. You may use any number of copies and
+users, with no license fee, revenue threshold, organization-size restriction,
+evaluation period or feature-tier restriction for this version.
+
+You may run the Application on devices you own or control, on your private
+networks and at your premises. You may allow your household members,
+employees, contractors and other authorized people to use it for those
+activities, including through private remote access. You are responsible for
+their compliance when they use it under your license.
+
+You may use the Application to perform work and provide services to your
+customers, including supervised customer-facing use at your own premises.
+You may charge for that work or those services. You may not sell access to
+the Application itself or operate the third-party software services
+prohibited by section 4.
+
+You may configure the Application and use its supported settings, plugins,
+extensions, integrations and customization features. Those activities do not
+constitute prohibited modification of the Application.
+
+This license continues for the version supplied under this agreement unless
+terminated under section 9. No subscription or renewal payment is required.
+
+3. FREE REDISTRIBUTION AND PAID SUPPORT
+
+You may copy and redistribute unmodified official Application packages at
+no charge, including through download mirrors, if you retain this agreement
+and every accompanying copyright, license and attribution notice. Make this
+agreement available to recipients before or when they obtain the package.
+Do not modify, repackage or rebrand the distributed Application, charge for
+the copy, imply endorsement by Oscova AI, or make commitments on its behalf.
+
+Each recipient obtains a license directly from Oscova AI by accepting this
+agreement. You do not receive a right to sublicense the Application.
+
+A consultant or service provider may charge separately for installing,
+configuring, training on or supporting the Application for a customer. The
+customer must have its own license under this agreement. Remote assistance
+with the customer's installation is permitted. A support charge must not
+be a disguised charge for a copy of, or access to, the Application.
+
+4. RESTRICTIONS ON THE PROPRIETARY APPLICATION
+
+Except as expressly permitted by this agreement, mandatory applicable law
+or a component's own license, you must not:
+
+(a) modify, translate, adapt or create derivative works of the proprietary
+    Application, or distribute modified or repackaged copies.
+(b) reverse engineer, decompile, disassemble or otherwise attempt to obtain
+    the source code of its proprietary portions.
+(c) sell, rent, lease, sublicense or charge for copies of or access to the
+    Application.
+(d) make the Application or substantial Application functionality available
+    to third parties as a public hosting, software-as-a-service, managed
+    software service, service-bureau or time-sharing offering, whether free
+    or paid. The private organizational use, customer work, on-premises use
+    and installation or support activities expressly allowed above remain
+    permitted.
+(e) remove or obscure ownership, license or attribution notices, or present
+    a copy or derivative as an official Oscova product.
+
+These restrictions apply to the proprietary Application, not to independently
+licensed open-source components or to Application source code published
+under section 5. They do not restrict lawful independent development of
+competing software or your use of ideas that copyright does not protect.
+
+5. OPEN-SOURCE AND SEPARATELY LICENSED COMPONENTS
+
+The Oscova.Agents framework and the first-party plugins published at
+https://github.com/oscova/oscova-agents are provided under the Apache
+License, Version 2.0. Their source, modification, redistribution,
+commercial-use and other rights arise under that license.
+
+Other open-source and third-party components, including any separately
+licensed libraries, models and assets, remain subject to their respective
+licenses and notices. Those terms prevail over this agreement for the
+components they cover. This agreement adds no restriction to rights granted
+by those licenses and does not require acceptance of this agreement to
+exercise rights granted independently by them.
+
+Consult the component licenses and accompanying notices for their complete
+terms. Separately distributed products, including Oscova Avatar Engine,
+are not licensed by this agreement unless expressly supplied under it.
+
+Oscova AI publishes the source code of each Application version under the
+GNU Affero General Public License version 3 with a plugin exception at
+https://github.com/oscova/oscova-agents within 90 days of that version's
+release. From the day a version's source is published there, that license
+applies to that version in place of this agreement.
+
+6. OWNERSHIP AND YOUR CONTENT
+
+The Application is licensed, not sold. Oscova AI and the applicable rights
+holders retain ownership of the Application and all rights not expressly
+granted. This agreement does not provide the proprietary source code.
+
+Oscova names, logos and other brand identifiers remain the property of their
+respective owners. You may use the product name for accurate identification,
+attribution and permitted redistribution, but receive no right to use Oscova
+branding for another product or imply sponsorship or endorsement.
+
+Oscova AI does not acquire ownership of your files, prompts, data or output
+through this agreement. This is not a promise that output is accurate,
+unique, copyrightable or free of third-party rights. You remain responsible
+for having the rights and permissions needed for your inputs and intended
+use of outputs.
+
+7. EXTERNAL SERVICES, UPDATES AND SUPPORT
+
+You choose and are responsible for any external providers, accounts, models,
+plugins or services you connect. Their terms, privacy practices, availability
+and charges apply separately. The free Application license does not pay for
+them. Handle credentials and confidential information appropriately, maintain
+backups, and review generated output and automated actions before relying
+on them. The Application may make mistakes or perform actions that affect
+your files or connected systems within the permissions you grant.
+
+Oscova AI is not obligated to provide support, maintenance, updates or any
+particular feature or service availability. Updates supplied without separate
+terms are covered by this agreement. Different terms for a later version
+apply only when you accept them. They do not retroactively change your
+license for a version already received under this agreement. Future versions
+or separate products and services may be offered on different terms.
+
+8. WARRANTIES AND LIABILITY
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE APPLICATION IS PROVIDED
+"AS IS" AND "AS AVAILABLE", WITHOUT EXPRESS, IMPLIED OR STATUTORY
+WARRANTIES, INCLUDING WARRANTIES OF MERCHANTABILITY, SATISFACTORY QUALITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. OSCOVA AI
+DOES NOT WARRANT UNINTERRUPTED, SECURE OR ERROR-FREE OPERATION, CORRECT
+OUTPUTS, OR THAT THE APPLICATION WILL MEET YOUR REQUIREMENTS.
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, OSCOVA AI WILL NOT BE LIABLE
+FOR INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL LOSS, LOST PROFITS,
+LOST REVENUE, BUSINESS INTERRUPTION OR LOSS OF DATA ARISING FROM THIS
+AGREEMENT OR THE APPLICATION, EVEN IF ADVISED OF THE POSSIBILITY. OSCOVA
+AI'S TOTAL LIABILITY FOR ALL OTHER CLAIMS ARISING FROM THIS AGREEMENT OR
+THE APPLICATION IS LIMITED TO INR 1,000. THESE LIMITS APPLY REGARDLESS OF
+THE LEGAL BASIS OF A CLAIM.
+
+Nothing in this agreement excludes or limits liability for fraud, fraudulent
+misrepresentation, death or personal injury caused by negligence, or any
+other liability that applicable law does not permit to be excluded or
+limited. Your non-waivable statutory and consumer rights remain unaffected.
+Where an exclusion or limit is not permitted, it applies only to the extent
+the law allows.
+
+9. TERMINATION
+
+You may end this agreement at any time by stopping use and deleting your
+copies of the proprietary Application. Oscova AI may terminate your license
+if you materially breach this agreement. On termination, stop using and
+redistributing the Application and delete your copies, except copies you
+must retain by law, which may not be used for any other purpose. Your own
+data need not be deleted.
+
+Termination does not cancel licenses already obtained by compliant recipients
+or rights held independently under open-source or other component licenses.
+The provisions on ownership, liability, governing law and any accrued rights
+continue after termination.
+
+10. GOVERNING LAW AND GENERAL TERMS
+
+The laws of India govern this agreement. Subject to any mandatory right to
+bring a claim elsewhere, disputes are subject to the exclusive jurisdiction
+of the courts of competent jurisdiction in Bengaluru, Karnataka, India.
+This choice does not deprive you of protections that applicable law makes
+non-waivable.
+
+This agreement is the entire agreement about the proprietary Application,
+except for any separate written agreement you have with Oscova AI. Component
+licenses continue to apply as stated in section 5. A failure to enforce a
+term is not a waiver. If a provision cannot be enforced, the remaining
+provisions continue to apply to the extent permitted by law.
+
+You may not assign this agreement without Oscova AI's written consent.
+Permitted redistribution does not constitute assignment. Oscova AI may
+transfer this agreement with ownership of the Application to a successor
+that assumes its obligations, without reducing rights already granted to
+you. Changes to this agreement require your acceptance.
+
+Publisher website: https://oscova.ai
+Licensing enquiries: use the publisher contact channels linked from that
+website. This does not replace or limit any method of serving a legal notice
+that applicable law permits.
+
+Copyright (c) 2026 Oscova AI. All rights reserved, subject to the licenses
+expressly identified above.

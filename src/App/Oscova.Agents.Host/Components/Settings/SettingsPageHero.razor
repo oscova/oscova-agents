@@ -1,0 +1,86 @@
+<div class="@ContainerClass">
+    <div class="@ContentClass">
+        <div class="relative z-10 max-w-2xl">
+            <div class="@BadgeClass">
+                @if (Compact)
+                {
+                    <div class="flex flex-col gap-1">
+                        <p class="text-base-content/60 text-[10px] uppercase tracking-[0.22em]">@CategoryLabel</p>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="@BadgeIconClass">
+                                <PresentationIcon Icon="@CategoryIcon" ImageSource="@IconImageSource" Size="16" />
+                            </span>
+                            <p class="text-primary text-base font-medium sm:text-xl">@Title</p>
+                            @if (!string.IsNullOrWhiteSpace(HelpTopic))
+                            {
+                                <HelpTriggerButton Topic="@(HelpTopic!)" />
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <span class="@BadgeIconClass">
+                        <PresentationIcon Icon="@CategoryIcon" ImageSource="@IconImageSource" Size="16" />
+                    </span>
+                    <div>
+                        <p class="text-base-content/60 text-[10px] uppercase tracking-[0.22em]">@CategoryLabel</p>
+                        <p class="text-sm font-medium">@Title</p>
+                    </div>
+                }
+            </div>
+            @if (!Compact)
+            {
+                <p class="@TitleClass">@Title</p>
+            }
+            <p class="@DescriptionClass">@Description</p>
+        </div>
+        @if (Actions is not null)
+        {
+            <div class="relative z-10 flex shrink-0 items-center gap-2 self-start">
+                @Actions
+            </div>
+        }
+    </div>
+    <PresentationIcon Icon="@AccentIcon" ImageSource="@IconImageSource" Size="132" Class="@AccentClass" />
+</div>
+
+@code {
+    private string ContainerClass => Compact
+        ? "app-page-hero bg-primary/10 rounded-box relative w-full shrink-0 overflow-hidden p-3 sm:p-4"
+        : "app-page-hero bg-primary/10 rounded-box relative w-full shrink-0 overflow-hidden p-4 sm:p-5";
+
+    private string ContentClass => Compact
+        ? "flex flex-col gap-1 sm:gap-1.5 lg:flex-row lg:items-start lg:justify-between"
+        : "flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between";
+
+    private string BadgeClass => Compact
+        ? "flex flex-col gap-1"
+        : "inline-flex items-center gap-2.5 rounded-box bg-base-100/45 px-3 py-1.5";
+
+    private string BadgeIconClass => Compact
+        ? "bg-primary/12 text-primary flex size-8 items-center justify-center rounded-lg sm:size-10 sm:rounded-xl"
+        : "bg-primary/12 text-primary flex size-8 items-center justify-center rounded-lg";
+
+    private string TitleClass => Compact
+        ? "text-primary mt-1.5 text-xl font-medium sm:text-[1.65rem]"
+        : "text-primary mt-2.5 text-xl font-medium sm:text-2xl";
+
+    private string DescriptionClass => Compact
+        ? "text-base-content/80 mt-0 text-xs sm:text-sm"
+        : "text-base-content/80 mt-1.5 text-sm";
+
+    private string AccentClass => Compact
+        ? "text-primary/5 pointer-events-none absolute end-2 top-1/2 size-20 -translate-y-1/2 rotate-6 sm:end-4 sm:size-28"
+        : "text-primary/5 pointer-events-none absolute end-3 -bottom-8 rotate-6 sm:end-4 sm:-bottom-10 sm:size-36";
+
+    [Parameter, EditorRequired] public string CategoryIcon { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string CategoryLabel { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Description { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string AccentIcon { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public bool Compact { get; set; }
+    [Parameter] public string? HelpTopic { get; set; }
+    [Parameter] public string? IconImageSource { get; set; }
+}

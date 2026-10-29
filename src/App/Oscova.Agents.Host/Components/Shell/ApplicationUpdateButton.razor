@@ -1,0 +1,186 @@
+@implements IAsyncDisposable
+@inject UserServiceScope UserScope
+@inject ManagementApiClient ApiClient
+@inject IDialogService DialogService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject ILogger<ApplicationUpdateButton> Logger
+
+@if (UserScope.IsInRole("Admin"))
+{
+    <button type="button"
+            class="@(IconOnly ? "workspace-rail-button relative" : "btn btn-ghost btn-sm whitespace-nowrap")"
+            aria-label="@Label"
+            title="@Label"
+            @onclick="OpenAsync">
+        @if (IconOnly)
+        {
+            <span class="iconify lucide--download size-4.5" aria-hidden="true"></span>
+            @if (_status?.State == "Available")
+            {
+                <span class="status status-primary status-xs absolute end-1 top-1" aria-hidden="true"></span>
+            }
+        }
+        else
+        {
+            @Label
+        }
+    </button>
+}
+
+@if (UserScope.IsInRole("Admin"))
+{
+    <div id="@ClientStatusElementId" class="toast toast-bottom toast-start" hidden>
+        <div role="alert" aria-live="assertive" class="alert alert-error alert-soft">
+            <span></span>
+            <button type="button" class="btn btn-ghost btn-xs btn-circle" style="color: inherit;" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")" hidden>
+                <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IconOnly { get; set; }
+
+    internal const string ClientStatusElementId = "application-update-client-status";
+
+    private readonly CancellationTokenSource _disposal = new();
+    private ApplicationUpdateStatus? _status;
+    private IJSObjectReference? _module;
+    private readonly PeriodicTimer _timer = new(TimeSpan.FromMinutes(15));
+    private Task? _polling;
+    private bool _checkFailed;
+    private bool _dialogOpen;
+
+    private static bool IsResult(ApplicationUpdateStatus? status) => status is { OperationId: not null, State: "Succeeded" or "Failed" };
+
+    private string Label => _checkFailed || _status?.State == "Unavailable"
+        ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateCheckUnavailableLabel, "Update check unavailable")
+        : _status is { State: "Available", AvailableVersion: not null }
+            ? Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateAvailable, "Update available")
+            : Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateCheck, "Check for updates");
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!UserScope.IsInRole("Admin"))
+        {
+            return;
+        }
+
+        await CheckAsync();
+        _polling = PollAsync();
+    }
+
+    private async Task CheckAsync(bool refresh = false)
+    {
+        try
+        {
+            _status = await ApiClient.GetApplicationUpdateStatusAsync(refresh, _disposal.Token);
+            _checkFailed = false;
+        }
+        catch (OperationCanceledException) when (_disposal.IsCancellationRequested)
+        {
+        }
+        catch (Exception)
+        {
+            _status = null;
+            _checkFailed = true;
+        }
+    }
+
+    private async Task PollAsync()
+    {
+        try
+        {
+            while (await _timer.WaitForNextTickAsync(_disposal.Token))
+            {
+                await InvokeAsync(async () => { await CheckAsync(); StateHasChanged(); });
+            }
+        }
+        catch (OperationCanceledException) when (_disposal.IsCancellationRequested) { }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!UserScope.IsInRole("Admin"))
+        {
+            return;
+        }
+
+        try
+        {
+            if (firstRender) { _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js"); }
+            // The status request can finish after the first render, including on a later browser visit.
+            if (!_dialogOpen && IsResult(_status) && !_status!.CompletionAcknowledged)
+            {
+                // Finish rendering while the operator reviews and dismisses the result dialog.
+                _ = OpenAsync();
+                return;
+            }
+            if (!firstRender || _module is null) { return; }
+            await _module.InvokeVoidAsync(
+                "resumeApplicationUpdate",
+                NavigationManager.ToAbsoluteUri(ApiRoutes.HostControl.Version).ToString(),
+                NavigationManager.ToAbsoluteUri(ApiRoutes.ApplicationUpdate.Status).ToString(),
+                NavigationManager.Uri,
+                ClientStatusElementId,
+                Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateRestarting, "Updating. Waiting for Oscova to restart..."),
+                Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateTakingLonger, "This update is taking longer. Oscova may still be backing up your data or downloading components. You can keep waiting or check 'oscova update status'."),
+                Loc.GetOrDefault(SettingsTextKeys.ApplicationUpdateNotStarted, "The update did not start, so Oscova was not changed. Check the update window on the Host computer, then try again."));
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private async Task OpenAsync()
+    {
+        if (_dialogOpen) { return; }
+        _dialogOpen = true;
+        try
+        {
+            var result = await DialogService.ShowAsync<ApplicationUpdateDialog>(new Dictionary<string, object?>
+            {
+                [nameof(ApplicationUpdateDialog.InitialStatus)] = _status,
+                [nameof(ApplicationUpdateDialog.StatusChanged)] = EventCallback.Factory.Create<ApplicationUpdateStatus>(this, status =>
+                {
+                    _status = status;
+                    _checkFailed = status.State == "Unavailable";
+                })
+            });
+            if (IsResult(_status) && _status is { OperationId: not null } shown)
+            {
+                await ApiClient.AcknowledgeApplicationUpdateAsync(shown.OperationId, _disposal.Token);
+                await CheckAsync();
+                if (result == DialogResult.Ok && shown.State == "Succeeded") { NavigationManager.NavigateTo("/settings/agents-ai/plugins"); }
+            }
+        }
+        catch (OperationCanceledException) when (_disposal.IsCancellationRequested) { }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Could not show or acknowledge the application update result.");
+        }
+        finally { _dialogOpen = false; }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposal.Cancel();
+        _timer.Dispose();
+        if (_polling is not null) { await _polling; }
+        _disposal.Dispose();
+        if (_module is not null)
+        {
+            try
+            {
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+}

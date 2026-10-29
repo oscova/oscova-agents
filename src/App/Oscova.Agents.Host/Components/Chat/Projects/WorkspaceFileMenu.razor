@@ -1,0 +1,52 @@
+@* The row and its touch button open one menu for the selected file. *@
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Firefox raises contextmenu before mouseup, which would immediately light-dismiss an opened popover. *@
+<div class="flex min-w-0 items-center" @oncontextmenu="args => OpenAsync(args.Buttons == 0)"
+     @onmouseup="args => OpenAsync(args.Button == 2)" @oncontextmenu:preventDefault="@(!File.IsDirectory)">
+    @ChildContent
+    @if (!File.IsDirectory)
+    {
+        <DropdownMenu @ref="_menu" TriggerClass="btn btn-ghost btn-xs btn-square shrink-0" Placement="dropdown-bottom dropdown-end"
+                      AriaLabel="@($"{Loc[ChatTextKeys.WorkspaceFileActions]}: {File.Name}")" Title="@Loc[ChatTextKeys.WorkspaceFileActions]"
+                      ContentClass="w-44 p-1" CloseOnContentClick="@true">
+            <TriggerContent><iconify-icon icon="lucide:ellipsis" width="16" height="16" aria-hidden="true"></iconify-icon></TriggerContent>
+            <ChildContent>
+                <ul class="menu w-full p-0">
+                    <li><button type="button" @onclick="() => OnAddToChat.InvokeAsync(File)">
+                        <iconify-icon icon="lucide:message-square-plus" width="16" height="16"></iconify-icon>
+                        @Loc[ChatTextKeys.WorkspaceAddToChat]
+                    </button></li>
+                    <li><DropdownMenu RootClass="custom-workspace-copy-trigger" TriggerClass="w-full"
+                                      Placement="" ContentClass="custom-workspace-copy-menu w-44 p-1"
+                                      StopTriggerPropagation="@true" CloseOnContentClick="@true">
+                        <TriggerContent>
+                            <iconify-icon icon="lucide:copy" width="16" height="16" aria-hidden="true"></iconify-icon>
+                            <span class="flex-1">@Loc[ChatTextKeys.ResponseCopyLabel]</span>
+                            <iconify-icon icon="lucide:chevron-right" width="14" height="14" aria-hidden="true"></iconify-icon>
+                        </TriggerContent>
+                        <ChildContent><ul class="menu w-full p-0">
+                            <li><CopyActionButton Text="@File.Path" Label="@Loc[ChatTextKeys.WorkspaceRelativePath]" Class="w-full" /></li>
+                            <li><CopyActionButton Text="@File.FullPath" Label="@Loc[ChatTextKeys.WorkspaceAbsolutePath]" Class="w-full" /></li>
+                            <li><CopyActionButton Text="@File.Name" Label="@Loc[ChatTextKeys.WorkspaceFilename]" Class="w-full" /></li>
+                        </ul></ChildContent>
+                    </DropdownMenu></li>
+                    <li><a href="@DownloadUrl" download="@File.Name">
+                        <iconify-icon icon="lucide:download" width="16" height="16"></iconify-icon>
+                        @CommonLoc[CommonTextKeys.Download]
+                    </a></li>
+                </ul>
+            </ChildContent>
+        </DropdownMenu>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public ProjectFileEntry File { get; set; } = default!;
+    [Parameter, EditorRequired] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public string DownloadUrl { get; set; } = string.Empty;
+    [Parameter] public EventCallback<ProjectFileEntry> OnAddToChat { get; set; }
+    private DropdownMenu? _menu;
+    private Task OpenAsync(bool open) => open ? _menu?.OpenAsync() ?? Task.CompletedTask : Task.CompletedTask;
+}

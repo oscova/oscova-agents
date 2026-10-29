@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Wizard.Title">
+		<value>Bienvenue dans Oscova Agents</value>
+
+	</data>
+	<data name="Wizard.ProductName">
+		<value>Oscova Agents</value>
+
+	</data>
+	<data name="Wizard.SubtitleLanguage">
+		<value>Choisissez votre langue.</value>
+
+	</data>
+	<data name="Wizard.SubtitleProfilePicture">
+		<value>Choisissez votre photo de profil.</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep1">
+		<value>Choisissez un fournisseur de modèle de langage</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep2">
+		<value>Configurer la voix (facultatif)</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep3">
+		<value>Nommez votre assistant</value>
+
+	</data>
+	<data name="Wizard.StepLanguageTitle">
+		<value>Langue</value>
+
+	</data>
+	<data name="Wizard.StepProfilePictureTitle">
+		<value>Photo de profil</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureQuestion">
+		<value>Choisissez votre photo de profil</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureHint">
+		<value>Gardez celle-ci ou choisissez-en une autre.</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureLaterNotice">
+		<value>Vous pourrez changer votre photo de profil plus tard dans Votre profil.</value>
+
+	</data>
+	<data name="Wizard.LanguageRestartHint">
+		<value>La configuration redémarrera dans la nouvelle langue après le rechargement de la page.</value>
+
+	</data>
+	<data name="Wizard.AgentNameFallback">
+		<value>Olivia</value>
+
+	</data>
+	<data name="Wizard.SaveFailed">
+		<value>Impossible d'enregistrer la configuration. Veuillez réessayer.</value>
+
+	</data>
+	<data name="Wizard.StepLlmTitle">
+		<value>Modèle</value>
+
+	</data>
+	<data name="Wizard.StepSpeechTitle">
+		<value>Voix</value>
+
+	</data>
+	<data name="Wizard.StepIdentityTitle">
+		<value>Identité</value>
+
+	</data>
+	<data name="Wizard.StepLabel">
+		<value>Étape {0} sur {1} — {2}</value>
+
+	</data>
+	<data name="Wizard.SkipStep">
+		<value>Ignorer l'étape</value>
+
+	</data>
+	<data name="Wizard.SkipAll">
+		<value>Tout ignorer</value>
+
+	</data>
+	<data name="Wizard.LaterSetupNotice">
+		<value>Vous pouvez ignorer cette étape et la configurer plus tard dans Paramètres.</value>
+
+	</data>
+	<data name="Wizard.Back">
+		<value>Retour</value>
+
+	</data>
+	<data name="Wizard.Continue">
+		<value>Continuer</value>
+
+	</data>
+	<data name="Wizard.Finish">
+		<value>Terminer</value>
+
+	</data>
+	<data name="Wizard.LlmQuestion">
+		<value>Comment Oscova doit-il réfléchir ?</value>
+
+	</data>
+	<data name="Wizard.LlmQuestionHint">
+		<value>Choisissez un fournisseur de modèle à configurer maintenant.</value>
+
+	</data>
+	<data name="Wizard.LlmProviderLegend">
+		<value>Fournisseur de modèle</value>
+
+	</data>
+	<data name="Wizard.LlmScrollHint">
+		<value>Faites défiler pour voir tous les fournisseurs disponibles.</value>
+
+	</data>
+	<data name="Wizard.LlmEndpointChoiceDescription">
+		<value>Point de terminaison de serveur local</value>
+
+	</data>
+	<data name="Wizard.LlmHostedChoiceDescription">
+		<value>Clé d'API hébergée</value>
+
+	</data>
+	<data name="Wizard.LlmLocalChoiceDescription">
+		<value>GGUF local via LLamaSharp</value>
+
+	</data>
+	<data name="Wizard.LlmCatalogChoiceDescription">
+		<value>Catalogue local et téléchargement</value>
+
+	</data>
+	<data name="Wizard.LlmNoChoiceHint">
+		<value>Sélectionnez une option pour configurer un fournisseur de modèle maintenant, ou ignorez cette étape pour l'ajouter plus tard.</value>
+
+	</data>
+	<data name="Wizard.LlmLocalDownloadHint">
+		<value>Téléchargez le modèle local maintenant, ou continuez et téléchargez-le plus tard depuis Paramètres.</value>
+
+	</data>
+	<data name="Wizard.LlmSavedOnContinueHint">
+		<value>Ceci est enregistré lorsque vous continuez.</value>
+
+	</data>
+	<data name="Wizard.LlmLocalNotConfigured">
+		<value>Aucun modèle local par défaut n'a été configuré. Vous pourrez en ajouter un plus tard dans Paramètres.</value>
+
+	</data>
+	<data name="Wizard.LlmApiKeyLabel">
+		<value>Clé d'API {0}</value>
+
+	</data>
+	<data name="Wizard.LlmBaseUrlLabel">
+		<value>URL de base de {0}</value>
+
+	</data>
+	<data name="Wizard.LlmEnvironmentVariableUnavailable">
+		<value>La variable d'environnement '{0}' n'est pas disponible pour Oscova.</value>
+
+	</data>
+	<data name="Wizard.LlmProviderModelsDescription">
+		<value>Récupérez les modèles de ce fournisseur, puis choisissez-en un pour continuer.</value>
+
+	</data>
+	<data name="Wizard.LlmFetchedModelRequired">
+		<value>Récupérez les modèles et choisissez-en un avant de continuer.</value>
+
+	</data>
+	<data name="Wizard.LlmModelDownloadRequired">
+		<value>Téléchargez le modèle sélectionné avant de continuer.</value>
+
+	</data>
+	<data name="Wizard.LlmConnectedNoModels">
+		<value>Connexion réussie, mais le fournisseur n'a retourné aucun modèle.</value>
+
+	</data>
+	<data name="Wizard.SpeechQuestion">
+		<value>Souhaitez-vous des fonctionnalités vocales ?</value>
+
+	</data>
+	<data name="Wizard.SpeechListenChoiceTitle">
+		<value>Permettre à Oscova d'écouter</value>
+
+	</data>
+	<data name="Wizard.SpeechListenChoiceDescription">
+		<value>Utilisez votre microphone pour convertir la voix en texte.</value>
+
+	</data>
+	<data name="Wizard.SpeechSpeakChoiceTitle">
+		<value>Permettre à Oscova de parler</value>
+
+	</data>
+	<data name="Wizard.SpeechSpeakChoiceDescription">
+		<value>Lire les réponses à voix haute à l'aide d'un modèle vocal local.</value>
+
+	</data>
+	<data name="Wizard.SpeechIntro">
+		<value>Téléchargez ici les modèles des plugins vocaux locaux installés. Pour OpenAI, installez Oscova OpenAI et configurez-le dans Paramètres &gt; Voix.</value>
+
+	</data>
+	<data name="Wizard.SpeechSkipNotice">
+		<value>La voix devient disponible après le téléchargement d’un modèle local ou la configuration d’un fournisseur hébergé.</value>
+
+	</data>
+	<data name="Wizard.SpeechPluginMissingAdminNotice">
+		<value>{0} n'est pas installé. Installez-le dans Paramètres &gt; Plugins.</value>
+	</data>
+	<data name="Wizard.SpeechPluginMissingUserNotice">
+		<value>{0} n'est pas installé. Votre administrateur peut l'installer.</value>
+	</data>
+	<data name="Wizard.AgentIntro">
+		<value>Donnez un nom à votre assistant, choisissez une image de profil et sélectionnez une personnalité. Vous pourrez l'ajuster plus tard dans les paramètres de l'agent principal.</value>
+
+	</data>
+	<data name="Wizard.AgentNameLabel">
+		<value>Nom</value>
+
+	</data>
+	<data name="Wizard.AgentNameRequired">
+		<value>Le nom est obligatoire.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaLabel">
+		<value>Personnalité</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaHint">
+		<value>Définit l'instruction système de l'agent. Vous pourrez l'ajuster plus tard dans l'Instruction système de l'agent principal.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaNone">
+		<value>Aucune personnalité</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaNoneDescription">
+		<value>Commencez de façon neutre et personnalisez l'agent plus tard.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaProfessional">
+		<value>Professionnel</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaProfessionalDescription">
+		<value>Soigné, structuré et professionnel.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaFriendly">
+		<value>Chaleureux</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaFriendlyDescription">
+		<value>Bienveillant, conversationnel et encourageant.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaEfficient">
+		<value>Efficace</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaEfficientDescription">
+		<value>Concis et direct, avec un préambule minimal.</value>
+
+	</data>
+  <data name="Wizard.VaultPasswordRequired"><value>Déverrouillez le mot de passe de votre coffre-fort avant d'enregistrer ce fournisseur.</value></data>
+</root>

@@ -1,0 +1,136 @@
+@implements IDisposable
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@if (Goal is not null || Editing is not null)
+{
+    <div class="custom-chat-followups custom-chat-goal-strip flex shrink-0 items-center gap-2 px-3 py-1 text-sm" aria-live="polite">
+        @if (Goal?.Status == ChatGoalStatus.Active && Editing is null)
+        {
+            <span class="loading loading-spinner loading-xs shrink-0" aria-hidden="true"></span>
+        }
+        else
+        {
+            <span class="iconify lucide--target size-4 shrink-0 text-base-content/60" aria-hidden="true"></span>
+        }
+        <div class="flex min-w-0 grow items-center gap-1.5">
+            <span class="shrink-0 font-medium @(Goal?.Status is ChatGoalStatus.Paused or ChatGoalStatus.Blocked ? "text-warning" : null)">@StatusText</span>
+            @if (!string.IsNullOrWhiteSpace(ReasonText))
+            {
+                <span class="custom-chat-goal-reason min-w-0 truncate text-xs text-warning" title="@ReasonText">@ReasonText</span>
+            }
+            @if (Goal is not null)
+            {
+                <span class="min-w-0 flex-1 truncate text-base-content/60" title="@Goal.Objective">@Goal.Objective</span>
+                <span class="shrink-0 text-xs text-base-content/60">· @ElapsedText</span>
+            }
+        </div>
+        <div class="flex shrink-0 items-center gap-1">
+            @if (Editing is not null)
+            {
+                <button type="button" class="btn btn-primary btn-xs" disabled="@(Saving || !CanSave)" @onclick="OnSave">@(Editing.Value ? Loc.GetOrDefault(ChatTextKeys.GoalSave, "Save goal") : Loc.GetOrDefault(ChatTextKeys.GoalStart, "Start goal"))</button>
+                <button type="button" class="btn btn-ghost btn-xs" disabled="@Saving" @onclick="OnCancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+            }
+            else if (Goal is not null)
+            {
+                <button type="button" class="btn btn-ghost btn-circle btn-xs text-base-content/60" disabled="@Saving" @onclick="OnClear"
+                        title="@CommonLoc.GetOrDefault(CommonTextKeys.Clear, "Clear")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Clear, "Clear")">
+                    <span class="iconify lucide--trash-2 size-3.5" aria-hidden="true"></span>
+                </button>
+                @if (Goal.Status == ChatGoalStatus.Active)
+                {
+                    <button type="button" class="btn btn-ghost btn-circle btn-xs text-base-content/60" disabled="@Saving" @onclick="OnPause"
+                            title="@Loc.GetOrDefault(ChatTextKeys.GoalPause, "Pause")" aria-label="@Loc.GetOrDefault(ChatTextKeys.GoalPause, "Pause")">
+                        <span class="iconify lucide--pause size-3.5" aria-hidden="true"></span>
+                    </button>
+                }
+                else if (Goal.Status != ChatGoalStatus.Achieved)
+                {
+                    <button type="button" class="btn btn-ghost btn-circle btn-xs text-base-content/60" disabled="@Saving" @onclick="OnResume"
+                            title="@CommonLoc.GetOrDefault(CommonTextKeys.Resume, "Resume")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Resume, "Resume")">
+                        <span class="iconify lucide--play size-3.5" aria-hidden="true"></span>
+                    </button>
+                }
+                @if (Goal.Status != ChatGoalStatus.Achieved)
+                {
+                    <button type="button" class="btn btn-ghost btn-circle btn-xs text-base-content/60" disabled="@Saving" @onclick="OnEdit"
+                            title="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")">
+                        <span class="iconify lucide--pencil size-3.5" aria-hidden="true"></span>
+                    </button>
+                }
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public ChatGoal? Goal { get; set; }
+    [Parameter] public bool? Editing { get; set; }
+    [Parameter] public bool Saving { get; set; }
+    [Parameter] public bool CanSave { get; set; }
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback OnPause { get; set; }
+    [Parameter] public EventCallback OnResume { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
+    [Parameter] public EventCallback OnClear { get; set; }
+    private Timer? _elapsedTimer;
+    private bool _disposed;
+
+    private string? ReasonText => Message ?? Goal?.Reason switch
+    {
+        "Paused" => null,
+        "Stopped" => Loc.GetOrDefault(ChatTextKeys.GoalReasonStopped, "Stopped"),
+        "App restarted" => Loc.GetOrDefault(ChatTextKeys.GoalReasonRestarted, "App restarted"),
+        "Budget reached" => Loc.GetOrDefault(ChatTextKeys.GoalReasonBudget, "Budget reached"),
+        "Iteration limit" => Loc.GetOrDefault(ChatTextKeys.GoalReasonIterations, "Iteration limit"),
+        "Provider unavailable" => Loc.GetOrDefault(ChatTextKeys.GoalReasonProvider, "Provider unavailable"),
+        "Couldn't check completion" => Loc.GetOrDefault(ChatTextKeys.GoalReasonJudge, "Couldn't check completion"),
+        "Couldn't continue" => Loc.GetOrDefault(ChatTextKeys.GoalReasonWorker, "Couldn't continue"),
+        "Waiting for your answer" => Loc.GetOrDefault(ChatTextKeys.GoalReasonQuestion, "Waiting for your answer"),
+        "Question dismissed" => Loc.GetOrDefault(ChatTextKeys.GoalReasonDismissed, "Question dismissed"),
+        _ => Goal?.Reason
+    };
+
+    private string StatusText => Editing is true ? Loc.GetOrDefault(ChatTextKeys.GoalEdit, "Edit goal")
+        : Editing is false ? Loc.GetOrDefault(ChatTextKeys.GoalTitle, "Goal") : Goal?.Status switch
+    {
+        ChatGoalStatus.Active => Loc.GetOrDefault(ChatTextKeys.GoalRunning, "Goal running"),
+        ChatGoalStatus.Paused => Loc.GetOrDefault(ChatTextKeys.GoalPaused, "Goal paused"),
+        ChatGoalStatus.Blocked => Loc.GetOrDefault(ChatTextKeys.GoalBlocked, "Goal blocked"),
+        ChatGoalStatus.Achieved => Loc.GetOrDefault(ChatTextKeys.GoalAchieved, "Goal achieved"),
+        _ => Loc.GetOrDefault(ChatTextKeys.GoalTitle, "Goal")
+    };
+
+    private string ElapsedText
+    {
+        get
+        {
+            var elapsed = TimeSpan.FromMilliseconds((Goal?.ElapsedMilliseconds ?? 0) +
+                (Goal?.ActiveSince is { } start ? Math.Max(0, (DateTimeOffset.UtcNow - start).TotalMilliseconds) : 0));
+            return elapsed.TotalHours >= 1
+                ? $"{(long)elapsed.TotalHours}:{elapsed.Minutes:00}:{elapsed.Seconds:00}"
+                : $"{(long)elapsed.TotalMinutes}:{elapsed.Seconds:00}";
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Goal?.ActiveSince is not null && Editing is null)
+        {
+            _elapsedTimer ??= new Timer(_ => _ = RefreshElapsedAsync(), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+        else { _elapsedTimer?.Dispose(); _elapsedTimer = null; }
+    }
+
+    private async Task RefreshElapsedAsync()
+    {
+        if (_disposed) { return; }
+        try { await InvokeAsync(() => { if (!_disposed) { StateHasChanged(); } }); }
+        catch (ObjectDisposedException) when (_disposed) { }
+        catch (InvalidOperationException) when (_disposed) { }
+    }
+
+    public void Dispose() { _disposed = true; _elapsedTimer?.Dispose(); }
+}

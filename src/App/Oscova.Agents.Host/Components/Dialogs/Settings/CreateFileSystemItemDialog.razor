@@ -1,0 +1,94 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Collects a validated file or folder name before the Files settings section creates the item. *@
+<AppDialogShell Title="@Title"
+                Icon="@DialogIcon"
+                MaxWidthClass="max-w-xl"
+                HelpTopic="@HelpTopics.CreateFileSystemItem"
+                CloseResult="@DialogResult.Cancel"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <fieldset class="fieldset p-0">
+            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</legend>
+            <label class="input w-full">
+                <iconify-icon icon="@InputIcon" class="text-base-content/60"></iconify-icon>
+                <input class="grow focus:outline-0"
+                       id="file-system-item-name"
+                       aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")"
+                       placeholder="@Placeholder"
+                       @bind="_name"
+                       @bind:event="oninput" />
+            </label>
+            @if (!_isDirectory)
+            {
+                <p class="fieldset-label">
+                    @string.Format(
+                        CultureInfo.CurrentCulture,
+                        Loc.GetOrDefault(SettingsTextKeys.FilesAllowedExtensionsHint, "Allowed: {0}"),
+                        $"\u2066{UserEditableFileTypes.DisplayList}\u2069")
+                </p>
+            }
+        </fieldset>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(!IsNameValid)" @onclick="Create">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Create, "Create")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private bool _isDirectory;
+    private string _name = string.Empty;
+
+    private string Title => _isDirectory
+        ? Loc.GetOrDefault(SettingsTextKeys.FilesNewFolder, "New Folder")
+        : Loc.GetOrDefault(SettingsTextKeys.FilesNewFile, "New File");
+
+    private string Placeholder => _isDirectory
+        ? Loc.GetOrDefault(SettingsTextKeys.FilesFolderNamePlaceholder, "Folder name")
+        : Loc.GetOrDefault(SettingsTextKeys.FilesFileNamePlaceholder, "filename.md");
+
+    private string DialogIcon => _isDirectory ? "lucide:folder-plus" : "lucide:file-plus";
+
+    private string InputIcon => _isDirectory ? "lucide:folder" : "lucide:file-plus";
+
+    private bool IsNameValid
+    {
+        get
+        {
+            var name = _name.Trim();
+            if (!FileNameValidator.IsValid(name))
+            {
+                return false;
+            }
+
+            return _isDirectory || UserEditableFileTypes.ContainsFileName(name);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _isDirectory = DialogInstance.Get("IsDirectory", false);
+    }
+
+    private void Create()
+    {
+        if (IsNameValid)
+        {
+            DialogInstance.Close(DialogResult.Ok, _name.Trim());
+        }
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close<string>(DialogResult.Cancel, null);
+    }
+}

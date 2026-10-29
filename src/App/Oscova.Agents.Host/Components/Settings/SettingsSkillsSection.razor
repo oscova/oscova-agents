@@ -1,0 +1,216 @@
+@using Oscova.Agents.Core.Skills
+@using Oscova.Agents.Core.ApiContracts.Agents
+@using Oscova.Agents.Core.ApiContracts.Skills
+@using Microsoft.Extensions.DependencyInjection
+@inherits SettingsComponentBase
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@inject UserServiceScope UserScope
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IServiceProvider Services
+
+<div class="space-y-6">
+    <div class="card custom-settings-catalog-card">
+        <div class="card-body gap-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="space-y-1">
+                    <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.SkillsInstalledSkillsTitle, "Installed Skills")</h4>
+                    <p class="text-sm opacity-70">
+                        @Loc.GetOrDefault(SettingsTextKeys.SkillsInstalledSkillsDescription, "Manage the skill packages available for assignment to your agents.")
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button"
+                            class="btn btn-primary btn-sm"
+                            disabled="@(_isLoadingSkills || !_canInstallSkills)"
+                            @onclick="OpenFindOnlineDialogAsync">
+                        <span class="iconify lucide--globe-2 size-4" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.SkillsFindOnlineButton, "Find skills online")
+                    </button>
+                    @if (UserScope.IsInRole("Admin"))
+                    {
+                        <button type="button"
+                                class="btn btn-ghost btn-sm"
+                                @onclick="OpenManageSourcesAsync">
+                            <span class="iconify lucide--settings-2 size-4" aria-hidden="true"></span>
+                            @Loc.GetOrDefault(SettingsTextKeys.SkillsManageSourcesButton, "Manage sources")
+                        </button>
+                    }
+                    <button type="button"
+                            class="btn btn-outline btn-sm"
+                            disabled="@(_isLoadingSkills || !_canManageSkills)"
+                            @onclick="OpenImportDialogAsync">
+                        <span class="iconify lucide--file-up size-4" aria-hidden="true"></span>
+                        @Loc.GetOrDefault(SettingsTextKeys.SkillsImportSkillButton, "Import Skill")
+                    </button>
+                </div>
+            </div>
+
+            @if (_isLoadingSkills)
+            {
+                <div class="flex justify-center py-6">
+                    <span class="loading loading-dots loading-md"></span>
+                </div>
+            }
+            else if (_installedSkills.Count == 0)
+            {
+                <div class="rounded-box border border-base-300 border-dashed p-5 text-sm opacity-70">
+                    @Loc.GetOrDefault(SettingsTextKeys.SkillsNoSkillsInstalledMessage, "No skills installed yet. Import a SKILL.md file or packaged .zip to make it available to your agents.")
+                </div>
+            }
+            else
+            {
+                <div class="custom-settings-table-container overflow-x-auto">
+                    <table class="table table-pin-rows custom-settings-adaptive-table custom-settings-skills-table">
+                        <thead>
+                            <tr>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</th>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")</th>
+                                <th>@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")</th>
+                                <th class="custom-settings-actions">@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (SkillDefinition skill in _installedSkills)
+                            {
+                                <tr class="hover:bg-base-200/40 align-top" @key="skill.Name">
+                                    <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")">
+                                        <p dir="auto" class="min-w-0 break-words font-medium [overflow-wrap:anywhere]">@skill.Name</p>
+                                    </td>
+                                    <td class="text-sm text-base-content/70" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")">
+                                        @if (!string.IsNullOrWhiteSpace(skill.Description))
+                                        {
+                                            <span dir="auto" class="min-w-0 break-words [overflow-wrap:anywhere]">@skill.Description</span>
+                                        }
+                                    </td>
+                                    <td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status")">
+                                        <span class="badge badge-soft whitespace-nowrap">@Loc[skill.IsBundled ? SettingsTextKeys.SkillsIncludedForAll :
+                                            skill.IsShared && !UserScope.IsInRole("Admin") ? SettingsTextKeys.SkillsManagedByOperator : SettingsTextKeys.SkillsInstalledBadge]</span>
+                                    </td>
+                                    <td class="custom-settings-actions text-right whitespace-nowrap" data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Actions, "Actions")">
+                                        @if (UserScope.IsInRole("Admin") && !skill.IsBundled)
+                                        {
+                                            <label class="inline-flex items-center gap-2 text-sm">
+                                                <input type="checkbox" class="toggle toggle-sm" checked="@skill.IsShared" disabled="@_isLoadingSkills"
+                                                       @onchange="e => PublishSkillAsync(skill, e.Value is true)" />
+                                                @Loc[SettingsTextKeys.SkillsShareWithUsers]
+                                            </label>
+                                            @if (skill.IsShared)
+                                            {
+                                                <button type="button" class="btn btn-ghost btn-sm" disabled="@_isLoadingSkills"
+                                                        @onclick="() => PublishSkillAsync(skill, true)">
+                                                    @Loc[SettingsTextKeys.SkillsUpdateForUsers]
+                                                </button>
+                                            }
+                                        }
+                                        @if (!skill.IsBundled)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-square btn-sm text-error"
+                                                    title="@(Loc.GetOrDefault(SettingsTextKeys.SkillsDeleteButton, "Uninstall skill"))"
+                                                    aria-label="@(Loc.GetOrDefault(SettingsTextKeys.SkillsDeleteButton, "Uninstall skill"))"
+                                                    disabled="@(_isLoadingSkills || !skill.CanEdit)"
+                                                    @onclick="() => DeleteSkillAsync(skill)">
+                                                <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _canInstallSkills;
+    private bool _canManageSkills;
+
+    private async Task PublishSkillAsync(SkillDefinition skill, bool enabled)
+    {
+        await RunAsync(value => _isLoadingSkills = value, async () =>
+        {
+            SkillPublicationResult? result = null;
+            if (await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc,
+                async confirmed => (result = await SettingsApiClient.PublishSkillAsync(skill.Name, enabled, confirmed)) is not null))
+            {
+                _installedSkills = (await SettingsApiClient.GetInstalledSkillsAsync()).ToList();
+                ToastService.Show(enabled
+                    ? Loc[SettingsTextKeys.SkillsPublicationResult, result!.Changed, result.Preserved]
+                    : CommonLoc.GetOrDefault(CommonTextKeys.GovernanceChangesSaved, "Changes saved."), ToastType.Success);
+            }
+        });
+    }
+
+    private bool _isLoadingSkills;
+    private List<SkillDefinition> _installedSkills = [];
+    protected override async Task OnInitializedAsync()
+    {
+        var grants = await Services.GetRequiredService<IUserPermissionService>().GetGrantedAsync(UserScope.UserId);
+        _canInstallSkills = UserScope.IsInRole("Admin") || grants.Contains(UserPermissionKeys.InstallApprovedSkills);
+        _canManageSkills = UserScope.IsInRole("Admin") || grants.Contains(UserPermissionKeys.ManageCustomSkills);
+        await LoadInstalledSkillsAsync();
+    }
+
+    private async Task LoadInstalledSkillsAsync()
+    {
+        await RunAsync(v => _isLoadingSkills = v, async () =>
+        {
+            _installedSkills = (await SettingsApiClient.GetInstalledSkillsAsync()).ToList();
+        });
+    }
+
+    private async Task OpenImportDialogAsync()
+    {
+        var dialogResult = await DialogService.ShowAsync<SkillImportDialog, ImportedSkillResult>();
+        if (!dialogResult.IsOk || dialogResult.Data is null)
+        {
+            return;
+        }
+
+        await LoadInstalledSkillsAsync();
+    }
+
+    private async Task DeleteSkillAsync(SkillDefinition skill)
+    {
+        var confirmResult = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.SkillsDeleteConfirmTitle, "Uninstall Skill"),
+            string.Format(
+                CultureInfo.CurrentCulture,
+                Loc.GetOrDefault(
+                    SettingsTextKeys.SkillsDeleteConfirmMessage,
+                    "Are you sure you want to uninstall \"{0}\"? This removes it from all of your agents."),
+                skill.Name));
+
+        if (confirmResult != DialogResult.Ok)
+        {
+            return;
+        }
+
+        await RunAsync(v => _isLoadingSkills = v, async () =>
+        {
+            await SettingsApiClient.DeleteSkillAsync(skill.Name);
+            _installedSkills = (await SettingsApiClient.GetInstalledSkillsAsync()).ToList();
+        }, Loc.GetOrDefault(SettingsTextKeys.SkillsDeletedToast, "Skill uninstalled."));
+    }
+
+    private async Task OpenFindOnlineDialogAsync()
+    {
+        var dialogResult = await DialogService.ShowAsync<SkillRegistryBrowserDialog>();
+        if (dialogResult == DialogResult.Ok)
+        {
+            await LoadInstalledSkillsAsync();
+        }
+    }
+
+    private async Task OpenManageSourcesAsync()
+    {
+        await DialogService.ShowAsync<SkillRegistrySourcesDialog>();
+    }
+
+
+}

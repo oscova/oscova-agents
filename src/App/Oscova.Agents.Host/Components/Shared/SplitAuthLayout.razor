@@ -1,0 +1,82 @@
+@inject Services.LayoutCustomizerService LayoutCustomizer
+@inject IStringLocalizer<AuthText> Loc
+
+<PageTitle>@Title</PageTitle>
+
+<div class="grid grid-cols-12 overflow-auto sm:h-screen">
+    @* Hero panel (left) — hidden on mobile *@
+    <div class="app-aurora-backdrop relative hidden lg:col-span-7 lg:block xl:col-span-8 2xl:col-span-9">
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="app-auth-hero-copy z-10 w-full max-w-2xl p-10 text-white lg:p-16">
+                <p class="mb-3 text-xs font-semibold uppercase tracking-wider">Oscova Agents</p>
+                <h2 class="app-auth-hero-title font-bold">
+                    @Loc.GetOrDefault($"{AuthTextKeys.HeroDynamicPrefix}{_heroCopy.Id}.Title", _heroCopy.Title)
+                </h2>
+                <p class="mt-4 max-w-lg text-base opacity-75">
+                    @Loc.GetOrDefault($"{AuthTextKeys.HeroDynamicPrefix}{_heroCopy.Id}.Description", _heroCopy.Description)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    @* Form panel (right) *@
+    <div class="col-span-12 lg:col-span-5 xl:col-span-4 2xl:col-span-3">
+        <div class="@PanelClass">
+            @* Header: logo + theme toggle *@
+            <div class="flex items-center justify-between">
+                <span class="text-primary text-xl font-bold tracking-tight">Oscova Agents</span>
+                <button class="btn btn-circle btn-outline border-base-300 relative overflow-hidden"
+                        aria-label="@(Loc.GetOrDefault(AuthTextKeys.ToggleThemeLabel, "Toggle Theme"))"
+                        @onclick="ToggleThemeAsync">
+                    <span class="iconify lucide--sun absolute size-4.5 -translate-y-4 opacity-0 transition-all duration-300 group-data-[theme=light]/html:translate-y-0 group-data-[theme=light]/html:opacity-100"></span>
+                    <span class="iconify lucide--moon absolute size-4.5 translate-y-4 opacity-0 transition-all duration-300 group-data-[theme=dark]/html:translate-y-0 group-data-[theme=dark]/html:opacity-100"></span>
+                    <span class="iconify lucide--palette absolute size-4.5 opacity-100 group-data-[theme=dark]/html:opacity-0 group-data-[theme=light]/html:opacity-0"></span>
+                </button>
+            </div>
+
+            @* Title + subtitle *@
+            <h3 class="mt-6 text-center text-xl font-semibold md:mt-8 lg:mt-12">@Title</h3>
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <p class="text-base-content/70 mt-2 text-center text-sm">@Subtitle</p>
+            }
+            @if (HeaderAction is not null)
+            {
+                <div class="mt-4 flex justify-center">
+                    @HeaderAction
+                </div>
+            }
+
+            @* Form content *@
+            <div class="@ContentClass">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private static readonly (string Id, string Title, string Description)[] HeroCopies =
+    [
+        new("Current", "Your agents, ready when you are.", "The agent OS for home and office, on hardware you own."),
+        new("Ownership", "Own the runtime. Keep the control.", "Durable agents, local data, and explicit choices about when anything reaches the cloud."),
+        new("VisiblePrivacy", "Privacy you can inspect.", "No telemetry, explicit cloud choices, and clear evidence when data leaves the machine."),
+        new("DurableAgents", "More than a chat window.", "Agents keep their tools, memory, schedules, and channels ready between conversations."),
+        new("LocalModels", "Small models. Serious work.", "Lean context and local-first workflows help hardware you own do more."),
+        new("OfflineOperation", "Useful even when the internet is not.", "Core agent runs and speech can stay local on hardware you own."),
+        new("ProtectedWork", "Private work stays protected.", "All agents store encrypted chats and task runs, including the main agent and subagents.")
+    ];
+
+    // Choose once so form rerenders do not reshuffle the message.
+    private readonly (string Id, string Title, string Description) _heroCopy =
+        HeroCopies[Random.Shared.Next(HeroCopies.Length)];
+
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string PanelClass { get; set; } = "flex flex-col items-stretch p-6 md:p-8 lg:p-16";
+    [Parameter] public string ContentClass { get; set; } = "mt-6 md:mt-10";
+    [Parameter] public RenderFragment? HeaderAction { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private Task ToggleThemeAsync() => LayoutCustomizer.ToggleThemeAsync();
+}

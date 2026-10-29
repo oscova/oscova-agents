@@ -1,0 +1,93 @@
+@using System
+@using Microsoft.AspNetCore.Components
+@using Oscova.Agents.Core.Conversation
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="chat chat-start">
+    <div class="chat-image avatar avatar-placeholder">
+        <div class="bg-neutral text-neutral-content w-8 rounded-full">
+            @if (!string.IsNullOrWhiteSpace(AssistantPictureUrl))
+            {
+                <img src="@AssistantPictureUrl" alt="" />
+            }
+            else
+            {
+                <span class="text-xs">@(!string.IsNullOrWhiteSpace(AssistantInitials) ? AssistantInitials : "AI")</span>
+            }
+        </div>
+    </div>
+    <div class="chat-bubble custom-chat-prompt custom-chat-prompt-padded w-full max-w-md">
+        <div class="flex flex-col gap-3">
+            <p class="font-medium" dir="auto">@Request.Message</p>
+
+            @if (Request.BooleanFields.Count > 0)
+            {
+                <div class="space-y-2 text-sm">
+                    @foreach (var field in Request.BooleanFields)
+                    {
+                        var caption = string.IsNullOrWhiteSpace(field.Description) ? field.Label : field.Description;
+                        if (!string.IsNullOrWhiteSpace(caption))
+                        {
+                            <p class="opacity-80" dir="auto">@caption</p>
+                        }
+                    }
+                </div>
+            }
+
+            <div class="flex flex-wrap gap-2">
+                <button class="btn btn-sm btn-primary"
+                        disabled="@_isSubmitting"
+                        @onclick="() => HandleChoiceAsync(true, false)">
+                    <span class="iconify lucide--check size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Yes, "Yes")
+                </button>
+                <button class="btn btn-sm btn-outline"
+                        disabled="@_isSubmitting"
+                        @onclick="() => HandleChoiceAsync(false, false)">
+                    <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.No, "No")
+                </button>
+                <button class="btn btn-sm btn-ghost"
+                        disabled="@_isSubmitting"
+                        @onclick="() => HandleChoiceAsync(null, true)">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ElicitationRequest Request { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public EventCallback<BooleanElicitationChoice> OnRespond { get; set; }
+
+    [Parameter]
+    public string? AssistantInitials { get; set; }
+
+    [Parameter]
+    public string? AssistantPictureUrl { get; set; }
+
+    private bool _isSubmitting;
+
+    private async Task HandleChoiceAsync(bool? value, bool isCancel)
+    {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        try
+        {
+            await OnRespond.InvokeAsync(new BooleanElicitationChoice(Request.RequestId, value, isCancel));
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

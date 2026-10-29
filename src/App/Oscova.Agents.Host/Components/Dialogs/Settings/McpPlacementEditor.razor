@@ -1,0 +1,49 @@
+@using Oscova.Agents.Core.Mcp
+@using Oscova.Agents.Core.ApiContracts.Nodes
+@inject NodesApiClient NodesApi
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="space-y-3">
+    <label class="flex items-center gap-2"><input type="checkbox" class="toggle toggle-sm" @bind="Server.IsEnabled" />@Loc[SettingsTextKeys.McpEnabled]</label>
+    @if (IsOperator)
+    {
+        <label class="flex items-center gap-2"><input type="checkbox" class="toggle toggle-sm" @bind="Server.IsShared" @bind:after="NormalizeDevice" />@Loc[SettingsTextKeys.McpShared]</label>
+    }
+    @if (Server.Transport == McpTransportType.Stdio && !Server.IsShared)
+    {
+        <label class="form-control">
+            <span class="label-text">@Loc[SettingsTextKeys.McpDevice]</span>
+            <select class="select select-bordered w-full" @bind="Server.NodeId" @bind:after="NotifyChangedAsync">
+                <option value="">@Loc[IsOperator ? SettingsTextKeys.McpCentralServer : SettingsTextKeys.McpSelectDevice]</option>
+                @foreach (var node in _nodes)
+                {
+                    <option value="@node.Node.Id">@node.Node.Name (@Loc[node.Connected ? SettingsTextKeys.McpDeviceOnline : SettingsTextKeys.McpDeviceOffline])</option>
+                }
+            </select>
+        </label>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public McpServerConfig Server { get; set; } = default!;
+    [Parameter] public bool IsOperator { get; set; }
+    [Parameter] public EventCallback Changed { get; set; }
+    private IReadOnlyList<NodeSummary> _nodes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _nodes = (await NodesApi.GetAsync()).Nodes;
+        NormalizeDevice();
+        await Changed.InvokeAsync();
+    }
+
+    protected override void OnParametersSet() => NormalizeDevice();
+
+    private Task NotifyChangedAsync() => Changed.InvokeAsync();
+
+    private void NormalizeDevice()
+    {
+        if (Server.Transport == McpTransportType.Http || Server.IsShared) { Server.NodeId = null; }
+        else if (!IsOperator && string.IsNullOrEmpty(Server.NodeId) && _nodes.Count == 1) { Server.NodeId = _nodes[0].Node.Id; }
+    }
+}

@@ -1,0 +1,57 @@
+#components-reconnect-modal .custom-reconnect-box {
+    background: var(--app-solid-base-100);
+    color: var(--color-base-content);
+    width: min(24rem, calc(100vw - 2rem));
+    overflow-wrap: anywhere;
+    padding: 1.5rem;
+    text-align: start;
+}
+
+.custom-reconnect-box h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-block-end: 1rem;
+}
+
+.custom-reconnect-box p {
+    margin-block: 0.75rem;
+}
+
+.custom-reconnect-actions {
+    display: flex;
+    justify-content: end;
+    margin-block-start: 1.25rem;
+}
+
+.custom-reconnect-actions .btn {
+    color: inherit;
+}
+
+.custom-reconnect-spinner {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: custom-reconnect-spin 0.8s linear infinite;
+}
+
+.custom-reconnect-modal [hidden] {
+    display: none !important;
+}
+
+@keyframes custom-reconnect-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .custom-reconnect-spinner { animation: none; }
+}
+
+@media (forced-colors: active) {
+    #components-reconnect-modal .custom-reconnect-box {
+        background: Canvas;
+        color: CanvasText;
+    }
+}

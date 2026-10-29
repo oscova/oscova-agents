@@ -1,0 +1,259 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutDialogTitle, "Message layout")"
+                Subtitle="@DialogSubtitle"
+                Icon="lucide:message-square"
+                MaxWidthClass="max-w-4xl"
+                HelpTopic="@HelpTopics.AvatarMessageLayout"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <div class="space-y-4">
+            <p id="avatar-message-layout-instructions" class="text-sm text-base-content/70">
+                @Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutInstructions, "Drag the message box to move it, resize it from a corner, or enter exact percentages below.")
+            </p>
+
+            <div @ref="_screenElement"
+                 class="relative max-w-2xl w-full overflow-hidden rounded-box border border-base-300 bg-base-300"
+                 style="margin-inline: auto; aspect-ratio: @_aspectRatio; touch-action: none;"
+                 aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutScreenLabel, "Avatar screen")">
+                <div @ref="_boxElement"
+                     class="absolute flex items-center justify-center select-none border-2 border-primary/20 bg-primary/10"
+                     style="@RectangleStyle">
+                    <span class="pointer-events-none text-sm font-medium text-primary">
+                        @Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutBoxLabel, "Message box")
+                    </span>
+                    <span aria-hidden="true" data-layout-handle="nw" class="absolute size-4 rounded-full bg-primary" style="left: 0; top: 0; cursor: nw-resize;"></span>
+                    <span aria-hidden="true" data-layout-handle="ne" class="absolute size-4 rounded-full bg-primary" style="right: 0; top: 0; cursor: ne-resize;"></span>
+                    <span aria-hidden="true" data-layout-handle="sw" class="absolute size-4 rounded-full bg-primary" style="left: 0; bottom: 0; cursor: sw-resize;"></span>
+                    <span aria-hidden="true" data-layout-handle="se" class="absolute size-4 rounded-full bg-primary" style="right: 0; bottom: 0; cursor: se-resize;"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <div class="form-control">
+                    <label class="label py-0" for="avatar-layout-left">
+                        <span class="label-text-alt">@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutLeftLabel, "Left") (%)</span>
+                    </label>
+                    <input id="avatar-layout-left" type="number" min="0" max="100" step="0.1"
+                           class="input input-bordered input-sm w-full"
+                           value="@FormatInput(_leftPercent)"
+                           aria-describedby="@FieldDescriptionIds"
+                           aria-invalid="@(IsValid ? "false" : "true")"
+                           @oninput="e => _leftPercent = ParsePercent(e)" />
+                </div>
+                <div class="form-control">
+                    <label class="label py-0" for="avatar-layout-top">
+                        <span class="label-text-alt">@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutTopLabel, "Top") (%)</span>
+                    </label>
+                    <input id="avatar-layout-top" type="number" min="0" max="100" step="0.1"
+                           class="input input-bordered input-sm w-full"
+                           value="@FormatInput(_topPercent)"
+                           aria-describedby="@FieldDescriptionIds"
+                           aria-invalid="@(IsValid ? "false" : "true")"
+                           @oninput="e => _topPercent = ParsePercent(e)" />
+                </div>
+                <div class="form-control">
+                    <label class="label py-0" for="avatar-layout-width">
+                        <span class="label-text-alt">@Loc.GetOrDefault(SettingsTextKeys.AvatarTransformWidthLabel, "Width (%)")</span>
+                    </label>
+                    <input id="avatar-layout-width" type="number" min="1" max="100" step="0.1"
+                           class="input input-bordered input-sm w-full"
+                           value="@FormatInput(_widthPercent)"
+                           aria-describedby="@FieldDescriptionIds"
+                           aria-invalid="@(IsValid ? "false" : "true")"
+                           @oninput="e => _widthPercent = ParsePercent(e)" />
+                </div>
+                <div class="form-control">
+                    <label class="label py-0" for="avatar-layout-height">
+                        <span class="label-text-alt">@Loc.GetOrDefault(SettingsTextKeys.AvatarTransformHeightLabel, "Height (%)")</span>
+                    </label>
+                    <input id="avatar-layout-height" type="number" min="1" max="100" step="0.1"
+                           class="input input-bordered input-sm w-full"
+                           value="@FormatInput(_heightPercent)"
+                           aria-describedby="@FieldDescriptionIds"
+                           aria-invalid="@(IsValid ? "false" : "true")"
+                           @oninput="e => _heightPercent = ParsePercent(e)" />
+                </div>
+            </div>
+
+            @if (!IsValid)
+            {
+                <p id="avatar-message-layout-error" class="text-error text-sm" role="alert">
+                    @Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutInvalid, "Keep the message box inside the screen and make its width and height at least 1%.")
+                </p>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(!IsValid)" @onclick="Save">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    private const double PercentRatio = 100.0;
+    private const double MinimumSizePercent = 1.0;
+
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private ElementReference _screenElement;
+    private ElementReference _boxElement;
+    private DotNetObjectReference<AvatarMessageLayoutDialog>? _selfReference;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _interaction;
+    private Input _input = default!;
+    private double _leftPercent;
+    private double _topPercent;
+    private double _widthPercent;
+    private double _heightPercent;
+    private string _aspectRatio = "16 / 9";
+
+    private bool IsValid =>
+        double.IsFinite(_leftPercent) &&
+        double.IsFinite(_topPercent) &&
+        double.IsFinite(_widthPercent) &&
+        double.IsFinite(_heightPercent) &&
+        _leftPercent is >= 0 and <= PercentRatio &&
+        _topPercent is >= 0 and <= PercentRatio &&
+        _widthPercent is >= MinimumSizePercent and <= PercentRatio &&
+        _heightPercent is >= MinimumSizePercent and <= PercentRatio &&
+        _leftPercent + _widthPercent <= PercentRatio &&
+        _topPercent + _heightPercent <= PercentRatio;
+
+    private string DialogSubtitle => string.Format(
+        CultureInfo.CurrentCulture,
+        Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutDialogSubtitle, "Position the message box on the {0} x {1} Avatar screen."),
+        _input.Width,
+        _input.Height);
+
+    private string FieldDescriptionIds => IsValid
+        ? "avatar-message-layout-instructions"
+        : "avatar-message-layout-instructions avatar-message-layout-error";
+
+    private string RectangleStyle
+    {
+        get
+        {
+            var left = ClipPercent(_leftPercent);
+            var top = ClipPercent(_topPercent);
+            var width = Math.Min(ClipPercent(_widthPercent), PercentRatio - left);
+            var height = Math.Min(ClipPercent(_heightPercent), PercentRatio - top);
+            return FormattableString.Invariant($"left: {left:0.###}%; top: {top:0.###}%; width: {width:0.###}%; height: {height:0.###}%; cursor: move;");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _input = DialogInstance.Get<Input>(nameof(Input))
+            ?? throw new InvalidOperationException("Avatar message layout input was not supplied.");
+        _leftPercent = ToDisplayedPercent(_input.Rectangle.Left);
+        _topPercent = ToDisplayedPercent(_input.Rectangle.Top);
+        _widthPercent = ToDisplayedPercent(_input.Rectangle.Width);
+        _heightPercent = ToDisplayedPercent(_input.Rectangle.Height);
+        if (_input.Width > 0 && _input.Height > 0)
+        {
+            _aspectRatio = FormattableString.Invariant($"{_input.Width} / {_input.Height}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _selfReference = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/avatarMessageLayoutEditor.js");
+        _interaction = await _module.InvokeAsync<IJSObjectReference>(
+            "attachMessageLayoutEditor",
+            _screenElement,
+            _boxElement,
+            _selfReference);
+    }
+
+    /// <summary>Applies the final browser gesture to the dialog's working copy.</summary>
+    [JSInvokable]
+    public Task OnLayoutChanged(double left, double top, double width, double height) =>
+        InvokeAsync(() =>
+        {
+            _leftPercent = ToDisplayedPercent(left);
+            _topPercent = ToDisplayedPercent(top);
+            _widthPercent = ToDisplayedPercent(width);
+            _heightPercent = ToDisplayedPercent(height);
+            StateHasChanged();
+        });
+
+    private void Save()
+    {
+        if (!IsValid)
+        {
+            return;
+        }
+
+        DialogInstance.Close(
+            DialogResult.Ok,
+            new Layout(
+                (float)(_leftPercent / PercentRatio),
+                (float)(_topPercent / PercentRatio),
+                (float)(_widthPercent / PercentRatio),
+                (float)(_heightPercent / PercentRatio)));
+    }
+
+    private void Cancel() => DialogInstance.Close(DialogResult.Cancel);
+
+    private static double ParsePercent(ChangeEventArgs args) =>
+        double.TryParse(args.Value?.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var value)
+            ? value
+            : double.NaN;
+
+    private static string FormatInput(double value) =>
+        double.IsFinite(value) ? value.ToString("0.###", CultureInfo.InvariantCulture) : string.Empty;
+
+    private static double ToDisplayedPercent(double value) =>
+        Math.Round(value * PercentRatio, 3, MidpointRounding.AwayFromZero);
+
+    private static double ClipPercent(double value) =>
+        double.IsFinite(value) ? Math.Clamp(value, 0, PercentRatio) : 0;
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_interaction is not null)
+            {
+                await _interaction.InvokeVoidAsync("dispose");
+                await _interaction.DisposeAsync();
+            }
+
+            if (_module is not null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+        finally
+        {
+            _selfReference?.Dispose();
+        }
+    }
+
+    /// <summary>Provides the selected Avatar screen and current message rectangle.</summary>
+    internal sealed record Input(int Width, int Height, Layout Rectangle);
+
+    /// <summary>Stores a normalized message rectangle using left, top, width, and height.</summary>
+    internal sealed record Layout(float Left, float Top, float Width, float Height);
+}

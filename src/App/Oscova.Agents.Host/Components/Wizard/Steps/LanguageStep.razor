@@ -1,0 +1,46 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<WizardText> WizardLoc
+@inject UserServiceScope UserScope
+@inject SettingsApiClient SettingsApiClient
+@inject NavigationManager NavigationManager
+@inject LayoutCustomizerService LayoutCustomizer
+
+<div class="form-control">
+    <label for="wizard-culture-select" class="label block mb-1 pl-0">
+        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.LanguageLabel, "Language")</span>
+    </label>
+    <select id="wizard-culture-select" class="select select-bordered w-full max-w-xs" value="@SelectedCultureName" @onchange="OnCultureChangedAsync">
+        @foreach (var cultureName in UiCultureCatalog.SupportedCultureNames)
+        {
+            var culture = CultureInfo.GetCultureInfo(cultureName);
+            <option value="@cultureName">@culture.NativeName</option>
+        }
+    </select>
+    <p class="text-xs mt-2 opacity-60">@WizardLoc.GetOrDefault(WizardTextKeys.WizardLanguageRestartHint, "Setup restarts in the new language after the page reloads.")</p>
+</div>
+
+@code {
+    private string SelectedCultureName => UserScope.UiSettings.CultureName;
+
+    private async Task OnCultureChangedAsync(ChangeEventArgs args)
+    {
+        var normalized = UiCultureCatalog.NormalizeOrDefault(args.Value?.ToString());
+        if (string.Equals(normalized, UserScope.UiSettings.CultureName, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var current = UserScope.UiSettings;
+        var request = SaveUiSettingsRequest.From(current);
+        request.CultureName = normalized;
+
+        await SettingsApiClient.SaveUiSettingsAsync(request);
+        request.ApplyTo(current);
+        await LayoutCustomizer.SetDirectionAsync(CultureInfo.GetCultureInfo(normalized).TextInfo.IsRightToLeft ? "rtl" : "ltr");
+
+        // This step force-reloads the page, so it must stay first: any step placed before it would lose its input.
+        NavigationManager.NavigateTo(
+            $"/Culture/Set?culture={Uri.EscapeDataString(normalized)}&redirectUri={Uri.EscapeDataString("/")}",
+            forceLoad: true);
+    }
+}

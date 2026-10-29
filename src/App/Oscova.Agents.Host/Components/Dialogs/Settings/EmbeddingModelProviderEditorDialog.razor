@@ -1,0 +1,308 @@
+@inject SettingsPageRegistry SettingsRegistry
+@using Oscova.Agents.Llm
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Core.Secrets
+@inject NavigationManager NavigationManager
+@inject SettingsApiClient SettingsApiClient
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@DialogTitle"
+                MaxWidthClass="max-w-lg"
+                HelpTopic="@HelpTopics.EmbeddingProviderEditor"
+                OnClose="Cancel">
+    <ChildContent>
+
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div class="form-control w-full">
+                    <label class="label">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderTypeLabel, "Provider Type")</span>
+                    </label>
+                    <select class="select select-bordered w-full"
+                            aria-label="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderTypeLabel, "Provider Type")"
+                            @bind="_config.Type"
+                            @bind:after="HandleProviderTypeChanged">
+                        @foreach (var type in _supportedTypes)
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label" for="embedding-provider-name">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderNameLabel, "Provider Name") <span class="text-error">*</span></span>
+                    </label>
+                    <label class="input w-full validator">
+                        <span class="iconify lucide--id-card text-base-content/60 size-4.5"></span>
+                        <input id="embedding-provider-name" class="grow focus:outline-0"
+                               @bind="_config.Name"
+                               required
+                               placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingProviderNamePlaceholder, "e.g., Ollama Embeddings"))" />
+                    </label>
+                    <div class="validator-hint hidden">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersProviderNameRequired, "Provider name is required")</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                @if (ShouldShowBaseUrlField())
+                {
+                    <div class="form-control w-full">
+                        <label class="label" for="embedding-base-url">
+                            <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlLabel, "Base URL")</span>
+                        </label>
+                        <label class="input w-full validator">
+                            <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                            <input id="embedding-base-url" class="grow focus:outline-0"
+                                   @bind="_config.BaseUrl"
+                                   type="url"
+                                   placeholder="@GetBaseUrlPlaceholder()" />
+                        </label>
+                        <div class="validator-hint hidden">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlInvalid, "Please enter a valid URL")</div>
+                        <label class="label">
+                            <span class="label-text-alt text-xs opacity-70">@GetBaseUrlHelpText()</span>
+                        </label>
+                    </div>
+                }
+
+                <div class="form-control w-full @(ShouldShowBaseUrlField() ? string.Empty : "md:col-span-2")">
+                    <label class="label" for="embedding-model-id">
+                        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelIdLabel, "Model ID") <span class="text-error">*</span></span>
+                    </label>
+                    <label class="input w-full validator">
+                        <span class="iconify lucide--box text-base-content/60 size-4.5"></span>
+                        <input id="embedding-model-id" class="grow focus:outline-0"
+                               @bind="_config.ModelId"
+                               required
+                               placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingModelIdPlaceholder, "e.g., nomic-embed-text"))" />
+                    </label>
+                    <div class="validator-hint hidden">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersModelIdRequired, "Model ID is required")</div>
+                </div>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label" for="vector-dimensions">
+                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersVectorDimensionsLabel, "Vector Dimensions") <span class="text-error">*</span></span>
+                </label>
+                <label class="input w-full validator">
+                    <span class="iconify lucide--hash text-base-content/60 size-4.5"></span>
+                    <input id="vector-dimensions" class="grow focus:outline-0"
+                           type="number"
+                           min="1"
+                           @bind="_config.VectorDimensions"
+                           required />
+                </label>
+                <div class="validator-hint hidden">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersVectorDimensionsRequired, "Vector dimensions is required")</div>
+                <label class="label">
+                    <span class="label-text-alt text-xs opacity-70 whitespace-normal break-words">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersVectorDimensionsHelp, "Must match the model's output (e.g. 768 for nomic-embed-text, 1536 for text-embedding-3-small). Saving a changed embedding model or dimensions clears the existing memory index so Oscova can rebuild it.")</span>
+                </label>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label">
+                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeLabel, "Endpoint scope")</span>
+                </label>
+                <select class="select select-bordered w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeLabel, "Endpoint scope")" @bind="LocalEndpointSelection">
+                    <option value="auto">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeAuto, "Auto-detect")</option>
+                    <option value="local">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeLocal, "Treat as local")</option>
+                    <option value="cloud">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeCloud, "Treat as cloud")</option>
+                </select>
+                <label class="label min-w-0 items-start py-1">
+                    <span class="label-text-alt text-xs leading-snug whitespace-normal break-words opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEndpointScopeDescription, "Use this when a custom endpoint is misclassified by Offline mode, such as a LAN gateway or a cloud proxy.")</span>
+                </label>
+            </div>
+
+            <div class="space-y-3 rounded-box border border-base-300 bg-base-200/40 p-4">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h5 class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersCredentialSectionTitle, "Credential")</h5>
+                        <p class="text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingCredentialDescription, "Link this embedding provider to a saved API key credential.")</p>
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-sm" @onclick="OpenCredentialsTab">
+                        <span class="iconify lucide--key-round size-4" aria-hidden="true"></span>@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersNewCredentialButton, "Manage credentials")
+                    </button>
+                </div>
+
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSavedApiKeyLabel, "Saved API Key")</span>
+                    </label>
+                    <select class="select select-bordered w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersSavedApiKeyLabel, "Saved API Key")" @bind="_config.CredentialKey">
+                        <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.NoneOption, "None")</option>
+                        @foreach (var credential in _apiKeyCredentials)
+                        {
+                            <option value="@credential.CredentialKey">@FormatCredentialOption(credential)</option>
+                        }
+                    </select>
+                    <label class="label">
+                        <span class="label-text-alt text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingCredentialHelp, "Select a saved credential, or leave empty for providers that do not require one.")</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </ChildContent>
+    <FooterContent>
+        <button class="btn" type="button" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button class="btn btn-primary" type="button" @onclick="Save">@CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private ModelProviderConfig _config = new();
+    private string _previousProviderType = ModelProviderKeys.Ollama;
+    private bool _isEditing;
+    private List<string> _supportedTypes = [];
+    private List<ProviderTypeDefault> _providerTypeDefaults = [];
+    private List<CredentialListItem> _apiKeyCredentials = [];
+    private string DialogTitle => _isEditing
+        ? Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingEditDialogTitle, "Edit Embedding Provider")
+        : Loc.GetOrDefault(SettingsTextKeys.ModelProvidersEmbeddingAddDialogTitle, "Add Embedding Provider");
+
+    protected override async Task OnInitializedAsync()
+    {
+        _supportedTypes = DialogInstance.Get<List<string>?>("SupportedTypes", null) ?? [];
+        _providerTypeDefaults = DialogInstance.Get<List<ProviderTypeDefault>?>("ProviderTypeDefaults", null) ?? [];
+
+        var provider = DialogInstance.Get<ModelProviderConfig?>("Provider", null);
+
+        if (provider is not null)
+        {
+            _isEditing = true;
+            _config = provider.Clone();
+        }
+        else
+        {
+            _isEditing = false;
+            _config = new ModelProviderConfig { Id = Guid.NewGuid() };
+
+            if (_supportedTypes.Count > 0)
+            {
+                _config.Type = _supportedTypes[0];
+            }
+
+            ApplyProviderTypeDefaults(_config.Type, preserveCustomBaseUrl: false);
+        }
+
+        _previousProviderType = _config.Type;
+        await LoadCredentialsAsync();
+    }
+
+    private void HandleProviderTypeChanged()
+    {
+        var previousBaseUrl = _config.BaseUrl;
+        var previousDefaultBaseUrl = ModelProviderEditorDefaults.GetDefaultEndpoint(
+            _previousProviderType,
+            _providerTypeDefaults);
+        var preserveCustomBaseUrl = !string.IsNullOrWhiteSpace(previousBaseUrl)
+            && !string.Equals(previousBaseUrl, previousDefaultBaseUrl, StringComparison.Ordinal);
+
+        ApplyProviderTypeDefaults(_config.Type, preserveCustomBaseUrl, previousBaseUrl);
+        _previousProviderType = _config.Type;
+    }
+
+    private void ApplyProviderTypeDefaults(
+        string type,
+        bool preserveCustomBaseUrl,
+        string? previousBaseUrl = null)
+    {
+        _config.Name = ModelProviderEditorDefaults.GetEmbeddingProviderName(type);
+        _config.BaseUrl = preserveCustomBaseUrl
+            ? previousBaseUrl
+            : ModelProviderEditorDefaults.GetDefaultEndpoint(type, _providerTypeDefaults);
+    }
+
+    private string LocalEndpointSelection
+    {
+        get => _config.IsLocalEndpoint switch
+        {
+            true => "local",
+            false => "cloud",
+            _ => "auto"
+        };
+        set => _config.IsLocalEndpoint = value switch
+        {
+            "local" => true,
+            "cloud" => false,
+            _ => (bool?)null
+        };
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close<ModelProviderConfig>(DialogResult.Cancel, null);
+    }
+
+    private async Task Save()
+    {
+        if (string.IsNullOrWhiteSpace(_config.Name) || string.IsNullOrWhiteSpace(_config.ModelId))
+        {
+            return;
+        }
+
+        if (_config.VectorDimensions <= 0)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(_config.BaseUrl) &&
+            !Uri.TryCreate(_config.BaseUrl, UriKind.Absolute, out _))
+        {
+            return;
+        }
+
+        var config = _config.Clone();
+
+        DialogInstance.Close(DialogResult.Ok, config);
+    }
+
+    private bool ShouldShowBaseUrlField()
+    {
+        return _config.Type is ModelProviderKeys.Ollama or ModelProviderKeys.Groq or ModelProviderKeys.OpenAICompatible or ModelProviderKeys.OpenRouter
+            || !string.IsNullOrWhiteSpace(_config.BaseUrl);
+    }
+
+    private string GetBaseUrlPlaceholder() => _config.Type switch
+    {
+        ModelProviderKeys.Ollama => "http://localhost:11434/",
+        ModelProviderKeys.Groq => "https://api.groq.com/openai/v1/",
+        ModelProviderKeys.OpenAICompatible => "https://your-proxy.example/v1/",
+        ModelProviderKeys.OpenRouter => "https://openrouter.ai/api/v1/",
+        _ => string.Empty
+    };
+
+    private string GetBaseUrlHelpText() => _config.Type switch
+    {
+        ModelProviderKeys.Ollama => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOllama, "Override the local Ollama endpoint if it is not running on the default address"),
+        ModelProviderKeys.Groq => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpGroq, "Override the Groq endpoint only if you are routing through a proxy or gateway"),
+        ModelProviderKeys.OpenAICompatible => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOpenAICompatible, "Set the endpoint for your compatible API, proxy, or gateway"),
+        ModelProviderKeys.OpenRouter => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpOpenRouter, "Override the OpenRouter endpoint only if you are routing through a proxy or gateway"),
+        _ => Loc.GetOrDefault(SettingsTextKeys.ModelProvidersBaseUrlHelpDefault, "Override the default API endpoint")
+    };
+
+    private async Task LoadCredentialsAsync()
+    {
+        var credentials = await SettingsApiClient.GetCredentialsAsync();
+        _apiKeyCredentials = credentials.ToList();
+    }
+
+    private void OpenCredentialsTab()
+    {
+        NavigationManager.NavigateTo(SettingsRegistry.GetSectionRoute("credentials"));
+        DialogInstance.Close<ModelProviderConfig>(DialogResult.Cancel, null);
+    }
+
+    private string FormatCredentialOption(CredentialListItem credential)
+    {
+        var valueState = credential.IsSet
+            ? Loc.GetOrDefault(SettingsTextKeys.CredentialsValueSetBadge, "Set")
+            : Loc.GetOrDefault(SettingsTextKeys.CredentialsValueNotSetBadge, "Not set");
+        return $"{credential.Alias} [{credential.CredentialKey}] - {valueState}";
+    }
+}
+
+

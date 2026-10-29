@@ -1,0 +1,130 @@
+@inject OAuthProviderCatalog OAuthProviderCatalog
+@inject SettingsPageRegistry SettingsRegistry
+@page "/settings"
+@page "/settings/{Category}/{Section}"
+@page "/settings/{Category}/plugins/{PluginId}/{PanelId}"
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+@inject IToastService ToastService
+@inject IStringLocalizer<SettingsText> Loc
+@inject UserServiceScope UserScope
+
+<DashboardShell ActiveView="ActiveView.Settings" ActiveSettingsSection="@ResolvedSection">
+    <div class="flex h-full min-h-0 w-full min-w-0 flex-col">
+        <SettingsPageShell ActiveSection="@ResolvedSection">
+            @content
+        </SettingsPageShell>
+    </div>
+</DashboardShell>
+
+@code {
+    [Parameter] public string? Category { get; set; }
+    [Parameter] public string? Section { get; set; }
+    [Parameter] public string? PluginId { get; set; }
+    [Parameter] public string? PanelId { get; set; }
+
+    private SettingsPageRegistry.SettingsSectionInfo? RequestedSection => PluginId is null
+        ? SettingsRegistry.GetSectionForRoute(Category, Section)
+        : SettingsRegistry.GetPluginPageForRoute(Category, PluginId, PanelId);
+
+    private bool IsAdmin => UserScope.IsInRole("Admin");
+
+    private string ResolvedSection
+    {
+        get
+        {
+            var section = RequestedSection;
+            if (section is null || !SettingsRegistry.CanAccessSection(section.Key, IsAdmin))
+            {
+                return "general";
+            }
+
+            return section.Key;
+        }
+    }
+
+    private RenderFragment content => ResolvedSection switch
+    {
+        "providers" => @<SettingsModelProvidersSection />,
+        "agent" => @<SettingsMainAgentSection />,
+        "agents" => @<SettingsAgentsSection />,
+        "compaction" => @<SettingsPromptsSection />,
+        "execution" => @<SettingsExecutionSection />,
+        "skills" => @<SettingsSkillsSection />,
+        "tools" => @<SettingsToolsSection />,
+        "plugins" => @<SettingsPluginsSection />,
+        "mcp" => @<SettingsMcpServersSection />,
+        "network" => @<SettingsNetworkSection />,
+        "privacy" => @<SettingsPrivacySection />,
+        "hooks" => @<SettingsHooksSection />,
+        "connectedaccounts" => @<SettingsConnectedAccountsSection />,
+        "credentials" => @<SettingsCredentialsSection />,
+        "notifications" => @<SettingsNotificationsSection />,
+        "speech" => @<SettingsSpeechSection />,
+        "avatar" => @<SettingsAvatarSection />,
+        var sectionKey when SettingsRegistry.GetSectionInfo(sectionKey)?.PluginPage is { } entry => @<PluginSettingsPanel Entry="@entry" @key="@sectionKey" />,
+        "importexport" => @<SettingsImportExportSection />,
+        "files" => @<SettingsFilesSection />,
+        _ => @<SettingsGeneralSection />
+    };
+
+    protected override void OnParametersSet()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("oauth_connected", out var connectedProvider))
+        {
+            ToastService.Show(Loc[SettingsTextKeys.OAuthConnected, GetOAuthProviderDisplayName(connectedProvider.ToString())], ToastType.Success);
+            NavigationManager.NavigateTo(SettingsRegistry.GetSectionRoute("connectedaccounts"), replace: true);
+            return;
+        }
+
+        if (query.TryGetValue("oauth_error", out var oauthError))
+        {
+            var provider = query.TryGetValue("oauth_provider", out var oauthProvider)
+                ? oauthProvider.ToString()
+                : null;
+
+            ToastService.Show(BuildOAuthErrorMessage(oauthError.ToString(), provider), ToastType.Error);
+            NavigationManager.NavigateTo(SettingsRegistry.GetSectionRoute("connectedaccounts"), replace: true);
+            return;
+        }
+
+        var requestedSection = RequestedSection;
+        if (requestedSection is not null && !SettingsRegistry.CanAccessSection(requestedSection.Key, IsAdmin))
+        {
+            ToastService.Show(Loc[SettingsTextKeys.AdminOnlySettings, SettingsRegistry.GetSectionLabel(requestedSection.Key, Loc)], ToastType.Warning);
+            NavigationManager.NavigateTo(SettingsRegistry.GetSectionRoute("general"), replace: true);
+            return;
+        }
+
+        var canonicalRoute = SettingsRegistry.GetSectionRoute(requestedSection?.Key ?? "general");
+        if (!string.Equals(uri.AbsolutePath, canonicalRoute, StringComparison.Ordinal))
+        {
+            NavigationManager.NavigateTo(canonicalRoute, replace: true);
+        }
+    }
+
+    private string BuildOAuthErrorMessage(string error, string? provider)
+    {
+        var displayName = GetOAuthProviderDisplayName(provider);
+        var key = error switch
+        {
+            "access_denied" => SettingsTextKeys.OAuthCanceled,
+            "invalid_state" => SettingsTextKeys.OAuthUnverified,
+            "missing_code" => SettingsTextKeys.OAuthMissingCode,
+            "provider_not_configured" => SettingsTextKeys.OAuthNotConfigured,
+            "token_exchange_failed" => SettingsTextKeys.OAuthTokenExchangeFailed,
+            "confidential_data_locked" => SettingsTextKeys.OAuthVaultLocked,
+            _ => SettingsTextKeys.OAuthFailed
+        };
+
+        return Loc[key, displayName, error];
+    }
+
+    private string GetOAuthProviderDisplayName(string? provider) =>
+        provider is null ? "OAuth" : OAuthProviderCatalog.Find(provider)?.Definition.DisplayName ?? "OAuth";
+}
+
+

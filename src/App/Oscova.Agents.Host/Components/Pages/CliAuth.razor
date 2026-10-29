@@ -1,0 +1,115 @@
+@page "/cli-auth"
+@attribute [Authorize]
+
+@inject ICliDeviceCodeStore Grants
+@inject UserManager<ApplicationUser> UserManager
+@inject CliAccessTokenService CliAccessTokenService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IStringLocalizer<AuthText> Loc
+
+<UserCultureSynchronizer />
+<SplitAuthLayout Title="@(Loc.GetOrDefault(AuthTextKeys.CliAuthTitle, "Approve CLI access"))" Subtitle="@(Loc.GetOrDefault(AuthTextKeys.CliAuthSubtitle, "Authorize this terminal to use your Oscova account."))">
+    <div class="space-y-5">
+        @if (_message is not null)
+        {
+            <div role="alert" class="alert @(_isApproved ? "alert-success" : "alert-warning") break-words">
+                <span>@_message</span>
+            </div>
+        }
+        else if (_grant is null)
+        {
+            <div role="alert" class="alert alert-error break-words">
+                <span>@Loc.GetOrDefault(AuthTextKeys.CliAuthInvalidCodeMessage, "This CLI approval code is not valid.")</span>
+            </div>
+        }
+        else
+        {
+            <div class="rounded-box border-base-300 bg-base-200/40 space-y-3 border p-4">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-base-content/70 text-sm">@Loc.GetOrDefault(AuthTextKeys.CliAuthCodeLabel, "Code")</span>
+                    <span class="badge badge-primary badge-lg font-mono">@_grant.UserCode</span>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-base-content/70 text-sm">@Loc.GetOrDefault(AuthTextKeys.CliAuthClientLabel, "Client")</span>
+                    <span class="text-sm font-medium">@_grant.Client</span>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <span class="text-base-content/70 text-sm">@Loc.GetOrDefault(AuthTextKeys.CliAuthMachineLabel, "Machine")</span>
+                    <span class="text-sm font-medium">@_grant.Machine</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <button class="btn btn-primary gap-2" type="button" @onclick="ApproveAsync" disabled="@_isBusy">
+                    <span class="iconify lucide--check size-4" aria-hidden="true"></span>
+                    <span>@Loc.GetOrDefault(AuthTextKeys.CliAuthApproveButton, "Approve")</span>
+                </button>
+                <button class="btn btn-ghost gap-2" type="button" @onclick="Deny" disabled="@_isBusy">
+                    <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                    <span>@Loc.GetOrDefault(AuthTextKeys.CliAuthDenyButton, "Deny")</span>
+                </button>
+            </div>
+        }
+    </div>
+</SplitAuthLayout>
+
+@code {
+    private CliDeviceGrant? _grant;
+    private string? _message;
+    private bool _isApproved;
+    private bool _isBusy;
+
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? Code { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _grant = string.IsNullOrWhiteSpace(Code) ? null : Grants.FindByUserCode(Code);
+        if (_grant?.IsExpired == true)
+        {
+            _message = Loc.GetOrDefault(AuthTextKeys.CliAuthExpiredCodeMessage, "This CLI approval code has expired.");
+        }
+    }
+
+    private async Task ApproveAsync()
+    {
+        if (_grant is null || string.IsNullOrWhiteSpace(Code))
+        {
+            return;
+        }
+
+        _isBusy = true;
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = await UserManager.GetUserAsync(authState.User);
+            if (user is null)
+            {
+                return;
+            }
+
+            var token = await CliAccessTokenService.CreateTokenAsync(user);
+            _isApproved = Grants.Approve(Code, token);
+            _message = _isApproved
+                ? Loc.GetOrDefault(AuthTextKeys.CliAuthApprovedMessage, "CLI access approved. You can return to your terminal.")
+                : Loc.GetOrDefault(AuthTextKeys.CliAuthInvalidCodeMessage, "This CLI approval code is not valid.");
+            _grant = null;
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    private void Deny()
+    {
+        if (!string.IsNullOrWhiteSpace(Code))
+        {
+            Grants.Deny(Code);
+        }
+
+        _isApproved = false;
+        _message = Loc.GetOrDefault(AuthTextKeys.CliAuthDeniedMessage, "CLI access denied.");
+        _grant = null;
+    }
+}

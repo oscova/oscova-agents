@@ -1,0 +1,245 @@
+@using Oscova.Agents.Core.ApiContracts.Profile
+@inject ManagementApiClient ManagementApiClient
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject IDialogService DialogService
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogYourProfileTitle, "Your Profile")"
+                Subtitle="@CommonLoc.GetOrDefault(CommonTextKeys.DialogProfileDescription, "Update your email address, full name, preferred name, and password.")"
+                Icon="lucide:user-circle"
+                HelpTopic="@HelpTopics.Profile"
+                BodyClass="px-5 pb-5 flex min-h-0 flex-col gap-4 overflow-y-auto">
+    <ChildContent>
+        @* Keep profile fields stable until the saved values have reloaded. *@
+        <fieldset disabled="@_isSaving">
+			@if (!string.IsNullOrEmpty(_statusMessage))
+			{
+				<div class="alert alert-success alert-soft">
+					<iconify-icon icon="lucide:check-circle" width="18" height="18"></iconify-icon>
+					<span>@_statusMessage</span>
+				</div>
+			}
+
+			@if (!string.IsNullOrEmpty(_errorMessage))
+			{
+				<div class="alert alert-error alert-soft">
+					<iconify-icon icon="lucide:alert-circle" width="18" height="18"></iconify-icon>
+					<span>@_errorMessage</span>
+				</div>
+			}
+
+			<div class="flex-1 overflow-y-auto pr-1">
+				<section class="mb-6" aria-labelledby="profile-security-title">
+					<h4 id="profile-security-title" class="text-sm font-medium">
+						@CommonLoc.GetOrDefault(CommonTextKeys.DialogSecurityTitle, "Security")
+					</h4>
+					<div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+						<button type="button" class="btn btn-primary min-h-10 justify-start py-2 text-start"
+								style="height: auto; white-space: normal"
+								@onclick="OpenVaultPasswordDialogAsync">
+							<iconify-icon icon="lucide:key-round" width="18" height="18" aria-hidden="true"></iconify-icon>
+							@CommonLoc.GetOrDefault(CommonTextKeys.DialogVaultPasswordManageButton, "Change Vault Password")
+						</button>
+						<button type="button" class="btn btn-error min-h-10 justify-start py-2 text-start"
+								style="height: auto; white-space: normal"
+								@onclick="OpenDuressCredentialsDialogAsync">
+							<iconify-icon icon="lucide:shield-alert" width="18" height="18" aria-hidden="true"></iconify-icon>
+							@CommonLoc.GetOrDefault(CommonTextKeys.DialogDuressOpenButton, "Set duress credentials")
+						</button>
+					</div>
+				</section>
+
+				<EditForm EditContext="@_editContext" OnValidSubmit="SaveAsync">
+					<DataAnnotationsValidator />
+					<ValidationSummary class="text-error text-sm mb-3" />
+
+					<div class="space-y-6">
+						<ImagePicker PictureUrl="@_pictureUrl"
+											  Target="@ImageGalleryTarget.UserProfilePicture"
+											  ImageSizeClass="h-24 w-24"
+											  ContainerClass="space-y-3"
+											  OnChanged="@OnProfilePictureChanged" />
+
+						<div class="space-y-4">
+							<p class="text-sm font-medium flex items-center gap-1.5">
+								<iconify-icon icon="lucide:id-card" width="14" height="14" class="text-base-content/60"></iconify-icon>
+								@CommonLoc.GetOrDefault(CommonTextKeys.DialogAccountDetailsTitle, "Account Details")
+							</p>
+
+							<fieldset class="fieldset">
+								<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.FullName, "Full name")</legend>
+								<label class="input w-full">
+									<span class="iconify lucide--user text-base-content/60 size-4.5"></span>
+									<InputText class="grow focus:outline-0" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.FullName, "Full name")" @bind-Value="_model.NewFullName" />
+								</label>
+							</fieldset>
+
+							<fieldset class="fieldset">
+								<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.PreferredName, "Preferred name")</legend>
+								<label class="input w-full">
+									<span class="iconify lucide--message-circle text-base-content/60 size-4.5"></span>
+									<InputText class="grow focus:outline-0" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.PreferredName, "Preferred name")" @bind-Value="_model.Nickname" />
+								</label>
+								<p class="fieldset-label">@CommonLoc.GetOrDefault(CommonTextKeys.PreferredNameHelp, "What should your agents call you?")</p>
+							</fieldset>
+
+							<fieldset class="fieldset">
+								<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.DialogEmailAddressLabel, "Email address")</legend>
+								<label class="input w-full">
+									<span class="iconify lucide--mail text-base-content/60 size-4.5"></span>
+									<InputText class="grow focus:outline-0" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogEmailAddressLabel, "Email address")" @bind-Value="_model.NewEmail" />
+								</label>
+							</fieldset>
+						</div>
+
+						<div class="divider"></div>
+
+						<div class="space-y-4">
+							<p class="text-sm font-medium flex items-center gap-1.5">
+								<iconify-icon icon="lucide:key-round" width="14" height="14" class="text-base-content/60"></iconify-icon>
+								@CommonLoc.GetOrDefault(CommonTextKeys.DialogChangePasswordTitle, "Change Password")
+							</p>
+							<p class="text-base-content/50 text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.DialogPasswordBlankHint, "Leave blank to keep your current password.")</p>
+
+							<fieldset class="fieldset">
+								<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.CurrentPassword, "Current password")</legend>
+								<label class="input w-full">
+									<span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+									<InputText class="grow focus:outline-0" type="password" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.CurrentPassword, "Current password")" @bind-Value="_model.CurrentPassword" autocomplete="current-password" />
+								</label>
+							</fieldset>
+
+							<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+								<fieldset class="fieldset">
+									<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.NewPassword, "New password")</legend>
+									<label class="input w-full">
+										<span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+										<InputText class="grow focus:outline-0" type="password" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.NewPassword, "New password")" @bind-Value="_model.NewPassword" autocomplete="new-password" />
+									</label>
+								</fieldset>
+
+								<fieldset class="fieldset">
+									<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.ConfirmPassword, "Confirm new password")</legend>
+									<label class="input w-full">
+										<span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+										<InputText class="grow focus:outline-0" type="password" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.ConfirmPassword, "Confirm new password")" @bind-Value="_model.ConfirmNewPassword" autocomplete="new-password" />
+									</label>
+								</fieldset>
+							</div>
+						</div>
+					</div>
+
+					<div class="mt-6">
+						<button class="btn btn-primary" type="button" @onclick="SaveAsync">
+							<span class="iconify lucide--save size-4" aria-hidden="true"></span>
+							@CommonLoc.GetOrDefault(CommonTextKeys.DialogSaveChangesButton, "Save changes")
+						</button>
+					</div>
+				</EditForm>
+			</div>
+            </fieldset>
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+	private EditContext _editContext = default!;
+
+	private readonly ProfileModel _model = new();
+	private string? _statusMessage;
+	private string? _errorMessage;
+    private bool _isSaving;
+
+	// Append the version token so a successful upload forces the browser to fetch the new picture.
+	private string _pictureUrl => $"/{ApiRoutes.ProfilePictures.User}?v={ProfilePictureRefreshState.Version}";
+
+	protected override async Task OnInitializedAsync()
+	{
+		_editContext = new EditContext(_model);
+		await LoadProfileAsync();
+	}
+
+	private async Task SaveAsync()
+	{
+		if (_isSaving || !_editContext.Validate())
+		{
+			return;
+		}
+
+		ClearMessages();
+        _isSaving = true;
+
+		try
+		{
+			var result = await ManagementApiClient.SaveProfileAsync(new SaveProfileRequest
+			{
+				FullName = _model.NewFullName,
+				Nickname = _model.Nickname,
+				Email = _model.NewEmail,
+				CurrentPassword = _model.CurrentPassword,
+				NewPassword = _model.NewPassword,
+				ConfirmNewPassword = _model.ConfirmNewPassword
+			});
+
+			_statusMessage = result.Message;
+			_model.CurrentPassword = string.Empty;
+			_model.NewPassword = string.Empty;
+			_model.ConfirmNewPassword = string.Empty;
+			await LoadProfileAsync();
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = ex.Message;
+		}
+        finally { _isSaving = false; }
+	}
+
+	private async Task LoadProfileAsync()
+	{
+		var profile = await ManagementApiClient.GetProfileAsync();
+		_model.NewFullName = profile.FullName;
+		_model.Nickname = profile.Nickname;
+		_model.NewEmail = profile.Email;
+	}
+
+	private async Task OpenVaultPasswordDialogAsync()
+	{
+		await DialogService.ShowAsync<VaultPasswordDialog>();
+	}
+
+	private async Task OpenDuressCredentialsDialogAsync()
+	{
+		await DialogService.ShowAsync<DuressCredentialsDialog>();
+	}
+
+	private void ClearMessages()
+	{
+		_statusMessage = null;
+		_errorMessage = null;
+	}
+
+	private void OnProfilePictureChanged() => StateHasChanged();
+
+	private sealed class ProfileModel
+	{
+		[Display(Name = nameof(FormValidationText.FullName), ResourceType = typeof(FormValidationText))]
+		[Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+		[MinLength(1, ErrorMessageResourceName = nameof(FormValidationText.MinimumLength), ErrorMessageResourceType = typeof(FormValidationText))]
+		public string NewFullName { get; set; } = string.Empty;
+
+		public string Nickname { get; set; } = string.Empty;
+
+		[Display(Name = nameof(FormValidationText.Email), ResourceType = typeof(FormValidationText))]
+		[Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+		[EmailAddress(ErrorMessageResourceName = nameof(FormValidationText.InvalidEmail), ErrorMessageResourceType = typeof(FormValidationText))]
+		public string NewEmail { get; set; } = string.Empty;
+
+		[DataType(DataType.Password)]
+		public string CurrentPassword { get; set; } = string.Empty;
+
+		[DataType(DataType.Password)]
+		public string NewPassword { get; set; } = string.Empty;
+
+		[DataType(DataType.Password)]
+		public string ConfirmNewPassword { get; set; } = string.Empty;
+	}
+}

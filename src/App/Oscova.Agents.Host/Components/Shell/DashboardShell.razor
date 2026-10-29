@@ -1,0 +1,102 @@
+@inject UserServiceScope UserScope
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject WallpaperRefreshState WallpaperRefreshState
+@inject IStringLocalizer<NavigationText> Loc
+@implements IDisposable
+
+@if (ActiveView is not ActiveView.Settings and not ActiveView.None)
+{
+    <PageTitle>@Loc[ActiveView switch
+    {
+        ActiveView.Dashboard => NavigationTextKeys.Dashboard,
+        ActiveView.Achievements => NavigationTextKeys.Achievements,
+        ActiveView.Admin => NavigationTextKeys.Administration,
+        ActiveView.Tasks => NavigationTextKeys.Tasks,
+        _ => NavigationTextKeys.Chat
+    }]</PageTitle>
+}
+
+<CascadingValue Value="UserScope.UiSettings.GetTimeZone()" Name="UserTimeZone">
+<UserCultureSynchronizer />
+<div id="layout-root" class="workspace-root size-full" style="@WallpaperStyle">
+    <div class="workspace-shell">
+        <div id="layout-sidebar" class="workspace-navigation sidebar-menu text-base-content">
+            <ChatSidebar CurrentUserName="@UserScope.DisplayName"
+                         CurrentUserUserName="@UserScope.UserName"
+                         ProfilePictureUrl="@ProfilePictureUrl"
+                         RoleLabel="@CurrentUserRoleLabel"
+                         RoleBadgeClass="@CurrentUserRoleBadgeClass"
+                         IsAdmin="@UserScope.IsInRole("Admin")"
+                         ShowAchievements="@UserScope.UiSettings.IsGamificationEnabled"
+                         ActiveView="@ActiveView"
+                         ActiveSettingsSection="@ActiveSettingsSection"
+                         IsChatListCollapsed="@IsChatListCollapsed"
+                         OnToggleChatList="@OnToggleChatList"
+                         OnCustomizerClicked="OpenCustomizer" />
+        </div>
+
+        <div class="workspace-main">
+            <main id="layout-content" class="flex min-h-0 flex-1 flex-col">
+                @ChildContent
+            </main>
+        </div>
+    </div>
+
+    <RightBar @ref="_rightBar" />
+</div>
+
+</CascadingValue>
+
+@code {
+    [Parameter] public ActiveView ActiveView { get; set; }
+    [Parameter] public string ActiveSettingsSection { get; set; } = "general";
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsChatListCollapsed { get; set; }
+    [Parameter] public EventCallback OnToggleChatList { get; set; }
+
+    private RightBar _rightBar = default!;
+    private string ProfilePictureUrl => $"/{ApiRoutes.ProfilePictures.User}?v={ProfilePictureRefreshState.Version}";
+    private string WallpaperStyle => $"--app-wallpaper-image: url('/{ApiRoutes.Wallpapers.User}?v={WallpaperRefreshState.Version}')";
+    private bool IsAdmin => UserScope.IsInRole("Admin");
+    private bool IsModerator => UserScope.IsInRole("Moderator");
+    private string CurrentUserRoleLabel => UserScope.IsInRole("Admin")
+        ? Loc.GetOrDefault(NavigationTextKeys.RoleAdmin, "Operator")
+        : UserScope.IsInRole("Moderator")
+            ? Loc.GetOrDefault(NavigationTextKeys.RoleModerator, "Moderator")
+            : Loc.GetOrDefault(NavigationTextKeys.RoleUser, "User");
+    private string CurrentUserRoleBadgeClass => IsAdmin
+        ? "badge-soft badge-primary"
+        : IsModerator ? "badge-soft badge-secondary" : "badge-ghost";
+
+    protected override void OnInitialized()
+    {
+        ProfilePictureRefreshState.Changed += OnProfilePictureChanged;
+        WallpaperRefreshState.Changed += OnWallpaperChanged;
+        UserScope.UiSettings.Changed += OnUiSettingsChanged;
+    }
+
+    private Task OpenCustomizer() => _rightBar.OpenAsync();
+
+    private void OnProfilePictureChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void OnWallpaperChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void OnUiSettingsChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ProfilePictureRefreshState.Changed -= OnProfilePictureChanged;
+        WallpaperRefreshState.Changed -= OnWallpaperChanged;
+        UserScope.UiSettings.Changed -= OnUiSettingsChanged;
+    }
+}
+

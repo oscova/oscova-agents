@@ -1,0 +1,50 @@
+@inject ManagementApiClient ManagementApiClient
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject IStringLocalizer<WizardText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="space-y-4">
+    <div>
+        <h2 class="text-lg font-semibold">@Loc.GetOrDefault(WizardTextKeys.WizardProfilePictureQuestion, "Choose your profile picture")</h2>
+        <p id="wizard-profile-picture-hint" class="text-base-content/60 mt-1 text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardProfilePictureHint, "Keep this one or pick another.")</p>
+    </div>
+
+    <fieldset class="fieldset w-full">
+        <label class="fieldset-legend" for="onboarding-preferred-name">@CommonLoc.GetOrDefault(CommonTextKeys.PreferredName, "Preferred name")</label>
+        <input id="onboarding-preferred-name" class="input w-full" value="@PreferredName" autocomplete="nickname" required
+               @oninput="@((ChangeEventArgs args) => PreferredNameChanged.InvokeAsync(args.Value?.ToString() ?? string.Empty))" />
+        <p class="fieldset-label break-words whitespace-normal text-xs opacity-70">@CommonLoc.GetOrDefault(CommonTextKeys.PreferredNameHelp, "What should your agents call you?")</p>
+    </fieldset>
+
+    <ProfilePictureSeedPicker SelectedSeedName="@SelectedSeedName"
+                              SelectedSeedNameChanged="@SelectedSeedNameChanged"
+                              AriaDescribedBy="wizard-profile-picture-hint" />
+</div>
+
+@code {
+    [Parameter] public string PreferredName { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> PreferredNameChanged { get; set; }
+
+    [Parameter]
+    public string? SelectedSeedName { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> SelectedSeedNameChanged { get; set; }
+
+    internal async Task<bool> CommitAsync()
+    {
+        if (SelectedSeedName is null || string.IsNullOrWhiteSpace(PreferredName))
+        {
+            return false;
+        }
+
+        var profile = await ManagementApiClient.GetProfileAsync();
+        await ManagementApiClient.SaveProfileAsync(new Oscova.Agents.Core.ApiContracts.Profile.SaveProfileRequest
+        {
+            FullName = profile.FullName, Email = profile.Email, Nickname = PreferredName.Trim()
+        });
+        await ManagementApiClient.ApplyUserSeedPictureAsync(SelectedSeedName);
+        ProfilePictureRefreshState.Refresh();
+        return true;
+    }
+}

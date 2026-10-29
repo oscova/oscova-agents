@@ -1,0 +1,205 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject BrowserViewerAccess BrowserAccess
+@inject UserServiceScope UserScope
+@inject IStringLocalizer<ChatText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<div class="browser-viewer" @ref="_root">
+    <div class="browser-toolbar">
+        <div class="browser-navigation">
+        @foreach (var action in new[] { ("back", CommonTextKeys.Back, "arrow-left"), ("forward", CommonTextKeys.Forward, "arrow-right"), ("reload", CommonTextKeys.Reload, "rotate-cw") })
+        {
+            <button type="button" class="btn btn-ghost btn-sm btn-square" disabled="@(_busy || (action.Item1 switch { "back" => !Page.CanGoBack, "forward" => !Page.CanGoForward, _ => Page.Url == "about:blank" }))" aria-label="@CommonLoc[action.Item2]" title="@CommonLoc[action.Item2]" @onclick="() => CommandAsync(action.Item1)">
+                @if (_busy && action.Item1 == "reload")
+                { <span class="loading loading-spinner loading-xs" role="status" aria-label="@CommonLoc[CommonTextKeys.Loading]"></span> }
+                else
+                { <span class="iconify lucide--@action.Item3 size-4" aria-hidden="true"></span> }
+            </button>
+        }
+        </div>
+        <input class="input input-sm browser-address" aria-label="@Loc[ChatTextKeys.BrowserAddress]" placeholder="@Loc[ChatTextKeys.BrowserAddress]"
+               @bind="_address" @bind:event="oninput" @onkeydown="AddressKeyAsync" @onfocus="() => _addressFocused = true" @onblur="() => _addressFocused = false" />
+    </div>
+    <div class="browser-notices">
+        @if (Page.HasFileChooser)
+        {
+            <div data-file-request class="browser-notice custom-menu-surface app-solid-overlay-surface text-base-content">
+                <button type="button" class="browser-notice-close btn btn-ghost btn-sm btn-square" aria-label="@CommonLoc[CommonTextKeys.Cancel]" @onclick='() => CommandAsync("cancel-upload")'>
+                    <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                </button>
+                <label class="browser-file-request">
+                    <span>@Loc[ChatTextKeys.BrowserChooseFile]</span>
+                    <InputFile OnChange="UploadAsync" multiple aria-label="@Loc[ChatTextKeys.BrowserChooseFile]" />
+                </label>
+            </div>
+        }
+        @if (_showDownloads && _downloads.Count > 0)
+        {
+            <div class="browser-notice custom-menu-surface app-solid-overlay-surface text-base-content">
+                <button type="button" class="browser-notice-close btn btn-ghost btn-sm btn-square" aria-label="@CommonLoc[CommonTextKeys.Close]" @onclick="() => _showDownloads = false">
+                    <span class="iconify lucide--x size-4" aria-hidden="true"></span>
+                </button>
+                @foreach (var download in _downloads)
+                {
+                    <div class="browser-download">
+                        <strong role="status">@(download.State == "completed" ? Loc[ChatTextKeys.BrowserFileReady] : CommonLoc[download.State == "failed" ? CommonTextKeys.DownloadFailed : CommonTextKeys.Loading])</strong>
+                        <span>@download.Name</span>
+                        @if (download.State == "completed")
+                        {
+                            <a class="btn btn-ghost btn-sm" href="@($"api/browser/{Uri.EscapeDataString(ThreadId)}/{Uri.EscapeDataString(Page.Id)}/downloads/{Uri.EscapeDataString(download.Id)}")" download>@Loc[ChatTextKeys.BrowserSaveToDevice]</a>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        @* Blazor and the input bridge own separate nodes so neither removes the other's text. *@
+        @if (_error is not null)
+        { <div class="browser-notice custom-menu-surface app-solid-overlay-surface text-base-content" role="status">@_error</div> }
+        <div data-error class="browser-error browser-notice custom-menu-surface app-solid-overlay-surface text-base-content" role="status"></div>
+    </div>
+    <div data-panel class="browser-page">
+        <canvas tabindex="0" aria-label="@Loc[ChatTextKeys.BrowserViewport]"></canvas>
+        <div class="browser-pointer-layer" aria-hidden="true">
+            <svg data-agent-pointer class="browser-agent-pointer" viewBox="0 0 24 24" focusable="false">
+                <path d="M3 2.3 C1.8 1.8 1.2 2.5 1.6 3.8 L6.2 20.7 C6.5 21.9 7.7 22 8.2 20.9 L11.4 14.1 Q11.7 13.4 12.5 13.1 L20.2 9.6 C21.4 9.1 21.3 7.8 20.1 7.4 Z" />
+            </svg>
+        </div>
+    </div>
+    <p class="browser-phone-hint text-sm p-2">@Loc[ChatTextKeys.BrowserPhoneView]</p>
+    <select data-option-picker popover size="2" aria-label="@CommonLoc[CommonTextKeys.ValidationSelectOption]" class="browser-options custom-menu-surface app-solid-overlay-surface text-base-content"></select>
+    <div data-menu popover class="browser-edit-menu custom-menu-surface app-solid-overlay-surface text-base-content">
+        @foreach (var edit in new[] { ("cut", ChatTextKeys.BrowserCut), ("copy", ChatTextKeys.BrowserCopy), ("paste", ChatTextKeys.BrowserPaste), ("all", ChatTextKeys.BrowserSelectAll) })
+        { <button type="button" class="btn btn-ghost btn-sm" data-edit="@edit.Item1">@Loc[edit.Item2]</button> }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string ThreadId { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public BrowserPage Page { get; set; } = default!;
+    private ElementReference _root;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _viewer;
+    private string _address = string.Empty;
+    private string? _error;
+    private bool _busy;
+    private bool _addressFocused;
+    private bool _initialized;
+    private bool _disposed;
+    private bool _showDownloads;
+    private IReadOnlyList<BrowserDownload> _downloads = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!_addressFocused) { _address = Page.Url == "about:blank" ? string.Empty : Page.Url; }
+        // Plugin download events refresh Page through the owning workspace.
+        if (_initialized) { await LoadDownloadsAsync(); }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // A successful toolbar retry can initialize the viewer after first-use setup failed.
+        if (!firstRender && (_initialized || _busy || _error is not null))
+        {
+            if (_viewer is not null) { await _viewer.InvokeVoidAsync("showFilePicker"); }
+            return;
+        }
+        _busy = true;
+        await InvokeAsync(StateHasChanged);
+        try
+        {
+            await BrowserAccess.RequireAsync();
+            await UserScope.BrowserWorkspace!.ExecuteAsync(ThreadId, new("focus", Page.Id));
+            if (_disposed) { return; }
+            _initialized = true;
+            await LoadDownloadsAsync();
+            if (_disposed) { return; }
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/browser-viewer.js");
+            if (_disposed) { return; }
+            _viewer = await _module.InvokeAsync<IJSObjectReference>("start", _root, $"/api/browser/{Uri.EscapeDataString(ThreadId)}", Page.Id,
+                new { failed = Loc[ChatTextKeys.BrowserFailed].Value, disconnected = Loc[ChatTextKeys.BrowserDisconnected].Value, clipboard = Loc[ChatTextKeys.BrowserClipboard].Value });
+        }
+        catch (Exception exception) { _error = exception.Message; }
+        finally
+        {
+            _busy = false;
+            if (_disposed) { await ReleaseViewerAsync(); }
+            else { await InvokeAsync(StateHasChanged); }
+        }
+    }
+
+    private async Task CommandAsync(string kind, string? text = null)
+    {
+        _busy = true;
+        _error = null;
+        if (_viewer is not null) { await _viewer.InvokeVoidAsync("clearError"); }
+        try { await BrowserAccess.RequireAsync(); await UserScope.BrowserWorkspace!.ExecuteAsync(ThreadId, new(kind, Page.Id, text)); }
+        catch (Exception exception) { _error = exception.Message; }
+        finally { _busy = false; }
+    }
+
+    private async Task AddressKeyAsync(KeyboardEventArgs args)
+    {
+        if (args.Key != "Enter") { return; }
+        // CommandAsync sets busy before interop yields, so Enter renders the same progress as the toolbar.
+        try { await CommandAsync("navigate", BrowserAddress.Resolve(_address)); }
+        catch (ArgumentException)
+        {
+            _error = Loc[ChatTextKeys.BrowserInvalidAddress];
+            if (_viewer is not null) { await _viewer.InvokeVoidAsync("clearError"); }
+        }
+    }
+
+    private async Task UploadAsync(InputFileChangeEventArgs args)
+    {
+        _error = null;
+        try
+        {
+            await BrowserAccess.RequireAsync();
+            var selected = args.GetMultipleFiles(8);
+            if (selected.Sum(file => file.Size) > 32 * 1024 * 1024) { throw new IOException(Loc[ChatTextKeys.BrowserUploadLimit]); }
+            var files = new List<BrowserUpload>();
+            foreach (var file in selected)
+            {
+                await using var stream = file.OpenReadStream(32 * 1024 * 1024);
+                using var data = new MemoryStream();
+                await stream.CopyToAsync(data);
+                files.Add(new(file.Name, file.ContentType, data.ToArray()));
+            }
+            await UserScope.BrowserWorkspace!.ExecuteAsync(ThreadId, new("upload", Page.Id, Files: files));
+        }
+        catch (Exception exception) { _error = exception.Message; }
+    }
+
+    private async Task LoadDownloadsAsync()
+    {
+        try
+        {
+            await BrowserAccess.RequireAsync();
+            var downloads = (await UserScope.BrowserWorkspace!.ExecuteAsync(ThreadId, new("downloads", Page.Id))).Downloads ?? [];
+            if (!downloads.SequenceEqual(_downloads)) { _showDownloads = true; }
+            _downloads = downloads;
+        }
+        catch (Exception exception) { _error = exception.Message; }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+        await ReleaseViewerAsync();
+    }
+
+    private async Task ReleaseViewerAsync()
+    {
+        var viewer = _viewer;
+        var module = _module;
+        _viewer = null;
+        _module = null;
+        try
+        {
+            if (viewer is not null) { await viewer.InvokeVoidAsync("dispose"); await viewer.DisposeAsync(); }
+            if (module is not null) { await module.DisposeAsync(); }
+        }
+        catch (JSDisconnectedException) { }
+    }
+}

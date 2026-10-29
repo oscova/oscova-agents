@@ -1,0 +1,770 @@
+@page "/dashboard"
+@attribute [Authorize]
+@implements IAsyncDisposable
+@inject ManagementApiClient ManagementApiClient
+@inject IDialogService DialogService
+@inject IStringLocalizer<NavigationText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IJSRuntime JS
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Core.Conversation
+@using Oscova.Agents.Host.Components.Settings
+
+<DashboardShell ActiveView="ActiveView.Dashboard">
+    <div class="custom-metrics-dashboard flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-3 sm:p-5">
+        @foreach (var budget in _budgets.Where(status => status.CanOverride && (status.Policy.DailyLimitUsd is not null || status.Policy.MonthlyLimitUsd is not null)))
+        {
+            <div class="rounded-box bg-base-200 p-3">
+                <div class="font-medium break-words">@budget.ProviderName</div>
+                <ModelBudgetSummary Status="@budget" />
+            </div>
+        }
+        <div class="custom-page-heading flex flex-wrap items-end justify-between gap-3">
+            <div>
+                <h1 class="text-2xl font-semibold">@Loc.GetOrDefault(NavigationTextKeys.Dashboard, "Dashboard")</h1>
+                <p class="text-sm text-base-content/60">@Loc.GetOrDefault(NavigationTextKeys.DashboardLastThirtyDays, "Activity over the last 30 days")</p>
+            </div>
+            <div class="inline-flex items-center gap-2">
+                <span class="status status-success"></span>
+                <span class="badge badge-soft badge-info">@Loc.GetOrDefault(NavigationTextKeys.DashboardWindow, "Last 30 days")</span>
+            </div>
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+                @for (var index = 0; index < 6; index++)
+                {
+                    <div class="skeleton h-32 rounded-box"></div>
+                }
+            </div>
+            <div class="grid gap-5 xl:grid-cols-12">
+                <div class="skeleton h-96 rounded-box xl:col-span-8"></div>
+                <div class="skeleton h-96 rounded-box xl:col-span-4"></div>
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div role="alert" class="alert alert-error alert-soft">
+                <span class="iconify lucide--triangle-alert size-4.5"></span>
+                <span>@Loc.GetOrDefault(NavigationTextKeys.DashboardError, "Could not load dashboard metrics.")</span>
+            </div>
+        }
+        else if (DisplaySnapshot is not { } displaySnapshot || IsEmpty(displaySnapshot))
+        {
+            <div class="alert alert-info alert-soft">
+                <span class="iconify lucide--gauge size-4.5"></span>
+                <div>
+                    <div class="font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardEmpty, "No metrics yet")</div>
+                    <div class="text-sm">@Loc.GetOrDefault(NavigationTextKeys.DashboardEmptyHint, "Run a chat or agent task to start filling this dashboard.")</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            var dashboard = DisplaySnapshot!;
+
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+                @MetricCard(NavigationTextKeys.DashboardTotalTokens, "Total tokens", FormatLong(dashboard.TotalTokens), Loc.GetOrDefault(NavigationTextKeys.DashboardInputTokens, "Input tokens") + $" {FormatLong(dashboard.TotalInputTokens)} / " + Loc.GetOrDefault(NavigationTextKeys.DashboardOutputTokens, "Output tokens") + $" {FormatLong(dashboard.TotalOutputTokens)}", "lucide--chart-bar")
+                @MetricCard(NavigationTextKeys.DashboardEstimatedCost, "Estimated cost", FormatEstimatedCost(dashboard), CostStatus(dashboard), "lucide--dollar-sign")
+                @MetricCard(
+                    NavigationTextKeys.DashboardEgress,
+                    "Egress",
+                    FormatLong(dashboard.EgressCount),
+                    Loc.GetOrDefault(NavigationTextKeys.DashboardAuditedEvents, "Audited data-leaving events"),
+                    "lucide--cloud",
+                    true,
+                    ShowEgressAuditAsync,
+                    Loc.GetOrDefault(NavigationTextKeys.DashboardEgressAuditAction, "Audit"))
+                @MetricCard(NavigationTextKeys.DashboardToolCalls, "Tool calls", FormatLong(dashboard.ToolInvocationCount), FormatToolOutcome(dashboard.ToolUsage), "lucide--wrench")
+                @MetricCard(NavigationTextKeys.DashboardTaskRuns, "Task runs", FormatLong(dashboard.TaskRunCount), FormatTaskOutcome(dashboard), "lucide--calendar-clock")
+                @MetricCard(NavigationTextKeys.DashboardModelProviders, "Model providers", FormatLong(dashboard.ModelProviderCount), Loc.GetOrDefault(NavigationTextKeys.DashboardAgents, "Agents") + $" {FormatLong(dashboard.AgentCount)}", "lucide--server")
+            </div>
+
+            <div class="grid grid-cols-12 gap-5">
+                <section class="card bg-base-100 shadow-sm col-span-12 xl:col-span-8 2xl:col-span-9">
+                    <div class="card-body px-0 pb-0">
+                        <div class="px-5 sm:px-6">
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                    <h2 class="text-lg/none font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardUsageOverview, "Usage overview")</h2>
+                                    <p class="mt-1 text-sm text-base-content/60">@Loc.GetOrDefault(NavigationTextKeys.DashboardUsageOverviewHint, "Input, output, and egress by day")</p>
+                                </div>
+                                <span class="badge badge-soft badge-info">@Loc.GetOrDefault(NavigationTextKeys.DashboardWindow, "Last 30 days")</span>
+                            </div>
+                            <div class="mt-5 grid gap-4 sm:grid-cols-3">
+                                @SummaryFigure(NavigationTextKeys.DashboardInputTokens, "Input tokens", FormatLong(dashboard.TotalInputTokens), "status-info")
+                                @SummaryFigure(NavigationTextKeys.DashboardOutputTokens, "Output tokens", FormatLong(dashboard.TotalOutputTokens), "status-secondary")
+                                @SummaryFigure(NavigationTextKeys.DashboardEgress, "Egress", FormatLong(dashboard.EgressCount), "status-success")
+                            </div>
+                        </div>
+                        <div class="mt-4 min-h-80 overflow-hidden px-2 sm:px-4">
+                            <div id="metrics-usage-chart" class="min-h-80" aria-label="@Loc.GetOrDefault(NavigationTextKeys.DashboardUsageOverview, "Usage overview")"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="custom-metric-operations card bg-base-100 shadow-sm col-span-12 xl:col-span-4 2xl:col-span-3">
+                    <div class="card-body p-5">
+                        <div class="flex items-center gap-3">
+                            <span class="iconify lucide--heart-pulse size-4.5"></span>
+                            <h2 class="grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardOperationalStatus, "Operational status")</h2>
+                            <span class="status status-success"></span>
+                        </div>
+                        <div class="mt-4 grid gap-3">
+                            @StatusTile(NavigationTextKeys.DashboardTaskSuccessRate, "Task success rate", FormatPercent(dashboard.TaskSuccessRate), "status-success")
+                            @StatusTile(NavigationTextKeys.DashboardAverageTaskDuration, "Average task duration", FormatDuration(dashboard.AverageTaskDurationSeconds), "status-info")
+                            @StatusTile(NavigationTextKeys.DashboardFallbacks, "Fallbacks", FormatLong(dashboard.FallbackActivationCount), "status-warning")
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="grid grid-cols-12 gap-5">
+                <section class="card bg-base-100 shadow-sm col-span-12 xl:col-span-6">
+                    <div class="card-body p-0">
+                        <div class="flex items-center gap-3 px-5 pt-5">
+                            <span class="iconify lucide--blocks size-4.5"></span>
+                            <h2 class="grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardDistribution, "Usage distribution")</h2>
+                            <span class="badge badge-ghost">@Loc.GetOrDefault(NavigationTextKeys.DashboardByProvider, "By provider")</span>
+                        </div>
+                        <div class="mx-4 mt-2 min-h-72">
+                            <div id="metrics-distribution-chart" class="min-h-72" aria-label="@Loc.GetOrDefault(NavigationTextKeys.DashboardDistribution, "Usage distribution")"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card bg-base-100 shadow-sm col-span-12 overflow-visible xl:col-span-6">
+                    <div class="card-body p-0">
+                        <div class="flex flex-wrap items-center gap-3 px-5 pt-5">
+                            <span class="iconify lucide--bar-chart-3 size-4.5"></span>
+                            <h2 class="grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardTokenMix, "Token mix")</h2>
+                            <span class="badge badge-soft badge-info">@Loc.GetOrDefault(NavigationTextKeys.DashboardInputOutput, "Input / Output")</span>
+                        </div>
+                        <div class="mx-4 mt-2 min-h-80 overflow-visible pb-2">
+                            <div id="metrics-token-mix-chart" class="min-h-80" aria-label="@Loc.GetOrDefault(NavigationTextKeys.DashboardTokenMix, "Token mix")"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="grid gap-5 xl:grid-cols-2">
+                @ToolUsagePanel(dashboard.ToolUsage)
+                @CostByProviderPanel(dashboard)
+            </div>
+
+            <div class="grid gap-5 xl:grid-cols-3">
+                @TokenBreakdownPanel(Loc.GetOrDefault(NavigationTextKeys.DashboardByProvider, "By provider"), Loc.GetOrDefault(NavigationTextKeys.DashboardProvider, "Provider"), dashboard.TokensByProvider)
+                @TokenBreakdownPanel(Loc.GetOrDefault(NavigationTextKeys.DashboardByAgent, "By agent"), Loc.GetOrDefault(NavigationTextKeys.DashboardAgent, "Agent"), dashboard.TokensByAgent)
+                @TokenBreakdownPanel(Loc.GetOrDefault(NavigationTextKeys.DashboardByModel, "By model"), Loc.GetOrDefault(NavigationTextKeys.DashboardModel, "Model"), dashboard.TokensByModel)
+            </div>
+
+            @if (_snapshot is { IsAdminView: true, UsageByUser: { Count: > 0 } usageByUser })
+            {
+                @AdminUsagePanel(usageByUser, _snapshot.UserCount ?? usageByUser.Count)
+                @AdminStoragePanel(usageByUser)
+            }
+        }
+    </div>
+</DashboardShell>
+
+@code {
+    private const int DashboardPanelRowLimit = 5;
+    private const int DashboardDistributionRowLimit = 5;
+
+    private DashboardSnapshot? _snapshot;
+    private IJSObjectReference? _chartsModule;
+    private IReadOnlyList<ModelBudgetStatus> _budgets = [];
+    private bool _isLoading = true;
+    private bool _chartsRendered;
+    private string? _error;
+
+    private DashboardSnapshot? DisplaySnapshot =>
+        _snapshot is { IsAdminView: true, SystemWideUsage: { } systemWideUsage }
+            ? systemWideUsage
+            : _snapshot;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _snapshot = await ManagementApiClient.GetDashboardSnapshotAsync();
+            _budgets = await ManagementApiClient.GetModelBudgetsAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var dashboard = DisplaySnapshot;
+        if (_chartsRendered || dashboard is null || IsEmpty(dashboard))
+        {
+            return;
+        }
+
+        _chartsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/metricsDashboardCharts.js");
+        await _chartsModule.InvokeVoidAsync("renderMetricsDashboardCharts", BuildChartPayload(dashboard));
+        _chartsRendered = true;
+    }
+
+    private RenderFragment MetricCard(
+        string labelKey,
+        string fallback,
+        string value,
+        string description,
+        string icon,
+        bool isInteractive = false,
+        Func<Task>? onClick = null,
+        string? actionLabel = null) => @<div class="custom-metric-card card bg-base-100">
+        @if (isInteractive && onClick is not null)
+        {
+            <button type="button"
+                    class="@GetMetricCardBodyClass(true)"
+                    aria-label="@GetMetricCardAriaLabel(labelKey, fallback, value)"
+                    @onclick="EventCallback.Factory.Create(this, onClick)">
+                @MetricCardContent(labelKey, fallback, value, description, icon, actionLabel)
+            </button>
+        }
+        else
+        {
+            <div class="@GetMetricCardBodyClass(false)">
+                @MetricCardContent(labelKey, fallback, value, description, icon, actionLabel)
+            </div>
+        }
+    </div>;
+
+    private RenderFragment MetricCardContent(string labelKey, string fallback, string value, string description, string icon, string? actionLabel) => @<div class="contents">
+        <div class="flex items-start justify-between gap-3">
+            <p class="min-w-0 text-sm/none font-medium">@Loc.GetOrDefault(labelKey, fallback)</p>
+            @if (string.IsNullOrWhiteSpace(actionLabel))
+            {
+                <span class="rounded-box bg-base-200 p-1">
+                    <span class="iconify @icon text-base-content/80 block size-4"></span>
+                </span>
+            }
+            else
+            {
+                <span class="rounded-box bg-primary/10 text-primary inline-flex shrink-0 items-center gap-1 px-2 py-1 text-xs font-medium whitespace-nowrap">
+                    <span>@actionLabel</span>
+                    <span class="iconify lucide--chevron-right block size-3.5"></span>
+                </span>
+            }
+        </div>
+        <p class="custom-metric-value text-2xl font-medium">@value</p>
+        <p class="custom-metric-description text-sm/5 text-base-content/60">@description</p>
+    </div>;
+
+    private RenderFragment SummaryFigure(string labelKey, string fallback, string value, string statusClass) => @<div class="custom-metric-summary">
+        <div class="flex items-center gap-2">
+            <span class="status @statusClass"></span>
+            <span class="text-sm text-base-content/80">@Loc.GetOrDefault(labelKey, fallback)</span>
+        </div>
+        <span class="font-semibold">@value</span>
+    </div>;
+
+    private RenderFragment StatusTile(string labelKey, string fallback, string value, string statusClass) => @<div class="custom-metric-status">
+        <div class="flex items-center gap-2">
+            <span class="status @statusClass"></span>
+            <span class="grow text-sm text-base-content/80">@Loc.GetOrDefault(labelKey, fallback)</span>
+        </div>
+        <div class="font-medium">@value</div>
+    </div>;
+
+    private RenderFragment TokenBreakdownPanel(string title, string label, IReadOnlyList<TokenBreakdownEntry> rows) => @<section class="card bg-base-100 shadow-sm">
+        <div class="flex items-center gap-3 px-5 pt-5">
+            <span class="iconify lucide--list size-4.5"></span>
+            <h2 class="grow font-medium">@title</h2>
+            <span class="badge badge-ghost">@FormatLong(rows.Count)</span>
+        </div>
+        @{
+            var visibleRows = BuildTokenBreakdownRows(rows).ToArray();
+            var maxTokens = visibleRows.Select(row => row.TotalTokens).DefaultIfEmpty(0).Max();
+        }
+        <div class="px-5 pb-5 pt-3">
+            <div class="mb-2 flex items-center justify-between gap-3 text-sm text-base-content/60">
+                <span>@label</span>
+                <span>@Loc.GetOrDefault(NavigationTextKeys.DashboardTokens, "Tokens")</span>
+            </div>
+            <div class="space-y-3">
+                @foreach (var row in visibleRows)
+                {
+                    <div class="rounded-box px-3 py-2.5 transition-all hover:bg-base-200/50">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="min-w-0 truncate font-medium">@FormatBucketName(row.Name)</span>
+                            <span class="text-sm font-medium">@FormatLong(row.TotalTokens)</span>
+                        </div>
+                        <progress class="progress progress-primary mt-2 h-1" aria-label="@FormatBucketName(row.Name)" value="@PercentOf(row.TotalTokens, maxTokens)" max="100"></progress>
+                        <div class="mt-1.5 flex items-center justify-between gap-3 text-xs text-base-content/50">
+                            <span>@Loc.GetOrDefault(NavigationTextKeys.DashboardInputTokens, "Input tokens") @FormatLong(row.InputTokens)</span>
+                            <span>@Loc.GetOrDefault(NavigationTextKeys.DashboardOutputTokens, "Output tokens") @FormatLong(row.OutputTokens)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>;
+
+    private RenderFragment ToolUsagePanel(IReadOnlyList<ToolUsageEntry> rows) => @<section class="card bg-base-100 shadow-sm">
+        <div class="flex items-center gap-3 px-5 pt-5">
+            <span class="iconify lucide--wrench size-4.5"></span>
+            <h2 class="grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardToolUsage, "Tool usage")</h2>
+            <span class="badge badge-ghost">@FormatLong(rows.Sum(row => row.Succeeded + row.Failed))</span>
+        </div>
+        @{
+            var visibleRows = BuildToolUsageRows(rows).ToArray();
+            var maxCalls = visibleRows.Select(ToolCallCount).DefaultIfEmpty(0).Max();
+        }
+        <div class="px-5 pb-5 pt-3">
+            <div class="space-y-1">
+                @foreach (var row in visibleRows)
+                {
+                    var calls = ToolCallCount(row);
+                    <div class="rounded-box px-3 py-2.5 transition-all hover:bg-base-200/50">
+                        <div class="flex min-w-0 flex-wrap items-center gap-2 sm:flex-nowrap sm:gap-3">
+                            <span class="min-w-0 flex-1 truncate font-medium" title="@FormatBucketName(row.ToolName)">@FormatCompactToolName(FormatBucketName(row.ToolName))</span>
+                            <span class="badge badge-soft badge-success badge-sm shrink-0">@FormatLong(row.Succeeded)</span>
+                            <span class="badge badge-soft badge-error badge-sm shrink-0">@FormatLong(row.Failed)</span>
+                        </div>
+                        <div class="mt-2 flex items-center gap-3">
+                            <progress class="progress progress-success h-1 grow" aria-label="@FormatCompactToolName(row.ToolName)" value="@PercentOf(calls, maxCalls)" max="100"></progress>
+                            <span class="w-10 text-right text-xs text-base-content/60">@FormatLong(calls)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>;
+
+    private RenderFragment CostByProviderPanel(DashboardSnapshot dashboard) => @<section class="card bg-base-100 shadow-sm">
+        <div class="flex items-center gap-3 px-5 pt-5">
+            <span class="iconify lucide--dollar-sign size-4.5"></span>
+            <h2 class="min-w-0 grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardEstimatedCost, "Estimated cost")</h2>
+            <span class="badge badge-ghost h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatEstimatedCost(dashboard)</span>
+        </div>
+        @{
+            var visibleRows = BuildCostRows(dashboard.CostByProvider).ToArray();
+            var maxTokens = visibleRows.Select(row => row.TotalTokens).DefaultIfEmpty(0).Max();
+        }
+        <div class="px-5 pb-5 pt-3">
+            @if (dashboard.HasUnpricedUsage && dashboard.CostByProvider.Count > 0)
+            {
+                <p class="text-sm text-warning">@Loc.GetOrDefault(NavigationTextKeys.DashboardPartialEstimate, "Partial estimate")</p>
+            }
+            <p class="text-xs text-base-content/60">@Loc.GetOrDefault(NavigationTextKeys.DashboardEstimateExplanation, "Uses reported input and output tokens at standard USD rates. Cached input uses the input rate. Other charges are excluded.")</p>
+            <div class="space-y-1">
+                @foreach (var row in visibleRows)
+                {
+                    <div class="rounded-box px-3 py-2.5 transition-all hover:bg-base-200/50">
+                        <div class="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
+                            <span class="status status-info shrink-0"></span>
+                            <span class="min-w-0 flex-1 truncate font-medium" title="@FormatBucketName(row.Name)">@FormatBucketName(row.Name)</span>
+                            <span class="badge badge-soft badge-info badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatCurrency(row.EstimatedCost)</span>
+                        </div>
+                        <div class="mt-2 flex items-center gap-3">
+                            <progress class="progress progress-info h-1 grow" aria-label="@row.Name" value="@PercentOf(row.TotalTokens, maxTokens)" max="100"></progress>
+                            <span class="w-20 text-right text-xs text-base-content/60">@FormatLong(row.TotalTokens)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>;
+
+    private RenderFragment AdminUsagePanel(IReadOnlyList<PerUserUsageEntry> rows, int userCount) => @<section class="card bg-base-100 shadow-sm">
+        <div class="flex items-center gap-3 px-5 pt-5">
+            <span class="iconify lucide--users size-4.5"></span>
+            <h2 class="grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardAdminUsage, "Admin usage by user")</h2>
+            <span class="badge badge-ghost">@FormatLong(userCount)</span>
+        </div>
+        @{
+            var visibleRows = BuildUserRows(rows).ToArray();
+            var maxTokens = visibleRows.Select(row => row.TotalTokens).DefaultIfEmpty(0).Max();
+        }
+        <div class="px-5 pb-5 pt-3">
+            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                @foreach (var row in visibleRows)
+                {
+                    <div class="rounded-box border border-base-200 p-3 transition-all hover:bg-base-200/50">
+                        <div class="flex items-center gap-3">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-base-200 text-base-content/70 rounded-box size-10">
+                                    <span class="text-sm font-medium">@Initial(row.UserName)</span>
+                                </div>
+                            </div>
+                            <div class="min-w-0 grow">
+                                <div class="truncate font-medium">@row.UserName</div>
+                                <div class="text-xs text-base-content/50">@Loc.GetOrDefault(NavigationTextKeys.DashboardEgress, "Egress") @FormatLong(row.EgressCount)</div>
+                            </div>
+                            <span class="text-sm font-medium">@FormatLong(row.TotalTokens)</span>
+                        </div>
+                        <progress class="progress progress-secondary mt-3 h-1.5" aria-label="@row.UserName" value="@PercentOf(row.TotalTokens, maxTokens)" max="100"></progress>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>;
+
+    private RenderFragment AdminStoragePanel(IReadOnlyList<PerUserUsageEntry> rows) => @<section class="card bg-base-100 shadow-sm">
+        <div class="flex items-center gap-3 px-5 pt-5">
+            <span class="iconify lucide--hard-drive size-4.5"></span>
+            <h2 class="grow font-medium">@Loc.GetOrDefault(NavigationTextKeys.DashboardStorageByUser, "Storage by user")</h2>
+            <span class="badge badge-ghost">@FormatBytes(rows.Sum(row => row.UserStorageBytes))</span>
+        </div>
+        @{
+            var visibleRows = BuildStorageRows(rows).ToArray();
+            var maxStorageBytes = visibleRows.Select(row => row.UserStorageBytes).DefaultIfEmpty(0).Max();
+        }
+        <div class="px-5 pb-5 pt-3">
+            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                @foreach (var row in visibleRows)
+                {
+                    <div class="rounded-box border border-base-200 p-3 transition-all hover:bg-base-200/50">
+                        <div class="flex items-center gap-3">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-base-200 text-base-content/70 rounded-box size-10">
+                                    <span class="text-sm font-medium">@Initial(row.UserName)</span>
+                                </div>
+                            </div>
+                            <div class="min-w-0 grow">
+                                <div class="truncate font-medium">@row.UserName</div>
+                                <div class="text-xs text-base-content/50">@FormatFileCount(row.UserFileCount)</div>
+                            </div>
+                            <span class="text-sm font-medium">@FormatBytes(row.UserStorageBytes)</span>
+                        </div>
+                        <progress class="progress progress-info mt-3 h-1.5" aria-label="@row.UserName" value="@PercentOf(row.UserStorageBytes, maxStorageBytes)" max="100"></progress>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>;
+
+    private static bool IsEmpty(DashboardSnapshot snapshot) =>
+        snapshot.TotalTokens == 0 &&
+        snapshot.EgressCount == 0 &&
+        snapshot.ToolInvocationCount == 0 &&
+        snapshot.TaskRunCount == 0;
+
+    private static string FormatLong(long value) =>
+        value.ToString("N0", CultureInfo.CurrentCulture);
+
+    private static string FormatBytes(long bytes) =>
+        ByteSize.Format(bytes);
+
+    private string GetMetricCardBodyClass(bool isInteractive)
+    {
+        var className = "card-body min-h-36 w-full gap-0 p-4 text-left";
+        return isInteractive
+            ? $"{className} cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            : $"{className} cursor-default";
+    }
+
+    private string GetMetricCardAriaLabel(string labelKey, string fallback, string value)
+    {
+        var label = Loc.GetOrDefault(labelKey, fallback);
+        return string.Equals(labelKey, NavigationTextKeys.DashboardEgress, StringComparison.Ordinal)
+            ? string.Format(
+                CultureInfo.CurrentCulture,
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOpenEgressAudit, "Open egress audit details for {0} events"),
+                value)
+            : label;
+    }
+
+    private async Task ShowEgressAuditAsync()
+    {
+        var isSystemScope = _snapshot is { IsAdminView: true, SystemWideUsage: not null };
+        await DialogService.ShowAsync<EgressAuditDialog>(new Dictionary<string, object?>
+        {
+            ["InitialScope"] = isSystemScope ? "system" : "self"
+        });
+    }
+
+    private string FormatEstimatedCost(DashboardSnapshot dashboard) =>
+        dashboard.HasUnpricedUsage && dashboard.CostByProvider.Count == 0
+            ? Loc.GetOrDefault(NavigationTextKeys.DashboardCostUnavailable, "Unavailable")
+            : FormatCurrency(dashboard.EstimatedCost);
+
+    private string CostStatus(DashboardSnapshot dashboard) =>
+        dashboard.HasUnpricedUsage
+            ? dashboard.CostByProvider.Count == 0
+                ? Loc.GetOrDefault(NavigationTextKeys.DashboardCostUnavailable, "Unavailable")
+                : Loc.GetOrDefault(NavigationTextKeys.DashboardPartialEstimate, "Partial estimate")
+            : Loc.GetOrDefault(NavigationTextKeys.DashboardProviderRatedUsage, "Standard input and output rates");
+
+    private static string FormatCurrency(decimal value) =>
+        "USD " + value.ToString(value == 0 ? "0.00" : "0.############################", CultureInfo.InvariantCulture);
+
+    // Usage without an agent identity is stored under reserved bucket keys; deleted and collapsed rows carry reserved labels.
+    private string FormatBucketName(string name) => name switch
+    {
+        MetricsEventBuilder.IncognitoBucket => Loc.GetOrDefault(NavigationTextKeys.DashboardIncognitoBucket, "Incognito"),
+        MetricsEventBuilder.BackgroundBucket => Loc.GetOrDefault(NavigationTextKeys.DashboardBackgroundBucket, "Background work"),
+        _ => CommonLoc.GetRecordLabel(name)
+    };
+
+    private static string FormatCompactToolName(string toolName)
+    {
+        if (string.IsNullOrWhiteSpace(toolName) || !toolName.Contains("__", StringComparison.Ordinal))
+        {
+            return toolName;
+        }
+
+        var segments = toolName.Split("__", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return segments.Length <= 2
+            ? toolName
+            : "..." + string.Join("__", segments.TakeLast(2));
+    }
+
+    private static string FormatPercent(double value) =>
+        value.ToString("P0", CultureInfo.CurrentCulture);
+
+    private IEnumerable<ToolUsageEntry> BuildToolUsageRows(IReadOnlyList<ToolUsageEntry> rows)
+    {
+        var rankedRows = rows.OrderByDescending(ToolCallCount).ToArray();
+        var visibleRows = rankedRows.Take(DashboardPanelRowLimit);
+        var hiddenRows = rankedRows.Skip(DashboardPanelRowLimit).ToArray();
+
+        foreach (var row in visibleRows)
+        {
+            yield return row;
+        }
+
+        if (hiddenRows.Length > 0)
+        {
+            yield return new ToolUsageEntry(
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOther, "Other"),
+                hiddenRows.Sum(row => row.Succeeded),
+                hiddenRows.Sum(row => row.Failed));
+        }
+    }
+
+    private IEnumerable<CostBreakdownEntry> BuildCostRows(IReadOnlyList<CostBreakdownEntry> rows)
+    {
+        var rankedRows = rows.OrderByDescending(row => row.TotalTokens).ToArray();
+        var visibleRows = rankedRows.Take(DashboardPanelRowLimit);
+        var hiddenRows = rankedRows.Skip(DashboardPanelRowLimit).ToArray();
+
+        foreach (var row in visibleRows)
+        {
+            yield return row;
+        }
+
+        if (hiddenRows.Length > 0)
+        {
+            yield return new CostBreakdownEntry(
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOther, "Other"),
+                hiddenRows.Sum(row => row.TotalTokens),
+                hiddenRows.Sum(row => row.EstimatedCost));
+        }
+    }
+
+    private IEnumerable<TokenBreakdownEntry> BuildTokenBreakdownRows(IReadOnlyList<TokenBreakdownEntry> rows)
+    {
+        var rankedRows = rows.OrderByDescending(row => row.TotalTokens).ToArray();
+        var visibleRows = rankedRows.Take(DashboardPanelRowLimit);
+        var hiddenRows = rankedRows.Skip(DashboardPanelRowLimit).ToArray();
+
+        foreach (var row in visibleRows)
+        {
+            yield return row;
+        }
+
+        if (hiddenRows.Length > 0)
+        {
+            yield return new TokenBreakdownEntry(
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOther, "Other"),
+                hiddenRows.Sum(row => row.InputTokens),
+                hiddenRows.Sum(row => row.OutputTokens),
+                hiddenRows.Sum(row => row.TotalTokens));
+        }
+    }
+
+    private IEnumerable<PerUserUsageEntry> BuildUserRows(IReadOnlyList<PerUserUsageEntry> rows)
+    {
+        var rankedRows = rows.OrderByDescending(row => row.TotalTokens).ToArray();
+        var visibleRows = rankedRows.Take(DashboardPanelRowLimit);
+        var hiddenRows = rankedRows.Skip(DashboardPanelRowLimit).ToArray();
+
+        foreach (var row in visibleRows)
+        {
+            yield return row;
+        }
+
+        if (hiddenRows.Length > 0)
+        {
+            yield return new PerUserUsageEntry(
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOther, "Other"),
+                hiddenRows.Sum(row => row.TotalTokens),
+                hiddenRows.Sum(row => row.EgressCount),
+                hiddenRows.Sum(row => row.UserStorageBytes),
+                hiddenRows.Sum(row => row.UserFileCount));
+        }
+    }
+
+    private IEnumerable<PerUserUsageEntry> BuildStorageRows(IReadOnlyList<PerUserUsageEntry> rows)
+    {
+        var rankedRows = rows.OrderByDescending(row => row.UserStorageBytes).ToArray();
+        var visibleRows = rankedRows.Take(DashboardPanelRowLimit);
+        var hiddenRows = rankedRows.Skip(DashboardPanelRowLimit).ToArray();
+
+        foreach (var row in visibleRows)
+        {
+            yield return row;
+        }
+
+        if (hiddenRows.Length > 0)
+        {
+            yield return new PerUserUsageEntry(
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOther, "Other"),
+                hiddenRows.Sum(row => row.TotalTokens),
+                hiddenRows.Sum(row => row.EgressCount),
+                hiddenRows.Sum(row => row.UserStorageBytes),
+                hiddenRows.Sum(row => row.UserFileCount));
+        }
+    }
+
+    private static int ToolCallCount(ToolUsageEntry row) =>
+        row.Succeeded + row.Failed;
+
+    private static int PercentOf(long value, long max)
+    {
+        if (value <= 0 || max <= 0)
+        {
+            return 0;
+        }
+
+        return (int)Math.Clamp(Math.Round(value * 100d / max, MidpointRounding.AwayFromZero), 0, 100);
+    }
+
+    private static string Initial(string value)
+    {
+        var trimmed = value.Trim();
+        return trimmed.Length == 0
+            ? "?"
+            : trimmed[0].ToString().ToUpper(CultureInfo.CurrentCulture);
+    }
+
+    private string FormatDuration(double seconds)
+    {
+        if (seconds <= 0)
+        {
+            return $"0 {Loc.GetOrDefault(NavigationTextKeys.DashboardSecondsShort, "s")}";
+        }
+
+        var duration = TimeSpan.FromSeconds(seconds);
+        return duration.TotalMinutes >= 1
+            ? $"{duration.TotalMinutes:N1} {Loc.GetOrDefault(NavigationTextKeys.DashboardMinutesShort, "m")}"
+            : $"{duration.TotalSeconds:N0} {Loc.GetOrDefault(NavigationTextKeys.DashboardSecondsShort, "s")}";
+    }
+
+    private string FormatFileCount(int fileCount)
+    {
+        // A count label avoids Arabic inflections that the singular/other resources cannot express.
+        if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar")
+        {
+            return $"{Loc.GetOrDefault(NavigationTextKeys.DashboardFiles, "files")}: {FormatLong(fileCount)}";
+        }
+
+        var fileLabel = fileCount == 1
+            ? Loc.GetOrDefault(NavigationTextKeys.DashboardFile, "file")
+            : Loc.GetOrDefault(NavigationTextKeys.DashboardFiles, "files");
+
+        return $"{FormatLong(fileCount)} {fileLabel}";
+    }
+
+    private string FormatTaskOutcome(DashboardSnapshot snapshot) =>
+        Loc.GetOrDefault(NavigationTextKeys.DashboardSucceeded, "Succeeded") + $" {FormatLong(snapshot.TaskSucceededCount)} / " +
+        Loc.GetOrDefault(NavigationTextKeys.DashboardFailed, "Failed") + $" {FormatLong(snapshot.TaskFailedCount)}";
+
+    private string FormatToolOutcome(IReadOnlyList<ToolUsageEntry> rows) =>
+        Loc.GetOrDefault(NavigationTextKeys.DashboardSucceeded, "Succeeded") + $" {FormatLong(rows.Sum(row => row.Succeeded))} / " +
+        Loc.GetOrDefault(NavigationTextKeys.DashboardFailed, "Failed") + $" {FormatLong(rows.Sum(row => row.Failed))}";
+
+    private object BuildChartPayload(DashboardSnapshot snapshot)
+    {
+        var timeline = MergeTimeline(snapshot.TokenTimeline, snapshot.EgressTimeline).TakeLast(30).ToArray();
+        var distribution = BuildDistributionRows(snapshot.TokensByProvider).ToArray();
+
+        return new
+        {
+            labels = timeline.Select(point => point.Date.ToString("MMM d", CultureInfo.CurrentCulture)).ToArray(),
+            inputTokens = timeline.Select(point => point.InputTokens).ToArray(),
+            outputTokens = timeline.Select(point => point.OutputTokens).ToArray(),
+            egress = timeline.Select(point => point.Egress).ToArray(),
+            egressName = Loc.GetOrDefault(NavigationTextKeys.DashboardEgress, "Egress"),
+            distributionTitle = Loc.GetOrDefault(NavigationTextKeys.DashboardByProvider, "By provider"),
+            distribution,
+            tokenMixTotal = Loc.GetOrDefault(NavigationTextKeys.DashboardTotalTokens, "Total tokens"),
+            tokenMix = new[]
+            {
+                new ChartDatum(Loc.GetOrDefault(NavigationTextKeys.DashboardInputTokens, "Input tokens"), snapshot.TotalInputTokens),
+                new ChartDatum(Loc.GetOrDefault(NavigationTextKeys.DashboardOutputTokens, "Output tokens"), snapshot.TotalOutputTokens)
+            }
+        };
+    }
+
+    private IEnumerable<ChartDatum> BuildDistributionRows(IReadOnlyList<TokenBreakdownEntry> rows)
+    {
+        var rankedRows = rows
+            .Where(row => row.TotalTokens > 0)
+            .OrderByDescending(row => row.TotalTokens)
+            .ToArray();
+        var visibleRows = rankedRows.Take(DashboardDistributionRowLimit);
+        var hiddenRows = rankedRows.Skip(DashboardDistributionRowLimit).ToArray();
+
+        foreach (var row in visibleRows)
+        {
+            yield return new ChartDatum(FormatBucketName(row.Name), row.TotalTokens);
+        }
+
+        if (hiddenRows.Length > 0)
+        {
+            yield return new ChartDatum(
+                Loc.GetOrDefault(NavigationTextKeys.DashboardOther, "Other"),
+                hiddenRows.Sum(row => row.TotalTokens));
+        }
+    }
+
+    private static IReadOnlyList<UsageTimePoint> MergeTimeline(IReadOnlyList<UsageTimePoint> tokens, IReadOnlyList<UsageTimePoint> egress)
+    {
+        var points = new Dictionary<DateOnly, UsageTimePoint>();
+        foreach (var point in tokens)
+        {
+            points[point.Date] = point;
+        }
+
+        foreach (var point in egress)
+        {
+            points[point.Date] = points.TryGetValue(point.Date, out var existing)
+                ? existing with { Egress = point.Egress }
+                : point;
+        }
+
+        return [.. points.Values.OrderBy(point => point.Date)];
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_chartsModule is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _chartsModule.InvokeVoidAsync("disposeMetricsDashboardCharts");
+            await _chartsModule.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    private sealed record ChartDatum(string Name, long Value);
+}

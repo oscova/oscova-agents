@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+	<resheader name="version"><value>1.3</value></resheader>
+	<resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<data name="Auth.Login.Title"><value>سائن ان کریں</value></data>
+	<data name="Auth.Login.Subtitle"><value>آسان رسائی، محفوظ رابطہ: ذاتی نوعیت کے تجربے کا آپ کا راستہ۔</value></data>
+	<data name="Auth.ShowPasswordLabel"><value>پاس ورڈ دکھائیں</value></data>
+	<data name="Auth.LoggingInButton"><value>لاگ ان ہو رہا ہے...</value></data>
+	<data name="Auth.LoginButton"><value>لاگ ان</value></data>
+	<data name="Auth.InvalidCredentialsError"><value>غلط صارف نام یا پاس ورڈ۔</value></data>
+	<data name="Auth.InvalidLoginTicketError"><value>آپ کے لاگ ان سیشن کی میعاد ختم ہو گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</value></data>
+	<data name="Auth.InvalidProfileError"><value>وہ پروفائل اب دستیاب نہیں ہے۔</value></data>
+	<data name="Auth.LoginFailedError"><value>لاگ ان ناکام ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</value></data>
+	<data name="Auth.Home.Title"><value>Oscova Agents کون استعمال کر رہا ہے؟</value></data>
+	<data name="Auth.Home.Subtitle"><value>جاری رکھنے کے لیے پروفائل منتخب کریں، یا پاس ورڈ سے سائن ان کریں۔</value></data>
+	<data name="Auth.Home.NoProfilesMessage"><value>ابھی تک کوئی پروفائل دستیاب نہیں ہے۔</value></data>
+	<data name="Auth.Home.ProfileFallbackName"><value>صارف</value></data>
+	<data name="Auth.Home.ProfilesLabel"><value>پروفائلز</value></data>
+	<data name="Auth.Home.PinHelp"><value>سائن ان کرنے کے لیے پن درج کریں۔</value></data>
+	<data name="Auth.Home.SwitchProfileButton"><value>تبدیل کریں</value></data>
+	<data name="Auth.Home.PinLabel"><value>پن</value></data>
+	<data name="Auth.Home.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Auth.Home.ShowPinLabel"><value>پن دکھائیں</value></data>
+	<data name="Auth.Home.SigningInButton"><value>سائن ان ہو رہا ہے...</value></data>
+	<data name="Auth.Home.ContinueButton"><value>جاری رکھیں</value></data>
+	<data name="Auth.Home.AdminPasswordSignInButton"><value>پاس ورڈ سے سائن ان</value></data>
+	<data name="Auth.Home.PinSessionExpiredError"><value>آپ کے سائن ان سیشن کی میعاد ختم ہو گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</value></data>
+	<data name="Auth.Home.ChooseProfileFirstError"><value>پہلے ایک پروفائل منتخب کریں۔</value></data>
+	<data name="Auth.Home.MissingPinError"><value>اس پروفائل کے لیے ابھی پن سیٹ نہیں ہے۔ آپریٹر سے پن سیٹ کرنے کو کہیں۔</value></data>
+	<data name="Auth.Home.InvalidPinError"><value>غلط پن۔</value></data>
+	<data name="Auth.Home.PinValidationError"><value>پن میں 6–64 ہندسے (0–9) ہونے چاہئیں۔</value></data>
+	<data name="Auth.AdminLogin.BackButton"><value>پروفائل سائن ان پر واپس جائیں</value></data>
+	<data name="Auth.AdminSetup.Title"><value>پہلا آپریٹر بنائیں</value></data>
+	<data name="Auth.AdminSetup.Subtitle"><value>Oscova Agents استعمال کرنے کے لیے آپریٹر اکاؤنٹ ترتیب دیں۔</value></data>
+	<data name="Auth.AdminSetup.FullNameLabel"><value>مکمل نام</value></data>
+	<data name="Auth.AdminSetup.FullNamePlaceholder"><value>علی احمد</value></data>
+	<data name="Auth.AdminSetup.FullNameHelp"><value>اپنا مکمل نام درج کریں۔</value></data>
+	<data name="Auth.AdminSetup.EmailLabel"><value>ای میل</value></data>
+	<data name="Auth.AdminSetup.EmailPlaceholder"><value>name@company.com</value></data>
+	<data name="Auth.AdminSetup.EmailHelp"><value>ایک درست ای میل پتہ استعمال کریں۔</value></data>
+	<data name="Auth.AdminSetup.UsernamePlaceholder"><value>operator</value></data>
+	<data name="Auth.AdminSetup.UsernameHelp"><value>3 یا زیادہ حروف۔ منفرد ہونا چاہیے۔</value></data>
+	<data name="Auth.AdminSetup.NewPasswordPlaceholder"><value>کم از کم 6 حروف</value></data>
+	<data name="Auth.AdminSetup.PasswordHelp"><value>حروف، اعداد اور علامات کے امتزاج کے ساتھ کم از کم 6 حروف استعمال کریں۔</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordLabel"><value>پاس ورڈ کی تصدیق کریں</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordPlaceholder"><value>اپنا پاس ورڈ دوبارہ درج کریں</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordHelp"><value>پاس ورڈ کے بالکل مطابق ہونا چاہیے۔</value></data>
+	<data name="Auth.AdminSetup.CreateAdminButton"><value>آپریٹر بنائیں</value></data>
+	<data name="Auth.AdminSetup.RestoreTitle"><value>بیک اپ سے بحال کریں</value></data>
+	<data name="Auth.AdminSetup.RestoreDescription"><value>اسے صرف نئی انسٹالیشن پر استعمال کریں۔ انکرپٹ شدہ .oscb بیک اپ فائل منتخب کریں اور پاس فریز درج کریں۔</value></data>
+	<data name="Auth.AdminSetup.RestoreFileLabel"><value>بیک اپ فائل</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseLabel"><value>بیک اپ پاس فریز</value></data>
+	<data name="Auth.AdminSetup.RestorePassphrasePlaceholder"><value>بیک اپ پاس فریز درج کریں</value></data>
+	<data name="Auth.AdminSetup.RestoreButton"><value>بیک اپ بحال کریں</value></data>
+	<data name="Auth.AdminSetup.RestoreChooseFileButton"><value>بیک اپ فائل منتخب کریں</value></data>
+	<data name="Auth.AdminSetup.RestoreFileRequired"><value>بیک اپ فائل منتخب کریں۔</value></data>
+	<data name="Auth.AdminSetup.RestoreUnsupportedFile"><value>صرف .oscb بیک اپ فائلیں معاون ہیں۔</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseRequired"><value>بیک اپ پاس فریز درج کریں۔</value></data>
+	<data name="Auth.AdminSetup.RestoreFreshInstallOnly"><value>بحالی صرف نئی انسٹالیشن پر دستیاب ہے۔</value></data>
+	<data name="Auth.AdminSetup.RestorePending"><value>ماحول کی بحالی زیر التوا ہے۔ اکاؤنٹ بنانے سے پہلے Oscova کے دوبارہ شروع ہونے کا انتظار کریں۔</value></data>
+	<data name="Auth.AdminSetup.Created"><value>آپریٹر بن گیا۔ اپنے نئے اکاؤنٹ سے سائن ان کریں۔</value></data>
+	<data name="Auth.AdminSetup.RestoreFailed"><value>بیک اپ بحال نہیں ہو سکا۔</value></data>
+	<data name="Auth.AdminSetup.RestoreInProgress"><value>بیک اپ بحال کرنے میں کچھ وقت لگ سکتا ہے۔ جب Oscova دوبارہ شروع ہونے کی تیاری کر رہا ہو تو اس ونڈو کو کھلا رکھیں۔</value></data>
+	<data name="Auth.AdminSetup.RestoreRestarting"><value>بیک اپ بحال ہو گیا۔ Oscova دوبارہ شروع ہو رہا ہے...</value></data>
+	<data name="Auth.AdminSetup.PasswordsDoNotMatchError"><value>پاس ورڈ مماثل نہیں ہیں۔</value></data>
+	<data name="Auth.AdminSetup.UsernameExistsError"><value>اس صارف نام والا صارف پہلے سے موجود ہے۔</value></data>
+	<data name="Auth.AdminSetup.EmailExistsError"><value>اس ای میل والا صارف پہلے سے موجود ہے۔</value></data>
+	<data name="Auth.CliAuth.Title"><value>CLI رسائی کی منظوری دیں</value></data>
+	<data name="Auth.CliAuth.Subtitle"><value>اپنے Oscova اکاؤنٹ کو استعمال کرنے کے لیے اس ٹرمینل کو اجازت دیں۔</value></data>
+	<data name="Auth.CliAuth.CodeLabel"><value>کوڈ</value></data>
+	<data name="Auth.CliAuth.ClientLabel"><value>کلائنٹ</value></data>
+	<data name="Auth.CliAuth.MachineLabel"><value>مشین</value></data>
+	<data name="Auth.CliAuth.ApproveButton"><value>منظور کریں</value></data>
+	<data name="Auth.CliAuth.DenyButton"><value>مسترد کریں</value></data>
+	<data name="Auth.CliAuth.ApprovedMessage"><value>CLI رسائی منظور ہو گئی۔ آپ اپنے ٹرمینل پر واپس جا سکتے ہیں۔</value></data>
+	<data name="Auth.CliAuth.DeniedMessage"><value>CLI رسائی مسترد کر دی گئی۔</value></data>
+	<data name="Auth.CliAuth.InvalidCodeMessage"><value>یہ CLI منظوری کوڈ درست نہیں ہے۔</value></data>
+	<data name="Auth.CliAuth.ExpiredCodeMessage"><value>اس CLI منظوری کوڈ کی میعاد ختم ہو گئی ہے۔</value></data>
+	<data name="Auth.ToggleThemeLabel"><value>تھیم تبدیل کریں</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Title"><value>آپ کے ایجنٹس، جب آپ چاہیں تیار۔</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Description"><value>گھر اور دفتر کے لیے ایجنٹ OS، آپ کے اپنے ہارڈ ویئر پر۔</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Title"><value>رن ٹائم اپنا رکھیں۔ کنٹرول اپنے ہاتھ میں رکھیں۔</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Description"><value>پائیدار ایجنٹس، مقامی ڈیٹا، اور اس بارے میں واضح انتخاب کہ کوئی چیز کلاؤڈ تک کب پہنچے۔</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Title"><value>ایسی رازداری جسے آپ جانچ سکیں۔</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Description"><value>کوئی ٹیلی میٹری نہیں، کلاؤڈ کے واضح انتخاب، اور ڈیٹا کے مشین سے باہر جانے پر واضح ثبوت۔</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Title"><value>صرف ایک چیٹ ونڈو سے کہیں زیادہ۔</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Description"><value>ایجنٹس گفتگو کے درمیان اپنے ٹولز، میموری، شیڈولز، اور چینلز تیار رکھتے ہیں۔</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Title"><value>چھوٹے ماڈلز۔ سنجیدہ کام۔</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Description"><value>مختصر کانٹیکسٹ اور مقامی ترجیح والے ورک فلو آپ کے اپنے ہارڈ ویئر سے زیادہ کام لینے میں مدد کرتے ہیں۔</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Title"><value>انٹرنیٹ نہ ہو تب بھی مفید۔</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Description"><value>بنیادی ایجنٹ رنز اور اسپیچ آپ کے اپنے ہارڈ ویئر پر مقامی رہ سکتے ہیں۔</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Title"><value>نجی کام محفوظ رہتا ہے۔</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Description"><value>مرکزی ایجنٹ اور ذیلی ایجنٹس سمیت تمام ایجنٹس چیٹس اور ٹاسک رنز کو انکرپٹ کرکے محفوظ کرتے ہیں۔</value></data>
+  <data name="Auth.SignIn.Mismatch"><value>میل نہیں کھاتا۔ دوبارہ کوشش کریں۔</value></data>
+  <data name="Auth.SignIn.RetryCountdown"><value>میل نہیں کھاتا۔ {0} سیکنڈ بعد دوبارہ کوشش کریں۔</value></data>
+  <data name="Auth.SignIn.WaitCountdown"><value>{0} سیکنڈ بعد دوبارہ کوشش کریں۔</value></data>
+  <data name="Auth.SignIn.TryAgain"><value>دوبارہ کوشش کریں</value></data>
+</root>

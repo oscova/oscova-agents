@@ -1,0 +1,836 @@
+@inject UserServiceScope UserScope
+@inject ManagementApiClient ManagementApiClient
+@inject ILogger<CreateAgentTaskDialog> Logger
+@using Oscova.Agents.Core.ApiContracts.Agents
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Core.ApiContracts.Tasks
+@using Oscova.Agents.Core.Utils
+@using Oscova.Agents.Definitions
+@using Oscova.Agents.Persistence
+@using Oscova.Agents.Policies
+@using Oscova.Agents.Tasks
+@using Oscova.Agents.Utils
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> SettingsLoc
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+
+<AppDialogShell Title="@(_isEditing ? CommonLoc.GetOrDefault(CommonTextKeys.TaskDialogEditTitle, "Edit Task") : CommonLoc.GetOrDefault(CommonTextKeys.TaskDialogCreateTitle, "Create Task"))"
+                MaxWidthClass="max-w-lg"
+                HelpTopic="@HelpTopics.AgentTaskEditor"
+                CanClose="@(!_isSaving)"
+                OnClose="Cancel">
+    <ChildContent>
+
+        <!-- Name -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend" id="task-name-label">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</legend>
+            <label class="input w-full">
+                <span class="iconify lucide--clipboard-list text-base-content/60 size-4.5"></span>
+                <input id="task-name" aria-labelledby="task-name-label" type="text" class="grow focus:outline-0" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.TaskNamePlaceholder, "e.g. Daily Summary")" @bind="_name" />
+            </label>
+        </fieldset>
+
+        <!-- Instruction -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.TaskInstructionLabel, "Instruction")</legend>
+            <div class="mb-1 flex items-center justify-end gap-3">
+                <button type="button" class="btn btn-ghost btn-sm" @onclick="OpenInstructionEditorAsync">
+                    <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")
+                </button>
+            </div>
+            <button type="button"
+                    class="w-full rounded-box border border-base-300 bg-base-100 p-3 text-left hover:bg-base-200"
+                    @onclick="OpenInstructionEditorAsync">
+                <pre class="max-h-24 overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed @InstructionPreviewClass">@InstructionPreview</pre>
+            </button>
+        </fieldset>
+
+        <!-- Agent -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend" id="task-agent-label">@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderAgent, "Agent")</legend>
+            <select id="task-agent" aria-labelledby="task-agent-label" class="select select-bordered w-full" value="@_agentId" @onchange="HandleAgentChanged" disabled="@(!HasAvailableAgents)">
+                @foreach (var agent in AvailableAgents)
+                {
+                    <option value="@agent.Id">@agent.Name</option>
+                }
+            </select>
+            @if (!HasAvailableAgents)
+            {
+                <p class="label text-warning">@CommonLoc.GetOrDefault(CommonTextKeys.TaskAgentUnavailable, "A task can only be created when at least one agent is available.")</p>
+            }
+        </fieldset>
+
+        <!-- Run Scope -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeLabel, "Run Scope")</legend>
+            <div class="rounded-box border border-base-300 bg-base-100 p-3">
+                <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="iconify lucide--sliders-horizontal text-base-content/60 size-4.5 shrink-0"></span>
+                            <select id="task-run-scope" class="select select-bordered w-full" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeLabel, "Run Scope")" value="@_runScopeMode" @onchange="HandleRunScopeModeChanged" disabled="@(SelectedAgentDefinition is null)">
+                                <option value="@RunScopeModeAgentSettings">
+                                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeUseAgentSettingsButton, "Use agent settings")
+                                </option>
+                                <option value="@RunScopeModeCustom">
+                                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeCustomTitle, "Custom task settings")
+                                </option>
+                            </select>
+                        </div>
+                        <p class="mt-1 text-sm opacity-65">@RunScopeSummary</p>
+                    </div>
+                    @if (IsCustomRunScope)
+                    {
+                        <div class="flex shrink-0 flex-wrap gap-2">
+                            <button type="button"
+                                    class="btn btn-outline btn-sm"
+                                    disabled="@(SelectedAgentDefinition is null)"
+                                    @onclick="OpenRunScopeDialogAsync">
+                                <span class="iconify lucide--settings-2 size-4" aria-hidden="true"></span>
+                                @CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Model Provider -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend" id="task-model-provider-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskModelProviderLabel, "Model Provider")</legend>
+            <select id="task-model-provider" aria-labelledby="task-model-provider-label" class="select select-bordered w-full" @bind="_modelOverrideId">
+                <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.TaskDefaultModelProviderShort, "Use agent default")</option>
+                @foreach (var provider in AvailableModelProviders)
+                {
+                    <option value="@provider.Id">
+                        @provider.Name @(string.IsNullOrEmpty(provider.ModelId) ? "" : $"({provider.ModelId})")
+                    </option>
+                }
+            </select>
+        </fieldset>
+
+        <!-- Schedule Kind -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend" id="task-schedule-kind-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageScheduleHeader, "Schedule")</legend>
+            <select id="task-schedule-kind" aria-labelledby="task-schedule-kind-label" class="select select-bordered w-full" @bind="_scheduleKind">
+                <option value="@TaskScheduleKind.Interval">@CommonLoc.GetOrDefault(CommonTextKeys.TaskScheduleInterval, "Interval")</option>
+                <option value="@TaskScheduleKind.OneShot">@CommonLoc.GetOrDefault(CommonTextKeys.TaskScheduleOneShot, "One-shot")</option>
+                <option value="@TaskScheduleKind.Cron">@CommonLoc.GetOrDefault(CommonTextKeys.TaskScheduleCron, "Cron")</option>
+                <option value="@TaskScheduleKind.AfterTask">@CommonLoc.GetOrDefault(CommonTextKeys.TaskScheduleAfterTask, "After another task")</option>
+            </select>
+        </fieldset>
+
+        <fieldset class="fieldset">
+            <div class="custom-settings-switch-row">
+                <input id="task-notify-on-completion" type="checkbox" class="toggle toggle-primary toggle-sm" @bind="_notifyOnCompletion" />
+                <label for="task-notify-on-completion" class="text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.TaskNotifyOnCompletion, "Notify on completion")</label>
+            </div>
+            <p class="text-sm opacity-70">@CommonLoc.GetOrDefault(CommonTextKeys.TaskNotifyOnCompletionHint, "Send an extra app inbox notice after a successful run. Failures always appear in the app inbox.")</p>
+        </fieldset>
+
+        @if (_scheduleKind == TaskScheduleKind.Interval)
+        {
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend" id="task-interval-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskIntervalLabel, "Interval (minutes)")</legend>
+                <label class="input w-full">
+                    <span class="iconify lucide--clock text-base-content/60 size-4.5"></span>
+                    <input id="task-interval" aria-labelledby="task-interval-label" type="number" class="grow focus:outline-0" min="1" @bind="_intervalMinutes" />
+                </label>
+            </fieldset>
+        }
+        else if (_scheduleKind == TaskScheduleKind.OneShot)
+        {
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend" id="task-run-at-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskRunAtLabel, "Run At")</legend>
+                <label class="input w-full">
+                    <span class="iconify lucide--calendar-clock text-base-content/60 size-4.5"></span>
+                    <input id="task-run-at" aria-labelledby="task-run-at-label" type="datetime-local" class="grow focus:outline-0" @bind="_runAt" />
+                </label>
+                <p class="label whitespace-normal break-words">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskRunAtTimeZoneHint, "Uses your current user time zone when this task is saved and scheduled.")
+                </p>
+            </fieldset>
+            <fieldset class="fieldset">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="checkbox checkbox-sm" @bind="_deleteAfterRun" />
+                    <span class="text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.TaskDeleteAfterRun, "Delete task after run")</span>
+                </label>
+            </fieldset>
+        }
+        else if (_scheduleKind == TaskScheduleKind.Cron)
+        {
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend" id="task-cron-expression-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskCronExpressionLabel, "Cron Expression")</legend>
+                <label class="input w-full">
+                    <span class="iconify lucide--calendar-cog text-base-content/60 size-4.5"></span>
+                    <input id="task-cron-expression" aria-labelledby="task-cron-expression-label" type="text" dir="ltr" class="grow focus:outline-0" placeholder="30 9 * * 1-5" @bind="_cronExpression" />
+                </label>
+                <p class="label whitespace-normal break-words">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskScheduleExamples, "Examples: 30 9 * * 1-5 for weekdays at 09:30, 0 */6 * * * for every 6 hours.")
+                </p>
+                <p class="label whitespace-normal break-words">
+                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskScheduleTimeZoneHint, "Evaluated using your current user time zone when this task is saved.")
+                </p>
+            </fieldset>
+        }
+        else if (_scheduleKind == TaskScheduleKind.AfterTask)
+        {
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend" id="task-predecessor-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPredecessorLabel, "Run after task")</legend>
+                @if (SelectablePredecessors.Any())
+                {
+                    <select id="task-predecessor" aria-labelledby="task-predecessor-label" class="select select-bordered w-full" @bind="_predecessorTaskId">
+                        <option value="">@CommonLoc.GetOrDefault(CommonTextKeys.ValidationSelectOption, "Select a task")</option>
+                        @foreach (var task in SelectablePredecessors)
+                        {
+                            <option value="@task.Id">@task.Name</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <p class="label whitespace-normal break-words">
+                        @CommonLoc.GetOrDefault(CommonTextKeys.TaskNoOtherTasks, "No other tasks are available to chain from.")
+                    </p>
+                }
+            </fieldset>
+        }
+
+        <fieldset class="fieldset">
+            <div class="flex items-center gap-3">
+                <input id="task-wait-for-provider" type="checkbox" class="toggle toggle-primary toggle-sm" @bind="_waitForOwnerProviderIdle" />
+                <label for="task-wait-for-provider" class="text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.TaskWaitForOwnerProviderIdle, "Wait while I'm using the provider")</label>
+            </div>
+            <p class="text-sm opacity-70">@CommonLoc.GetOrDefault(CommonTextKeys.TaskWaitForOwnerProviderIdleHint, "Scheduled starts wait for your active requests on the task's provider. Run now, webhooks and chained tasks start immediately.")</p>
+        </fieldset>
+
+        <!-- External Trigger -->
+        <fieldset class="fieldset">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="toggle toggle-sm toggle-primary" @bind="_externalTriggerEnabled" />
+                <span class="text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerEnableLabel, "Allow external webhook trigger")</span>
+            </label>
+            <p class="label whitespace-normal break-words">
+                @CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerHint, "External callers can trigger this task through an authenticated hook endpoint.")
+            </p>
+        </fieldset>
+
+        @if (_externalTriggerEnabled)
+        {
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend" id="task-external-trigger-slug-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerSlugLabel, "Webhook slug")</legend>
+                <label class="input w-full">
+                    <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                    <input id="task-external-trigger-slug" aria-labelledby="task-external-trigger-slug-label" type="text" dir="ltr" class="grow focus:outline-0" placeholder="@Slugs.ForTaskTrigger(_name)" @bind="_externalTriggerSlug" />
+                </label>
+                <div class="mt-2 flex items-center gap-2">
+                    <label class="input input-sm flex-1">
+                        <span class="iconify lucide--webhook text-base-content/60 size-4"></span>
+                        <input type="text" dir="ltr" class="grow font-mono text-xs focus:outline-0" aria-label="@CommonLoc[CommonTextKeys.TaskExternalTriggerEndpointLabel]" value="@ExternalTriggerEndpoint" readonly />
+                    </label>
+                    <button type="button" class="btn btn-square btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerCopyEndpointButton, "Copy endpoint")" @onclick="CopyExternalTriggerEndpointAsync">
+                        <iconify-icon icon="lucide:copy"></iconify-icon>
+                    </button>
+                </div>
+            </fieldset>
+
+            <fieldset class="fieldset">
+                <div class="flex items-center justify-between gap-2">
+                    <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerParametersLabel, "Webhook parameters")</legend>
+                    <button type="button" class="btn btn-ghost btn-xs" @onclick="AddExternalParameter">
+                        <span class="iconify lucide--plus size-3" aria-hidden="true"></span>
+                        @CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerAddParameterButton, "Add parameter")
+                    </button>
+                </div>
+                @if (_externalTriggerParameters.Count == 0)
+                {
+                    <p class="label whitespace-normal break-words">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerNoParameters, "No parameters are required for this webhook.")</p>
+                }
+                else
+                {
+                    <div class="space-y-2">
+                        @foreach (var parameter in _externalTriggerParameters)
+                        {
+                            <div class="grid gap-2 md:grid-cols-[minmax(0,1fr)_8rem_auto_auto]" @key="parameter">
+                                <label class="input input-sm w-full">
+                                    <span class="iconify lucide--braces text-base-content/60 size-4"></span>
+                                    <input class="grow focus:outline-0" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerParameterNamePlaceholder, "parameterName")" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerParameterNamePlaceholder, "parameterName")" @bind-value="parameter.Name" @bind-value:event="oninput" />
+                                </label>
+                                <select class="select select-bordered select-sm w-full" aria-label="@CommonLoc[CommonTextKeys.TaskExternalTriggerParameterKindLabel]" @bind="parameter.Kind">
+                                    <option value="@TaskExternalParameterKind.String">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerKindString, "String")</option>
+                                    <option value="@TaskExternalParameterKind.Number">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerKindNumber, "Number")</option>
+                                    <option value="@TaskExternalParameterKind.Boolean">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerKindBoolean, "Boolean")</option>
+                                    <option value="@TaskExternalParameterKind.Json">@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerKindJson, "JSON")</option>
+                                </select>
+                                <label class="flex items-center gap-2 text-xs">
+                                    <input type="checkbox" class="checkbox checkbox-sm" @bind="parameter.IsRequired" />
+                                    @CommonLoc.GetOrDefault(CommonTextKeys.Required, "Required")
+                                </label>
+                                <button type="button" class="btn btn-square btn-ghost btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.Remove, "Remove")" @onclick="() => RemoveExternalParameter(parameter)">
+                                    <iconify-icon icon="lucide:x"></iconify-icon>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </fieldset>
+        }
+
+        <!-- Tool Approval Mode -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend" id="task-approval-mode-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskApprovalModeLabel, "Approval Mode")</legend>
+            <select id="task-approval-mode" aria-labelledby="task-approval-mode-label" class="select select-bordered w-full" @bind="_toolApprovalRunMode">
+                <option value="@ToolApprovalRunMode.AutoRejectRequired">@CommonLoc.GetOrDefault(CommonTextKeys.TaskApprovalModeAutoReject, "Auto-reject approval-required tools")</option>
+                <option value="@ToolApprovalRunMode.AutoApproveRequired">@CommonLoc.GetOrDefault(CommonTextKeys.TaskApprovalModeAutoApprove, "Auto-approve approval-required tools")</option>
+            </select>
+            <p class="label whitespace-normal break-words">
+                @CommonLoc.GetOrDefault(CommonTextKeys.TaskApprovalModeHint, "Background tasks have no interactive user; required-approval tools must be auto-decided.")
+            </p>
+            @if (_toolApprovalRunMode == ToolApprovalRunMode.AutoApproveRequired)
+            {
+                <p class="text-warning mt-1 flex items-start gap-1 text-xs">
+                    <span class="iconify lucide--triangle-alert mt-0.5 size-4 shrink-0" aria-hidden="true"></span>
+                    <span>@SettingsLoc.GetOrDefault(SettingsTextKeys.ToolsAutoApproveHostWarning, "Auto-approved shell commands can change the machine running Oscova when host execution is enabled.")</span>
+                </p>
+            }
+        </fieldset>
+
+        <!-- Keep Last Runs -->
+        <fieldset class="fieldset">
+            <legend class="fieldset-legend" id="task-keep-last-runs-label">@CommonLoc.GetOrDefault(CommonTextKeys.TaskKeepLastRunsLabel, "Keep last runs")</legend>
+            <label class="input w-full">
+                <span class="iconify lucide--history text-base-content/60 size-4.5"></span>
+                <input id="task-keep-last-runs" aria-labelledby="task-keep-last-runs-label" type="number" class="grow focus:outline-0" min="1" placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.TaskKeepLastRunsPlaceholder, "Keep all")" @bind="_keepLastRuns" />
+            </label>
+            <p class="label whitespace-normal break-words">
+                @CommonLoc.GetOrDefault(CommonTextKeys.TaskKeepLastRunsHint, "Older runs are deleted after the next run finishes. Leave empty to keep every run.")
+            </p>
+        </fieldset>
+
+        <!-- Enabled -->
+        <fieldset class="fieldset">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="toggle toggle-sm toggle-primary" @bind="_isEnabled" />
+                <span class="text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.TaskEnabled, "Enabled")</span>
+            </label>
+        </fieldset>
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div role="alert" class="alert alert-error alert-soft mt-3">
+                <span>@_error</span>
+            </div>
+        }
+
+    </ChildContent>
+    <FooterContent>
+        <button class="btn" @onclick="Cancel" disabled="@_isSaving">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button class="btn btn-primary" @onclick="SaveAsync" disabled="@(_isSaving || !HasAvailableAgents)">
+            @(_isEditing ? CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save") : CommonLoc.GetOrDefault(CommonTextKeys.Create, "Create"))
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<SelectableAgent> AvailableAgents { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<AgentDefinition> AvailableAgentDefinitions { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<SelectableTask> AvailableTasks { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<ToolGroup> ToolGroups { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<AgentReference> ExposableAgents { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<SkillDefinition> AvailableSkills { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<string> AvailableWorkspaces { get; set; } = [];
+
+    [Parameter]
+    public IReadOnlyList<SelectableModelProvider> AvailableModelProviders { get; set; } = [];
+
+    [Parameter]
+    public string UserTimeZoneId { get; set; } = string.Empty;
+
+    private bool _isEditing;
+    private bool _isSaving;
+    private Func<AgentTaskDefinition, Task<bool>>? _saveTaskAsync;
+    private string _existingId = string.Empty;
+    private string _name = string.Empty;
+    private string _instruction = string.Empty;
+    private string? _instructionSource;
+    private string? _instructionMode;
+    private string _agentId = string.Empty;
+    private string _modelOverrideId = string.Empty;
+    private TaskScheduleKind _scheduleKind = TaskScheduleKind.Interval;
+    private bool _notifyOnCompletion = true;
+    private bool _waitForOwnerProviderIdle = true;
+    private int _intervalMinutes = 60;
+    private DateTime _runAt;
+    private string _taskTimeZoneId = string.Empty;
+    private string _cronExpression = string.Empty;
+    private TimeZoneInfo _taskTimeZone = TimeZoneInfo.Local;
+    private bool _deleteAfterRun;
+    private bool _isEnabled = true;
+    private TaskSessionMode _sessionMode;
+    private int? _maxTokenBudget;
+    private int? _keepLastRuns;
+    private bool _externalTriggerEnabled;
+    private string _externalTriggerSlug = string.Empty;
+    private List<TaskExternalParameter> _externalTriggerParameters = [];
+    private string _predecessorTaskId = string.Empty;
+    private ToolApprovalRunMode _toolApprovalRunMode = ToolApprovalRunMode.AutoRejectRequired;
+    private TaskRunScope? _runScope;
+    private string _runScopeMode = RunScopeModeAgentSettings;
+    private string? _error;
+    private const string RunScopeModeAgentSettings = "agent_settings";
+    private const string RunScopeModeCustom = "custom";
+    private bool HasAvailableAgents => AvailableAgents.Count > 0;
+    private string ExternalTriggerEndpoint => ApiRoutes.Hooks.TaskRuns(ResolveExternalTriggerSlug());
+
+    private AgentDefinition? SelectedAgentDefinition =>
+        AvailableAgentDefinitions.FirstOrDefault(agent => string.Equals(agent.Id, _agentId, StringComparison.OrdinalIgnoreCase));
+
+    private bool IsCustomRunScope => string.Equals(_runScopeMode, RunScopeModeCustom, StringComparison.Ordinal);
+
+    private string RunScopeSummary => !IsCustomRunScope || _runScope is null
+        ? CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeInheritSummary,
+            "This task inherits the selected agent's tools, memory, skills and workspaces.")
+        : string.Format(CommonLoc.GetOrDefault(CommonTextKeys.TaskRunScopeCustomSummary, "{0} tools, {1} workspaces"),
+            _runScope.AllowedToolNames.Count, _runScope.AllowedWorkspaces.Count);
+
+    // Exclude the task being edited so it cannot select itself as predecessor.
+    private IEnumerable<SelectableTask> SelectablePredecessors =>
+        AvailableTasks.Where(task => !string.Equals(task.Id, _existingId, StringComparison.Ordinal));
+
+    // Truncated text shown on the clickable preview area; placeholder when empty.
+    private string InstructionPreview =>
+        _instructionSource is not null && _instructionMode == InstructionSelection.Default
+            ? SettingsLoc.GetOrDefault(SettingsTextKeys.InstructionUseDefault, "Use Default")
+            : string.IsNullOrWhiteSpace(_instruction)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.TaskInstructionPlaceholder, "What should the agent do?")
+            : _instruction;
+
+    private string InstructionPreviewClass => string.IsNullOrWhiteSpace(_instruction) ? "text-base-content/50" : "text-base-content/80";
+
+    protected override void OnInitialized()
+    {
+        HydrateDialogParameters();
+        _saveTaskAsync = DialogInstance.Get<Func<AgentTaskDefinition, Task<bool>>?>("SaveTaskAsync", null);
+
+        _agentId = AvailableAgents.FirstOrDefault()?.Id ?? string.Empty;
+        _taskTimeZoneId = UserTimeZoneId;
+        _taskTimeZone = TimeZoneResolver.ResolveOrLocal(_taskTimeZoneId);
+
+        var currentTimeInUserZone = DateTimeOffset.UtcNow.ToUserTime(_taskTimeZone);
+        _runAt = currentTimeInUserZone.AddHours(1).DateTime;
+
+        if (DialogInstance.TryGet<AgentTaskDefinition>("Task", out var existing) && existing is not null)
+        {
+            _isEditing = true;
+            _existingId = existing.Id;
+            _name = existing.Name;
+            _instruction = existing.Instruction;
+            _instructionSource = existing.InstructionSource;
+            _instructionMode = existing.InstructionMode;
+            _agentId = existing.AgentId;
+            _modelOverrideId = existing.ModelOverrideId ?? string.Empty;
+            _scheduleKind = existing.Schedule.Kind;
+            _notifyOnCompletion = existing.NotifyOnCompletion;
+            _waitForOwnerProviderIdle = existing.WaitForOwnerProviderIdle;
+            _intervalMinutes = existing.Schedule.IntervalMinutes ?? 60;
+            _taskTimeZoneId = string.IsNullOrWhiteSpace(existing.Schedule.TimeZoneId) ? UserTimeZoneId : existing.Schedule.TimeZoneId;
+            _taskTimeZone = TimeZoneResolver.ResolveOrLocal(_taskTimeZoneId);
+            _runAt = existing.Schedule.RunAt is null
+                ? currentTimeInUserZone.AddHours(1).DateTime
+                : existing.Schedule.RunAt.Value.ToUserTime(_taskTimeZone).DateTime;
+            _cronExpression = existing.Schedule.CronExpression ?? string.Empty;
+            _deleteAfterRun = existing.Schedule.DeleteAfterRun;
+            _predecessorTaskId = existing.Schedule.PredecessorTaskId?.Trim() ?? string.Empty;
+            _isEnabled = existing.IsEnabled;
+            _sessionMode = existing.SessionMode;
+            _maxTokenBudget = existing.MaxTokenBudget;
+            _keepLastRuns = existing.KeepLastRuns;
+            _externalTriggerEnabled = existing.ExternalTrigger.IsEnabled;
+            _externalTriggerSlug = existing.ExternalTrigger.Slug;
+            _externalTriggerParameters = existing.ExternalTrigger.Parameters
+                .Select(parameter => new TaskExternalParameter
+                {
+                    Name = parameter.Name,
+                    Kind = parameter.Kind,
+                    IsRequired = parameter.IsRequired
+                })
+                .ToList();
+            _toolApprovalRunMode = existing.ToolApprovalRunMode == ToolApprovalRunMode.UseAgentPolicy
+                ? ToolApprovalRunMode.AutoRejectRequired
+                : existing.ToolApprovalRunMode;
+            _runScope = existing.RunScope?.Clone();
+            _runScopeMode = _runScope is null ? RunScopeModeAgentSettings : RunScopeModeCustom;
+        }
+    }
+
+    private void HydrateDialogParameters()
+    {
+        if (AvailableAgents.Count == 0 &&
+            DialogInstance.TryGet<List<SelectableAgent>>(nameof(AvailableAgents), out var availableAgents) &&
+            availableAgents is not null)
+        {
+            AvailableAgents = availableAgents;
+        }
+
+        if (AvailableAgentDefinitions.Count == 0 &&
+            DialogInstance.TryGet<List<AgentDefinition>>(nameof(AvailableAgentDefinitions), out var availableAgentDefinitions) &&
+            availableAgentDefinitions is not null)
+        {
+            AvailableAgentDefinitions = availableAgentDefinitions;
+        }
+
+        if (AvailableTasks.Count == 0 &&
+            DialogInstance.TryGet<List<SelectableTask>>(nameof(AvailableTasks), out var availableTasks) &&
+            availableTasks is not null)
+        {
+            AvailableTasks = availableTasks;
+        }
+
+        if (AvailableModelProviders.Count == 0 &&
+            DialogInstance.TryGet<List<SelectableModelProvider>>(nameof(AvailableModelProviders), out var availableModelProviders) &&
+            availableModelProviders is not null)
+        {
+            AvailableModelProviders = availableModelProviders;
+        }
+
+        if (ToolGroups.Count == 0 &&
+            DialogInstance.TryGet<List<ToolGroup>>(nameof(ToolGroups), out var toolGroups) &&
+            toolGroups is not null)
+        {
+            ToolGroups = toolGroups;
+        }
+
+        if (ExposableAgents.Count == 0 &&
+            DialogInstance.TryGet<List<AgentReference>>(nameof(ExposableAgents), out var exposableAgents) &&
+            exposableAgents is not null)
+        {
+            ExposableAgents = exposableAgents;
+        }
+
+        if (AvailableSkills.Count == 0 &&
+            DialogInstance.TryGet<List<SkillDefinition>>(nameof(AvailableSkills), out var availableSkills) &&
+            availableSkills is not null)
+        {
+            AvailableSkills = availableSkills;
+        }
+
+        if (AvailableWorkspaces.Count == 0 &&
+            DialogInstance.TryGet<List<string>>(nameof(AvailableWorkspaces), out var availableWorkspaces) &&
+            availableWorkspaces is not null)
+        {
+            AvailableWorkspaces = availableWorkspaces;
+        }
+
+        if (string.IsNullOrWhiteSpace(UserTimeZoneId) &&
+            DialogInstance.TryGet<string>(nameof(UserTimeZoneId), out var userTimeZoneId) &&
+            userTimeZoneId is not null)
+        {
+            UserTimeZoneId = userTimeZoneId;
+        }
+    }
+
+    private void Cancel()
+    {
+        if (!_isSaving) { DialogInstance.Close(DialogResult.Cancel); }
+    }
+
+    private void HandleAgentChanged(ChangeEventArgs args)
+    {
+        _agentId = args.Value?.ToString() ?? string.Empty;
+        if (!IsCustomRunScope)
+        {
+            return;
+        }
+
+        _runScope = null;
+        _ = EnsureCustomRunScope();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_isSaving) { return; }
+        _error = null;
+
+        if (string.IsNullOrWhiteSpace(_name))
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.ValidationNameRequired, "Name is required.");
+            return;
+        }
+
+        if (_instructionSource is null && string.IsNullOrWhiteSpace(_instruction))
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.ValidationInstructionRequired, "Instruction is required.");
+            return;
+        }
+
+        if (_scheduleKind == TaskScheduleKind.Interval && _intervalMinutes < 1)
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskIntervalInvalid, "Interval must be at least 1 minute.");
+            return;
+        }
+
+        if (_keepLastRuns is < 1)
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskKeepLastRunsInvalid, "Keep last runs must be at least 1, or empty to keep every run.");
+            return;
+        }
+
+        if (_scheduleKind == TaskScheduleKind.Cron && string.IsNullOrWhiteSpace(_cronExpression))
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskCronExpressionRequired, "Cron expression is required.");
+            return;
+        }
+
+        if (_scheduleKind == TaskScheduleKind.AfterTask)
+        {
+            _predecessorTaskId = _predecessorTaskId.Trim();
+
+            if (string.IsNullOrWhiteSpace(_predecessorTaskId))
+            {
+                _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskPredecessorRequired, "Select the task this one should run after.");
+                return;
+            }
+
+            if (string.Equals(_predecessorTaskId, _existingId, StringComparison.Ordinal))
+            {
+                _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskPredecessorSelf, "A task cannot run after itself.");
+                return;
+            }
+        }
+
+        if (_externalTriggerEnabled && !ValidateExternalTriggerParameters())
+        {
+            return;
+        }
+
+        var localRunAt = DateTime.SpecifyKind(_runAt, DateTimeKind.Unspecified);
+        var scheduledRunAt = new DateTimeOffset(localRunAt, _taskTimeZone.GetUtcOffset(localRunAt));
+
+        var task = new AgentTaskDefinition
+        {
+            Id = _isEditing ? _existingId : Guid.NewGuid().ToString(),
+            Name = _name.Trim(),
+            Instruction = _instructionSource is null ? _instruction.Trim() : _instruction,
+            InstructionSource = _instructionSource,
+            InstructionMode = _instructionMode,
+            AgentId = _agentId,
+            ModelOverrideId = string.IsNullOrEmpty(_modelOverrideId) ? null : _modelOverrideId,
+            IsEnabled = _isEnabled,
+            // Editing visible fields preserves the task's API-configured execution settings.
+            SessionMode = _sessionMode,
+            MaxTokenBudget = _maxTokenBudget,
+            KeepLastRuns = _keepLastRuns,
+            ToolApprovalRunMode = _toolApprovalRunMode,
+            RunScope = IsCustomRunScope ? EnsureCustomRunScope()?.Clone() : null,
+            NotifyOnCompletion = _notifyOnCompletion,
+            WaitForOwnerProviderIdle = _waitForOwnerProviderIdle,
+            ExternalTrigger = new TaskExternalTrigger
+            {
+                IsEnabled = _externalTriggerEnabled,
+                Slug = ResolveExternalTriggerSlug(),
+                Parameters = _externalTriggerEnabled
+                    ? _externalTriggerParameters.Select(parameter => new TaskExternalParameter
+                    {
+                        Name = parameter.Name.Trim(),
+                        Kind = parameter.Kind,
+                        IsRequired = parameter.IsRequired
+                    }).ToList()
+                    : []
+            },
+            Schedule = new TaskSchedule
+            {
+                Kind = _scheduleKind,
+                IntervalMinutes = _scheduleKind == TaskScheduleKind.Interval ? _intervalMinutes : null,
+                RunAt = _scheduleKind == TaskScheduleKind.OneShot ? scheduledRunAt : null,
+                CronExpression = _scheduleKind == TaskScheduleKind.Cron ? _cronExpression.Trim() : null,
+                TimeZoneId = _scheduleKind is TaskScheduleKind.OneShot or TaskScheduleKind.Cron ? _taskTimeZoneId : string.Empty,
+                DeleteAfterRun = _scheduleKind == TaskScheduleKind.OneShot && _deleteAfterRun,
+                PredecessorTaskId = _scheduleKind == TaskScheduleKind.AfterTask ? _predecessorTaskId.Trim() : null
+            }
+        };
+
+        _isSaving = true;
+        try
+        {
+            // The page saves before closing so a rejected request retains this complete draft.
+            if (_saveTaskAsync is not null && !await _saveTaskAsync(task)) { return; }
+            DialogInstance.Close(DialogResult.Ok, task);
+        }
+        finally { _isSaving = false; }
+    }
+
+    private async Task OpenRunScopeDialogAsync()
+    {
+        if (SelectedAgentDefinition is null)
+        {
+            return;
+        }
+
+        var parameters = new Dictionary<string, object?>
+        {
+            [nameof(TaskRunScopeDialog.SelectedAgent)] = SelectedAgentDefinition,
+            [nameof(TaskRunScopeDialog.InitialScope)] = EnsureCustomRunScope()?.Clone(),
+            [nameof(TaskRunScopeDialog.ToolGroups)] = ToolGroups,
+            [nameof(TaskRunScopeDialog.ExposableAgents)] = ExposableAgents,
+            [nameof(TaskRunScopeDialog.AvailableSkills)] = AvailableSkills,
+            [nameof(TaskRunScopeDialog.AvailableWorkspaces)] = AvailableWorkspaces
+        };
+
+        var result = await DialogService.ShowAsync<TaskRunScopeDialog, TaskRunScope>(parameters);
+        if (result.IsOk && result.Data is not null)
+        {
+            _runScope = result.Data.Clone();
+            _runScopeMode = RunScopeModeCustom;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleRunScopeModeChanged(ChangeEventArgs args)
+    {
+        var requestedMode = args.Value?.ToString();
+        if (string.Equals(requestedMode, RunScopeModeCustom, StringComparison.Ordinal))
+        {
+            _runScopeMode = RunScopeModeCustom;
+            _ = EnsureCustomRunScope();
+            return;
+        }
+
+        _runScopeMode = RunScopeModeAgentSettings;
+        _runScope = null;
+    }
+
+    private TaskRunScope? EnsureCustomRunScope()
+    {
+        if (_runScope is not null)
+        {
+            return _runScope;
+        }
+
+        if (SelectedAgentDefinition is null)
+        {
+            return null;
+        }
+
+        _runScope = TaskRunScope.FromAgent(SelectedAgentDefinition);
+        return _runScope;
+    }
+
+    private async Task OpenInstructionEditorAsync()
+    {
+        PromptDocument? document;
+        try { document = _instructionSource is null ? null : await ManagementApiClient.GetTaskInstructionAsync(_existingId); }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Could not load instruction default for task {TaskId}.", _existingId);
+            _error = ex.Message;
+            return;
+        }
+        if (_instructionSource is not null && _instructionMode != InstructionSelection.Replace && document?.DefaultContent is null)
+        {
+            _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskInstructionDefaultUnavailable,
+                "The task's default instruction is unavailable. Enable its plugin and restart.");
+            return;
+        }
+        var result = await DialogService.ShowAsync<PromptEditorDialog>(new Dictionary<string, object?>
+        {
+            ["Title"] = CommonLoc.GetOrDefault(CommonTextKeys.TaskInstructionLabel, "Instruction"),
+            ["FileName"] = "instruction.md",
+            ["InitialContent"] = _instruction,
+            ["DefaultContent"] = document?.DefaultContent,
+            ["InstructionMode"] = _instructionMode,
+            ["SaveContentAsync"] = (Func<SavePromptRequest, Task>)(request =>
+            {
+                _instruction = request.Content;
+                _instructionMode = request.Mode;
+                return Task.CompletedTask;
+            })
+        });
+
+        if (result == DialogResult.Ok)
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void AddExternalParameter()
+    {
+        _externalTriggerParameters.Add(new TaskExternalParameter { Kind = TaskExternalParameterKind.String });
+    }
+
+    private void RemoveExternalParameter(TaskExternalParameter parameter)
+    {
+        _externalTriggerParameters.Remove(parameter);
+    }
+
+    private async Task CopyExternalTriggerEndpointAsync()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ExternalTriggerEndpoint);
+    }
+
+    private string ResolveExternalTriggerSlug()
+    {
+        return Slugs.ForUserTaskTrigger(UserScope.UserId, string.IsNullOrWhiteSpace(_externalTriggerSlug) ? _name : _externalTriggerSlug);
+    }
+
+    private bool ValidateExternalTriggerParameters()
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var parameter in _externalTriggerParameters)
+        {
+            var name = parameter.Name?.Trim() ?? string.Empty;
+            if (!IsValidExternalParameterName(name))
+            {
+                _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerParameterNameInvalid, "Parameter names must start with a letter and contain only letters, numbers, underscores, or hyphens.");
+                return false;
+            }
+
+            if (!names.Add(name))
+            {
+                _error = CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerParameterNameDuplicate, "Parameter names must be unique.");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool IsValidExternalParameterName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || name[0] is not (>= 'A' and <= 'Z' or >= 'a' and <= 'z'))
+        {
+            return false;
+        }
+
+        foreach (var character in name)
+        {
+            if (character is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9' or '_' or '-')
+            {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+}
+
+@using Oscova.Agents.Core.ApiContracts.Prompts

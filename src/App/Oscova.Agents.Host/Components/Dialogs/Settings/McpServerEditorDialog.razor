@@ -1,0 +1,295 @@
+@using Oscova.Agents.Core.Mcp
+@using Oscova.Agents.Policies
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+@* Edits a single MCP server without expanding the settings page layout. *@
+<AppDialogShell Title="@DialogTitle"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.McpServersDetailsDialogTitle, "Server configuration"))"
+                Icon="@GetTransportIcon(_server.Transport)"
+                MaxWidthClass="max-w-3xl"
+                HelpTopic="@HelpTopics.McpServerEditor"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <div class="space-y-4">
+            <McpPlacementEditor Server="@_server" IsOperator="@_isOperator" Changed="StateHasChanged" />
+            <div class="grid gap-3 md:grid-cols-2">
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</span></label>
+                    <label class="input input-sm w-full">
+                        <span class="iconify lucide--server text-base-content/60 size-4"></span>
+                        <input id="mcp-server-name"
+                               aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")"
+                               class="grow focus:outline-0"
+                               placeholder="@(Loc.GetOrDefault(SettingsTextKeys.McpServersNamePlaceholder, "e.g. My MCP Server"))"
+                               @bind-value="_server.Name"
+                               @bind-value:event="oninput" />
+                    </label>
+                    @if (string.IsNullOrWhiteSpace(_server.Name))
+                    {
+                        <p class="mt-1 text-xs text-error">@Loc.GetOrDefault(SettingsTextKeys.McpServersNameRequired, "Name is required.")</p>
+                    }
+                </div>
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportLabel, "Transport")</span></label>
+                    <select class="select select-bordered select-sm w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportLabel, "Transport")" @bind="_server.Transport">
+                        <option value="@McpTransportType.Http">@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportHttp, "HTTP")</option>
+                        <option value="@McpTransportType.Stdio">@Loc.GetOrDefault(SettingsTextKeys.McpServersTransportStdio, "STDIO")</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label py-1" for="mcp-server-network-scope"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersNetworkScopeLabel, "Network use")</span></label>
+                <select id="mcp-server-network-scope" class="select select-bordered select-sm w-full" @bind="_server.NetworkScope">
+                    <option value="@NetworkScope.None">@Loc.GetNetworkScopeLabel(NetworkScope.None)</option>
+                    <option value="@NetworkScope.Incidental">@Loc.GetNetworkScopeLabel(NetworkScope.Incidental)</option>
+                    <option value="@NetworkScope.Egress">@Loc.GetNetworkScopeLabel(NetworkScope.Egress)</option>
+                </select>
+                <p class="mt-1 text-xs text-base-content/60">
+                    @Loc.GetOrDefault(SettingsTextKeys.McpServersNetworkScopeHelp, "Air-gapped runs exclude only servers classified as Internet. Choose the server's actual network classification.")
+                </p>
+            </div>
+
+            @if (_server.Transport == McpTransportType.Http)
+            {
+                <div class="grid gap-3 md:grid-cols-2">
+                    <div class="form-control md:col-span-2">
+                        <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersEndpointLabel, "Endpoint")</span></label>
+                        <label class="input input-sm w-full">
+                            <span class="iconify lucide--link text-base-content/60 size-4"></span>
+                            <input id="mcp-server-endpoint" dir="ltr"
+                                   aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersEndpointLabel, "Endpoint")"
+                                   class="grow focus:outline-0"
+                                   placeholder="@(Loc.GetOrDefault(SettingsTextKeys.McpServersEndpointPlaceholder, "http://127.0.0.1:8811/mcp"))"
+                                   @bind-value="_server.Endpoint"
+                                   @bind-value:event="oninput" />
+                        </label>
+                        @if (string.IsNullOrWhiteSpace(_server.Endpoint))
+                        {
+                            <p class="mt-1 text-xs text-error">@Loc.GetOrDefault(SettingsTextKeys.McpServersEndpointRequired, "Endpoint is required before reconnecting.")</p>
+                        }
+                    </div>
+                    <div class="form-control md:col-span-2">
+                        <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersHeadersLabel, "Headers (key=value per line)")</span></label>
+                        <textarea dir="ltr" class="textarea textarea-bordered textarea-sm h-24 w-full"
+                                  aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersHeadersLabel, "Headers (key=value per line)")"
+                                  placeholder="@(Loc.GetOrDefault(SettingsTextKeys.McpServersHeadersPlaceholder, "Authorization=Bearer sk-xxx"))"
+                                  value="@GetHeadersText()"
+                                  @oninput="e => SetHeadersFromText(e.Value?.ToString())"></textarea>
+                    </div>
+                </div>
+            }
+            else if (_server.Transport == McpTransportType.Stdio)
+            {
+                <div class="grid gap-3 md:grid-cols-2">
+                    <div class="form-control">
+                        <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersCommandLabel, "Command")</span></label>
+                        <label class="input input-sm w-full">
+                            <span class="iconify lucide--terminal text-base-content/60 size-4"></span>
+                            <input id="mcp-server-command" dir="ltr"
+                                   aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersCommandLabel, "Command")"
+                                   class="grow focus:outline-0"
+                                   placeholder="@(Loc.GetOrDefault(SettingsTextKeys.McpServersCommandPlaceholder, "npx"))"
+                                   @bind-value="_server.Command"
+                                   @bind-value:event="oninput" />
+                        </label>
+                        @if (string.IsNullOrWhiteSpace(_server.Command))
+                        {
+                            <p class="mt-1 text-xs text-error">@Loc.GetOrDefault(SettingsTextKeys.McpServersCommandRequired, "Command is required before reconnecting.")</p>
+                        }
+                    </div>
+                    <div class="form-control">
+                        <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentLabel, "Execution environment")</span></label>
+                        <select class="select select-bordered select-sm w-full" aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentLabel, "Execution environment")" @bind="_server.ExecutionEnvironment">
+                            <option value="@McpExecutionEnvironment.HostLocal">@Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentHost, "Host process")</option>
+                            <option value="@McpExecutionEnvironment.Containerized">@Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentContainer, "Docker sandbox")</option>
+                        </select>
+                        <p class="mt-1 text-xs text-base-content/60">
+                            @(_server.ExecutionEnvironment == McpExecutionEnvironment.Containerized
+                                ? Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentContainerHint, "Runs in Docker on the configured device. Project runs mount /project; central runs mount /workspace/<name>.")
+                                : Loc.GetOrDefault(SettingsTextKeys.McpServersExecutionEnvironmentHostHint, "Runs on the configured device with the app's permissions."))
+                        </p>
+                    </div>
+                    @if (_server.ExecutionEnvironment != McpExecutionEnvironment.Containerized)
+                    {
+                        <div class="form-control">
+                            <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersWorkingDirectoryLabel, "Working Directory (optional)")</span></label>
+                            <label class="input input-sm w-full">
+                                <span class="iconify lucide--folder text-base-content/60 size-4"></span>
+                                <input id="mcp-server-working-directory" dir="ltr"
+                                       aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersWorkingDirectoryLabel, "Working Directory (optional)")"
+                                       class="grow focus:outline-0"
+                                       @bind-value="_server.WorkingDirectory"
+                                       @bind-value:event="oninput" />
+                            </label>
+                        </div>
+                    }
+                    <div class="form-control md:col-span-2">
+                        <label class="label py-1" for="mcp-server-arguments"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersArgumentsLabel, "Arguments (one per line)")</span></label>
+                        <textarea id="mcp-server-arguments" dir="ltr"
+                                  aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersArgumentsLabel, "Arguments (one per line)")"
+                                  class="textarea textarea-bordered textarea-sm h-24 w-full"
+                                  placeholder="@(Loc.GetOrDefault(SettingsTextKeys.McpServersArgumentsPlaceholder, "-y\n@modelcontextprotocol/server-everything"))"
+                                  value="@GetArgumentsText()"
+                                  @oninput="e => SetArgumentsFromText(e.Value?.ToString())"></textarea>
+                    </div>
+                    <div class="form-control md:col-span-2">
+                        <label class="label py-1"><span class="label-text text-xs">@Loc.GetOrDefault(SettingsTextKeys.McpServersEnvironmentVariablesLabel, "Environment Variables (KEY=VALUE or KEY per line)")</span></label>
+                        <textarea dir="ltr" class="textarea textarea-bordered textarea-sm h-24 w-full"
+                                  aria-label="@Loc.GetOrDefault(SettingsTextKeys.McpServersEnvironmentVariablesLabel, "Environment Variables (KEY=VALUE or KEY per line)")"
+                                  placeholder="@(Loc.GetOrDefault(SettingsTextKeys.McpServersEnvironmentVariablesPlaceholder, "API_KEY\nNODE_ENV=production"))"
+                                  value="@GetEnvVarsText()"
+                                  @oninput="e => SetEnvVarsFromText(e.Value?.ToString())"></textarea>
+                        <p class="mt-1 text-xs text-base-content/60">
+                            @Loc.GetOrDefault(SettingsTextKeys.McpServersEnvironmentVariablesHelp, "Use KEY=VALUE for a saved literal. For Host processes, use KEY to read it from Oscova at launch; missing keys are omitted, and resolved values are never saved or shown.")
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Cancel">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(!_server.IsValidForConnect() || !_isOperator && _server.Transport == McpTransportType.Stdio && string.IsNullOrWhiteSpace(_server.NodeId))" @onclick="Save">
+            <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+            @Loc.GetOrDefault(SettingsTextKeys.McpServersSaveServerButton, "Save server")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private McpServerConfig _server = new()
+    {
+        Transport = McpTransportType.Stdio
+    };
+
+    private bool _isOperator;
+    private bool _enableWhenComplete;
+    private bool IsEditing { get; set; }
+
+    private string DialogTitle => IsEditing
+        ? Loc.GetOrDefault(SettingsTextKeys.McpServersEditDialogTitle, "Edit MCP server")
+        : Loc.GetOrDefault(SettingsTextKeys.McpServersAddDialogTitle, "Add MCP server");
+
+    protected override void OnInitialized()
+    {
+        _isOperator = DialogInstance.Get<bool>("IsOperator");
+        var server = DialogInstance.Get<McpServerConfig>("Server");
+
+        if (server is not null)
+        {
+            _server = server.Clone();
+            IsEditing = true;
+            _enableWhenComplete = !server.IsEnabled && server.HasUnsetValues();
+        }
+    }
+
+    private string GetHeadersText()
+    {
+        return _server.Headers is null || _server.Headers.Count == 0
+            ? string.Empty
+            : string.Join("\n", _server.Headers.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+    }
+
+    private void SetHeadersFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            _server.Headers = null;
+            return;
+        }
+
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var line in text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var idx = line.IndexOf('=');
+            if (idx > 0)
+            {
+                var key = line[..idx].Trim();
+                var value = line[(idx + 1)..].Trim();
+                if (!string.IsNullOrEmpty(key))
+                {
+                    dict[key] = value;
+                }
+            }
+        }
+
+        _server.Headers = dict.Count == 0 ? null : dict;
+    }
+
+    private string GetArgumentsText()
+    {
+        return _server.Arguments is null || _server.Arguments.Count == 0 ? string.Empty : string.Join('\n', _server.Arguments);
+    }
+
+    private void SetArgumentsFromText(string? text)
+    {
+        // Newlines delimit arguments so paths and literal spaces survive editing.
+        _server.Arguments = string.IsNullOrWhiteSpace(text)
+            ? null
+            : text.Replace("\r\n", "\n", StringComparison.Ordinal).Split('\n', StringSplitOptions.RemoveEmptyEntries).ToList();
+    }
+
+    private string GetEnvVarsText()
+    {
+        return _server.EnvironmentVariables is null || _server.EnvironmentVariables.Count == 0
+            ? string.Empty
+            : string.Join("\n", _server.EnvironmentVariables.Select(variable =>
+                variable.Value is null ? variable.Key : $"{variable.Key}={variable.Value}"));
+    }
+
+    private void SetEnvVarsFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            _server.EnvironmentVariables = null;
+            return;
+        }
+
+        var dict = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var line in text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var idx = line.IndexOf('=');
+            if (idx > 0)
+            {
+                var key = line[..idx].Trim();
+                var value = line[(idx + 1)..].Trim();
+                if (!string.IsNullOrEmpty(key))
+                {
+                    dict[key] = value;
+                }
+            }
+            else if (idx < 0)
+            {
+                dict[line] = null;
+            }
+        }
+
+        _server.EnvironmentVariables = dict.Count == 0 ? null : dict;
+    }
+
+    private static string GetTransportIcon(McpTransportType transport)
+    {
+        return transport == McpTransportType.Http ? "lucide:globe" : "lucide:terminal";
+    }
+
+    private void Save()
+    {
+        // A pending registry install is saved off, so filling its blank values turns it on.
+        if (_enableWhenComplete && !_server.HasUnsetValues())
+        {
+            _server.IsEnabled = true;
+        }
+
+        DialogInstance.Close(DialogResult.Ok, _server.Clone());
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+}

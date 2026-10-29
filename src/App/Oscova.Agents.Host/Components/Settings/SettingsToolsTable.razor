@@ -1,0 +1,557 @@
+@* Renders a compact, filterable tools table for settings screens that need either read-only or selectable rows. *@
+@using System.Globalization
+@using Oscova.Agents.Core.ApiContracts.Agents
+@using Oscova.Agents.Core.ApiContracts.Tools
+@using Oscova.Agents.Policies
+@using Oscova.Agents.Toolsets
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="card min-w-0 bg-base-100 shadow-sm">
+    <div class="card-body p-0">
+        @if (IsEgressDisabled)
+        {
+            <div class="alert alert-warning alert-soft mx-5 mt-5">
+                <iconify-icon icon="lucide:shield-alert"></iconify-icon>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.ToolsEgressDisabledNotice, "Internet tools are blocked by the current local-only setting.")</span>
+            </div>
+        }
+
+        <div class="flex flex-col gap-3 border-b border-base-200 px-5 pt-5 pb-4 sm:flex-row sm:items-center sm:justify-between">
+            <label class="input input-sm w-full sm:w-72">
+                <iconify-icon icon="lucide:search" width="14" height="14" class="text-base-content/60"></iconify-icon>
+                <input type="search"
+                       class="grow"
+                       placeholder="@(Loc.GetOrDefault(SettingsTextKeys.ToolsSearchPlaceholder, "Search tools"))"
+                       aria-label="@(Loc.GetOrDefault(SettingsTextKeys.ToolsSearchLabel, "Search tools"))"
+                       @bind="_searchTerm"
+                       @bind:event="oninput" />
+            </label>
+
+            <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+                @if (SelectionEnabled && ShowEnabledOnlyFilter)
+                {
+                    <label class="label cursor-pointer justify-start gap-2">
+                        <input type="checkbox" class="checkbox checkbox-sm" @bind="_enabledOnly" />
+                        <span>@Loc.GetOrDefault(SettingsTextKeys.ToolsShowEnabledOnlyLabel, "Show enabled tools only")</span>
+                    </label>
+                }
+                @if (SelectionEnabled)
+                {
+                    <span class="badge badge-ghost badge-sm justify-center whitespace-nowrap" aria-live="polite">
+                        @FormatSettingsText(SettingsTextKeys.ToolsSelectedCountLabel, "{0} of {1} selected", SelectedToolCount, AvailableToolCount)
+                    </span>
+                }
+
+                <select class="select select-sm w-full sm:w-48"
+                        aria-label="@(Loc.GetOrDefault(SettingsTextKeys.ToolsServerNameLabel, "Server name"))"
+                        @bind="_selectedServerFilter">
+                    <option value="@AllServersValue">@Loc.GetOrDefault(SettingsTextKeys.ToolsAllServersOption, "All")</option>
+                    @foreach (var option in ServerOptions)
+                    {
+                        <option value="@option.ServerName">@option.DisplayName</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="@($"custom-settings-table-container min-h-0 max-w-full overflow-auto {HeightClass}".Trim())">
+            <table class="table table-pin-rows w-full custom-settings-adaptive-table custom-settings-tools-table">
+                <thead>
+                    <tr>
+                        @if (SelectionEnabled)
+                        {
+                            <th class="w-12">
+                                <input aria-label="@(Loc.GetOrDefault(SettingsTextKeys.ToolsSelectVisibleToolsLabel, "Select visible tools"))"
+                                       class="checkbox checkbox-sm"
+                                       type="checkbox"
+                                       checked="@AreAllVisibleToolsSelected"
+                                       disabled="@(SelectableFilteredTools.Count == 0)"
+                                       @onchange="OnVisibleToolsChangedAsync" />
+                            </th>
+                        }
+                        @if (PinningEnabled)
+                        {
+                            <th class="w-24">@Loc.GetOrDefault(SettingsTextKeys.AgentsPinnedColumnLabel, "Pinned")</th>
+                        }
+                        <th>@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderTool, "Tool")</th>
+                        <th class="custom-settings-tool-server">@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderServer, "Server")</th>
+                        <th class="custom-settings-tool-network">@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderNetwork, "Internet")</th>
+                        @if (ShowGovernanceActions)
+                        {
+                            <th>@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderPolicy, "Policy")</th>
+                        }
+                        @if (PolicyControlsEnabled)
+                        {
+                            <th class="custom-settings-tool-approval">@Loc.GetOrDefault(SettingsTextKeys.ToolsTableHeaderApproval, "Approval")</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (FilteredTools.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="@ColumnCount" class="py-8 text-center text-sm opacity-60">
+                                @Loc.GetOrDefault(SettingsTextKeys.ToolsNoMatchesMessage, "No tools match the current filters.")
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var tool in FilteredTools)
+                        {
+                            <tr class="@GetRowClass(tool)" @key="tool.QualifiedName">
+                                @if (SelectionEnabled)
+                                {
+                                    <td class="pt-4" data-label="@Loc[SettingsTextKeys.ToolsSelectVisibleToolsLabel]">
+                                        <div class="@(IsToolBlocked(tool) ? "tooltip tooltip-right" : string.Empty)"
+                                             data-tip="@GetBlockedTooltip(tool)">
+                                            <input aria-label="@FormatSettingsText(SettingsTextKeys.ToolsSelectToolLabel, "Select tool {0}", tool.OriginalName)"
+                                                   class="checkbox checkbox-sm"
+                                                   type="checkbox"
+                                                   checked="@IsToolSelected(tool.QualifiedName)"
+                                                   disabled="@IsToolBlocked(tool)"
+                                                   @onchange="e => OnToolChangedAsync(tool, e.Value is bool isChecked && isChecked)" />
+                                        </div>
+                                    </td>
+                                }
+                                @if (PinningEnabled)
+                                {
+                                    <td class="pt-4" data-label="@Loc[SettingsTextKeys.AgentsPinnedColumnLabel]">
+                                        <input aria-label="@FormatSettingsText(SettingsTextKeys.AgentsPinToolLabel, "Pin tool {0}", tool.OriginalName)"
+                                               class="checkbox checkbox-primary checkbox-sm"
+                                               type="checkbox"
+                                               checked="@IsToolPinned(tool.QualifiedName)"
+                                               disabled="@(!IsToolSelected(tool.QualifiedName) || IsToolBlocked(tool))"
+                                               @onchange="e => OnToolPinChangedAsync(tool, e.Value is bool isChecked && isChecked)" />
+                                    </td>
+                                }
+                                <td data-label="@Loc[SettingsTextKeys.ToolsTableHeaderTool]">
+                                    <div class="flex items-start gap-3">
+                                        <div class="bg-base-200 text-base-content/70 mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg">
+                                            <iconify-icon icon="lucide:wrench" width="16" height="16"></iconify-icon>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-medium">@tool.OriginalName</p>
+                                            <code class="text-xs text-base-content/60">@tool.QualifiedName</code>
+                                            @if (!string.IsNullOrWhiteSpace(tool.Description))
+                                            {
+                                                <p dir="auto" class="mt-1 line-clamp-2 text-sm text-base-content/65">@tool.Description</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-sm text-base-content/70" data-label="@Loc[SettingsTextKeys.ToolsTableHeaderServer]">@tool.ServerDisplayName</td>
+                                <td data-label="@Loc[SettingsTextKeys.ToolsTableHeaderNetwork]">
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="@GetNetworkScopeBadgeClass(tool.NetworkScope)">
+                                            <span class="@GetNetworkScopeIconClass(tool.NetworkScope)"></span>
+                                            @Loc.GetNetworkScopeLabel(tool.NetworkScope)
+                                        </span>
+                                        @if (tool.HasNetworkScopeOverride)
+                                        {
+                                            <span class="badge badge-info badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">
+                                                @Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceOverrideBadge, "Overridden")
+                                            </span>
+                                        }
+                                        @if (IsToolBlocked(tool))
+                                        {
+                                            <span class="badge badge-error badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">
+                                                @Loc.GetOrDefault(SettingsTextKeys.ToolsEgressDisabledBadge, "Blocked")
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                @if (ShowGovernanceActions)
+                                {
+                                    <td data-label="@Loc[SettingsTextKeys.ToolsTableHeaderPolicy]">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span class="@GetPolicyBadgeClass(tool)">
+                                                @GetPolicyLabel(tool)
+                                            </span>
+                                            @if (tool.CallLimit is { IsEnabled: true })
+                                            {
+                                                <span class="badge badge-neutral badge-soft badge-sm whitespace-nowrap">
+                                                    @FormatQuota(tool)
+                                                </span>
+                                            }
+                                            <button type="button"
+                                                    class="btn btn-ghost btn-sm btn-circle"
+                                                    title="@Loc.GetOrDefault(SettingsTextKeys.ToolsConfigurePolicyTooltip, "Configure tool policy")"
+                                                    aria-label="@FormatSettingsText(SettingsTextKeys.ToolsConfigurePolicyLabel, "Configure policy for {0}", tool.OriginalName)"
+                                                    @onclick="() => OnConfigureToolGovernance.InvokeAsync(tool.QualifiedName)">
+                                                <span class="iconify lucide--settings-2 size-4"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
+                                @if (PolicyControlsEnabled)
+                                {
+                                    <td data-label="@Loc[SettingsTextKeys.ToolsTableHeaderApproval]">
+                                        @if (IsToolSelected(tool.QualifiedName))
+                                        {
+                                            <select class="select select-sm w-full"
+                                                    aria-label="@($"{Loc[SettingsTextKeys.ToolsTableHeaderApproval]}: {tool.QualifiedName}")"
+                                                    value="@GetToolApprovalMode(tool.QualifiedName)"
+                                                    disabled="@IsToolBlocked(tool)"
+                                                    @onchange="e => OnToolPolicyChangedAsync(tool.QualifiedName, e)">
+                                                <option value="@ToolApprovalMode.Default">@GetDefaultApprovalLabel(tool.DefaultApprovalMode)</option>
+                                                <option value="@ToolApprovalMode.RequireApproval">@Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalRequire, "Require approval")</option>
+                                                <option value="@ToolApprovalMode.AutoApprove">@Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalAutoApprove, "Auto-approve")</option>
+                                                <option value="@ToolApprovalMode.Deny">@Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalDeny, "Deny")</option>
+                                            </select>
+                                            @if (IsAutoApprovedShellCommand(tool))
+                                            {
+                                                <p class="text-warning mt-1 flex items-start gap-1 text-xs">
+                                                    <span class="iconify lucide--triangle-alert mt-0.5 size-4 shrink-0" aria-hidden="true"></span>
+                                                    <span>@Loc.GetOrDefault(SettingsTextKeys.ToolsAutoApproveHostWarning, "Auto-approved shell commands can change the machine running Oscova when host execution is enabled.")</span>
+                                                </p>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalUnavailable, "Not selected")</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private const string AllServersValue = "__all__";
+
+    [Parameter, EditorRequired] public IReadOnlyList<ToolGroup> ToolGroups { get; set; } = [];
+    [Parameter] public bool ShowSelection { get; set; }
+    [Parameter] public bool ShowEnabledOnlyFilter { get; set; }
+    [Parameter] public ISet<string>? SelectedToolNames { get; set; }
+    [Parameter] public EventCallback OnSelectionChanged { get; set; }
+    [Parameter] public string HeightClass { get; set; } = string.Empty;
+    [Parameter] public bool ShowPolicyControls { get; set; }
+    [Parameter] public IDictionary<string, ToolApprovalMode>? ToolApprovalModes { get; set; }
+    [Parameter] public EventCallback<(string ToolName, ToolApprovalMode Mode)> OnToolApprovalModeChanged { get; set; }
+    [Parameter] public bool IsEgressDisabled { get; set; }
+    [Parameter] public bool ShowPinning { get; set; }
+    [Parameter] public ISet<string>? PinnedToolNames { get; set; }
+    [Parameter] public EventCallback OnPinnedToolNamesChanged { get; set; }
+    [Parameter] public IReadOnlyDictionary<string, ToolGovernanceEntrySummary>? GovernanceByToolName { get; set; }
+    [Parameter] public bool ShowGovernanceActions { get; set; }
+    [Parameter] public EventCallback<string> OnConfigureToolGovernance { get; set; }
+
+    private string _searchTerm = string.Empty;
+    private bool _enabledOnly;
+    private string _selectedServerFilter = AllServersValue;
+
+    private bool SelectionEnabled => ShowSelection && SelectedToolNames is not null;
+
+    private bool PolicyControlsEnabled =>
+        SelectionEnabled && ShowPolicyControls && ToolApprovalModes is not null;
+
+    private bool PinningEnabled => SelectionEnabled && ShowPinning && PinnedToolNames is not null;
+
+    private int ColumnCount =>
+        (SelectionEnabled ? 4 : 3) +
+        (PolicyControlsEnabled ? 1 : 0) +
+        (PinningEnabled ? 1 : 0) +
+        (ShowGovernanceActions ? 1 : 0);
+
+    private List<ToolRow> FlatTools => [.. ToolGroups
+        .SelectMany(group => group.Tools.Select(tool => CreateToolRow(group, tool)))
+        .OrderBy(tool => tool.ServerDisplayName, StringComparer.CurrentCultureIgnoreCase)
+        .ThenBy(tool => PinningEnabled && IsToolPinned(tool.QualifiedName) ? 0 : 1)
+        .ThenBy(tool => tool.OriginalName, StringComparer.CurrentCultureIgnoreCase)];
+
+    private List<ServerOption> ServerOptions => [.. ToolGroups
+        .Select(group => new ServerOption(group.ServerName, GetServerDisplayName(group.ServerName)))
+        .DistinctBy(option => option.ServerName, StringComparer.OrdinalIgnoreCase)
+        .OrderBy(option => option.DisplayName, StringComparer.CurrentCultureIgnoreCase)];
+
+    private List<ToolRow> ServerFilteredTools => [.. FlatTools.Where(MatchesServerFilter)];
+
+    private List<ToolRow> FilteredTools => [.. ServerFilteredTools.Where(tool =>
+        MatchesSearchFilter(tool) &&
+        (!SelectionEnabled || !ShowEnabledOnlyFilter || !_enabledOnly || IsToolSelected(tool.QualifiedName)))];
+
+    private List<ToolRow> SelectableFilteredTools => [.. FilteredTools.Where(tool => !IsToolBlocked(tool))];
+
+    private int AvailableToolCount => ServerFilteredTools.Count;
+
+    private int SelectedToolCount => ServerFilteredTools.Count(tool => IsToolSelected(tool.QualifiedName));
+
+    private bool AreAllVisibleToolsSelected =>
+        SelectableFilteredTools.Count > 0 &&
+        SelectableFilteredTools.All(tool => IsToolSelected(tool.QualifiedName));
+
+    private bool MatchesServerFilter(ToolRow tool)
+    {
+        return string.Equals(_selectedServerFilter, AllServersValue, StringComparison.Ordinal) ||
+               string.Equals(tool.ServerName, _selectedServerFilter, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool MatchesSearchFilter(ToolRow tool)
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            return true;
+        }
+
+        // Search across the labels users see in the table so filtering stays predictable.
+        return tool.OriginalName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+               tool.ServerDisplayName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+               tool.QualifiedName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsToolSelected(string qualifiedName)
+    {
+        return SelectedToolNames?.Contains(qualifiedName) == true;
+    }
+
+    private async Task OnToolChangedAsync(ToolRow tool, bool isChecked)
+    {
+        if (!SelectionEnabled || IsToolBlocked(tool))
+        {
+            return;
+        }
+
+        if (isChecked)
+        {
+            SelectedToolNames!.Add(tool.QualifiedName);
+        }
+        else
+        {
+            SelectedToolNames!.Remove(tool.QualifiedName);
+            PinnedToolNames?.Remove(tool.QualifiedName);
+            ToolApprovalModes?.Remove(tool.QualifiedName);
+        }
+
+        await OnSelectionChanged.InvokeAsync();
+    }
+
+    private bool IsToolPinned(string qualifiedName)
+    {
+        return PinnedToolNames?.Contains(qualifiedName) == true;
+    }
+
+    private async Task OnToolPinChangedAsync(ToolRow tool, bool isChecked)
+    {
+        if (!PinningEnabled || !IsToolSelected(tool.QualifiedName) || IsToolBlocked(tool))
+        {
+            return;
+        }
+
+        if (isChecked)
+        {
+            PinnedToolNames!.Add(tool.QualifiedName);
+        }
+        else
+        {
+            PinnedToolNames!.Remove(tool.QualifiedName);
+        }
+
+        await OnPinnedToolNamesChanged.InvokeAsync();
+    }
+
+    private ToolApprovalMode GetToolApprovalMode(string qualifiedName)
+    {
+        if (ToolApprovalModes is null)
+        {
+            return ToolApprovalMode.Default;
+        }
+        return ToolApprovalModes.TryGetValue(qualifiedName, out var mode) ? mode : ToolApprovalMode.Default;
+    }
+
+    private bool IsAutoApprovedShellCommand(ToolRow tool)
+    {
+        var mode = GetToolApprovalMode(tool.QualifiedName);
+        if (mode == ToolApprovalMode.Default) { mode = tool.DefaultApprovalMode; }
+        return mode == ToolApprovalMode.AutoApprove &&
+            (tool.QualifiedName == ToolNaming.BuildToolsetQualifiedName<ShellToolset>(nameof(ShellToolset.ExecCommandAsync)) ||
+             tool.QualifiedName == ToolNaming.BuildToolsetQualifiedName<ShellToolset>(nameof(ShellToolset.StartCommandAsync)) ||
+             tool.QualifiedName == HostShellToolset.QualifiedToolName);
+    }
+
+    private async Task OnToolPolicyChangedAsync(string qualifiedName, ChangeEventArgs args)
+    {
+        if (!PolicyControlsEnabled || ToolApprovalModes is null)
+        {
+            return;
+        }
+
+        if (!Enum.TryParse(args.Value?.ToString(), ignoreCase: true, out ToolApprovalMode mode))
+        {
+            mode = ToolApprovalMode.Default;
+        }
+
+        if (mode == ToolApprovalMode.Default)
+        {
+            ToolApprovalModes.Remove(qualifiedName);
+        }
+        else
+        {
+            ToolApprovalModes[qualifiedName] = mode;
+        }
+
+        await OnToolApprovalModeChanged.InvokeAsync((qualifiedName, mode));
+    }
+
+    private string GetDefaultApprovalLabel(ToolApprovalMode defaultMode)
+    {
+        return defaultMode switch
+        {
+            ToolApprovalMode.RequireApproval =>
+                Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalDefaultRequire, "Default (require approval)"),
+            ToolApprovalMode.AutoApprove =>
+                Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalDefaultAutoApprove, "Default (auto-approve)"),
+            _ => Loc.GetOrDefault(SettingsTextKeys.ToolsApprovalDefault, "Default")
+        };
+    }
+
+    private string GetNetworkScopeBadgeClass(NetworkScope scope)
+    {
+        return scope switch
+        {
+            NetworkScope.Egress => "badge badge-warning badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere] gap-1",
+            NetworkScope.Incidental => "badge badge-info badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere] gap-1",
+            _ => "badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere] gap-1"
+        };
+    }
+
+    private string GetNetworkScopeIconClass(NetworkScope scope)
+    {
+        return scope switch
+        {
+            NetworkScope.Egress or NetworkScope.Incidental => "iconify lucide--globe size-3",
+            _ => "iconify lucide--hard-drive size-3"
+        };
+    }
+
+    private string FormatQuota(ToolRow tool)
+    {
+        if (tool.CallLimit is null)
+        {
+            return string.Empty;
+        }
+
+        var used = tool.Usage?.Used ?? 0;
+        var maxCalls = tool.Usage?.MaxCalls ?? tool.CallLimit.MaxCalls;
+        return FormatSettingsText(SettingsTextKeys.ToolsGovernanceQuotaBadge, "{0} / {1}", used, maxCalls);
+    }
+
+    private string GetPolicyLabel(ToolRow tool)
+    {
+        return HasCustomPolicy(tool)
+            ? Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceCustomBadge, "Custom")
+            : Loc.GetOrDefault(SettingsTextKeys.ToolsGovernanceDefaultBadge, "Default");
+    }
+
+    private static string GetPolicyBadgeClass(ToolRow tool)
+    {
+        return HasCustomPolicy(tool)
+            ? "badge badge-primary badge-soft badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]"
+            : "badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]";
+    }
+
+    private static bool HasCustomPolicy(ToolRow tool)
+    {
+        return tool.HasNetworkScopeOverride || tool.CallLimit is { IsEnabled: true };
+    }
+
+    private async Task OnVisibleToolsChangedAsync(ChangeEventArgs args)
+    {
+        if (!SelectionEnabled)
+        {
+            return;
+        }
+
+        bool isChecked = args.Value is bool selected && selected;
+
+        // Apply the header checkbox only to the currently filtered slice.
+        foreach (var tool in SelectableFilteredTools)
+        {
+            if (isChecked)
+            {
+                SelectedToolNames!.Add(tool.QualifiedName);
+            }
+            else
+            {
+                SelectedToolNames!.Remove(tool.QualifiedName);
+                PinnedToolNames?.Remove(tool.QualifiedName);
+            }
+        }
+
+        await OnSelectionChanged.InvokeAsync();
+    }
+
+    private bool IsToolBlocked(ToolRow tool)
+    {
+        return IsEgressDisabled && tool.NetworkScope == NetworkScope.Egress;
+    }
+
+    private ToolRow CreateToolRow(ToolGroup group, ToolDefinition tool)
+    {
+        var governance = GovernanceByToolName is not null &&
+                         GovernanceByToolName.TryGetValue(tool.QualifiedName, out var summary)
+            ? summary
+            : null;
+
+        return new ToolRow(
+            group.ServerName,
+            GetServerDisplayName(group.ServerName),
+            tool.OriginalName,
+            tool.QualifiedName,
+            tool.Description,
+            tool.DefaultApprovalMode,
+            governance?.EffectiveNetworkScope ?? tool.NetworkScope,
+            governance?.HasNetworkScopeOverride == true,
+            governance?.CallLimit,
+            governance?.Usage);
+    }
+
+    private string GetRowClass(ToolRow tool)
+    {
+        return IsToolBlocked(tool)
+            ? "bg-warning/5 hover:bg-warning/10 align-top"
+            : "hover:bg-base-200/40 align-top";
+    }
+
+    private string GetBlockedTooltip(ToolRow tool)
+    {
+        return IsToolBlocked(tool)
+            ? Loc.GetOrDefault(SettingsTextKeys.ToolsEgressDisabledTooltip, "Turn off the active local-only setting to select this internet tool.")
+            : string.Empty;
+    }
+
+    private static string GetServerDisplayName(string serverName)
+    {
+        if (string.IsNullOrWhiteSpace(serverName))
+        {
+            return "Server";
+        }
+
+        string normalized = serverName.Replace('-', ' ').Replace('_', ' ');
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(normalized);
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private sealed record ToolRow(
+        string ServerName,
+        string ServerDisplayName,
+        string OriginalName,
+        string QualifiedName,
+        string Description,
+        ToolApprovalMode DefaultApprovalMode,
+        NetworkScope NetworkScope,
+        bool HasNetworkScopeOverride,
+        ToolCallLimit? CallLimit,
+        ToolQuotaUsageSummary? Usage);
+
+    private sealed record ServerOption(string ServerName, string DisplayName);
+}

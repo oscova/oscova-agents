@@ -1,0 +1,1890 @@
+@using Oscova.Agents.Avatar.Contracts
+@using Oscova.Agents.Core.Avatar.Contracts
+@using Oscova.Agents.Core.Settings
+@using Oscova.Agents.Host
+@using Oscova.Agents.Host.Components
+@using Oscova.Agents.Host.Constants
+@using System.Net
+@implements IDisposable
+@inject HttpClient Http
+@inject IToastService ToastService
+@inject IDialogService DialogService
+@inject ILogger<SettingsAvatarSection> Logger
+@inject AvatarUpdateService AvatarUpdates
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<UnsavedChangesGuard IsDirty="@IsDirty" />
+
+<div class="custom-settings-avatar space-y-6">
+    <fieldset class="fieldset custom-settings-group custom-settings-form">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.AvatarConnectionHeading, "Connection")</legend>
+        <div class="form-control">
+            <label class="label pl-0" for="avatar-bridge-url">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarBridgeUrlLabel, "Bridge URL")</span>
+            </label>
+            <div class="custom-settings-connection">
+                <label class="input w-full max-w-md">
+                    <span class="iconify lucide--link text-base-content/60 size-4.5"></span>
+                    <input id="avatar-bridge-url" class="grow focus:outline-0"
+                           placeholder="http://127.0.0.1:11318"
+                           @bind="_draft.BridgeUrl"
+                           @bind:event="oninput"
+                           @bind:after="MarkEngineUnchecked" />
+                </label>
+                <button type="button"
+                        class="btn btn-primary btn-sm"
+                        disabled="@(IsDirty || !IsEngineReachable)"
+                        title="@(Loc.GetOrDefault(SettingsTextKeys.AvatarApplySavedAvatarSettingsTitle, "Apply to Live Avatar"))"
+                        @onclick="ApplySavedSettingsAsync">
+                    <span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarApplySavedAvatarSettingsButton, "Apply to Live Avatar")</span>
+                </button>
+                <button type="button"
+                        @ref="_connectButton"
+                        class="btn btn-ghost btn-sm"
+                        disabled="@IsEngineChecking"
+                        title="@(Loc.GetOrDefault(SettingsTextKeys.AvatarConnectEngineTitle, "Connect to Avatar Engine"))"
+                        @onclick="HandleConnectAsync">
+                    <iconify-icon icon="lucide:radar"></iconify-icon>
+                    <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarConnectEngineButton, "Connect")</span>
+                </button>
+                @if (ShowLocalEngineStart)
+                {
+                    <button type="button"
+                            class="btn btn-outline btn-sm"
+                            disabled="@_isStartingLocalEngine"
+                            @onclick="StartLocalEngineAsync">
+                        <span class="iconify lucide--play size-4" aria-hidden="true"></span>
+                        <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarStartEngineButton, "Start Avatar Engine")</span>
+                    </button>
+                }
+            </div>
+            <div class="form-control mt-3 max-w-md">
+                <label class="label pl-0" for="avatar-access-mode">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeLabel, "Access mode")</span>
+                </label>
+                <select id="avatar-access-mode" class="select select-bordered w-full" @bind="_draft.PreferredAccessMode" @bind:after="MarkEngineUnchecked">
+                    <option value="@AvatarAccessMode.Shared">@Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeShared, "Shared")</option>
+                    <option value="@AvatarAccessMode.Exclusive">@Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeExclusive, "Exclusive")</option>
+                </select>
+                <p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AvatarAccessModeHelp, "Shared allows other paired clients. Exclusive blocks them until the Engine restarts.")</p>
+            </div>
+            <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+                <span class="@EngineStatusBadgeClass">
+                    <span class="@EngineStatusDotClass"></span>
+                    @EngineStatusLabel
+                </span>
+                <p class="text-xs opacity-70">@EngineStatusDescription</p>
+            </div>
+            <p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AvatarBridgeUrlDescription, "Saved bridge endpoint used by the shared avatar runtime.")</p>
+            @if (IsDirty)
+            {
+                <p class="text-xs mt-2 text-warning">@Loc.GetOrDefault(SettingsTextKeys.AvatarSaveChangesWarning, "Save changes before applying them to the avatar engine.")</p>
+            }
+        </div>
+    </fieldset>
+
+    <fieldset class="fieldset custom-settings-group custom-settings-form">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.AvatarAvatarHeading, "Avatar")</legend>
+        <div class="form-control">
+            <label class="label pl-0" for="avatar-selected-avatar">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarSelectedAvatarLabel, "Selected Avatar")</span>
+            </label>
+            <div class="flex items-center gap-2">
+                <select id="avatar-selected-avatar" class="select select-bordered w-full max-w-md"
+                        disabled="@(!CanSelectAvatar)"
+                        value="@SelectedAvatarValue"
+                        @onchange="OnAvatarSelectionChanged">
+                    @foreach (var option in GetAvatarOptions())
+                    {
+                        <option @key="option.Value" value="@option.Value">@option.Label</option>
+                    }
+                </select>
+                <button type="button"
+                        class="btn btn-ghost btn-sm btn-square"
+                        title="@(Loc.GetOrDefault(SettingsTextKeys.AvatarRefreshAvatarsTitle, "Refresh Avatars"))"
+                        disabled="@(!IsEngineReachable)"
+                        @onclick="RefreshEngineAsync">
+                    <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+                </button>
+            </div>
+            <p class="text-xs mt-2 opacity-60">@AvatarCatalogHint</p>
+        </div>
+        <div class="form-control mt-3 max-w-md">
+            <label class="label pl-0" for="avatar-selected-hair">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarHairLabel, "Hair")</span>
+            </label>
+            <select id="avatar-selected-hair" class="select select-bordered w-full"
+                    disabled="@(!CanSelectHair)"
+                    value="@(_draft.SelectedHairId ?? string.Empty)"
+                    @onchange="OnHairSelectionChanged">
+                @foreach (var option in GetHairOptions())
+                {
+                    <option @key="option.Value" value="@option.Value">@option.Label</option>
+                }
+            </select>
+            <p class="text-xs mt-2 opacity-60">@GetAppearanceHint(_hairCatalogLoaded, _draft.SelectedHairId, _availableHairOptions, SettingsTextKeys.AvatarChooseHairDescription, "Choose hair for the selected avatar.")</p>
+        </div>
+        <div class="form-control mt-3 max-w-md">
+            <label class="label pl-0" for="avatar-selected-top">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarTopClothingLabel, "Top")</span>
+            </label>
+            <select id="avatar-selected-top" class="select select-bordered w-full"
+                    disabled="@(!CanSelectTopClothing)"
+                    value="@(_draft.SelectedTopClothingId ?? string.Empty)"
+                    @onchange="OnTopClothingSelectionChanged">
+                @foreach (var option in GetTopClothingOptions())
+                {
+                    <option @key="option.Value" value="@option.Value">@option.Label</option>
+                }
+            </select>
+            <p class="text-xs mt-2 opacity-60">@GetAppearanceHint(_topClothingCatalogLoaded, _draft.SelectedTopClothingId, _availableTopClothingOptions, SettingsTextKeys.AvatarChooseTopClothingDescription, "Choose a top for the selected avatar.")</p>
+        </div>
+        <div class="mt-4 flex">
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!CanApplyAvatar)"
+                    @onclick="ApplyAvatarAsync">
+                <span class="iconify lucide--check size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarApplyAvatarButton, "Apply Appearance")</span>
+            </button>
+        </div>
+    </fieldset>
+
+    <fieldset class="fieldset custom-settings-group custom-settings-form">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.AvatarExpressionHeading, "Expression")</legend>
+        <div class="space-y-4">
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-selected-emotion">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarSelectedEmotionLabel, "Selected Emotion")</span>
+                </label>
+                <div class="flex items-center gap-2">
+                    <select id="avatar-selected-emotion" class="select select-bordered w-full max-w-md"
+                            disabled="@(!CanSelectEmotion)"
+                            value="@SelectedEmotionValue"
+                            @onchange="OnEmotionSelectionChanged">
+                        @foreach (var option in GetEmotionOptions())
+                        {
+                            <option @key="option.Value" value="@option.Value">@option.Label</option>
+                        }
+                    </select>
+                    <button type="button"
+                            class="btn btn-ghost btn-sm btn-square"
+                            title="@(Loc.GetOrDefault(SettingsTextKeys.AvatarRefreshEmotionsTitle, "Refresh Emotions"))"
+                            disabled="@(!IsEngineReachable)"
+                            @onclick="RefreshEngineAsync">
+                        <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+                    </button>
+                </div>
+                <p class="text-xs mt-2 opacity-60">@EmotionCatalogHint</p>
+            </div>
+
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-blend-speed">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarBlendSpeedLabel, "Blend Speed")</span>
+                </label>
+                <div class="flex max-w-md items-center gap-3">
+                    <input id="avatar-blend-speed" type="range"
+                           min="0"
+                           max="5"
+                           step="0.1"
+                           class="range range-primary min-w-0 w-full"
+                           @bind="_draft.EmotionBlendSpeed"
+                           @bind:culture="CultureInfo.InvariantCulture"
+                           @bind:event="oninput" />
+                    <div class="flex items-center gap-2" style="flex: 0 0 auto;">
+                        <input id="avatar-blend-speed-value" type="number"
+                               min="0"
+                               max="5"
+                               step="0.1"
+                               class="input input-bordered input-sm w-24"
+                               aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarBlendSpeedLabel, "Blend Speed")"
+                               value="@_draft.EmotionBlendSpeed.ToString(CultureInfo.InvariantCulture)"
+                               @oninput="HandleBlendSpeedChange" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-cue-blend-in">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarCueBlendInLabel, "Cue Blend-In Seconds")</span>
+                </label>
+                <div class="flex max-w-md items-center gap-3">
+                    <input id="avatar-cue-blend-in" type="range"
+                           min="0.1" max="2" step="0.1"
+                           class="range range-primary min-w-0 w-full"
+                           @bind="_draft.EmotionCueBlendInSeconds"
+                           @bind:culture="CultureInfo.InvariantCulture"
+                           @bind:event="oninput" />
+                    <div class="flex items-center gap-2" style="flex: 0 0 auto;">
+                        <input id="avatar-cue-blend-in-value" type="number"
+                               min="0.1" max="2" step="0.1"
+                               class="input input-bordered input-sm w-24"
+                               aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarCueBlendInLabel, "Cue Blend-In Seconds")"
+                               value="@_draft.EmotionCueBlendInSeconds.ToString(CultureInfo.InvariantCulture)"
+                               @oninput="HandleCueBlendInChange" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-cue-restore-after">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarCueRestoreAfterLabel, "Cue Restore After Seconds")</span>
+                </label>
+                <div class="flex max-w-md items-center gap-3">
+                    <input id="avatar-cue-restore-after" type="range"
+                           min="1" max="10" step="0.5"
+                           class="range range-primary min-w-0 w-full"
+                           @bind="_draft.EmotionCueRestoreAfterSeconds"
+                           @bind:culture="CultureInfo.InvariantCulture"
+                           @bind:event="oninput" />
+                    <div class="flex items-center gap-2" style="flex: 0 0 auto;">
+                        <input id="avatar-cue-restore-after-value" type="number"
+                               min="1" max="10" step="0.5"
+                               class="input input-bordered input-sm w-24"
+                               aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarCueRestoreAfterLabel, "Cue Restore After Seconds")"
+                               value="@_draft.EmotionCueRestoreAfterSeconds.ToString(CultureInfo.InvariantCulture)"
+                               @oninput="HandleCueRestoreAfterChange" />
+                    </div>
+                </div>
+            </div>
+            <p class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AvatarCueTimingDescription, "Emotions from spoken replies blend in, hold, then return to the selected emotion at the blend speed above.")</p>
+        </div>
+        <div class="mt-4 flex">
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!CanApplyExpression)"
+                    @onclick="ApplyExpressionAsync">
+                <span class="iconify lucide--check size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarApplyExpressionButton, "Apply Expression")</span>
+            </button>
+        </div>
+    </fieldset>
+
+    <fieldset class="fieldset custom-settings-group custom-settings-form">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.AvatarWindowHeading, "Window")</legend>
+        <div class="grid gap-4 lg:grid-cols-2">
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-resolution">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolutionLabel, "Resolution")</span>
+                </label>
+                <select id="avatar-resolution" class="select select-bordered w-full"
+                        value="@CurrentResolutionValue"
+                        @onchange="HandleResolutionChange">
+                    <option value="1920x1080">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution1920x1080, "1920x1080 (16:9)")</option>
+                    <option value="2560x1440">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution2560x1440, "2560x1440 (16:9)")</option>
+                    <option value="3840x2160">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution3840x2160, "3840x2160 (16:9)")</option>
+                    <option value="2560x1080">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution2560x1080, "2560x1080 (21:9)")</option>
+                    <option value="3440x1440">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution3440x1440, "3440x1440 (21:9)")</option>
+                    <option value="5120x2160">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution5120x2160, "5120x2160 (21:9)")</option>
+                    <option value="1280x720">@Loc.GetOrDefault(SettingsTextKeys.AvatarResolution1280x720, "1280x720 (16:9)")</option>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-graphics-preset">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarGraphicsPresetLabel, "Graphics Preset")</span>
+                </label>
+                <select id="avatar-graphics-preset" class="select select-bordered w-full"
+                        @bind="_draft.GraphicsPresetLevel">
+                    <option value="0">@Loc.GetOrDefault(SettingsTextKeys.AvatarGraphicsPresetLow, "Low")</option>
+                    <option value="1">@Loc.GetOrDefault(SettingsTextKeys.AvatarGraphicsPresetMedium, "Medium")</option>
+                    <option value="2">@Loc.GetOrDefault(SettingsTextKeys.AvatarGraphicsPresetHigh, "High")</option>
+                    <option value="3">@Loc.GetOrDefault(SettingsTextKeys.AvatarGraphicsPresetEpic, "Epic")</option>
+                    <option value="4">@Loc.GetOrDefault(SettingsTextKeys.AvatarGraphicsPresetCinematic, "Cinematic")</option>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label cursor-pointer justify-start gap-3 pl-0">
+                    <input type="checkbox" class="checkbox checkbox-primary" @bind="_draft.IsFullscreen" />
+                    <span class="label-text">@Loc.GetOrDefault(SettingsTextKeys.AvatarFullscreenLabel, "Fullscreen")</span>
+                </label>
+            </div>
+
+            <div class="form-control">
+                <label class="flex cursor-pointer items-start gap-3">
+                    <input type="checkbox" name="avatar-ray-tracing" class="checkbox checkbox-primary mt-1" @bind="_draft.IsRayTracingEnabled" />
+                    <span class="min-w-0">
+                        <span class="label-text block">@Loc.GetOrDefault(SettingsTextKeys.AvatarRayTracingLabel, "Ray Tracing")</span>
+                        <span class="mt-1 block text-xs opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AvatarRayTracingDescription, "Enables supported ray-traced effects independently of the quality preset. Off by default and may reduce performance.")</span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-background-color">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarBackgroundColorLabel, "Background Color")</span>
+                </label>
+                <div class="flex items-center gap-3">
+                    <input id="avatar-background-color" type="color"
+                           class="input input-bordered input-sm h-10 w-16 p-1"
+                           @bind="BackgroundColorHex"
+                           @bind:event="oninput" />
+                    <span class="text-sm opacity-70">@BackgroundColorHex</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 flex">
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!IsEngineReachable)"
+                    @onclick="ApplyWindowAsync">
+                <span class="iconify lucide--check size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarApplyWindowButton, "Apply Window")</span>
+            </button>
+        </div>
+    </fieldset>
+
+    <fieldset class="fieldset custom-settings-group custom-settings-form" disabled="@(_presentationTest is not null)">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationHeading, "Presentation")</legend>
+        <div class="form-control max-w-md">
+            <label for="avatar-presentation-mode" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationModeLabel, "Layout mode")</label>
+            <select id="avatar-presentation-mode" class="select select-bordered" @bind="_draft.Presentation.Mode">
+                <option value="Auto">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationAutoLabel, "Auto")</option>
+                <option value="Subtitle">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationSubtitleLabel, "Subtitle")</option>
+                <option value="Side">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationSideLabel, "Side")</option>
+            </select>
+        </div>
+        <div class="form-control max-w-md mt-3">
+            <label for="avatar-message-display-duration" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageDisplayDurationLabel, "Display Duration")</label>
+            <div class="flex items-center gap-2">
+                <input id="avatar-message-display-duration" type="number" min="0" step="0.1" class="input input-bordered input-sm w-24" @bind="_draft.Presentation.DurationSeconds" @bind:event="oninput" />
+                <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarSecondsUnit, "seconds")</span>
+            </div>
+        </div>
+        <div class="grid gap-4 lg:grid-cols-2 mt-4">
+            @foreach (var (layoutName, layout) in new[] { ("Subtitle", _draft.Presentation.Subtitle), ("Side", _draft.Presentation.Side) })
+            {
+                var prefix = $"avatar-{layoutName.ToLowerInvariant()}";
+                <fieldset class="fieldset border border-base-300 rounded p-4 space-y-3">
+                    <legend class="fieldset-legend">@(layoutName == "Subtitle" ? Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationSubtitleLabel, "Subtitle") : Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationSideLabel, "Side"))</legend>
+                    <div class="form-control">
+                        <label for="@(prefix + "-font")" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageFontSizeLabel, "Message Font Size")</label>
+                        <div class="flex items-center gap-3 max-w-md">
+                            <input id="@(prefix + "-font")" type="range" min="8" max="120" step="1" class="range range-primary" @bind="layout.FontSize" @bind:event="oninput" />
+                            <input id="@(prefix + "-font-value")" type="number" min="8" max="120" class="input input-bordered input-sm w-24" aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageFontSizeLabel, "Message Font Size")" value="@(layout.FontSize)" @oninput="args => HandleMessageFontSizeChange(layout, args)" />
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <label for="@(prefix + "-color")" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageColorLabel, "Color")</label>
+                        <input id="@(prefix + "-color")" type="color" class="input input-bordered input-sm h-10 w-16 p-1" value="@ToHexColor(layout.Red, layout.Green, layout.Blue)" @oninput="args => HandleMessageColorChange(layout, args)" />
+                    </div>
+                    <div class="form-control">
+                        <label for="@(prefix + "-opacity")" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageColorOpacityLabel, "Opacity")</label>
+                        <div class="flex items-center gap-3 max-w-md">
+                            <input id="@(prefix + "-opacity")" type="range" min="0" max="1" step="0.01" class="range range-primary" @bind="layout.Alpha" @bind:culture="CultureInfo.InvariantCulture" @bind:event="oninput" />
+                            <input id="@(prefix + "-opacity-value")" type="number" min="0" max="100" class="input input-bordered input-sm w-24" aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageColorOpacityLabel, "Opacity")" value="@((layout.Alpha * PercentDisplayRatio).ToString(CultureInfo.InvariantCulture))" @oninput="args => HandleMessageOpacityChange(layout, args)" />
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <label for="@(prefix + "-yaw")" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarCameraYawLabel, "Camera Yaw")</label>
+                        <div class="flex items-center gap-3 max-w-md">
+                            <input id="@(prefix + "-yaw")" type="range" min="-45" max="45" step="0.1" class="range range-primary" value="@GetDisplayYaw(layout).ToString(CultureInfo.InvariantCulture)" @oninput="args => HandleCameraYawChange(layout, args)" />
+                            <input id="@(prefix + "-yaw-value")" type="number" min="-45" max="45" step="0.1" class="input input-bordered input-sm w-24" aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarCameraYawLabel, "Camera Yaw")" value="@GetDisplayYaw(layout).ToString(CultureInfo.InvariantCulture)" @oninput="args => HandleCameraYawChange(layout, args)" />
+                            <span>&deg;</span>
+                        </div>
+                    </div>
+                    <dl class="grid grid-cols-2 gap-3 text-sm">
+                        <div><dt>@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutLeftLabel, "Left")</dt><dd>@FormatPercent(layout.PositionX)</dd></div>
+                        <div><dt>@Loc.GetOrDefault(SettingsTextKeys.AvatarMessageLayoutTopLabel, "Top")</dt><dd>@FormatPercent(layout.PositionY)</dd></div>
+                        <div><dt>@Loc.GetOrDefault(SettingsTextKeys.AvatarTransformWidthLabel, "Width (%)")</dt><dd>@FormatPercent(layout.Width)</dd></div>
+                        <div><dt>@Loc.GetOrDefault(SettingsTextKeys.AvatarTransformHeightLabel, "Height (%)")</dt><dd>@FormatPercent(layout.Height)</dd></div>
+                    </dl>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="@(prefix + "-edit")" type="button" class="btn btn-outline btn-sm" @onclick="() => OpenMessageLayoutEditorAsync(layout)">@Loc.GetOrDefault(SettingsTextKeys.AvatarEditMessageLayoutButton, "Edit layout")</button>
+                        <button id="@(prefix + "-test")" type="button" class="btn btn-outline btn-sm" disabled="@(!IsEngineReachable || _draft.Presentation.DurationSeconds <= 0 || string.IsNullOrWhiteSpace(_testMessage))" @onclick="() => TestPresentationAsync(layoutName)">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationTestButton, "Test layout")</button>
+                    </div>
+                </fieldset>
+            }
+        </div>
+        <div class="form-control mt-4">
+            <label for="avatar-message-test" class="label pl-0">@Loc.GetOrDefault(SettingsTextKeys.AvatarPreviewTextLabel, "Preview Text")</label>
+            <textarea id="avatar-message-test" class="textarea textarea-bordered w-full" rows="3" @bind="_testMessage" @bind:event="oninput"></textarea>
+            <p class="text-xs mt-2 opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationTestDescription, "Testing uses the display duration above, then restores the selected layout mode. Set a duration greater than zero to test.")</p>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+            <button id="avatar-presentation-apply" type="button" class="btn btn-primary btn-sm" disabled="@(!IsEngineReachable)" @onclick="ApplyPresentationAsync">@Loc.GetOrDefault(SettingsTextKeys.AvatarApplyPresentationButton, "Apply Presentation")</button>
+            <button type="button" class="btn btn-outline btn-sm" disabled="@(!IsEngineReachable)" @onclick="ClearMessageDisplayAsync">@Loc.GetOrDefault(SettingsTextKeys.AvatarClearPreviewButton, "Clear")</button>
+            <button type="button" class="btn btn-outline btn-sm" disabled="@(!IsEngineReachable || string.IsNullOrWhiteSpace(_testMessage))" @onclick="TestMessageDisplayAsync">@Loc.GetOrDefault(SettingsTextKeys.AvatarSendPreviewButton, "Send Preview")</button>
+        </div>
+    </fieldset>
+    @if (_presentationTest is not null)
+    {
+        <button id="avatar-presentation-end-test" type="button" class="btn btn-outline btn-sm" @onclick="EndPresentationTestAsync">@Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationEndTestButton, "End Test")</button>
+    }
+
+    <fieldset class="fieldset custom-settings-group custom-settings-form">
+        <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.AvatarAudioHeading, "Audio")</legend>
+        <div class="grid gap-4 lg:grid-cols-2">
+            <div class="form-control">
+                <label class="label pl-0" for="avatar-speech-volume">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarSpeechVolumeLabel, "Speech Volume")</span>
+                </label>
+                <div class="flex max-w-md items-center gap-3">
+                    <input id="avatar-speech-volume" type="range"
+                           min="0"
+                           max="1"
+                           step="0.01"
+                           class="range range-primary min-w-0 w-full"
+                           @bind="_draft.SpeechVolume"
+                           @bind:culture="CultureInfo.InvariantCulture"
+                           @bind:event="oninput" />
+                    <div class="flex items-center gap-2" style="flex: 0 0 auto;">
+                        <input id="avatar-speech-volume-value" type="number"
+                               min="0"
+                               max="100"
+                               step="1"
+                               class="input input-bordered input-sm w-24"
+                               aria-label="@Loc.GetOrDefault(SettingsTextKeys.AvatarSpeechVolumeLabel, "Speech Volume")"
+                               value="@SpeechVolumePercent.ToString(CultureInfo.InvariantCulture)"
+                               @oninput="HandleSpeechVolumeChange" />
+                        <span class="text-sm text-base-content/70">%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 flex">
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!IsEngineReachable)"
+                    @onclick="ApplyAudioAsync">
+                <span class="iconify lucide--check size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarApplyAudioButton, "Apply Audio")</span>
+            </button>
+        </div>
+    </fieldset>
+
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <button type="button"
+                class="btn btn-warning btn-sm"
+                title="@(Loc.GetOrDefault(SettingsTextKeys.AvatarShutdownAvatarTitle, "Shutdown Avatar"))"
+                disabled="@(!IsEngineReachable)"
+                @onclick="ConfirmShutdownAvatarAsync">
+            <iconify-icon icon="lucide:power"></iconify-icon>
+            <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarShutdownAvatarButton, "Shutdown Avatar")</span>
+        </button>
+
+        <div class="flex flex-wrap justify-end gap-2">
+            <button type="button"
+                    class="btn btn-outline btn-sm"
+                    @onclick="ResetToDefaults">
+                @Loc.GetOrDefault(SettingsTextKeys.AvatarResetToDefaultsButton, "Reset to defaults")
+            </button>
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    disabled="@(!IsDirty)"
+                    @onclick="SaveSettingsAsync">
+                <span class="iconify lucide--save size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.AvatarSaveSettingsButton, "Save Settings")</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private const float DisplayToServerRatio = 9.0f;
+    private const float PercentDisplayRatio = 100.0f;
+    private AvatarSettings.Snapshot _saved = new();
+    private AvatarSettings.Snapshot _draft = new();
+    private List<string> _availableAvatars = new();
+    private List<string> _availableEmotions = new();
+    private List<SelectOption> _availableHairOptions = new();
+    private List<SelectOption> _availableTopClothingOptions = new();
+    private string _testMessage = string.Empty;
+    private CancellationTokenSource? _presentationTest;
+    private bool _disposed;
+    private AvatarEngineState _engineState = AvatarEngineState.Unknown;
+    private bool _avatarCatalogLoaded;
+    private bool _emotionCatalogLoaded;
+    private bool _hairCatalogLoaded;
+    private bool _topClothingCatalogLoaded;
+    private bool _isLocalEngineInstalled;
+    private bool _isStartingLocalEngine;
+    private bool _localEngineStartRequested;
+    private int _engineRefreshVersion;
+    private int _appearanceCatalogVersion;
+    private string? _engineStatusDetail;
+    private ElementReference _connectButton;
+    private bool _restoreConnectFocus;
+
+    private bool IsDirty => !AreSettingsEqual(_saved, _draft);
+    private string CurrentResolutionValue => $"{_draft.ResolutionWidth}x{_draft.ResolutionHeight}";
+    private bool IsEngineChecking => _engineState == AvatarEngineState.Checking;
+    private bool IsEngineReachable => _engineState is AvatarEngineState.Connected or AvatarEngineState.CatalogError;
+    private bool ShowLocalEngineStart =>
+        _isLocalEngineInstalled &&
+        !_localEngineStartRequested &&
+        !IsEngineChecking &&
+        _engineState == AvatarEngineState.Offline;
+    private bool CanSelectAvatar => _avatarCatalogLoaded && !IsEngineChecking;
+    private bool CanSelectEmotion => _emotionCatalogLoaded && !IsEngineChecking;
+    private bool CanSelectHair => _hairCatalogLoaded && !IsEngineChecking;
+    private bool CanSelectTopClothing => _topClothingCatalogLoaded && !IsEngineChecking;
+    private bool CanApplyAvatar =>
+        IsEngineReachable &&
+        _avatarCatalogLoaded &&
+        !string.IsNullOrWhiteSpace(_draft.SelectedAvatar) &&
+        _availableAvatars.Contains(_draft.SelectedAvatar, StringComparer.Ordinal);
+    private bool CanApplyExpression =>
+        IsEngineReachable &&
+        _emotionCatalogLoaded &&
+        !string.IsNullOrWhiteSpace(_draft.SelectedEmotion) &&
+        _availableEmotions.Contains(_draft.SelectedEmotion, StringComparer.Ordinal);
+
+    private string EngineStatusLabel => _engineState switch
+    {
+        AvatarEngineState.Checking => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineCheckingStatus, "Checking"),
+        AvatarEngineState.Connected => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineConnectedStatus, "Connected"),
+        AvatarEngineState.Offline => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineOfflineStatus, "Offline"),
+        AvatarEngineState.PairingRequired => Loc.GetOrDefault(SettingsTextKeys.AvatarEnginePairingRequiredStatus, "Pairing required"),
+        AvatarEngineState.AccessConflict => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineAccessConflictStatus, "Access conflict"),
+        AvatarEngineState.RateLimited => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineRateLimitedStatus, "Rate limited"),
+        AvatarEngineState.ConfigurationError => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineConfigurationErrorStatus, "Configuration issue"),
+        AvatarEngineState.EngineError => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineErrorStatus, "Engine error"),
+        AvatarEngineState.CatalogError => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineCatalogErrorStatus, "Catalog issue"),
+        _ => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineNotCheckedStatus, "Not checked")
+    };
+
+    private string EngineStatusDescription => _engineState switch
+    {
+        AvatarEngineState.Checking => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineCheckingDescription, "Connecting to the Avatar Engine and loading live choices."),
+        AvatarEngineState.Connected => FormatSettingsText(SettingsTextKeys.AvatarEngineConnectedDescription, "Avatar Engine is reachable at {0}.", _draft.BridgeUrl),
+        AvatarEngineState.Offline => FormatSettingsText(SettingsTextKeys.AvatarEngineOfflineDescription, "Could not reach the Avatar Engine at {0}. Saved settings remain editable.", _draft.BridgeUrl),
+        AvatarEngineState.PairingRequired => _engineStatusDetail ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEnginePairingRequiredDescription, "Select Connect to pair this Oscova installation."),
+        AvatarEngineState.AccessConflict => _engineStatusDetail ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineAccessConflictDescription, "Another client currently owns incompatible runtime access."),
+        AvatarEngineState.RateLimited => _engineStatusDetail ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineRateLimitedDescription, "Wait before selecting Connect again."),
+        AvatarEngineState.ConfigurationError => _engineStatusDetail ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineConfigurationErrorDescription, "Fix local settings storage, then select Connect again."),
+        AvatarEngineState.EngineError => _engineStatusDetail ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineErrorDescription, "The Avatar Engine returned an unexpected response. Select Connect to try again."),
+        AvatarEngineState.CatalogError => _engineStatusDetail ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineCatalogErrorDescription, "The engine is reachable, but one or more live choice lists could not be loaded."),
+        _ => Loc.GetOrDefault(SettingsTextKeys.AvatarEngineNotCheckedDescription, "Select Connect to load live avatars and expressions.")
+    };
+
+    private string EngineStatusBadgeClass => _engineState switch
+    {
+        AvatarEngineState.Connected => "badge badge-success badge-soft gap-2",
+        AvatarEngineState.Offline => "badge badge-error badge-soft gap-2",
+        AvatarEngineState.CatalogError or AvatarEngineState.PairingRequired or AvatarEngineState.AccessConflict or AvatarEngineState.RateLimited or AvatarEngineState.ConfigurationError or AvatarEngineState.EngineError => "badge badge-warning badge-soft gap-2",
+        AvatarEngineState.Checking => "badge badge-info badge-soft gap-2",
+        _ => "badge badge-ghost gap-2"
+    };
+
+    private string EngineStatusDotClass => _engineState switch
+    {
+        AvatarEngineState.Connected => "status status-success status-sm",
+        AvatarEngineState.Offline => "status status-error status-sm",
+        AvatarEngineState.CatalogError or AvatarEngineState.PairingRequired or AvatarEngineState.AccessConflict or AvatarEngineState.RateLimited or AvatarEngineState.ConfigurationError or AvatarEngineState.EngineError => "status status-warning status-sm",
+        AvatarEngineState.Checking => "loading loading-spinner loading-xs",
+        _ => "status status-neutral status-sm"
+    };
+
+    private string AvatarCatalogHint =>
+        GetCatalogHint(_avatarCatalogLoaded, _draft.SelectedAvatar, _availableAvatars, SettingsTextKeys.AvatarChooseAvatarDescription, "Choose an avatar to display");
+
+    private string EmotionCatalogHint =>
+        GetCatalogHint(_emotionCatalogLoaded, _draft.SelectedEmotion, _availableEmotions, SettingsTextKeys.AvatarChooseEmotionDescription, "Choose an expression from the running engine.");
+
+    private string SelectedAvatarValue => _draft.SelectedAvatar ?? string.Empty;
+    private string SelectedEmotionValue => _draft.SelectedEmotion ?? string.Empty;
+
+    private enum AvatarEngineState
+    {
+        Unknown,
+        Checking,
+        Connected,
+        Offline,
+        CatalogError,
+        PairingRequired,
+        AccessConflict,
+        RateLimited,
+        ConfigurationError,
+        EngineError
+    }
+
+    private sealed record SelectOption(string Value, string Label);
+
+    private string BackgroundColorHex
+    {
+        get => ToHexColor(_draft.BackgroundColorRed, _draft.BackgroundColorGreen, _draft.BackgroundColorBlue);
+        set
+        {
+            if (TryParseHexColorBytes(value, out var red, out var green, out var blue))
+            {
+                _draft.BackgroundColorRed = red;
+                _draft.BackgroundColorGreen = green;
+                _draft.BackgroundColorBlue = blue;
+            }
+        }
+    }
+
+    private void HandleMessageColorChange(AvatarPresentationLayout layout, ChangeEventArgs args)
+    {
+        if (TryParseHexColor(args.Value?.ToString() ?? string.Empty, out var red, out var green, out var blue))
+        {
+            layout.Red = red;
+            layout.Green = green;
+            layout.Blue = blue;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AvatarUpdates.InstallationChanged += OnInstallationChanged;
+        _testMessage = Loc.GetOrDefault(SettingsTextKeys.AvatarDefaultPreviewMessage, "This is a test message.");
+        await LoadSettingsAsync();
+        await LoadLocalEngineInstalledAsync();
+        await RefreshEngineAsync(showToasts: false);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_restoreConnectFocus && !IsEngineChecking)
+        {
+            // Connecting disables the trigger before the pairing dialog can remember it.
+            _restoreConnectFocus = false;
+            await _connectButton.FocusAsync();
+        }
+    }
+
+    private async Task LoadLocalEngineInstalledAsync()
+    {
+        try
+        {
+            _isLocalEngineInstalled = await Http.GetFromJsonAsync<bool>(ApiRoutes.AvatarBridge.LocalEngineInstalled);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to check local Avatar Engine installation.");
+            _isLocalEngineInstalled = false;
+        }
+    }
+
+    private void OnInstallationChanged(object? sender, EventArgs args) => _ = RefreshLocalInstallationAsync();
+
+    private async Task RefreshLocalInstallationAsync()
+    {
+        try
+        {
+            await InvokeAsync(async () =>
+            {
+                if (_disposed) { return; }
+                await LoadLocalEngineInstalledAsync();
+                StateHasChanged();
+            });
+        }
+        catch (Exception ex) when (_disposed || ex is ObjectDisposedException) { }
+    }
+
+    private async Task StartLocalEngineAsync()
+    {
+        _isStartingLocalEngine = true;
+        try
+        {
+            using var response = await Http.PostAsync(
+                ApiRoutes.AvatarBridge.StartLocalEngine(Uri.EscapeDataString(_draft.BridgeUrl ?? string.Empty)),
+                null);
+            if (response.IsSuccessStatusCode)
+            {
+                _localEngineStartRequested = true;
+                ToastService.Show(
+                    Loc.GetOrDefault(SettingsTextKeys.AvatarStartEngineStartedToast, "Avatar Engine started. Wait for its window, then select Connect."),
+                    ToastType.Success);
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                ToastService.Show(
+                    Loc.GetOrDefault(SettingsTextKeys.AvatarStartEngineLocalUrlToast, "Use an http://localhost or http://127.0.0.1 Bridge URL to start the local Avatar Engine."),
+                    ToastType.Error);
+            }
+            else
+            {
+                ToastService.Show(
+                    Loc.GetOrDefault(SettingsTextKeys.AvatarStartEngineFailedToast, "Avatar Engine could not be started."),
+                    ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to start local Avatar Engine.");
+            ToastService.Show(
+                Loc.GetOrDefault(SettingsTextKeys.AvatarStartEngineFailedToast, "Avatar Engine could not be started."),
+                ToastType.Error);
+        }
+        finally
+        {
+            _isStartingLocalEngine = false;
+        }
+    }
+
+    private async Task LoadSettingsAsync()
+    {
+        try
+        {
+            var settings = await Http.GetFromJsonAsync<AvatarSettings.Snapshot>(ApiRoutes.AvatarBridge.Settings);
+            _saved = settings?.Clone() ?? new AvatarSettings.Snapshot();
+            _draft = _saved.Clone();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load avatar settings.");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarSettingsLoadErrorToast, "Avatar settings load error: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private void MarkEngineUnchecked()
+    {
+        unchecked
+        {
+            _engineRefreshVersion++;
+        }
+
+        _engineState = AvatarEngineState.Unknown;
+        _engineStatusDetail = null;
+        _avatarCatalogLoaded = false;
+        _emotionCatalogLoaded = false;
+        ClearAppearanceCatalogs();
+        _availableAvatars = [];
+        _availableEmotions = [];
+    }
+
+    private float GetDisplayYaw(AvatarPresentationLayout layout)
+    {
+        return layout.Yaw * DisplayToServerRatio;
+    }
+
+    private float SpeechVolumePercent => _draft.SpeechVolume * PercentDisplayRatio;
+
+    private static string FormatPercent(float value) =>
+        string.Format(CultureInfo.CurrentCulture, "{0:0.#}%", value * PercentDisplayRatio);
+
+    private void HandleCameraYawChange(AvatarPresentationLayout layout, ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var displayValue))
+        {
+            layout.Yaw = Math.Clamp(displayValue / DisplayToServerRatio, -5.0f, 5.0f);
+        }
+    }
+
+    private void HandleBlendSpeedChange(ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var value))
+        {
+            _draft.EmotionBlendSpeed = Math.Clamp(value, 0.0f, 5.0f);
+        }
+    }
+
+    private void HandleCueBlendInChange(ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var value))
+        {
+            _draft.EmotionCueBlendInSeconds = Math.Clamp(value, 0.1f, 2.0f);
+        }
+    }
+
+    private void HandleCueRestoreAfterChange(ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var value))
+        {
+            _draft.EmotionCueRestoreAfterSeconds = Math.Clamp(value, 1.0f, 10.0f);
+        }
+    }
+
+    private void HandleMessageFontSizeChange(AvatarPresentationLayout layout, ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var value))
+        {
+            layout.FontSize = (int)MathF.Round(Math.Clamp(value, 8.0f, 120.0f));
+        }
+    }
+
+    private void HandleMessageOpacityChange(AvatarPresentationLayout layout, ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var displayValue))
+        {
+            layout.Alpha = Math.Clamp(displayValue / PercentDisplayRatio, 0.0f, 1.0f);
+        }
+    }
+
+    private void HandleSpeechVolumeChange(ChangeEventArgs args)
+    {
+        if (TryParseDisplayValue(args, out var displayValue))
+        {
+            _draft.SpeechVolume = Math.Clamp(displayValue / PercentDisplayRatio, 0.0f, 1.0f);
+        }
+    }
+
+    private static bool TryParseDisplayValue(ChangeEventArgs args, out float displayValue)
+    {
+        displayValue = 0.0f;
+        return args.Value != null &&
+               float.TryParse(args.Value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out displayValue);
+    }
+
+    private async Task OpenMessageLayoutEditorAsync(AvatarPresentationLayout layout)
+    {
+        var input = new AvatarMessageLayoutDialog.Input(
+            _draft.ResolutionWidth,
+            _draft.ResolutionHeight,
+            new AvatarMessageLayoutDialog.Layout(
+                layout.PositionX,
+                layout.PositionY,
+                layout.Width,
+                layout.Height));
+        var result = await DialogService.ShowAsync<AvatarMessageLayoutDialog, AvatarMessageLayoutDialog.Layout>(
+            new Dictionary<string, object?> { [nameof(AvatarMessageLayoutDialog.Input)] = input });
+
+        if (result is { IsOk: true, Data: not null })
+        {
+            layout.PositionX = result.Data.Left;
+            layout.PositionY = result.Data.Top;
+            layout.Width = result.Data.Width;
+            layout.Height = result.Data.Height;
+        }
+    }
+
+    private void HandleResolutionChange(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        var parts = value.Split('x');
+        if (parts.Length == 2 && int.TryParse(parts[0], out var width) && int.TryParse(parts[1], out var height))
+        {
+            _draft.ResolutionWidth = width;
+            _draft.ResolutionHeight = height;
+        }
+    }
+
+    private async Task ApplySavedSettingsAsync()
+    {
+        try
+        {
+            using var httpResponse = await Http.PostAsync(ApiRoutes.AvatarBridge.Sync, null);
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarRuntimeSyncResponse>();
+            if (httpResponse.IsSuccessStatusCode && response?.Success == true)
+            {
+                ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarSavedSettingsAppliedToast, "Saved avatar settings applied"), ToastType.Success);
+                var refreshVersion = ++_engineRefreshVersion;
+                await LoadEngineCatalogsAfterConnectedAsync(refreshVersion, showToasts: false);
+                return;
+            }
+
+            SetEngineFailure(response?.ErrorCode, response?.Description);
+            ToastService.Show(response?.Description ?? Loc.GetOrDefault(SettingsTextKeys.AvatarApplySavedSettingsFailedToast, "Avatar settings could not be applied."), ToastType.Error);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply saved avatar settings.");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarSyncErrorToast, "Avatar sync error: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private Task RefreshEngineAsync()
+    {
+        return RefreshEngineAsync(showToasts: true);
+    }
+
+    private Task RefreshEngineAsync(bool showToasts) =>
+        SyncAndLoadEngineAsync(_saved.BridgeUrl, showToasts, allowPairing: false);
+
+    private async Task HandleConnectAsync()
+    {
+        var bridgeUrl = _draft.BridgeUrl?.Trim() ?? string.Empty;
+        if (!await SaveConnectionPreferenceAsync(bridgeUrl, _draft.PreferredAccessMode))
+        {
+            return;
+        }
+
+        await SyncAndLoadEngineAsync(bridgeUrl, showToasts: true, allowPairing: true);
+    }
+
+    private async Task<bool> SaveConnectionPreferenceAsync(string bridgeUrl, AvatarAccessMode accessMode)
+    {
+        try
+        {
+            using var response = await Http.PutAsync(
+                ApiRoutes.AvatarBridge.ConnectionSettings(
+                    Uri.EscapeDataString(bridgeUrl),
+                    Uri.EscapeDataString(accessMode.ToString())),
+                null);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    _engineState = AvatarEngineState.ConfigurationError;
+                    _engineStatusDetail = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(_engineStatusDetail))
+                    {
+                        _engineStatusDetail = "BaseUrl and a valid accessMode are required.";
+                    }
+                    ToastService.Show(_engineStatusDetail, ToastType.Error);
+                    return false;
+                }
+
+                throw new HttpRequestException(await response.Content.ReadAsStringAsync());
+            }
+
+            _saved.BridgeUrl = bridgeUrl;
+            _saved.PreferredAccessMode = accessMode;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save Avatar Engine connection settings.");
+            _engineState = AvatarEngineState.ConfigurationError;
+            _engineStatusDetail = Loc.GetOrDefault(
+                SettingsTextKeys.AvatarEngineConfigurationErrorDescription,
+                "Fix local settings storage, then select Connect again.");
+            ToastService.Show(_engineStatusDetail, ToastType.Error);
+            return false;
+        }
+    }
+
+    private async Task SyncAndLoadEngineAsync(string bridgeUrl, bool showToasts, bool allowPairing)
+    {
+        unchecked
+        {
+            _engineRefreshVersion++;
+        }
+
+        var refreshVersion = _engineRefreshVersion;
+        _engineStatusDetail = null;
+        _avatarCatalogLoaded = false;
+        _emotionCatalogLoaded = false;
+        ClearAppearanceCatalogs();
+        _availableAvatars = [];
+        _availableEmotions = [];
+
+        if (string.IsNullOrWhiteSpace(bridgeUrl))
+        {
+            _engineState = AvatarEngineState.Unknown;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        _engineState = AvatarEngineState.Checking;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            using var httpResponse = await Http.PostAsync(ApiRoutes.AvatarBridge.Sync, null);
+            var sync = await httpResponse.Content.ReadFromJsonAsync<AvatarRuntimeSyncResponse>();
+
+            if (!IsCurrentEngineRefresh(refreshVersion))
+            {
+                return;
+            }
+
+            if (sync?.Success != true)
+            {
+                SetEngineFailure(sync?.ErrorCode, sync?.Description, sync?.RetryAfterSeconds);
+                if (showToasts && !(allowPairing && sync?.ErrorCode == "pairing_required"))
+                {
+                    ToastService.Show(
+                        _engineStatusDetail ?? sync?.Description ?? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineOfflineToast, "Avatar Engine is not reachable."),
+                        ToastType.Warning);
+                }
+
+                if (allowPairing && sync?.ErrorCode == "pairing_required")
+                {
+                    await StartPairingAsync(refreshVersion, bridgeUrl);
+                }
+                return;
+            }
+
+            await LoadEngineCatalogsAfterConnectedAsync(refreshVersion, showToasts);
+        }
+        catch (Exception ex)
+        {
+            if (!IsCurrentEngineRefresh(refreshVersion))
+            {
+                return;
+            }
+
+            Logger.LogWarning(ex, "Failed to refresh Avatar Engine state.");
+            _engineState = AvatarEngineState.Offline;
+            _localEngineStartRequested = false;
+            _engineStatusDetail = ex.Message;
+            if (showToasts)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarEngineRefreshFailedToast, "Avatar Engine refresh failed: {0}", ex.Message), ToastType.Error);
+            }
+        }
+    }
+
+    private bool IsCurrentEngineRefresh(int refreshVersion) => refreshVersion == _engineRefreshVersion;
+
+    private async Task StartPairingAsync(int refreshVersion, string bridgeUrl)
+    {
+        using var startResponse = await Http.PostAsync(
+            ApiRoutes.AvatarBridge.PairingStart(Uri.EscapeDataString(bridgeUrl)),
+            null);
+        var start = await startResponse.Content.ReadFromJsonAsync<AvatarPairingStartResult>();
+        if (!IsCurrentEngineRefresh(refreshVersion))
+        {
+            return;
+        }
+
+        if (start?.Success != true || start.ExpiresInSeconds is null)
+        {
+            SetEngineFailure(start?.ErrorCode, start?.Description, start?.RetryAfterSeconds);
+            ToastService.Show(
+                _engineStatusDetail ?? start?.Description ?? Loc.GetOrDefault(SettingsTextKeys.AvatarPairingFailed, "Pairing failed. Request a new code and try again."),
+                ToastType.Error);
+            return;
+        }
+
+        var result = await DialogService.ShowAsync<PairAvatarEngineDialog>(
+            new Dictionary<string, object?>
+            {
+                ["BaseUrl"] = bridgeUrl,
+                ["ExpiresInSeconds"] = start.ExpiresInSeconds.Value,
+                ["AccessMode"] = _draft.PreferredAccessMode
+            });
+        if (result != DialogResult.Ok)
+        {
+            _restoreConnectFocus = true;
+            return;
+        }
+
+        await SyncAndLoadEngineAsync(bridgeUrl, showToasts: true, allowPairing: false);
+    }
+
+    private void SetEngineFailure(string? errorCode, string? description, int? retryAfterSeconds = null)
+    {
+        _engineStatusDetail = errorCode == "rate_limited" && retryAfterSeconds is { } seconds
+            ? FormatSettingsText(
+                SettingsTextKeys.AvatarEngineRateLimitedRetryDescription,
+                "Wait {0} seconds before selecting Connect again.",
+                seconds)
+            : description;
+        _engineState = errorCode switch
+        {
+            "pairing_required" => AvatarEngineState.PairingRequired,
+            "exclusive_unavailable" or "exclusive_access_denied" or "access_mode_conflict" => AvatarEngineState.AccessConflict,
+            "rate_limited" => AvatarEngineState.RateLimited,
+            "unreachable" => AvatarEngineState.Offline,
+            "credential_persistence_failed" => AvatarEngineState.ConfigurationError,
+            _ => AvatarEngineState.EngineError
+        };
+        _localEngineStartRequested = _engineState != AvatarEngineState.Offline;
+    }
+
+    private async Task LoadEngineCatalogsAfterConnectedAsync(int refreshVersion, bool showToasts)
+    {
+        var avatarCatalog = await LoadAvatarsAsync(showToasts);
+        var emotionCatalog = await LoadEmotionsAsync(showToasts);
+
+        if (!IsCurrentEngineRefresh(refreshVersion))
+        {
+            return;
+        }
+
+        _availableAvatars = avatarCatalog.Values;
+        _availableEmotions = emotionCatalog.Values;
+        _avatarCatalogLoaded = avatarCatalog.Loaded;
+        _emotionCatalogLoaded = emotionCatalog.Loaded;
+        var appearanceLoaded = await LoadAppearanceCatalogsAsync(_draft.SelectedAvatar, refreshVersion, showToasts);
+        if (!IsCurrentEngineRefresh(refreshVersion) || appearanceLoaded is null)
+        {
+            return;
+        }
+
+        _engineState = avatarCatalog.Loaded && emotionCatalog.Loaded && appearanceLoaded.Value
+            ? AvatarEngineState.Connected
+            : AvatarEngineState.CatalogError;
+
+        if (_engineState == AvatarEngineState.CatalogError)
+        {
+            _engineStatusDetail = Loc.GetOrDefault(
+                SettingsTextKeys.AvatarEngineCatalogErrorDescription,
+                "The engine is reachable, but one or more live choice lists could not be loaded.");
+        }
+        else if (showToasts)
+        {
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarEngineConnectedToast, "Avatar Engine connected and live choices loaded."), ToastType.Success);
+        }
+    }
+
+    private async Task<(bool Loaded, List<string> Values)> LoadAvatarsAsync(bool showToasts)
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<AvatarListResponse>(ApiRoutes.AvatarBridge.Avatars);
+            if (response is not null && response.Success)
+            {
+                var avatars = response.Avatars.ToList();
+                if (showToasts)
+                {
+                    ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarLoadedAvatarsToast, "Loaded {0} avatars", avatars.Count), ToastType.Success);
+                }
+
+                return (true, avatars);
+            }
+            else
+            {
+                if (showToasts)
+                {
+                    ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarLoadAvatarsFailedToast, "Failed to load avatars: {0}", response?.Description), ToastType.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load avatars");
+            if (showToasts)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarLoadAvatarsErrorToast, "Error loading avatars: {0}", ex.Message), ToastType.Error);
+            }
+        }
+
+        return (false, []);
+    }
+
+    private async Task<(bool Loaded, List<string> Values)> LoadEmotionsAsync(bool showToasts)
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<AvatarEmotionListResponse>(ApiRoutes.AvatarBridge.Emotions);
+            if (response is not null && response.Success)
+            {
+                var emotions = response.Emotions.ToList();
+                if (showToasts)
+                {
+                    ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarLoadedEmotionsToast, "Loaded {0} emotions", emotions.Count), ToastType.Success);
+                }
+
+                return (true, emotions);
+            }
+            else
+            {
+                if (showToasts)
+                {
+                    ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarLoadEmotionsFailedToast, "Failed to load emotions: {0}", response?.Description), ToastType.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load emotions");
+            if (showToasts)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarLoadEmotionsErrorToast, "Error loading emotions: {0}", ex.Message), ToastType.Error);
+            }
+        }
+
+        return (false, []);
+    }
+
+    private void ClearAppearanceCatalogs()
+    {
+        _appearanceCatalogVersion++;
+        _hairCatalogLoaded = false;
+        _topClothingCatalogLoaded = false;
+        _availableHairOptions = [];
+        _availableTopClothingOptions = [];
+    }
+
+    private async Task<bool?> LoadAppearanceCatalogsAsync(string? avatarName, int refreshVersion, bool showToasts)
+    {
+        ClearAppearanceCatalogs();
+        if (string.IsNullOrWhiteSpace(avatarName) || !_availableAvatars.Contains(avatarName, StringComparer.Ordinal))
+        {
+            return true;
+        }
+
+        var appearanceVersion = _appearanceCatalogVersion;
+        AvatarHairListResponse? hair = null;
+        AvatarClothingListResponse? clothing = null;
+        try
+        {
+            hair = await Http.GetFromJsonAsync<AvatarHairListResponse>(
+                $"{ApiRoutes.AvatarBridge.Hair}?avatarName={Uri.EscapeDataString(avatarName)}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load hair choices for avatar {AvatarName}.", avatarName);
+        }
+
+        try
+        {
+            clothing = await Http.GetFromJsonAsync<AvatarClothingListResponse>(
+                $"{ApiRoutes.AvatarBridge.Clothing}?avatarName={Uri.EscapeDataString(avatarName)}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load clothing choices for avatar {AvatarName}.", avatarName);
+        }
+
+        // Keep a late catalog response from replacing choices for a newly selected avatar.
+        if (!IsCurrentEngineRefresh(refreshVersion) || appearanceVersion != _appearanceCatalogVersion ||
+            !string.Equals(_draft.SelectedAvatar, avatarName, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        if (hair?.Success == true && hair.HairOptions is { } hairOptions)
+        {
+            _hairCatalogLoaded = true;
+            _availableHairOptions = hairOptions.Select(option => new SelectOption(option.HairId, option.DisplayName)).ToList();
+        }
+        if (clothing?.Success == true && clothing.ClothingOptions is { } clothingOptions)
+        {
+            _topClothingCatalogLoaded = true;
+            _availableTopClothingOptions = clothingOptions
+                .Where(option => string.Equals(option.Slot, "top", StringComparison.Ordinal))
+                .Select(option => new SelectOption(option.ClothingId, option.DisplayName))
+                .ToList();
+        }
+
+        if (showToasts && (!_hairCatalogLoaded || !_topClothingCatalogLoaded))
+        {
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarAppearanceCatalogFailedToast,
+                "Some appearance choices could not be loaded. Check the Engine connection and refresh."), ToastType.Warning);
+        }
+
+        await InvokeAsync(StateHasChanged);
+        return _hairCatalogLoaded && _topClothingCatalogLoaded;
+    }
+
+    private async Task OnAvatarSelectionChanged(ChangeEventArgs args)
+    {
+        var selectedAvatar = NormalizeOptionalSelection(args.Value?.ToString());
+        if (string.Equals(_draft.SelectedAvatar, selectedAvatar, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _draft.SelectedAvatar = selectedAvatar;
+        _draft.SelectedHairId = null;
+        _draft.SelectedTopClothingId = null;
+        ClearAppearanceCatalogs();
+        if (selectedAvatar is not null && IsEngineReachable)
+        {
+            await InvokeAsync(StateHasChanged);
+            var appearanceLoaded = await LoadAppearanceCatalogsAsync(selectedAvatar, _engineRefreshVersion, showToasts: true);
+            if (appearanceLoaded.HasValue)
+            {
+                _engineState = _avatarCatalogLoaded && _emotionCatalogLoaded && appearanceLoaded.Value
+                    ? AvatarEngineState.Connected
+                    : AvatarEngineState.CatalogError;
+            }
+        }
+    }
+
+    private void OnHairSelectionChanged(ChangeEventArgs args) =>
+        _draft.SelectedHairId = NormalizeOptionalSelection(args.Value?.ToString());
+
+    private void OnTopClothingSelectionChanged(ChangeEventArgs args) =>
+        _draft.SelectedTopClothingId = NormalizeOptionalSelection(args.Value?.ToString());
+
+    private void OnEmotionSelectionChanged(ChangeEventArgs args)
+    {
+        _draft.SelectedEmotion = NormalizeOptionalSelection(args.Value?.ToString());
+    }
+
+    private static string? NormalizeOptionalSelection(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
+    private IReadOnlyList<SelectOption> GetAvatarOptions()
+    {
+        return GetCatalogOptions(
+            _avatarCatalogLoaded,
+            _draft.SelectedAvatar,
+            _availableAvatars.Select(value => new SelectOption(value, value)).ToList(),
+            Loc.GetOrDefault(SettingsTextKeys.AvatarLoadingAvatarsOption, "Loading avatars..."));
+    }
+
+    private IReadOnlyList<SelectOption> GetEmotionOptions()
+    {
+        return GetCatalogOptions(
+            _emotionCatalogLoaded,
+            _draft.SelectedEmotion,
+            _availableEmotions.Select(value => new SelectOption(value, value)).ToList(),
+            Loc.GetOrDefault(SettingsTextKeys.AvatarLoadingEmotionsOption, "Loading expressions..."));
+    }
+
+    private IReadOnlyList<SelectOption> GetHairOptions() => GetCatalogOptions(
+        _hairCatalogLoaded, _draft.SelectedHairId, _availableHairOptions,
+        Loc.GetOrDefault(SettingsTextKeys.AvatarCatalogCheckingHint, "Loading live choices from the Avatar Engine."));
+
+    private IReadOnlyList<SelectOption> GetTopClothingOptions() => GetCatalogOptions(
+        _topClothingCatalogLoaded, _draft.SelectedTopClothingId, _availableTopClothingOptions,
+        Loc.GetOrDefault(SettingsTextKeys.AvatarCatalogCheckingHint, "Loading live choices from the Avatar Engine."));
+
+    private string GetAppearanceHint(bool loaded, string? selectedId, IReadOnlyList<SelectOption> options, string key, string text)
+    {
+        if (string.IsNullOrWhiteSpace(_draft.SelectedAvatar))
+        {
+            return Loc.GetOrDefault(SettingsTextKeys.AvatarChooseAvatarDescription, "Choose an avatar to display");
+        }
+
+        return GetCatalogHint(loaded, selectedId, options.Select(option => option.Value).ToList(), key, text);
+    }
+
+    private IReadOnlyList<SelectOption> GetCatalogOptions(
+        bool catalogLoaded,
+        string? savedValue,
+        IReadOnlyList<SelectOption> liveValues,
+        string loadingText)
+    {
+        if (IsEngineChecking)
+        {
+            return [new SelectOption(savedValue ?? string.Empty, loadingText)];
+        }
+
+        if (!catalogLoaded)
+        {
+            if (string.IsNullOrWhiteSpace(savedValue))
+            {
+                return [new SelectOption(string.Empty, CommonLoc.GetOrDefault(CommonTextKeys.NoneOption, "None"))];
+            }
+
+            return [new SelectOption(
+                savedValue,
+                FormatSettingsText(SettingsTextKeys.AvatarSavedUnverifiedOption, "Saved: {0} (not verified)", savedValue))];
+        }
+
+        var options = new List<SelectOption>
+        {
+            new(string.Empty, CommonLoc.GetOrDefault(CommonTextKeys.NoneOption, "None"))
+        };
+
+        if (!string.IsNullOrWhiteSpace(savedValue) &&
+            !liveValues.Any(option => string.Equals(option.Value, savedValue, StringComparison.Ordinal)))
+        {
+            options.Add(new SelectOption(
+                savedValue,
+                FormatSettingsText(SettingsTextKeys.AvatarSavedUnavailableOption, "Saved: {0} (not available)", savedValue)));
+        }
+
+        options.AddRange(liveValues);
+        return options;
+    }
+
+    private string GetCatalogHint(
+        bool catalogLoaded,
+        string? selectedValue,
+        IReadOnlyList<string> liveValues,
+        string defaultKey,
+        string defaultText)
+    {
+        if (IsEngineChecking)
+        {
+            return Loc.GetOrDefault(SettingsTextKeys.AvatarCatalogCheckingHint, "Loading live choices from the Avatar Engine.");
+        }
+
+        if (!catalogLoaded)
+        {
+            return string.IsNullOrWhiteSpace(selectedValue)
+                ? Loc.GetOrDefault(SettingsTextKeys.AvatarCatalogOfflineHint, "Live choices are available after the Avatar Engine connects.")
+                : FormatSettingsText(SettingsTextKeys.AvatarSavedValueUnverifiedHint, "Saved value '{0}' is shown but has not been verified with the running engine.", selectedValue);
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedValue) &&
+            !liveValues.Contains(selectedValue, StringComparer.Ordinal))
+        {
+            return FormatSettingsText(SettingsTextKeys.AvatarSavedValueUnavailableHint, "Saved value '{0}' is not available in the running engine.", selectedValue);
+        }
+
+        return Loc.GetOrDefault(defaultKey, defaultText);
+    }
+
+    private async Task ApplyAvatarAsync()
+    {
+        var avatarName = _draft.SelectedAvatar;
+        if (string.IsNullOrWhiteSpace(avatarName))
+        {
+            return;
+        }
+
+        var hairId = _draft.SelectedHairId;
+        var topClothingId = _draft.SelectedTopClothingId;
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.AvatarsSelect, new AvatarSelectRequest { AvatarName = avatarName });
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarSelectResponse>();
+            if (response is not null && response.Success)
+            {
+                var hairApplied = await ApplyHairAsync(avatarName, hairId);
+                var topApplied = await ApplyTopClothingAsync(avatarName, topClothingId);
+                if (hairApplied && topApplied)
+                {
+                    ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarAppliedToast,
+                        "Appearance applied to '{0}'", response.SelectedAvatar), ToastType.Success);
+                }
+            }
+            else
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarApplyFailedToast, "Failed to apply avatar: {0}", response?.Description), ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply avatar");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarApplyErrorToast, "Error applying avatar: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task<bool> ApplyHairAsync(string avatarName, string? hairId)
+    {
+        if (string.IsNullOrWhiteSpace(hairId))
+        {
+            return true;
+        }
+
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.HairSelect,
+                new AvatarHairSelectRequest { AvatarName = avatarName, HairId = hairId });
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarHairSelectResponse>();
+            if (response?.Success == true)
+            {
+                return true;
+            }
+
+            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarHairLabel, "Hair"), response?.Description);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to apply hair to avatar {AvatarName}.", avatarName);
+            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarHairLabel, "Hair"), ex.Message);
+        }
+
+        return false;
+    }
+
+    private async Task<bool> ApplyTopClothingAsync(string avatarName, string? clothingId)
+    {
+        if (string.IsNullOrWhiteSpace(clothingId))
+        {
+            return true;
+        }
+
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.ClothingSelect,
+                new AvatarClothingSelectRequest
+                {
+                    AvatarName = avatarName,
+                    Slot = "top",
+                    ClothingId = clothingId
+                });
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarClothingSelectResponse>();
+            if (response?.Success == true)
+            {
+                return true;
+            }
+
+            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarTopClothingLabel, "Top"), response?.Description);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to apply top clothing to avatar {AvatarName}.", avatarName);
+            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarTopClothingLabel, "Top"), ex.Message);
+        }
+
+        return false;
+    }
+
+    private void ShowAppearanceApplyWarning(string choice, string? detail)
+    {
+        var reason = string.IsNullOrWhiteSpace(detail)
+            ? Loc.GetOrDefault(SettingsTextKeys.AvatarEngineErrorDescription,
+                "The Avatar Engine returned an unexpected response. Select Connect to try again.")
+            : detail;
+        ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarAppearanceApplyFailedToast,
+            "Could not apply {0}: {1}. Choose an available option and try again.", choice, reason), ToastType.Warning);
+    }
+
+    private async Task ApplyExpressionAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_draft.SelectedEmotion))
+        {
+            return;
+        }
+
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.EmotionsSet, new AvatarEmotionRequest
+            {
+                EmotionName = _draft.SelectedEmotion,
+                BlendSpeed = _draft.EmotionBlendSpeed
+            });
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarEmotionResponse>();
+            if (response is not null && response.Success)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarExpressionAppliedToast, "Expression '{0}' applied", response.SelectedEmotion), ToastType.Success);
+            }
+            else
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarExpressionFailedToast, "Failed to apply expression: {0}", response?.Description), ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply expression");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarExpressionErrorToast, "Error applying expression: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task ApplyWindowAsync()
+    {
+        try
+        {
+            using var resolutionHttpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.Resolution, new AvatarResolutionRequest
+            {
+                Width = _draft.ResolutionWidth,
+                Height = _draft.ResolutionHeight,
+                Fullscreen = _draft.IsFullscreen
+            });
+            var resolutionResponse = await resolutionHttpResponse.Content.ReadFromJsonAsync<AvatarResolutionResponse>();
+            if (resolutionResponse is null || !resolutionResponse.Success)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarWindowApplyFailedToast, "Failed to apply window: {0}", resolutionResponse?.Description), ToastType.Error);
+                return;
+            }
+
+            using var graphicsHttpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.Graphics.Preset, new AvatarGraphicsPresetRequest
+            {
+                Level = _draft.GraphicsPresetLevel,
+                RayTracingEnabled = _draft.IsRayTracingEnabled
+            });
+            var graphicsResponse = await graphicsHttpResponse.Content.ReadFromJsonAsync<AvatarGraphicsPresetResponse>();
+            if (graphicsResponse is null || !graphicsResponse.Success)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarWindowApplyFailedToast, "Failed to apply window: {0}", graphicsResponse?.Description), ToastType.Error);
+                return;
+            }
+
+            using var backgroundHttpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.Background.Color, new AvatarBackgroundColorRequest
+            {
+                Red = _draft.BackgroundColorRed,
+                Green = _draft.BackgroundColorGreen,
+                Blue = _draft.BackgroundColorBlue
+            });
+            var backgroundResponse = await backgroundHttpResponse.Content.ReadFromJsonAsync<AvatarBackgroundColorResponse>();
+            if (backgroundResponse is null || !backgroundResponse.Success)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarWindowApplyFailedToast, "Failed to apply window: {0}", backgroundResponse?.Description), ToastType.Error);
+                return;
+            }
+
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarWindowSettingsAppliedToast, "Window settings applied"), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply avatar window settings");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarWindowApplyErrorToast, "Error applying window: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task ApplyPresentationAsync()
+    {
+        await SendPresentationAsync(_draft.Presentation);
+    }
+
+    // The proxy forwards the complete draft to IAvatarBridgeService without saving settings.
+    private async Task<bool> SendPresentationAsync(AvatarPresentationSettingsRequest settings)
+    {
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.PresentationSettings, settings);
+            httpResponse.EnsureSuccessStatusCode();
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarPresentationSettingsResponse>();
+            ToastService.Show(response?.Description ?? Loc.GetOrDefault(SettingsTextKeys.AvatarPresentationFailedToast, "Could not apply presentation settings."),
+                response?.Success == true ? ToastType.Success : ToastType.Error);
+            return response?.Success == true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply avatar presentation settings");
+            ToastService.Show(ex.Message, ToastType.Error);
+            return false;
+        }
+    }
+
+    // Force one preset temporarily, then restore the selected mode even after an early end.
+    private async Task TestPresentationAsync(string mode)
+    {
+        var restore = _draft.Presentation.Clone();
+        var preview = restore.Clone();
+        preview.Mode = mode;
+        using var cancellation = new CancellationTokenSource();
+        _presentationTest = cancellation;
+        try
+        {
+            if (!await SendPresentationAsync(preview)) { return; }
+            cancellation.Token.ThrowIfCancellationRequested();
+            if (!await TestMessageDisplayAsync()) { return; }
+            await Task.Delay(TimeSpan.FromSeconds(preview.DurationSeconds), cancellation.Token);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested) { }
+        finally
+        {
+            // Wait for pending preview requests before clearing and restoring the selected mode.
+            if (cancellation.IsCancellationRequested) { await ClearMessageDisplayAsync(); }
+            await SendPresentationAsync(restore);
+            _presentationTest = null;
+            if (!_disposed) { await InvokeAsync(StateHasChanged); }
+        }
+    }
+
+    private Task EndPresentationTestAsync()
+    {
+        _presentationTest?.Cancel();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Ends the temporary preset override when leaving settings.</summary>
+    public void Dispose()
+    {
+        _disposed = true;
+        AvatarUpdates.InstallationChanged -= OnInstallationChanged;
+        _presentationTest?.Cancel();
+    }
+
+    private async Task ApplyAudioAsync()
+    {
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.Speech.Volume, new AvatarSpeechVolumeRequest { Volume = _draft.SpeechVolume });
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarSpeechVolumeResponse>();
+            if (response is not null && response.Success)
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarAudioSettingsAppliedToast, "Audio settings applied ({0}%)", (response.Volume * 100).ToString("0", CultureInfo.CurrentCulture)), ToastType.Success);
+            }
+            else
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarAudioApplyFailedToast, "Failed to apply audio: {0}", response?.Description), ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to apply audio settings");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarAudioApplyErrorToast, "Error applying audio: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task<bool> TestMessageDisplayAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_testMessage))
+        {
+            return false;
+        }
+
+        try
+        {
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.Message.Text, new AvatarMessageTextRequest
+            {
+                Message = _testMessage
+            });
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarMessageTextResponse>();
+            if (response is not null && response.Success)
+            {
+                ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarPreviewMessageSentToast, "Preview message sent"), ToastType.Success);
+                return true;
+            }
+            else
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarPreviewMessageFailedToast, "Failed to send preview message: {0}", response?.Description), ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to send avatar message display test");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarPreviewMessageErrorToast, "Message preview error: {0}", ex.Message), ToastType.Error);
+        }
+        return false;
+    }
+
+    private async Task ClearMessageDisplayAsync()
+    {
+        try
+        {
+            using var httpResponse = await Http.PostAsync(ApiRoutes.AvatarBridge.Message.Clear, null);
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarMessageClearResponse>();
+            if (response is not null && response.Success)
+            {
+                ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarPreviewMessageClearedToast, "Preview message cleared"), ToastType.Success);
+            }
+            else
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarPreviewMessageClearFailedToast, "Failed to clear preview message: {0}", response?.Description), ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to clear avatar message display test");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarPreviewMessageClearErrorToast, "Message clear error: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task ConfirmShutdownAvatarAsync()
+    {
+        var confirmedTarget = _draft.BridgeUrl;
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.AvatarShutdownConfirmTitle, "Confirm Avatar Shutdown"),
+            Loc.GetOrDefault(SettingsTextKeys.AvatarShutdownConfirmMessage, "Shut down the avatar connected to this bridge URL? This may affect an avatar running on another machine on the network."));
+
+        if (result == DialogResult.Ok)
+        {
+            await ShutdownAvatarAsync(confirmedTarget);
+        }
+    }
+
+    private async Task ShutdownAvatarAsync(string confirmedTarget)
+    {
+        try
+        {
+            // Send the displayed target through confirmation to the shared shutdown owner.
+            using var httpResponse = await Http.PostAsJsonAsync($"{ApiRoutes.AvatarBridge.Shutdown}?expectedBaseUrl={Uri.EscapeDataString(confirmedTarget)}", new AvatarShutdownRequest());
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarShutdownResponse>();
+            if (response is not null && response.Success && response.ShutdownInitiated)
+            {
+                _engineState = AvatarEngineState.Offline;
+                _localEngineStartRequested = false;
+                _engineStatusDetail = null;
+                ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarShutdownInitiatedToast, "Avatar shutdown initiated"), ToastType.Success);
+            }
+            else
+            {
+                ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarShutdownFailedToast, "Failed to initiate shutdown: {0}", response?.Description), ToastType.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to initiate avatar shutdown");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarShutdownErrorToast, "Shutdown error: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private async Task SaveSettingsAsync()
+    {
+        if (!IsDirty)
+        {
+            return;
+        }
+
+        try
+        {
+            using var response = await Http.PutAsJsonAsync(ApiRoutes.AvatarBridge.Settings, _draft);
+            response.EnsureSuccessStatusCode();
+            _saved = _draft.Clone();
+            ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarSettingsSavedToast, "Avatar settings saved"), ToastType.Success);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save avatar settings");
+            ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarSaveSettingsFailedToast, "Failed to save avatar settings: {0}", ex.Message), ToastType.Error);
+        }
+    }
+
+    private void ResetToDefaults()
+    {
+        _draft = new AvatarSettings.Snapshot();
+        ClearAppearanceCatalogs();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private static string ToHexColor(float red, float green, float blue)
+    {
+        return $"#{ToByte(red):X2}{ToByte(green):X2}{ToByte(blue):X2}";
+    }
+
+    private static string ToHexColor(int red, int green, int blue)
+    {
+        return $"#{Math.Clamp(red, 0, 255):X2}{Math.Clamp(green, 0, 255):X2}{Math.Clamp(blue, 0, 255):X2}";
+    }
+
+    private static int ToByte(float channel)
+    {
+        return (int)Math.Round(Math.Clamp(channel, 0.0f, 1.0f) * 255);
+    }
+
+    private static bool TryParseHexColor(string? value, out float red, out float green, out float blue)
+    {
+        red = 0.0f;
+        green = 0.0f;
+        blue = 0.0f;
+
+        if (!TryParseHexColorBytes(value, out var redByte, out var greenByte, out var blueByte))
+        {
+            return false;
+        }
+
+        red = redByte / 255.0f;
+        green = greenByte / 255.0f;
+        blue = blueByte / 255.0f;
+        return true;
+    }
+
+    private static bool TryParseHexColorBytes(string? value, out int red, out int green, out int blue)
+    {
+        red = 0;
+        green = 0;
+        blue = 0;
+
+        var hex = value?.Trim();
+        if (string.IsNullOrWhiteSpace(hex))
+        {
+            return false;
+        }
+
+        if (hex.StartsWith('#'))
+        {
+            hex = hex[1..];
+        }
+
+        if (hex.Length != 6)
+        {
+            return false;
+        }
+
+        return int.TryParse(hex[..2], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out red) &&
+               int.TryParse(hex.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out green) &&
+               int.TryParse(hex.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out blue);
+    }
+
+    private static bool ArePresentationSettingsEqual(AvatarPresentationSettingsRequest a, AvatarPresentationSettingsRequest b) =>
+        a.Mode == b.Mode && Math.Abs(a.DurationSeconds - b.DurationSeconds) < 0.01f &&
+        ArePresentationLayoutsEqual(a.Subtitle, b.Subtitle) && ArePresentationLayoutsEqual(a.Side, b.Side);
+
+    private static bool ArePresentationLayoutsEqual(AvatarPresentationLayout a, AvatarPresentationLayout b) =>
+        Math.Abs(a.Yaw - b.Yaw) < 0.01f && a.PositionX == b.PositionX && a.PositionY == b.PositionY &&
+        a.Width == b.Width && a.Height == b.Height && a.FontSize == b.FontSize &&
+        a.Red == b.Red && a.Green == b.Green && a.Blue == b.Blue && a.Alpha == b.Alpha;
+
+    private static bool AreSettingsEqual(AvatarSettings.Snapshot a, AvatarSettings.Snapshot b)
+    {
+        return a.BridgeUrl == b.BridgeUrl &&
+               a.PreferredAccessMode == b.PreferredAccessMode &&
+               a.SelectedAvatar == b.SelectedAvatar &&
+               a.SelectedHairId == b.SelectedHairId &&
+               a.SelectedTopClothingId == b.SelectedTopClothingId &&
+               a.SelectedEmotion == b.SelectedEmotion &&
+               Math.Abs(a.EmotionBlendSpeed - b.EmotionBlendSpeed) < 0.01f &&
+               Math.Abs(a.EmotionCueBlendInSeconds - b.EmotionCueBlendInSeconds) < 0.01f &&
+               Math.Abs(a.EmotionCueRestoreAfterSeconds - b.EmotionCueRestoreAfterSeconds) < 0.01f &&
+               a.BackgroundColorRed == b.BackgroundColorRed &&
+               a.BackgroundColorGreen == b.BackgroundColorGreen &&
+               a.BackgroundColorBlue == b.BackgroundColorBlue &&
+               a.GraphicsPresetLevel == b.GraphicsPresetLevel &&
+               a.IsRayTracingEnabled == b.IsRayTracingEnabled &&
+               a.ResolutionWidth == b.ResolutionWidth &&
+               a.ResolutionHeight == b.ResolutionHeight &&
+               a.IsFullscreen == b.IsFullscreen &&
+               ArePresentationSettingsEqual(a.Presentation, b.Presentation) &&
+               Math.Abs(a.SpeechVolume - b.SpeechVolume) < 0.01f;
+    }
+}

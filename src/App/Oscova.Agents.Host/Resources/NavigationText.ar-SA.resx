@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Navigation.Overview">
+		<value>نظرة عامة</value>
+	</data>
+	<data name="Navigation.Chat">
+		<value>الدردشة</value>
+	</data>
+	<data name="Navigation.Tasks">
+		<value>المهام</value>
+	</data>
+	<data name="Navigation.Manage">
+		<value>الإعدادات</value>
+	</data>
+	<data name="Navigation.Orchestration">
+		<value>التنسيق</value>
+	</data>
+	<data name="Navigation.AgentTasks">
+		<value>مهام الوكيل</value>
+	</data>
+	<data name="Navigation.Administration">
+		<value>الإدارة</value>
+	</data>
+	<data name="Navigation.ToggleSidebarHover">
+		<value>تبديل إظهار الشريط الجانبي عند تمرير المؤشر</value>
+	</data>
+	<data name="Navigation.CloseSidebar">
+		<value>إغلاق الشريط الجانبي</value>
+	</data>
+	<data name="Navigation.ToggleSidebar">
+		<value>تبديل الشريط الجانبي</value>
+	</data>
+	<data name="Navigation.ToggleTheme">
+		<value>تبديل المظهر</value>
+	</data>
+	<data name="Navigation.OpenCustomization">
+		<value>فتح التخصيص</value>
+	</data>
+	<data name="Navigation.SettingsMenuTrigger">
+		<value>مشغّل قائمة {0}</value>
+	</data>
+	<data name="Navigation.ToggleLayoutSidebar"><value>تبديل الشريط الجانبي للتخطيط</value></data>
+	<data name="Navigation.Customization"><value>التخصيص</value></data>
+	<data name="Navigation.Reset"><value>إعادة تعيين</value></data>
+	<data name="Navigation.CustomizationResetToast"><value>تمت إعادة تعيين التخصيص إلى الإعدادات الافتراضية.</value></data>
+	<data name="Navigation.FullScreen"><value>ملء الشاشة</value></data>
+	<data name="Navigation.Theme"><value>المظهر</value></data>
+	<data name="Navigation.Sidebar"><value>الشريط الجانبي</value></data>
+	<data name="Navigation.SidebarThemeAvailability"><value>(*متوفر فقط في المظهر الفاتح)</value></data>
+	<data name="Navigation.Light"><value>فاتح</value></data>
+	<data name="Navigation.Dark"><value>داكن</value></data>
+	<data name="Navigation.FontFamily"><value>عائلة الخط</value></data>
+	<data name="Navigation.Direction"><value>الاتجاه</value></data>
+	<data name="Navigation.LeftToRight"><value>من اليسار إلى اليمين</value></data>
+	<data name="Navigation.RightToLeft"><value>من اليمين إلى اليسار</value></data>
+	<data name="Navigation.LeftToRightShort"><value>LTR</value></data>
+	<data name="Navigation.RightToLeftShort"><value>RTL</value></data>
+	<data name="Navigation.Account"><value>الحساب</value></data>
+	<data name="Navigation.Logs"><value>السجلات</value></data>
+	<data name="Navigation.ChatMemory"><value>ذاكرة الدردشة</value></data>
+	<data name="Navigation.LogOut"><value>تسجيل الخروج</value></data>
+	<data name="Navigation.Role.Admin"><value>المشغّل</value></data>
+	<data name="Navigation.Role.Moderator"><value>المشرف</value></data>
+	<data name="Navigation.Role.User"><value>المستخدم</value></data>
+	<data name="Navigation.HelpButtonAriaLabel"><value>فتح المساعدة</value></data>
+	<data name="Navigation.Dashboard"><value>لوحة التحكم</value></data>
+	<data name="Navigation.Dashboard.Window"><value>آخر 30 يومًا</value></data>
+	<data name="Navigation.Dashboard.Loading"><value>جارٍ تحميل لوحة التحكم...</value></data>
+	<data name="Navigation.Dashboard.Error"><value>تعذر تحميل مقاييس لوحة التحكم.</value></data>
+	<data name="Navigation.Dashboard.Empty"><value>لا توجد مقاييس بعد</value></data>
+	<data name="Navigation.Dashboard.EmptyHint"><value>شغّل دردشة أو مهمة وكيل لبدء ملء لوحة التحكم هذه.</value></data>
+	<data name="Navigation.Dashboard.LastThirtyDays"><value>النشاط خلال آخر 30 يومًا</value></data>
+	<data name="Navigation.Dashboard.TotalTokens"><value>إجمالي الرموز</value></data>
+	<data name="Navigation.Dashboard.EstimatedCost"><value>التكلفة التقديرية</value></data>
+	<data name="Navigation.Dashboard.ProviderRatedUsage"><value>أسعار الإدخال والإخراج القياسية</value></data>
+	<data name="Navigation.Dashboard.CostUnavailable"><value>غير متاح</value></data>
+	<data name="Navigation.Dashboard.PartialEstimate"><value>تقدير جزئي</value></data>
+	<data name="Navigation.Dashboard.EstimateExplanation"><value>تُستخدم رموز الإدخال والإخراج المُبلّغ عنها بالأسعار القياسية بالدولار. يُحسب الإدخال المخزن مؤقتًا بسعر الإدخال. لا تشمل التقديرات الرسوم الأخرى.</value></data>
+	<data name="Navigation.Dashboard.Egress"><value>البيانات الصادرة</value></data>
+	<data name="Navigation.Dashboard.ToolCalls"><value>استدعاءات الأدوات</value></data>
+	<data name="Navigation.Dashboard.TaskRuns"><value>تشغيلات المهام</value></data>
+	<data name="Navigation.Dashboard.Agents"><value>الوكلاء</value></data>
+	<data name="Navigation.Dashboard.ModelProviders"><value>مزودو النماذج</value></data>
+	<data name="Navigation.Dashboard.McpServers"><value>خوادم MCP</value></data>
+	<data name="Navigation.Dashboard.Skills"><value>المهارات</value></data>
+	<data name="Navigation.Dashboard.InputOutput"><value>الإدخال / الإخراج</value></data>
+	<data name="Navigation.Dashboard.Cloud"><value>سحابي</value></data>
+	<data name="Navigation.Dashboard.Local"><value>محلي</value></data>
+	<data name="Navigation.Dashboard.AuditedEvents"><value>أحداث خروج البيانات المدققة</value></data>
+	<data name="Navigation.Dashboard.OpenEgressAudit"><value>فتح تفاصيل تدقيق خروج البيانات لـ {0} من الأحداث</value></data>
+	<data name="Navigation.Dashboard.EgressAuditAction"><value>التدقيق</value></data>
+	<data name="Navigation.Dashboard.TokenBreakdown"><value>تفصيل الرموز</value></data>
+	<data name="Navigation.Dashboard.ByProvider"><value>حسب المزود</value></data>
+	<data name="Navigation.Dashboard.ByAgent"><value>حسب الوكيل</value></data>
+	<data name="Navigation.Dashboard.ByModel"><value>حسب النموذج</value></data>
+	<data name="Navigation.Dashboard.ToolUsage"><value>استخدام الأدوات</value></data>
+	<data name="Navigation.Dashboard.Timeline"><value>النشاط الأخير</value></data>
+	<data name="Navigation.Dashboard.AdminUsage"><value>الاستخدام حسب المستخدم (للإدارة)</value></data>
+	<data name="Navigation.Dashboard.StorageByUser"><value>التخزين حسب المستخدم</value></data>
+	<data name="Navigation.Dashboard.Date"><value>التاريخ</value></data>
+	<data name="Navigation.Dashboard.Provider"><value>المزود</value></data>
+	<data name="Navigation.Dashboard.Agent"><value>الوكيل</value></data>
+	<data name="Navigation.Dashboard.Model"><value>النموذج</value></data>
+	<data name="Navigation.Dashboard.Tool"><value>الأداة</value></data>
+	<data name="Navigation.Dashboard.Succeeded"><value>ناجحة</value></data>
+	<data name="Navigation.Dashboard.Failed"><value>فاشلة</value></data>
+	<data name="Navigation.Dashboard.User"><value>المستخدم</value></data>
+	<data name="Navigation.Dashboard.Tokens"><value>الرموز</value></data>
+	<data name="Navigation.Dashboard.File"><value>ملف</value></data>
+	<data name="Navigation.Dashboard.Files"><value>ملفات</value></data>
+	<data name="Navigation.Dashboard.Other"><value>أخرى</value></data>
+	<data name="Navigation.Dashboard.IncognitoBucket"><value>التصفح المتخفي</value></data>
+	<data name="Navigation.Dashboard.BackgroundBucket"><value>العمل في الخلفية</value></data>
+	<data name="Navigation.Dashboard.UsageOverview"><value>نظرة عامة على الاستخدام</value></data>
+	<data name="Navigation.Dashboard.UsageOverviewHint"><value>الإدخال والإخراج والبيانات الصادرة حسب اليوم</value></data>
+	<data name="Navigation.Dashboard.InputTokens"><value>رموز الإدخال</value></data>
+	<data name="Navigation.Dashboard.OutputTokens"><value>رموز الإخراج</value></data>
+	<data name="Navigation.Dashboard.OperationalStatus"><value>الحالة التشغيلية</value></data>
+	<data name="Navigation.Dashboard.TaskSuccessRate"><value>معدل نجاح المهام</value></data>
+	<data name="Navigation.Dashboard.AverageTaskDuration"><value>متوسط مدة المهمة</value></data>
+	<data name="Navigation.Dashboard.Fallbacks"><value>البدائل الاحتياطية</value></data>
+	<data name="Navigation.Dashboard.LocalCloudMix"><value>مزيج محلي / سحابي</value></data>
+	<data name="Navigation.Dashboard.Distribution"><value>توزيع الاستخدام</value></data>
+	<data name="Navigation.Dashboard.TokenMix"><value>مزيج الرموز</value></data>
+	<data name="Navigation.Dashboard.SecondsShort"><value>ث</value></data>
+	<data name="Navigation.Dashboard.MinutesShort"><value>د</value></data>
+	<data name="Navigation.Achievements"><value>الإنجازات</value></data>
+  <data name="Navigation.ShowSettingsNavigation" xml:space="preserve"><value>إظهار قائمة الإعدادات</value></data>
+</root>

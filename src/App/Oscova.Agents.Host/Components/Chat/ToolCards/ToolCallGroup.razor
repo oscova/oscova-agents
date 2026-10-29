@@ -1,0 +1,85 @@
+@* Groups consecutive retained calls without mounting their details until requested. *@
+@inject IStringLocalizer<ChatText> Loc
+
+<button type="button" class="btn btn-ghost btn-sm h-auto min-h-11 sm:min-h-8 flex w-full min-w-0 justify-start text-start"
+        aria-expanded="@(_expanded ? "true" : "false")" @onclick="() => _expanded = !_expanded">
+    <span class="iconify lucide--wrench size-4 shrink-0" aria-hidden="true"></span>
+    <span class="min-w-0 grow truncate font-semibold"><span class="@(IsBusy ? "custom-activity-shimmer" : null)">@CategoryLabel</span></span>
+    <span class="flex min-w-0 flex-wrap items-center justify-end gap-2 text-xs">
+        <span>@ActivityCountLabel</span>
+        @if (Approvals.Count > 0)
+        {
+            <span>@Loc[ChatTextKeys.AutoApproved]</span>
+        }
+        @if (!string.IsNullOrEmpty(StateLabel))
+        {
+            <span>@StateLabel</span>
+        }
+        @if (FailedCount > 0)
+        {
+            <span class="text-warning">@FailureLabel</span>
+        }
+    </span>
+    <span class="iconify lucide--chevron-down size-4 shrink-0 @(_expanded ? "rotate-180" : null)" aria-hidden="true"></span>
+</button>
+@if (_expanded)
+{
+    <div class="custom-tool-activity-scroll">
+        @for (var index = 0; index < Segments.Count; index++)
+        {
+            var segment = Segments[index];
+            var callId = segment.FunctionCall?.CallId;
+            object rowKey = string.IsNullOrWhiteSpace(callId) ? index : callId;
+            <ToolCallCardHost @key="rowKey" Segment="@segment" />
+            @foreach (var approval in Approvals.Where(approval => approval.ToolCallId == callId))
+            {
+                <ToolApprovalPrompt @key="approval.RequestId" Request="@approval" Compact="true"
+                                    OnRespond="@(default(EventCallback<ToolApprovalChoice>))" />
+            }
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ChatSegment> Segments { get; set; } = [];
+    [Parameter] public IReadOnlyList<ToolApprovalRequest> Approvals { get; set; } = [];
+    private bool _expanded;
+    private int RunningCount => Segments.Count(s => s.ExecutionState == ToolExecutionState.Executing);
+    private bool IsBusy => RunningCount > 0;
+    private int FailedCount => Segments.Count(s => s.ExecutionState == ToolExecutionState.Failed);
+    private bool AllCompleted => Segments.Count > 0 && Segments.All(s => s.ExecutionState == ToolExecutionState.Completed);
+
+    private string CategoryLabel
+    {
+        get
+        {
+            // Three distinct descriptors establish the two visible categories and the overflow marker.
+            var categories = Segments.Select(s => ToolCardDescriptor.For(s.FunctionCall?.Name, Loc))
+                .DistinctBy(d => d.Kind).Take(3).ToArray();
+            var titles = categories.Take(2).Select(d => d.Kind == ToolCardKind.Generic
+                ? Loc.GetOrDefault(ChatTextKeys.ToolActivityGenericLabel, "Tool activity") : d.Title);
+            var label = string.Join(Loc.GetOrDefault(ChatTextKeys.ToolActivityListSeparator, ", "), titles);
+            return categories.Length > 2
+                ? string.Format(CultureInfo.CurrentCulture,
+                    Loc.GetOrDefault(ChatTextKeys.ToolActivityCategoriesAndMoreFormat, "{0} and more"), label)
+                : label;
+        }
+    }
+
+    private string ActivityCountLabel => Segments.Count == 1
+        ? Loc.GetOrDefault(ChatTextKeys.ActivityOneActivity, "1 activity")
+        : string.Format(CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(ChatTextKeys.ActivityManyActivitiesFormat, "{0} activities"), Segments.Count);
+
+    private string StateLabel => RunningCount > 0
+        ? string.Format(CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(ChatTextKeys.ToolActivityRunningCountFormat, "{0} running"), RunningCount)
+        : AllCompleted ? Loc.GetOrDefault(ChatTextKeys.ToolCardStatusCompleted, "Completed")
+        : Segments.Any(s => s.ExecutionState == ToolExecutionState.Pending)
+            ? Loc.GetOrDefault(ChatTextKeys.ToolCardStatusQueued, "Queued")
+        : Segments.Any(s => s.ExecutionState == ToolExecutionState.Cancelled)
+            ? Loc.GetOrDefault(ChatTextKeys.ToolCardStatusCancelled, "Cancelled") : string.Empty;
+
+    private string FailureLabel => string.Format(CultureInfo.CurrentCulture,
+        Loc.GetOrDefault(ChatTextKeys.ToolActivityFailedCountFormat, "{0} failed. Expand for details"), FailedCount);
+}

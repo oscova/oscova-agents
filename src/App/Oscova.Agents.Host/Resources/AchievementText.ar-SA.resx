@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!--
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format
+		that is mostly human readable. The generation and parsing of the
+		various data types are done through the TypeConverter classes
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a
+		type or mimetype. Type corresponds to a .NET class that support
+		text/value conversion through the TypeConverter architecture.
+		Classes that don't support this are serialized and stored with the
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the
+		ResXResourceReader how to depersist the object. This is currently not
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format
+		that the ResXResourceWriter will generate, however the reader can
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Achievement.FirstThread.Name"><value>الكلمات الأولى</value></data>
+	<data name="Achievement.FirstThread.Description"><value>ابدأ أول محادثة لك. لا تُحتسب المحادثات السرية.</value></data>
+	<data name="Achievement.TenThreads.Name"><value>محاور</value></data>
+	<data name="Achievement.TenThreads.Description"><value>احتفظ بـ 10 محادثات. لا تُحتسب المحادثات السرية.</value></data>
+	<data name="Achievement.FiftyThreads.Name"><value>ناسج المحادثات</value></data>
+	<data name="Achievement.FiftyThreads.Description"><value>احتفظ بـ 50 محادثة. لا تُحتسب المحادثات السرية.</value></data>
+	<data name="Achievement.FirstAgent.Name"><value>صانع الوكلاء</value></data>
+	<data name="Achievement.FirstAgent.Description"><value>أنشئ أول وكيل مخصص لك.</value></data>
+	<data name="Achievement.ThreeAgents.Name"><value>فريق صغير</value></data>
+	<data name="Achievement.ThreeAgents.Description"><value>أنشئ 3 وكلاء مخصصين.</value></data>
+	<data name="Achievement.FiveAgents.Name"><value>فريق كامل</value></data>
+	<data name="Achievement.FiveAgents.Description"><value>أنشئ 5 وكلاء مخصصين.</value></data>
+	<data name="Achievement.TenAgents.Name"><value>وكالة</value></data>
+	<data name="Achievement.TenAgents.Description"><value>أنشئ 10 وكلاء مخصصين.</value></data>
+	<data name="Achievement.FirstProvider.Name"><value>متصل</value></data>
+	<data name="Achievement.FirstProvider.Description"><value>قم بتكوين أول مزود نماذج لك.</value></data>
+	<data name="Achievement.ThreeProviders.Name"><value>متعدد النماذج</value></data>
+	<data name="Achievement.ThreeProviders.Description"><value>قم بتكوين 3 مزودي نماذج.</value></data>
+	<data name="Achievement.FiveProviders.Name"><value>جامع المزودين</value></data>
+	<data name="Achievement.FiveProviders.Description"><value>قم بتكوين 5 مزودي نماذج.</value></data>
+	<data name="Achievement.FirstTask.Name"><value>مفوِّض</value></data>
+	<data name="Achievement.FirstTask.Description"><value>أنشئ أول مهمة وكيل لك.</value></data>
+	<data name="Achievement.FiveTasks.Name"><value>مؤتمِت المهام</value></data>
+	<data name="Achievement.FiveTasks.Description"><value>أنشئ 5 مهام وكيل.</value></data>
+	<data name="Achievement.FifteenTasks.Name"><value>مهندس المهام</value></data>
+	<data name="Achievement.FifteenTasks.Description"><value>أنشئ 15 مهمة وكيل.</value></data>
+	<data name="Achievement.FirstTaskRun.Name"><value>إنه يعمل</value></data>
+	<data name="Achievement.FirstTaskRun.Description"><value>أكمل أول تشغيل لمهمة.</value></data>
+	<data name="Achievement.TwentyFiveTaskRuns.Name"><value>أيدٍ موثوقة</value></data>
+	<data name="Achievement.TwentyFiveTaskRuns.Description"><value>أكمل 25 تشغيلاً للمهام.</value></data>
+	<data name="Achievement.HundredTaskRuns.Name"><value>مئوية التشغيل</value></data>
+	<data name="Achievement.HundredTaskRuns.Description"><value>أكمل 100 تشغيل للمهام.</value></data>
+	<data name="Achievement.FirstScheduledRun.Name"><value>اضبط وانسَ</value></data>
+	<data name="Achievement.FirstScheduledRun.Description"><value>دع مهمة مجدولة تعمل مرة واحدة.</value></data>
+	<data name="Achievement.TenScheduledRuns.Name"><value>بدقة الساعة</value></data>
+	<data name="Achievement.TenScheduledRuns.Description"><value>دع المهام المجدولة تعمل 10 مرات.</value></data>
+	<data name="Achievement.FirstMcpServer.Name"><value>باني الجسور</value></data>
+	<data name="Achievement.FirstMcpServer.Description"><value>قم بالاتصال بأول خادم MCP لك.</value></data>
+	<data name="Achievement.ThreeMcpServers.Name"><value>اتصال وثيق</value></data>
+	<data name="Achievement.ThreeMcpServers.Description"><value>قم بالاتصال بـ 3 خوادم MCP.</value></data>
+	<data name="Achievement.FiveMcpServers.Name"><value>مركز التكامل</value></data>
+	<data name="Achievement.FiveMcpServers.Description"><value>قم بالاتصال بـ 5 خوادم MCP.</value></data>
+	<data name="Achievement.FirstSkill.Name"><value>سريع التعلم</value></data>
+	<data name="Achievement.FirstSkill.Description"><value>قم بتثبيت أو إنشاء أول مهارة لك.</value></data>
+	<data name="Achievement.FiveSkills.Name"><value>ماهر</value></data>
+	<data name="Achievement.FiveSkills.Description"><value>احتفظ بـ 5 مهارات متاحة.</value></data>
+	<data name="Achievement.TenSkills.Name"><value>موسوعي</value></data>
+	<data name="Achievement.TenSkills.Description"><value>احتفظ بـ 10 مهارات متاحة.</value></data>
+	<data name="Achievement.FiveTools.Name"><value>صندوق الأدوات مفتوح</value></data>
+	<data name="Achievement.FiveTools.Description"><value>استخدم 5 أدوات مختلفة.</value></data>
+	<data name="Achievement.FifteenTools.Name"><value>بارع بالأدوات</value></data>
+	<data name="Achievement.FifteenTools.Description"><value>استخدم 15 أداة مختلفة.</value></data>
+	<data name="Achievement.ThirtyTools.Name"><value>سيد الأدوات</value></data>
+	<data name="Achievement.ThirtyTools.Description"><value>استخدم 30 أداة مختلفة.</value></data>
+	<data name="Achievement.FallbackSaved.Name"><value>شبكة الأمان</value></data>
+	<data name="Achievement.FallbackSaved.Description"><value>دع المزود الاحتياطي ينقذ عملية تشغيل من الفشل.</value></data>
+	<data name="Achievement.FirstLocalDay.Name"><value>خارج الشبكة</value></data>
+	<data name="Achievement.FirstLocalDay.Description"><value>اعمل يوماً كاملاً دون أن تغادر أي بيانات جهازك.</value></data>
+	<data name="Achievement.SevenLocalDays.Name"><value>أسبوع الخصوصية</value></data>
+	<data name="Achievement.SevenLocalDays.Description"><value>اعمل 7 أيام دون أن تغادر أي بيانات جهازك.</value></data>
+	<data name="Achievement.ThirtyLocalDays.Name"><value>محلي بالكامل</value></data>
+	<data name="Achievement.ThirtyLocalDays.Description"><value>اعمل 30 يوماً دون أن تغادر أي بيانات جهازك.</value></data>
+	<data name="Achievement.Page.Title"><value>الإنجازات</value></data>
+	<data name="Achievement.Page.Subtitle"><value>ما اكتشفته حتى الآن</value></data>
+	<data name="Achievement.Page.Discovered"><value>تم اكتشاف {0} من {1}</value></data>
+	<data name="Achievement.Page.Empty"><value>لم يتم فتح أي إنجاز بعد</value></data>
+	<data name="Achievement.Page.EmptyHint"><value>ابدأ محادثة، أو أضف مزود نماذج، أو أنشئ مهمة وكيل.</value></data>
+	<data name="Achievement.Page.Error"><value>تعذر تحميل الإنجازات.</value></data>
+	<data name="Achievement.Level"><value>المستوى {0}</value></data>
+	<data name="Achievement.Points"><value>{0} XP</value></data>
+	<data name="Achievement.Unlocked.Body"><value>تم فتح إنجاز جديد.</value></data>
+</root>

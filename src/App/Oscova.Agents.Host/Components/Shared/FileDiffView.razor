@@ -1,0 +1,77 @@
+@using DiffPlex.DiffBuilder
+@using DiffPlex.DiffBuilder.Model
+
+@* Uses inline rows in narrow project panels and side-by-side rows for backup comparisons. *@
+<div class="h-full min-h-0 overflow-x-auto overflow-y-auto rounded-box border border-base-300">
+    @if (Inline)
+    {
+        <table class="table table-xs w-full">
+            <tbody>
+                @foreach (var line in InlineDiffBuilder.Diff(OldText, NewText, ignoreWhiteSpace: false).Lines)
+                {
+                    <tr>
+                        <td class="w-px select-none whitespace-nowrap py-1 text-right align-top leading-5 opacity-60">@FormatPosition(line)</td>
+                        <td class="py-1 @GetCellClass(line)">
+                            <code class="block whitespace-pre-wrap wrap-anywhere text-[0.8125rem] leading-5">@(line.Type == ChangeType.Inserted ? "+ " : line.Type == ChangeType.Deleted ? "- " : "  ")@line.Text</code>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <table class="table table-xs table-pin-rows w-max min-w-full">
+            <thead>
+                <tr>
+                    <th class="w-16 py-2 text-right leading-5">@OldLabel</th>
+                    <th class="min-w-96 py-2 leading-5">@OldTitle</th>
+                    <th class="w-16 py-2 text-right leading-5">@NewLabel</th>
+                    <th class="min-w-96 py-2 leading-5">@NewTitle</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Rows)
+                {
+                    <tr>
+                        <td class="select-none py-1 text-right align-top leading-5 opacity-60">@FormatPosition(row.Old)</td>
+                        <td class="py-1 @GetCellClass(row.Old)">
+                            <code class="block whitespace-pre text-[0.8125rem] leading-5">@row.Old.Text</code>
+                        </td>
+                        <td class="select-none py-1 text-right align-top leading-5 opacity-60">@FormatPosition(row.New)</td>
+                        <td class="py-1 @GetCellClass(row.New)">
+                            <code class="block whitespace-pre text-[0.8125rem] leading-5">@row.New.Text</code>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public string OldText { get; set; } = string.Empty;
+    [Parameter] public string NewText { get; set; } = string.Empty;
+    [Parameter] public string OldLabel { get; set; } = "-";
+    [Parameter] public string NewLabel { get; set; } = "+";
+    [Parameter] public string OldTitle { get; set; } = string.Empty;
+    [Parameter] public string NewTitle { get; set; } = string.Empty;
+    [Parameter] public bool Inline { get; set; }
+
+    private SideBySideDiffModel Diff => SideBySideDiffBuilder.Diff(OldText, NewText, ignoreWhiteSpace: false);
+
+    private IEnumerable<(DiffPiece Old, DiffPiece New)> Rows =>
+        Diff.OldText.Lines.Zip(Diff.NewText.Lines, (oldLine, newLine) => (oldLine, newLine));
+
+    private static string FormatPosition(DiffPiece piece) =>
+        piece.Position?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+
+    private static string GetCellClass(DiffPiece piece) => piece.Type switch
+    {
+        ChangeType.Inserted => "align-top bg-success/10",
+        ChangeType.Deleted => "align-top bg-error/10",
+        ChangeType.Modified => "align-top bg-warning/10",
+        ChangeType.Imaginary => "align-top bg-base-200 opacity-50",
+        _ => "align-top"
+    };
+}

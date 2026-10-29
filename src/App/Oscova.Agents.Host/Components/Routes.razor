@@ -1,0 +1,16 @@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <VaultGate>
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+                <NotAuthorized>
+                    <LayoutView Layout="typeof(MainLayout)">
+                        <AccessDenied />
+                    </LayoutView>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </VaultGate>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
+
+<HelpPanel />

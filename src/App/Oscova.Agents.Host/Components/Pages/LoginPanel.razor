@@ -1,0 +1,196 @@
+@using Oscova.Agents.Host.Server.Services
+@inject ILogger<LoginPanel> Logger
+@inject LoginTicketService LoginTickets
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<AuthText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<SplitAuthLayout Title="@(Loc.GetOrDefault(AuthTextKeys.LoginTitle, "Sign in"))" Subtitle="@(Loc.GetOrDefault(AuthTextKeys.LoginSubtitle, "Seamless Access, Secure Connection: Your Gateway to a Personalized Experience."))">
+	@if (!string.IsNullOrEmpty(_error))
+	{
+		<div class="alert alert-error" role="alert" aria-live="assertive">
+			<span>@_error</span>
+		</div>
+	}
+	@if (_operatorCreated)
+	{
+		<div class="alert alert-success alert-soft" role="status">
+			<span>@Loc.GetOrDefault(AuthTextKeys.AdminSetupCreated, "Operator created. Sign in with your new account.")</span>
+		</div>
+	}
+
+    <SignInRetryNotice RetryUntil="@_retryUntil" WasBlocked="@_wasBlocked" OnExpired="@ClearDisplayedWait" />
+	<EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
+		<DataAnnotationsValidator />
+		<ValidationSummary class="text-sm text-error" />
+
+		<fieldset class="fieldset" disabled="@_isBusy">
+			<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username")</legend>
+			<label class="input w-full focus:outline-0">
+				<iconify-icon icon="lucide:user" class="text-base-content/80 size-5"></iconify-icon>
+				<InputText class="grow focus:outline-0" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username"))" placeholder="@(CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username"))" @bind-Value="_model.Username" @bind-Value:after="ClearDisplayedWait" maxlength="256" autocomplete="username" />
+			</label>
+		</fieldset>
+
+		<fieldset class="fieldset" disabled="@_isBusy">
+			<legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password")</legend>
+			<label class="input w-full focus:outline-0">
+				<iconify-icon icon="lucide:key-round" class="text-base-content/80 size-5"></iconify-icon>
+				<InputText class="grow focus:outline-0" aria-label="@(CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password"))" placeholder="@(CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password"))" type="@(_showPassword ? "text" : "password")" @bind-Value="_model.Password" autocomplete="current-password" />
+				<label class="swap btn btn-xs btn-ghost btn-circle text-base-content/60">
+					<input type="checkbox" @bind="@_showPassword" aria-label="@(Loc.GetOrDefault(AuthTextKeys.ShowPasswordLabel, "Show password"))" />
+					<iconify-icon icon="lucide:eye" class="swap-off size-4"></iconify-icon>
+					<iconify-icon icon="lucide:eye-off" class="swap-on size-4"></iconify-icon>
+				</label>
+			</label>
+		</fieldset>
+
+		<button class="btn btn-primary btn-wide mt-4 max-w-full gap-3 md:mt-6" type="submit" disabled="@(_isBusy || _retryUntil is not null)" aria-busy="@_isBusy">
+			@if (_isBusy)
+			{
+				<span class="loading loading-dots loading-sm"></span>
+				<span>@Loc.GetOrDefault(AuthTextKeys.LoggingInButton, "Logging in...")</span>
+			}
+			else
+			{
+				<span class="iconify lucide--log-in size-4" aria-hidden="true"></span>
+				<span>@(_isRetry ? Loc.GetOrDefault(AuthTextKeys.TryAgainButton, "Try again") : Loc.GetOrDefault(AuthTextKeys.LoginButton, "Login"))</span>
+			}
+		</button>
+	</EditForm>
+
+	@if (!string.IsNullOrWhiteSpace(SecondaryActionLabel))
+	{
+		<div class="mt-4 text-center">
+			<button type="button" class="btn btn-ghost btn-sm" @onclick="NavigateToSecondaryAction">
+				@SecondaryActionLabel
+			</button>
+		</div>
+	}
+</SplitAuthLayout>
+
+@code {
+    private DateTimeOffset? _retryUntil;
+    private bool _wasBlocked;
+    private bool _isRetry;
+
+    private void ClearDisplayedWait()
+    {
+        _retryUntil = null;
+        _error = null;
+    }
+
+	private readonly LoginModel _model = new();
+	private string? _error;
+	private bool _isBusy;
+	private bool _showPassword;
+	private bool _operatorCreated;
+	private string? _pendingNavUrl;
+
+	[Parameter] public EventCallback OnSuccess { get; set; }
+	[Parameter] public bool RedirectOnSuccess { get; set; }
+	[Parameter] public string? SecondaryActionLabel { get; set; }
+	[Parameter] public string? SecondaryActionUrl { get; set; }
+
+	protected override void OnInitialized()
+	{
+		// Read error code returned from server redirects (e.g., /login?e=invalid_credentials)
+		var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+		var query = QueryHelpers.ParseQuery(uri.Query);
+		if (query.TryGetValue("e", out var e) && !string.IsNullOrWhiteSpace(e))
+		{
+			_error = e.ToString() switch
+			{
+				"invalid_credentials" => Loc.GetOrDefault(AuthTextKeys.SignInMismatch, "That didn't match. Try again."),
+				"invalid_ticket" => Loc.GetOrDefault(AuthTextKeys.InvalidLoginTicketError, "Your login session expired. Please try again."),
+				"invalid_profile" => Loc.GetOrDefault(AuthTextKeys.InvalidProfileError, "That profile is no longer available."),
+				_ => null
+			};
+
+			// Clean the query string so the error doesn't persist on refresh/back
+			var clean = NavigationManager.GetUriWithQueryParameter("e", (string?)null);
+			NavigationManager.NavigateTo(clean, replace: true);
+		}
+        // First-run setup redirects here after creating the operator account.
+        if (query.TryGetValue("setup", out var setup) && setup == "done")
+        {
+            _operatorCreated = true;
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("setup", (string?)null), replace: true);
+        }
+        if (query.TryGetValue("failure", out var failureToken) && LoginTickets.TryConsumeFailure(failureToken.ToString(), out var failure) && failure is not null)
+        {
+            _model.Username = failure.Username;
+            _retryUntil = failure.RetryUntil;
+            _wasBlocked = failure.WasBlocked;
+            _isRetry = true;
+            if (_retryUntil is not null) { _error = null; }
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameter("failure", (string?)null), replace: true);
+        }
+	}
+
+	private async Task HandleValidSubmit()
+	{
+        if (_isBusy || _retryUntil is not null) { return; }
+		_error = null;
+		_isBusy = true;
+
+		// Flush UI so inputs/button disable and text updates before any heavy work
+		await InvokeAsync(StateHasChanged);
+
+		try
+		{
+			// Create short-lived login ticket.
+			var token = LoginTickets.Create(_model.Username, _model.Password);
+
+			// Note: Create always returns a token; validation happens server-side.
+			var returnUrl = LoginNavigation.GetReturnUrl(NavigationManager);
+			_pendingNavUrl = $"/auth/login-ticket?token={Uri.EscapeDataString(token)}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+
+			// Trigger a render; OnAfterRenderAsync will perform the navigation after the UI shows busy state
+			await InvokeAsync(StateHasChanged);
+
+			if (OnSuccess.HasDelegate)
+			{
+				await OnSuccess.InvokeAsync();
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.LogError(ex, "Could not start password sign-in.");
+			_isBusy = false;
+			_error = Loc.GetOrDefault(AuthTextKeys.LoginFailedError, "Login failed. Please try again.");
+		}
+	}
+
+	protected override Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (_pendingNavUrl is not null)
+		{
+			var url = _pendingNavUrl;
+			_pendingNavUrl = null; // avoid duplicate attempts
+			NavigationManager.NavigateTo(url, forceLoad: true);
+		}
+		return Task.CompletedTask;
+	}
+
+	private void NavigateToSecondaryAction()
+	{
+		if (!string.IsNullOrWhiteSpace(SecondaryActionUrl))
+		{
+			var url = QueryHelpers.AddQueryString(SecondaryActionUrl, "returnUrl", LoginNavigation.GetReturnUrl(NavigationManager));
+			NavigationManager.NavigateTo(url, forceLoad: true);
+		}
+	}
+
+	private sealed class LoginModel
+	{
+		[Display(Name = nameof(FormValidationText.Username), ResourceType = typeof(FormValidationText))]
+		[Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+		public string Username { get; set; } = string.Empty;
+
+		[Display(Name = nameof(FormValidationText.Password), ResourceType = typeof(FormValidationText))]
+		[Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+		[DataType(DataType.Password)]
+		public string Password { get; set; } = string.Empty;
+	}
+}

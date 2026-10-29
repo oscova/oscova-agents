@@ -1,0 +1,34 @@
+@inject IDialogService DialogService
+@inject IStringLocalizer<CommonText> Loc
+
+@* Blocks in-app navigation and browser unload while the owning section has unsaved edits. *@
+<NavigationLock ConfirmExternalNavigation="@IsDirty" OnBeforeInternalNavigation="ConfirmNavigationAsync" />
+
+@code {
+    [Parameter, EditorRequired] public bool IsDirty { get; set; }
+    [Parameter] public Func<Task<bool>>? ConfirmDecision { get; set; }
+
+    /// <summary>Returns whether the current edits may be discarded.</summary>
+    public async Task<bool> ConfirmDiscardChangesAsync()
+    {
+        if (!IsDirty)
+        {
+            return true;
+        }
+        if (ConfirmDecision is not null) { return await ConfirmDecision(); }
+
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(CommonTextKeys.UnsavedChangesTitle, "Discard unsaved changes?"),
+            Loc.GetOrDefault(CommonTextKeys.UnsavedChangesMessage, "You have unsaved changes on this page. Leaving now discards them."));
+
+        return result == DialogResult.Ok;
+    }
+
+    private async Task ConfirmNavigationAsync(LocationChangingContext context)
+    {
+        if (!await ConfirmDiscardChangesAsync())
+        {
+            context.PreventNavigation();
+        }
+    }
+}

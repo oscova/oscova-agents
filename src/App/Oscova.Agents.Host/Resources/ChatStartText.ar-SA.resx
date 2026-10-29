@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.Start.Dynamic.Common.Returns.Greeting">
+		<value>عودة حميدة، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.Returns.Question">
+		<value>فيما نفكر معاً؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.FirstChat.Welcome.Greeting">
+		<value>مرحبًا بك في Oscova، {0}.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.FirstChat.Welcome.Question">
+		<value>اسألني كيف يعمل أي شيء هنا، أو اختر فكرة من الأسفل.</value>
+	</data>
+	<data name="Chat.Start.Dynamic.Common.Alright.Greeting">
+		<value>كل شيء على ما يرام، {0}؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ThereYouAre.Greeting">
+		<value>ها أنت هنا، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ThereYouAre.Question">
+		<value>ما الذي ينبغي أن نفكك خيوطه أولاً؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ReadyWhen.Greeting">
+		<value>مستعد حين تكون جاهزاً، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.ReadyWhen.Question">
+		<value>ابدأ من أي نقطة تريد.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.FloorYours.Greeting">
+		<value>الكلمة لك، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.FloorYours.Question">
+		<value>ما الذي نمنحه شكلاً اليوم؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.BackBoard.Greeting">
+		<value>عودة إلى لوحة الأفكار، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.BackBoard.Question">
+		<value>ما الذي يستحق صياغة أوضح؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.LetsBegin.Greeting">
+		<value>فلنبدأ، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.LetsBegin.Question">
+		<value>أعطني النسخة غير المرتبة.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.YouMadeIt.Greeting">
+		<value>وصلت أخيراً، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Common.YouMadeIt.Question">
+		<value>ما الذي يحتاج إلى انتباهك؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.GoodMorning.Greeting">
+		<value>صباح الخير، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.GoodMorning.Question">
+		<value>من أين ينبغي أن نبدأ؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.FreshStart.Greeting">
+		<value>بداية منعشة، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.FreshStart.Question">
+		<value>ما أول أمر مفيد ننجزه؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.YoureEarly.Greeting">
+		<value>لقد أتيت مبكراً، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.YoureEarly.Question">
+		<value>ما الذي ندفعه للأمام؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.Morning.Greeting">
+		<value>صباح الخير، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Morning.Morning.Question">
+		<value>أتحتاج إلى خطة، أم مسودة، أم عقل إضافي مساند؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.GoodAfternoon.Greeting">
+		<value>طاب مساؤك، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.GoodAfternoon.Question">
+		<value>على ماذا نعمل الآن؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.NextThing.Greeting">
+		<value>هل أنت جاهز للخطوة التالية، {0}؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Focus.Greeting">
+		<value>تركيز الظهيرة، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Focus.Question">
+		<value>ما الذي سنجعله أكثر وضوحاً؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Useful.Greeting">
+		<value>لنجعل هذه الظهيرة مثمرة، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Afternoon.Useful.Question">
+		<value>ما الذي سنجعله أقل إزعاجاً؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.GoodEvening.Greeting">
+		<value>مساء الخير، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.GoodEvening.Question">
+		<value>فيما نتأمل الليلة؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.QuietHours.Greeting">
+		<value>ساعات هدوء، وأفكار ثاقبة، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.QuietHours.Question">
+		<value>ما الذي يتطلب نظرة أكثر هدوءاً؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.StillThinking.Greeting">
+		<value>ما زلت تفكر، {0}؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.WrapOrRefine.Greeting">
+		<value>مساء الخير، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Evening.WrapOrRefine.Question">
+		<value>ما الذي ينبغي اختتامه أو تحسينه؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.LateMode.Greeting">
+		<value>نمط السهر المتأخر، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.LateMode.Question">
+		<value>ما الذي نملك الجرأة لحله الليلة؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.UpLate.Greeting">
+		<value>سهران لوقت متأخر، {0}؟</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.NightShift.Greeting">
+		<value>وردية ليلية، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.NightShift.Question">
+		<value>أعطني النسخة غير المرتبة.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.QuietHours.Greeting">
+		<value>ساعات السكون، {0}.</value>
+
+	</data>
+	<data name="Chat.Start.Dynamic.Night.QuietHours.Question">
+		<value>ما الذي يستحق صياغة أدق؟</value>
+
+	</data>
+</root>

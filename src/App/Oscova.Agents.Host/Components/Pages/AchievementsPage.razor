@@ -1,0 +1,92 @@
+@page "/achievements"
+@attribute [Authorize]
+
+<DashboardShell ActiveView="ActiveView.Achievements">
+    <div class="custom-achievements-page flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-3 sm:p-5">
+        <div class="custom-page-heading flex flex-wrap items-end justify-between gap-3">
+            <div>
+                <h1 class="text-2xl font-semibold">@AchievementLoc.GetOrDefault(AchievementTextKeys.PageTitle, "Achievements")</h1>
+                <p class="text-sm text-base-content/60">@AchievementLoc.GetOrDefault(AchievementTextKeys.PageSubtitle, "What you have discovered so far")</p>
+            </div>
+            @if (_summary is not null)
+            {
+                <span class="badge badge-soft badge-primary gap-1.5 whitespace-nowrap px-3 py-3">
+                    <iconify-icon icon="lucide:award" width="15" height="15"></iconify-icon>
+                    @FormatAchievementText(
+                        AchievementTextKeys.PageDiscovered,
+                        "{0} of {1} discovered",
+                        _summary.UnlockedCount,
+                        _summary.TotalCount)
+                </span>
+            }
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                @for (var index = 0; index < 6; index++)
+                {
+                    <div class="skeleton h-44 rounded-box"></div>
+                }
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div role="alert" class="alert alert-error alert-soft">
+                <span class="iconify lucide--triangle-alert size-4.5"></span>
+                <span>@AchievementLoc.GetOrDefault(AchievementTextKeys.PageError, "Could not load achievements.")</span>
+            </div>
+        }
+        else if (_summary is { } summary)
+        {
+            <section class="custom-achievement-level card custom-settings-catalog-card">
+                <div class="card-body flex-row flex-wrap items-center gap-4 p-4 sm:p-5">
+                    <div class="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-box">
+                        <iconify-icon icon="lucide:sparkles" width="24" height="24"></iconify-icon>
+                    </div>
+                    <div class="min-w-0 grow">
+                        <div class="text-lg font-semibold">@FormatAchievementText(AchievementTextKeys.Level, "Level {0}", summary.Level)</div>
+                        <div class="text-sm text-base-content/60">@FormatAchievementText(AchievementTextKeys.Points, "{0} XP", summary.TotalPoints)</div>
+                    </div>
+                </div>
+            </section>
+
+            @if (summary.UnlockedCount == 0)
+            {
+                <div class="card border border-dashed border-primary/30 bg-primary/5">
+                    <div class="card-body items-center py-12 text-center">
+                        <div class="bg-primary/10 text-primary flex size-14 items-center justify-center rounded-full">
+                            <iconify-icon icon="lucide:award" width="28" height="28"></iconify-icon>
+                        </div>
+                        <h2 class="mt-2 text-lg font-semibold">@AchievementLoc.GetOrDefault(AchievementTextKeys.PageEmpty, "Nothing unlocked yet")</h2>
+                        <p class="max-w-lg text-sm text-base-content/60">@AchievementLoc.GetOrDefault(AchievementTextKeys.PageEmptyHint, "Start a chat, add a model provider, or create an agent task.")</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach (var achievement in summary.Achievements.Where(item => item.IsUnlocked))
+                    {
+                        <article class="custom-achievement-card card custom-settings-catalog-card">
+                            <div class="card-body gap-4 p-5">
+                                <div class="flex items-start gap-4">
+                                    <div class="bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center rounded-box">
+                                        <iconify-icon icon="@achievement.Icon" width="22" height="22"></iconify-icon>
+                                    </div>
+                                    <div class="min-w-0 grow">
+                                        <div class="custom-achievement-title">
+                                            <h2 class="font-semibold">@AchievementLoc.GetOrDefault($"{achievement.Key}.Name", achievement.Key)</h2>
+                                            <span class="badge badge-soft badge-primary whitespace-nowrap">@FormatAchievementText(AchievementTextKeys.Points, "{0} XP", achievement.Points)</span>
+                                        </div>
+                                        <p class="mt-1 text-sm leading-relaxed text-base-content/60">@AchievementLoc.GetOrDefault($"{achievement.Key}.Description", achievement.Key)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </section>
+            }
+        }
+    </div>
+</DashboardShell>

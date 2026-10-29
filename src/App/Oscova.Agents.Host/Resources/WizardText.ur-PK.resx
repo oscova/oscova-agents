@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Wizard.Title">
+		<value>Oscova Agents میں خوش آمدید</value>
+
+	</data>
+	<data name="Wizard.ProductName">
+		<value>Oscova Agents</value>
+
+	</data>
+	<data name="Wizard.SubtitleLanguage">
+		<value>اپنی زبان منتخب کریں۔</value>
+
+	</data>
+	<data name="Wizard.SubtitleProfilePicture">
+		<value>اپنی پروفائل تصویر منتخب کریں۔</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep1">
+		<value>زبان کا ماڈل فراہم کنندہ منتخب کریں</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep2">
+		<value>آواز ترتیب دیں (اختیاری)</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep3">
+		<value>اپنے معاون کا نام رکھیں</value>
+
+	</data>
+	<data name="Wizard.StepLanguageTitle">
+		<value>زبان</value>
+
+	</data>
+	<data name="Wizard.StepProfilePictureTitle">
+		<value>پروفائل تصویر</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureQuestion">
+		<value>اپنی پروفائل تصویر منتخب کریں</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureHint">
+		<value>اسے رکھیں یا کوئی اور منتخب کریں۔</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureLaterNotice">
+		<value>آپ بعد میں اپنی پروفائل سے تصویر تبدیل کر سکتے ہیں۔</value>
+
+	</data>
+	<data name="Wizard.LanguageRestartHint">
+		<value>صفحہ دوبارہ لوڈ ہونے کے بعد سیٹ اپ نئی زبان میں شروع ہوگا۔</value>
+
+	</data>
+	<data name="Wizard.AgentNameFallback">
+		<value>Olivia</value>
+
+	</data>
+	<data name="Wizard.SaveFailed">
+		<value>سیٹ اپ محفوظ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔</value>
+
+	</data>
+	<data name="Wizard.StepLlmTitle">
+		<value>ماڈل</value>
+
+	</data>
+	<data name="Wizard.StepSpeechTitle">
+		<value>آواز</value>
+
+	</data>
+	<data name="Wizard.StepIdentityTitle">
+		<value>شناخت</value>
+
+	</data>
+	<data name="Wizard.StepLabel">
+		<value>مرحلہ {0} از {1} — {2}</value>
+
+	</data>
+	<data name="Wizard.SkipStep">
+		<value>مرحلہ چھوڑیں</value>
+
+	</data>
+	<data name="Wizard.SkipAll">
+		<value>سب چھوڑ دیں</value>
+
+	</data>
+	<data name="Wizard.LaterSetupNotice">
+		<value>آپ یہ مرحلہ چھوڑ سکتے ہیں اور بعد میں ترتیبات میں ترتیب دے سکتے ہیں۔</value>
+
+	</data>
+	<data name="Wizard.Back">
+		<value>پیچھے</value>
+
+	</data>
+	<data name="Wizard.Continue">
+		<value>جاری رکھیں</value>
+
+	</data>
+	<data name="Wizard.Finish">
+		<value>مکمل کریں</value>
+
+	</data>
+	<data name="Wizard.LlmQuestion">
+		<value>Oscova کو کیسے سوچنا چاہیے؟</value>
+
+	</data>
+	<data name="Wizard.LlmQuestionHint">
+		<value>ابھی سیٹ اپ کرنے کے لیے ماڈل فراہم کنندہ منتخب کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmProviderLegend">
+		<value>ماڈل فراہم کنندہ</value>
+
+	</data>
+	<data name="Wizard.LlmScrollHint">
+		<value>دستیاب تمام فراہم کنندگان دیکھنے کے لیے اسکرول کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmEndpointChoiceDescription">
+		<value>مقامی سرور اینڈ پوائنٹ</value>
+
+	</data>
+	<data name="Wizard.LlmHostedChoiceDescription">
+		<value>ہوسٹ شدہ API کلید</value>
+
+	</data>
+	<data name="Wizard.LlmLocalChoiceDescription">
+		<value>LLamaSharp کے ذریعے مقامی GGUF</value>
+
+	</data>
+	<data name="Wizard.LlmCatalogChoiceDescription">
+		<value>مقامی کیٹلاگ اور ڈاؤن لوڈ</value>
+
+	</data>
+	<data name="Wizard.LlmNoChoiceHint">
+		<value>ابھی ماڈل فراہم کنندہ سیٹ کرنے کے لیے ایک آپشن منتخب کریں، یا یہ مرحلہ چھوڑ کر بعد میں شامل کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmLocalDownloadHint">
+		<value>مقامی ماڈل ابھی ڈاؤن لوڈ کریں، یا جاری رکھیں اور بعد میں ترتیبات سے ڈاؤن لوڈ کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmSavedOnContinueHint">
+		<value>جاری رکھنے پر یہ محفوظ ہو جائے گا۔</value>
+
+	</data>
+	<data name="Wizard.LlmLocalNotConfigured">
+		<value>کوئی ڈیفالٹ مقامی ماڈل تشکیل نہیں دیا گیا۔ آپ بعد میں ترتیبات میں ایک شامل کر سکتے ہیں۔</value>
+
+	</data>
+	<data name="Wizard.LlmApiKeyLabel">
+		<value>{0} API کلید</value>
+
+	</data>
+	<data name="Wizard.LlmBaseUrlLabel">
+		<value>{0} بنیادی URL</value>
+
+	</data>
+	<data name="Wizard.LlmEnvironmentVariableUnavailable">
+		<value>ماحول کا متغیر '{0}' Oscova کے لیے دستیاب نہیں ہے۔</value>
+
+	</data>
+	<data name="Wizard.LlmProviderModelsDescription">
+		<value>اس فراہم کنندہ سے ماڈلز حاصل کریں، پھر جاری رکھنے کے لیے ایک منتخب کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmFetchedModelRequired">
+		<value>جاری رکھنے سے پہلے ماڈلز حاصل کریں اور ایک منتخب کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmModelDownloadRequired">
+		<value>جاری رکھنے سے پہلے منتخب ماڈل ڈاؤن لوڈ کریں۔</value>
+
+	</data>
+	<data name="Wizard.LlmConnectedNoModels">
+		<value>کامیابی سے جڑ گیا، لیکن فراہم کنندہ نے کوئی ماڈل واپس نہیں کیا۔</value>
+
+	</data>
+	<data name="Wizard.SpeechQuestion">
+		<value>کیا آپ صوتی خصوصیات چاہتے ہیں؟</value>
+
+	</data>
+	<data name="Wizard.SpeechListenChoiceTitle">
+		<value>Oscova کو سننے دیں</value>
+
+	</data>
+	<data name="Wizard.SpeechListenChoiceDescription">
+		<value>گفتگو کو متن میں بدلنے کے لیے اپنا مائیکروفون استعمال کریں۔</value>
+
+	</data>
+	<data name="Wizard.SpeechSpeakChoiceTitle">
+		<value>Oscova کو بولنے دیں</value>
+
+	</data>
+	<data name="Wizard.SpeechSpeakChoiceDescription">
+		<value>مقامی صوتی ماڈل کا استعمال کرتے ہوئے بلند آواز میں جوابات سنیں۔</value>
+
+	</data>
+	<data name="Wizard.SpeechIntro">
+		<value>یہاں انسٹال شدہ مقامی اسپیچ پلگ ان کے ماڈل ڈاؤن لوڈ کریں۔ OpenAI اسپیچ کے لیے Oscova OpenAI انسٹال کریں اور ترتیبات &gt; اسپیچ میں ترتیب دیں۔</value>
+
+	</data>
+	<data name="Wizard.SpeechSkipNotice">
+		<value>مقامی ماڈل ڈاؤن لوڈ کرنے یا ہوسٹ شدہ فراہم کنندہ ترتیب دینے کے بعد اسپیچ دستیاب ہوتی ہے۔</value>
+
+	</data>
+	<data name="Wizard.SpeechPluginMissingAdminNotice">
+		<value>{0} انسٹال نہیں ہے۔ اسے ترتیبات &gt; پلگ انز میں انسٹال کریں۔</value>
+	</data>
+	<data name="Wizard.SpeechPluginMissingUserNotice">
+		<value>{0} انسٹال نہیں ہے۔ آپ کا ایڈمنسٹریٹر اسے انسٹال کر سکتا ہے۔</value>
+	</data>
+	<data name="Wizard.AgentIntro">
+		<value>اپنے معاون کو ایک نام دیں، پروفائل تصویر منتخب کریں اور شخصیت کا انتخاب کریں۔ آپ بعد میں مرکزی ایجنٹ کی ترتیبات میں اسے تبدیل کر سکتے ہیں۔</value>
+
+	</data>
+	<data name="Wizard.AgentNameLabel">
+		<value>نام</value>
+
+	</data>
+	<data name="Wizard.AgentNameRequired">
+		<value>نام ضروری ہے۔</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaLabel">
+		<value>شخصیت</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaHint">
+		<value>یہ ایجنٹ کی سسٹم ہدایات طے کرتا ہے۔ آپ بعد میں مرکزی ایجنٹ کی سسٹم ہدایات میں اسے نکھار سکتے ہیں۔</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaNone">
+		<value>کوئی خاص شخصیت نہیں</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaNoneDescription">
+		<value>غیر جانبدارانہ آغاز کریں اور ایجنٹ کو بعد میں اپنی مرضی کے مطابق ڈھالیں۔</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaProfessional">
+		<value>پیشہ ورانہ</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaProfessionalDescription">
+		<value>سلیقہ مند، باضابطہ اور پیشہ ورانہ۔</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaFriendly">
+		<value>دوستانہ</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaFriendlyDescription">
+		<value>پرتپاک، گفتگو میں آسان اور مددگار۔</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaEfficient">
+		<value>موثر اور چست</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaEfficientDescription">
+		<value>مختصر اور سیدھی بات، بلا ضرورت طوالت کے بغیر۔</value>
+
+	</data>
+  <data name="Wizard.VaultPasswordRequired"><value>اس فراہم کنندہ کو محفوظ کرنے سے پہلے اپنا والٹ پاس ورڈ انلاک کریں۔</value></data>
+</root>

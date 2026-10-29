@@ -1,0 +1,75 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.PluginsDetailsTitle, "Plugin Details"))"
+                Icon="lucide:puzzle"
+                HelpTopic="@HelpTopics.PluginDetails"
+                TitleClass="truncate text-lg font-bold"
+                CloseResult="@DialogResult.Ok"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="alert alert-warning alert-soft my-4 text-sm">
+            <iconify-icon icon="lucide:shield-alert"></iconify-icon>
+            <span>@Loc.GetOrDefault(SettingsTextKeys.PluginsDetailsTrustNotice, "Enabled plugins run trusted code inside Oscova Agents. Enable only plugins you trust.")</span>
+        </div>
+
+        @if (_plugin is not null)
+        {
+            <dl class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-[10rem_1fr]">
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsNameLabel, "Name")</dt>
+                <dd>@DisplayValue(_plugin.Name)</dd>
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsIdLabel, "Plugin ID")</dt>
+                <dd><code class="text-xs break-all">@DisplayValue(_plugin.Id)</code></dd>
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsVersionLabel, "Version")</dt>
+                <dd><bdi dir="ltr">@DisplayValue(_plugin.Version)</bdi></dd>
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsAssemblyLabel, "Assembly")</dt>
+                <dd><code class="text-xs break-all">@DisplayValue(_plugin.Assembly)</code></dd>
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsEntryTypeLabel, "Entry Type")</dt>
+                <dd><code class="text-xs break-all">@DisplayValue(_plugin.EntryType)</code></dd>
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsCurrentStatusLabel, "Current Status")</dt>
+                <dd>@_statusLabel</dd>
+                <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsNextStartLabel, "Load On Next Restart")</dt>
+                <dd>@_nextStartLabel</dd>
+                @if (_plugin.HardwareRequirement is not null)
+                {
+                    <dt class="opacity-70">@Loc[SettingsTextKeys.PluginsHardwareSummary]</dt>
+                    <dd><PluginHardwareGuidance Requirement="@_plugin.HardwareRequirement" /></dd>
+                }
+                @if (!string.IsNullOrWhiteSpace(_plugin.DiagnosticMessage))
+                {
+                    <dt class="opacity-70">@Loc.GetOrDefault(SettingsTextKeys.PluginsDiagnosticLabel, "Diagnostic")</dt>
+                    <dd class="text-error">@_plugin.DiagnosticMessage</dd>
+                }
+            </dl>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button class="btn btn-ghost btn-sm" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private PluginSettingsEntry? _plugin;
+    private string _statusLabel = string.Empty;
+    private string _nextStartLabel = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _plugin = DialogInstance.Get<PluginSettingsEntry>("Plugin");
+        _statusLabel = DialogInstance.Get<string>("StatusLabel", string.Empty);
+        _nextStartLabel = DialogInstance.Get<string>("NextStartLabel", string.Empty);
+    }
+
+    private static string DisplayValue(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "-" : value;
+    }
+
+    private void Close()
+    {
+        DialogInstance.Close(DialogResult.Ok);
+    }
+}

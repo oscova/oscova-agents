@@ -1,0 +1,119 @@
+@implements IDisposable
+@inject IChatSpeechService SpeechService
+@inject IDownloadService DownloadService
+@inject IStringLocalizer<SettingsText> Loc
+@inject ILogger<SpeechModelDownloadCard> Logger
+
+<ModelDownloadCard Title="@_title"
+                   Ready="@_ready"
+                   Downloading="@_downloadInProgress"
+                   Percent="@_percent"
+                   OnDownload="@StartDownloadAsync"
+                   OnCancel="@CancelDownloadAsync" />
+
+@code {
+    [Parameter] public SpeechModelKind Kind { get; set; }
+    [Parameter] public string? Title { get; set; }
+
+    private bool _ready;
+    private bool _downloadInProgress;
+    private double? _percent;
+    private string _title = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DownloadService.DownloadsChanged += OnDownloadsChanged;
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        try
+        {
+            _ready = Kind == SpeechModelKind.Asr
+                ? await SpeechService.IsAsrAvailableAsync()
+                : await SpeechService.IsTtsAvailableAsync();
+
+            var progress = Kind == SpeechModelKind.Asr
+                ? await SpeechService.GetAsrModelProgressAsync()
+                : await SpeechService.GetTtsModelProgressAsync();
+
+            _downloadInProgress = progress is { Status: DownloadStatus.Pending or DownloadStatus.Downloading };
+            _percent = progress?.Percent;
+
+            _title = !string.IsNullOrWhiteSpace(Title)
+                ? Title
+                : Kind == SpeechModelKind.Asr
+                    ? Loc.GetOrDefault(SettingsTextKeys.SpeechRecognitionSectionTitle, "Speech recognition (Whisper)")
+                    : Loc.GetOrDefault(SettingsTextKeys.SpeechSynthesisSectionTitle, "Speech synthesis (Kokoro)");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to refresh speech model status for {Kind}.", Kind);
+        }
+    }
+
+    private async Task StartDownloadAsync()
+    {
+        if (_downloadInProgress || _ready)
+        {
+            return;
+        }
+        try
+        {
+            if (Kind == SpeechModelKind.Asr)
+            {
+                await SpeechService.StartAsrModelDownloadAsync();
+            }
+            else
+            {
+                await SpeechService.StartTtsModelDownloadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to start speech model download for {Kind}.", Kind);
+        }
+        await RefreshAsync();
+        StateHasChanged();
+    }
+
+    private async Task CancelDownloadAsync()
+    {
+        if (!_downloadInProgress)
+        {
+            return;
+        }
+        try
+        {
+            if (Kind == SpeechModelKind.Asr)
+            {
+                await SpeechService.CancelAsrModelDownloadAsync();
+            }
+            else
+            {
+                await SpeechService.CancelTtsModelDownloadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to cancel speech model download for {Kind}.", Kind);
+        }
+        await RefreshAsync();
+        StateHasChanged();
+    }
+
+    private void OnDownloadsChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await RefreshAsync();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        DownloadService.DownloadsChanged -= OnDownloadsChanged;
+    }
+}

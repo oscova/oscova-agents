@@ -1,0 +1,30 @@
+@inject IStringLocalizer<SettingsText> Loc
+
+<div class="relative z-20 mt-2 shrink-0 min-w-0 max-w-full overflow-visible space-y-2">
+    <p class="text-xs opacity-60">@ResolvedHelperText</p>
+
+    <div class="relative z-20 flex max-w-full flex-wrap gap-2 overflow-visible">
+        @foreach (PromptVariableOption variable in Variables)
+        {
+            <button type="button"
+                    class="btn btn-xs btn-outline h-auto min-h-0 rounded-full px-2.5 py-1 font-mono normal-case"
+                    @onclick="() => InsertVariableAsync(variable)">
+                @variable.Token
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<PromptVariableOption> Variables { get; set; } = [];
+    [Parameter, EditorRequired] public EventCallback<string> InsertRequested { get; set; }
+    [Parameter] public string? HelperText { get; set; }
+
+    private async Task InsertVariableAsync(PromptVariableOption variable)
+    {
+        await InsertRequested.InvokeAsync(variable.Token);
+    }
+
+    private string ResolvedHelperText =>
+        HelperText ?? Loc.GetOrDefault(SettingsTextKeys.PromptsVariablePickerHelperText, "Click a variable to insert it at the cursor.");
+}

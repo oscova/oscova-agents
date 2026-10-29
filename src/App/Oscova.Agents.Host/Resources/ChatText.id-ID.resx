@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Chat.RetryServiceCheckTitle">
+		<value>Coba lagi pemeriksaan layanan</value>
+
+	</data>
+	<data name="Chat.RetryNow">
+		<value>Coba lagi sekarang</value>
+
+	</data>
+	<data name="Chat.CheckingChatServiceStatus">
+		<value>Memeriksa status layanan obrolan...</value>
+
+	</data>
+	<data name="Chat.ServiceNotRunning">
+		<value>Layanan obrolan tidak berjalan. Mulai layanan lalu coba lagi.</value>
+
+	</data>
+	<data name="Chat.AgentSelectorPrefix">
+		<value>Agen:</value>
+
+	</data>
+	<data name="Chat.AgentConversation.ReadOnly">
+		<value>Hanya baca</value>
+
+	</data>
+	<data name="Chat.AgentConversation.TabsLabel">
+		<value>Percakapan agen</value>
+
+	</data>
+	<data name="Chat.AssistantFallbackName">
+		<value>Asisten</value>
+
+	</data>
+	<data name="Chat.AttachFileLabel">
+		<value>Lampirkan berkas</value>
+
+	</data>
+	<data name="Chat.CheckingAvailability">
+		<value>Memeriksa ketersediaan</value>
+
+	</data>
+	<data name="Chat.DefaultInputPlaceholder">
+		<value>Ketik pesan Anda...</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmMessage">
+		<value>Hapus percakapan ini? Tidak dapat dibatalkan. Lampiran sementara dan berkas hasil alat juga dihapus meskipun perubahan disimpan terlebih dahulu. Berkas ruang kerja dan proyek biasa tetap ada.</value>
+
+	</data>
+	<data name="Chat.DeleteThreadConfirmTitle">
+		<value>Konfirmasi Penghapusan Utas</value>
+
+	</data>
+	<data name="Chat.FileSizeExceeded">
+		<value>'{0}' melebihi batas ukuran {1}.</value>
+
+	</data>
+	<data name="Chat.GeneratingResponseStatus">
+		<value>Membuat respons</value>
+
+	</data>
+	<data name="Chat.ResponseComplete">
+		<value>Respons selesai.</value>
+
+	</data>
+	<data name="Chat.ResponseFailed">
+		<value>Respons obrolan tidak dapat diselesaikan.</value>
+
+	</data>
+	<data name="Chat.ImageAttachmentKind">
+		<value>Gambar</value>
+
+	</data>
+	<data name="Chat.InspectSessionTitle">
+		<value>Periksa sesi</value>
+
+	</data>
+	<data name="Chat.LiveAndReady">
+		<value>Aktif dan siap</value>
+
+	</data>
+	<data name="Chat.ModelNotSetLabel">
+		<value>Model belum diatur</value>
+
+	</data>
+	<data name="Chat.MultipleFilesReadyLabel">
+		<value>{0} berkas siap</value>
+
+	</data>
+	<data name="Chat.NewChatLabel">
+		<value>Obrolan Baru</value>
+
+	</data>
+	<data name="Chat.NoConversationsFound">
+		<value>Tidak ada percakapan ditemukan</value>
+
+	</data>
+	<data name="Chat.NoModelProviderConfigured">
+		<value>Tidak ada penyedia model yang dikonfigurasi</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersConfigured">
+		<value>Tidak ada penyedia model yang dikonfigurasi</value>
+
+	</data>
+	<data name="Chat.NoDefaultModelProviderSelected">
+		<value>Tidak ada penyedia model default yang dipilih</value>
+
+	</data>
+	<data name="Chat.NoModelProvidersPresence">
+		<value>Penyedia model diperlukan</value>
+
+	</data>
+	<data name="Chat.ModelProviderSelectionRequiredPresence">
+		<value>Pilih penyedia model</value>
+
+	</data>
+	<data name="Chat.AddModelProviderToStartChatting">
+		<value>Tambahkan penyedia model untuk mulai mengobrol.</value>
+
+	</data>
+	<data name="Chat.SelectModelProviderToStartChatting">
+		<value>Pilih penyedia model di bawah untuk mulai mengobrol.</value>
+
+	</data>
+	<data name="Chat.AddModelProviderAction">
+		<value>Tambahkan penyedia</value>
+
+	</data>
+	<data name="Chat.OneFileReadyLabel">
+		<value>1 berkas siap</value>
+
+	</data>
+	<data name="Chat.ProcessingPlaceholder">
+		<value>Memproses...</value>
+
+	</data>
+	<data name="Chat.ReadAloudLabel">
+		<value>Baca dengan lantang</value>
+
+	</data>
+	<data name="Chat.RemoveAttachmentLabel">
+		<value>Hapus lampiran: {0}</value>
+
+	</data>
+	<data name="Chat.RenameThread">
+		<value>Ganti nama</value>
+
+	</data>
+	<data name="Chat.RenameThreadBusy">
+		<value>Tunggu hingga respons selesai, lalu coba ganti nama lagi.</value>
+
+	</data>
+	<data name="Chat.RenameThreadDialogTitle">
+		<value>Ganti nama percakapan</value>
+
+	</data>
+	<data name="Chat.RenameThreadFailed">
+		<value>Percakapan tidak dapat diganti namanya.</value>
+
+	</data>
+	<data name="Chat.SearchChatsLabel">
+		<value>Cari obrolan</value>
+
+	</data>
+	<data name="Chat.SendLabel">
+		<value>Kirim</value>
+
+	</data>
+	<data name="Chat.ServiceOffline">
+		<value>Layanan offline</value>
+
+	</data>
+	<data name="Chat.ShowChatsLabel">
+		<value>Tampilkan obrolan</value>
+
+	</data>
+	<data name="Chat.SpeakingPlaceholder">
+		<value>Berbicara...</value>
+
+	</data>
+	<data name="Chat.StartListeningLabel">
+		<value>Mulai mendengarkan</value>
+
+	</data>
+	<data name="Chat.StartVoiceModeLabel">
+		<value>Mulai mode suara</value>
+
+	</data>
+	<data name="Chat.StopLabel">
+		<value>Berhenti</value>
+
+	</data>
+	<data name="Chat.StopListeningLabel">
+		<value>Berhenti mendengarkan</value>
+
+	</data>
+	<data name="Chat.StopVoiceModeLabel">
+		<value>Hentikan mode suara</value>
+
+	</data>
+	<data name="Chat.Start.Card.Agenda.Action">
+		<value>Susun agenda</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Description">
+		<value>Dapatkan agenda berwaktu untuk rapat yang Anda pimpin.</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Prompt">
+		<value>Bantu saya menyiapkan agenda untuk rapat yang saya pimpin, dengan alokasi waktu untuk setiap topik.</value>
+	</data>
+	<data name="Chat.Start.Card.Agenda.Title">
+		<value>Siapkan agenda rapat</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Action">
+		<value>Mulai anggaran</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Description">
+		<value>Susun pemasukan dan pengeluaran bulanan dalam satu tampilan.</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Prompt">
+		<value>Bantu saya menyusun anggaran bulanan sederhana dari pemasukan dan pengeluaran saya.</value>
+	</data>
+	<data name="Chat.Start.Card.Budget.Title">
+		<value>Buat anggaran sederhana</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Action">
+		<value>Buat grafik</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Description">
+		<value>Lihat angka dalam grafik yang mudah dibandingkan.</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Prompt">
+		<value>Buat grafik dari beberapa angka yang akan saya berikan agar saya bisa membandingkannya sekilas.</value>
+	</data>
+	<data name="Chat.Start.Card.Chart.Title">
+		<value>Buat grafik angka</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Action">
+		<value>Buat daftar</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Description">
+		<value>Pecah tugas menjadi langkah jelas yang bisa dicentang.</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Prompt">
+		<value>Buat daftar periksa langkah demi langkah untuk tugas yang akan saya kerjakan.</value>
+	</data>
+	<data name="Chat.Start.Card.Checklist.Title">
+		<value>Buat daftar periksa</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Action">
+		<value>Tinjau kode</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Description">
+		<value>Pahami cara kerja kode dan temukan kemungkinan bug.</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Prompt">
+		<value>Jelaskan langkah demi langkah apa yang dilakukan potongan kode yang akan saya tempel, dan tunjukkan kemungkinan bug.</value>
+	</data>
+	<data name="Chat.Start.Card.Code.Title">
+		<value>Jelaskan kode</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Action">
+		<value>Hubungkan aplikasi</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Description">
+		<value>Biarkan Oscova bekerja dengan aplikasi yang sudah Anda gunakan.</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Prompt">
+		<value>Saya ingin Anda bekerja dengan aplikasi yang saya gunakan. Cari cara untuk menghubungkannya dan siapkan.</value>
+	</data>
+	<data name="Chat.Start.Card.ConnectApp.Title">
+		<value>Hubungkan aplikasi</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Action">
+		<value>Mulai riset</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Description">
+		<value>Dapatkan laporan singkat bersumber tentang pertanyaan yang Anda ajukan.</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Prompt">
+		<value>Riset topik yang akan saya sebutkan dan beri saya laporan singkat beserta sumbernya.</value>
+	</data>
+	<data name="Chat.Start.Card.Research.Title">
+		<value>Riset sebuah topik</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Action">
+		<value>Analisis data</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Description">
+		<value>Temukan tren dan nilai janggal dalam file CSV.</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Prompt">
+		<value>Saya akan melampirkan file CSV. Jelaskan isinya dan tunjukkan tren atau nilai yang janggal.</value>
+	</data>
+	<data name="Chat.Start.Card.Csv.Title">
+		<value>Jelajahi spreadsheet</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Action">
+		<value>Bandingkan pilihan</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Description">
+		<value>Bandingkan pilihan dengan kelebihan, kekurangan, dan rekomendasi.</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Prompt">
+		<value>Bantu saya menimbang keputusan dengan mencantumkan pilihan, kelebihan dan kekurangannya, serta rekomendasi Anda.</value>
+	</data>
+	<data name="Chat.Start.Card.Decision.Title">
+		<value>Timbang keputusan</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Action">
+		<value>Buat draf balasan</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Description">
+		<value>Tempel email dan dapatkan balasan yang jelas dan sopan.</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Prompt">
+		<value>Bantu saya membalas email. Saya akan menempelkannya setelah ini. Buat balasannya jelas dan sopan.</value>
+	</data>
+	<data name="Chat.Start.Card.EmailReply.Title">
+		<value>Balas email</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Action">
+		<value>Jelaskan</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Description">
+		<value>Pahami topik yang sulit dengan contoh yang mudah.</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Prompt">
+		<value>Jelaskan topik yang ingin saya ketahui dengan bahasa sederhana, disertai contoh yang mudah.</value>
+	</data>
+	<data name="Chat.Start.Card.Explain.Title">
+		<value>Jelaskan dengan sederhana</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Action">
+		<value>Mulai latihan</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Description">
+		<value>Latih jawaban dengan masukan setelah setiap pertanyaan.</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Prompt">
+		<value>Lakukan simulasi wawancara kerja dengan saya untuk posisi yang akan saya jelaskan. Ajukan satu pertanyaan setiap kali dan beri masukan setelah setiap jawaban.</value>
+	</data>
+	<data name="Chat.Start.Card.Interview.Title">
+		<value>Latihan wawancara</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Action">
+		<value>Rencanakan menu</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Description">
+		<value>Menu sederhana dan satu daftar belanja gabungan.</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Prompt">
+		<value>Rencanakan menu sederhana untuk seminggu dan berikan satu daftar belanja gabungan.</value>
+	</data>
+	<data name="Chat.Start.Card.Meals.Title">
+		<value>Rencanakan menu mingguan</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Action">
+		<value>Atur catatan</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Description">
+		<value>Ubah catatan kasar menjadi keputusan, penanggung jawab, dan langkah berikutnya.</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Prompt">
+		<value>Saya akan menempelkan catatan rapat. Ubah menjadi ringkasan singkat berisi keputusan, penanggung jawab, dan langkah berikutnya.</value>
+	</data>
+	<data name="Chat.Start.Card.MeetingNotes.Title">
+		<value>Rapikan catatan rapat</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Action">
+		<value>Cari di PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Description">
+		<value>Temukan dan kutip bagian penting dari PDF.</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Prompt">
+		<value>Saya akan melampirkan PDF. Temukan bagian tentang topik yang saya sebutkan dan kutip bagian itu.</value>
+	</data>
+	<data name="Chat.Start.Card.Pdf.Title">
+		<value>Cari di PDF</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Action">
+		<value>Rancang rencana</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Description">
+		<value>Ubah ide awal menjadi rencana langkah berikutnya yang praktis.</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Prompt">
+		<value>Bantu saya mengubah ide proyek awal menjadi rencana praktis dengan langkah selanjutnya yang jelas.</value>
+	</data>
+	<data name="Chat.Start.Card.Plan.Title">
+		<value>Rencanakan proyek</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Action">
+		<value>Perbaiki teks</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Description">
+		<value>Tingkatkan kejelasan dan nada, beserta penjelasan perubahan utama.</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Prompt">
+		<value>Perbaiki kejelasan dan nada tulisan yang akan saya tempel, lalu jelaskan perubahan utamanya.</value>
+	</data>
+	<data name="Chat.Start.Card.Polish.Title">
+		<value>Perbaiki tulisan saya</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Action">
+		<value>Mulai kuis</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Description">
+		<value>Belajar dengan menjawab satu pertanyaan setiap kali.</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Prompt">
+		<value>Beri saya kuis tentang topik yang sedang saya pelajari, satu pertanyaan setiap kali, dan jelaskan jawaban yang salah.</value>
+	</data>
+	<data name="Chat.Start.Card.Quiz.Title">
+		<value>Uji saya tentang suatu topik</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Action">
+		<value>Jadwalkan</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Description">
+		<value>Dapatkan pengingat setiap hari kerja untuk meninjau prioritas Anda.</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Prompt">
+		<value>Ingatkan saya setiap hari kerja pukul 09.00 untuk meninjau prioritas hari itu.</value>
+	</data>
+	<data name="Chat.Start.Card.Reminder.Title">
+		<value>Atur pengingat harian</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Action">
+		<value>Cari keterampilan</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Description">
+		<value>Temukan dan tambahkan keterampilan untuk tugas yang sering Anda lakukan.</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Prompt">
+		<value>Temukan keterampilan yang membantu tugas yang sering saya lakukan, lalu siapkan untuk saya.</value>
+	</data>
+	<data name="Chat.Start.Card.Skill.Title">
+		<value>Ajari Oscova keterampilan</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Action">
+		<value>Ringkas catatan</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Description">
+		<value>Ekstrak poin-poin penting dari catatan, dokumen, atau berkas.</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Prompt">
+		<value>Bantu saya meringkas dokumen ini dan mencantumkan keputusan penting, risiko, serta tindakan berikutnya.</value>
+	</data>
+	<data name="Chat.Start.Card.Summarize.Title">
+		<value>Ringkas dokumen</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Action">
+		<value>Ikuti tur</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Description">
+		<value>Lihat apa yang bisa dilakukan Oscova dan apa yang perlu disiapkan dulu.</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Prompt">
+		<value>Saya baru di Oscova. Apa saja yang bisa Anda bantu, dan apa yang sebaiknya saya siapkan dulu?</value>
+	</data>
+	<data name="Chat.Start.Card.Tour.Title">
+		<value>Kenali Oscova</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Action">
+		<value>Terjemahkan</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Description">
+		<value>Terjemahkan dengan nada yang tetap alami.</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Prompt">
+		<value>Terjemahkan teks yang akan saya tempel dan pertahankan nadanya tetap alami.</value>
+	</data>
+	<data name="Chat.Start.Card.Translate.Title">
+		<value>Terjemahkan teks</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Action">
+		<value>Rencanakan perjalanan</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Description">
+		<value>Dapatkan rencana harian dan daftar barang bawaan.</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Prompt">
+		<value>Bantu saya merencanakan perjalanan singkat dengan rencana harian dan daftar barang bawaan.</value>
+	</data>
+	<data name="Chat.Start.Card.Trip.Title">
+		<value>Rencanakan perjalanan</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Action">
+		<value>Baca tautan</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Description">
+		<value>Dapatkan poin penting dari sebuah tautan.</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Prompt">
+		<value>Baca halaman web yang akan saya tautkan dan berikan poin-poin pentingnya.</value>
+	</data>
+	<data name="Chat.Start.Card.WebPage.Title">
+		<value>Ringkas halaman web</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Action">
+		<value>Rencanakan minggu</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Description">
+		<value>Ubah komitmen minggu ini menjadi rencana yang realistis.</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Prompt">
+		<value>Bantu saya merencanakan minggu ini. Saya akan menyebutkan komitmen saya, lalu Anda ubah menjadi rencana harian yang realistis.</value>
+	</data>
+	<data name="Chat.Start.Card.Week.Title">
+		<value>Rencanakan minggu saya</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Action">
+		<value>Rancang teks</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Description">
+		<value>Buat draf email, balasan, pengumuman, atau pembaruan singkat.</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Prompt">
+		<value>Bantu saya menyusun pesan yang jelas dan ramah untuk situasi ini.</value>
+	</data>
+	<data name="Chat.Start.Card.Write.Title">
+		<value>Tulis pesan</value>
+	</data>
+	<data name="Chat.Start.CheckingQuestion">
+		<value>Menyiapkan asisten Anda...</value>
+
+	</data>
+	<data name="Chat.Start.Greeting">
+		<value>Halo, {0}</value>
+
+	</data>
+	<data name="Chat.Start.InputPlaceholder">
+		<value>Beritahu kami apa yang Anda butuhkan...</value>
+
+	</data>
+	<data name="Chat.Start.Question">
+		<value>Bagaimana saya bisa membantu Anda hari ini?</value>
+
+	</data>
+	<data name="Chat.TextAttachmentKind">
+		<value>Teks</value>
+
+	</data>
+	<data name="Chat.ThreadActionsLabel">
+		<value>Tindakan utas</value>
+
+	</data>
+	<data name="Chat.ThreadTitleHelp">
+		<value>Masukkan 1 hingga 120 karakter.</value>
+
+	</data>
+	<data name="Chat.ThreadTitleLabel">
+		<value>Judul percakapan</value>
+
+	</data>
+	<data name="Chat.ThreadUnreadLabel">
+		<value>Belum dibaca</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Empty">
+		<value>Belum ada tugas.</value>
+
+	</data>
+	<data name="Chat.TodoPanel.ProgressFormat">
+		<value>{0} dari {1} selesai</value>
+
+	</data>
+	<data name="Chat.TodoPanel.Title">
+		<value>Tugas</value>
+
+	</data>
+	<data name="Chat.TooManyFilesAttached">
+		<value>Anda hanya dapat melampirkan maksimal {0} berkas per pesan.</value>
+
+	</data>
+	<data name="Chat.TranscribingPlaceholder">
+		<value>Mentranskripsikan...</value>
+
+	</data>
+	<data name="Chat.TypeYourMessagePlaceholder">
+		<value>Ketik pesan Anda...</value>
+
+	</data>
+	<data name="Chat.UnableToStartSpeechSynthesis">
+		<value>Tidak dapat memulai sintesis suara.</value>
+
+	</data>
+	<data name="Chat.UnableToTranscribeAudio">
+		<value>Tidak dapat mentranskripsikan audio.</value>
+
+	</data>
+	<data name="Chat.UnsupportedFileType">
+		<value>'{0}' belum merupakan jenis berkas yang didukung.</value>
+
+	</data>
+	<data name="Chat.UsingProviderPrefix">
+		<value>Menggunakan</value>
+
+	</data>
+	<data name="Chat.VoiceModeListeningPlaceholder">
+		<value>Mendengarkan...</value>
+
+	</data>
+	<data name="Chat.VoiceModeMissingServices">
+		<value>Mode suara memerlukan layanan pengenalan dan sintesis suara.</value>
+
+	</data>
+	<data name="Chat.VoiceModeStartFailed">
+		<value>Gagal memulai mode suara.</value>
+
+	</data>
+	<data name="Chat.VoiceModeWaitingPlaceholder">
+		<value>Menunggu ucapan...</value>
+
+	</data>
+	<data name="Chat.Yesterday">
+		<value>Kemarin</value>
+
+	</data>
+	<data name="Chat.ThreadGroupToday"><value>Hari ini</value></data>
+	<data name="Chat.ThreadGroupPreviousSevenDays"><value>7 hari sebelumnya</value></data>
+	<data name="Chat.ThreadGroupOlder"><value>Lebih lama</value></data>
+	<data name="Chat.NoConversationsMatchSearch"><value>Tidak ada percakapan yang cocok dengan pencarian Anda.</value></data>
+	<data name="Chat.ThreadSearchFailed"><value>Pencarian percakapan tidak tersedia.</value></data>
+	<data name="Chat.ToolCallLabel"><value>Panggilan Alat</value></data>
+	<data name="Chat.ToolCard.ArgumentsSummaryFormat"><value>{0} argumen disediakan.</value></data>
+	<data name="Chat.ToolCard.Applying"><value>Menerapkan perubahan...</value></data>
+	<data name="Chat.ToolCard.AvatarTitle"><value>Tindakan avatar</value></data>
+	<data name="Chat.ToolCard.CommunicationTitle"><value>Alat komunikasi</value></data>
+	<data name="Chat.ToolCard.DiagnosticsTitle"><value>Diagnostik</value></data>
+	<data name="Chat.ToolCard.DirectoryTitle"><value>Membuat daftar direktori</value></data>
+	<data name="Chat.ToolCard.DocumentTitle"><value>Membaca dokumen</value></data>
+	<data name="Chat.ToolCard.ExternalTitle"><value>Pencarian online</value></data>
+	<data name="Chat.ToolCard.FileChangeTitle"><value>Mengubah berkas</value></data>
+	<data name="Chat.ToolCard.FileLabel"><value>Berkas</value></data>
+	<data name="Chat.ToolCard.FileReadTitle"><value>Membaca berkas</value></data>
+	<data name="Chat.ToolCard.Installing"><value>Menginstal...</value></data>
+	<data name="Chat.ToolCard.MemoryTitle"><value>Menggunakan memori</value></data>
+	<data name="Chat.ToolCard.NoArgumentsSummary"><value>Tidak ada argumen yang disediakan.</value></data>
+	<data name="Chat.ToolCard.NotificationTitle"><value>Notifikasi</value></data>
+	<data name="Chat.ToolCard.Reading"><value>Membaca konten...</value></data>
+	<data name="Chat.ToolCard.ResultLabel"><value>Hasil</value></data>
+	<data name="Chat.ToolCard.Running"><value>Bekerja...</value></data>
+	<data name="Chat.ToolCard.Saving"><value>Menyimpan...</value></data>
+	<data name="Chat.ToolCard.ScheduleTitle"><value>Alat kalender</value></data>
+	<data name="Chat.ToolCard.SearchTitle"><value>Mencari di ruang kerja</value></data>
+	<data name="Chat.ToolCard.Searching"><value>Mencari...</value></data>
+	<data name="Chat.ToolCard.ShellRunning"><value>Menjalankan perintah...</value></data>
+	<data name="Chat.ToolCard.ShellTitle"><value>Perintah shell</value></data>
+	<data name="Chat.ToolCard.SkillAuthoringTitle"><value>Menyimpan keterampilan</value></data>
+	<data name="Chat.ToolCard.SkillInspectTitle"><value>Memeriksa keterampilan</value></data>
+	<data name="Chat.ToolCard.SkillInstallTitle"><value>Menginstal keterampilan</value></data>
+	<data name="Chat.ToolCard.SkillSearchTitle"><value>Mencari keterampilan</value></data>
+	<data name="Chat.ToolCard.Status.Completed"><value>Selesai</value></data>
+	<data name="Chat.ToolCard.Status.Failed"><value>Gagal</value></data>
+	<data name="Chat.ToolCard.Status.Queued"><value>Dalam antrean</value></data>
+	<data name="Chat.ToolCard.Status.Running"><value>Sedang berjalan</value></data>
+	<data name="Chat.NoParameters"><value>Tanpa parameter</value></data>
+	<data name="Chat.SpeechModelsUnavailableTooltip"><value>Model suara tidak tersedia. Atur suara di Pengaturan → Suara.</value></data>
+	<data name="Chat.ToolApprovalTitle"><value>Persetujuan alat diperlukan</value></data>
+	<data name="Chat.ToolApprovalArgumentsLabel"><value>Argumen</value></data>
+	<data name="Chat.ToolApprovalApproveButton"><value>Setujui</value></data>
+	<data name="Chat.ToolApprovalRejectButton"><value>Tolak</value></data>
+	<data name="Chat.ToolApprovalSubmitFailed"><value>Tidak dapat mengirimkan persetujuan tersebut.</value></data>
+	<data name="Chat.ToolApprovalSkillCreateMessage"><value>Setujui pembuatan keterampilan ini?</value></data>
+	<data name="Chat.ToolApprovalSkillUpdateMessage"><value>Setujui pembaruan keterampilan ini?</value></data>
+	<data name="Chat.ToolApprovalSkillNameLabel"><value>Keterampilan</value></data>
+	<data name="Chat.ToolApprovalSkillDescriptionLabel"><value>Deskripsi</value></data>
+	<data name="Chat.ToolApprovalRegistrySkillMessage"><value>Setujui pemasangan keterampilan ini?</value></data>
+	<data name="Chat.ToolApprovalRegistryServerMessage"><value>Setujui pemasangan server MCP ini?</value></data>
+	<data name="Chat.ToolApprovalServerLabel"><value>Server MCP</value></data>
+	<data name="Chat.ToolApprovalPublisherLabel"><value>Penerbit</value></data>
+	<data name="Chat.ToolApprovalVersionLabel"><value>Versi</value></data>
+	<data name="Chat.ToolApprovalSourceLabel"><value>Sumber</value></data>
+	<data name="Chat.ToolApprovalCommandLabel"><value>Perintah</value></data>
+	<data name="Chat.ToolApprovalConnectsToLabel"><value>Terhubung ke</value></data>
+	<data name="Chat.ToolApprovalNetworkLabel"><value>Jaringan</value></data>
+	<data name="Chat.ToolApprovalNetworkNone"><value>Tanpa akses jaringan</value></data>
+	<data name="Chat.ToolApprovalNetworkIncidental"><value>Penggunaan jaringan sesekali</value></data>
+	<data name="Chat.ToolApprovalNetworkEgress"><value>Mengirim data ke layanan luar</value></data>
+	<data name="Chat.ToolApprovalTaskCreateMessage"><value>Setujui pembuatan tugas terjadwal ini?</value></data>
+	<data name="Chat.ToolApprovalTaskUpdateMessage"><value>Setujui pembaruan tugas terjadwal ini?</value></data>
+	<data name="Chat.ToolApprovalTaskDeleteMessage"><value>Setujui penghapusan tugas terjadwal ini?</value></data>
+	<data name="Chat.ToolApprovalTaskRunMessage"><value>Setujui untuk menjalankan tugas terjadwal ini sekarang?</value></data>
+	<data name="Chat.ToolApprovalTaskNameLabel"><value>Tugas</value></data>
+	<data name="Chat.ToolApprovalTaskNewNameLabel"><value>Nama baru</value></data>
+	<data name="Chat.ToolApprovalTaskAgentLabel"><value>Agen</value></data>
+	<data name="Chat.ToolApprovalTaskScheduleLabel"><value>Jadwal</value></data>
+	<data name="Chat.ToolApprovalTaskRunModeLabel"><value>Alat yang dibatasi</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveValue"><value>Disetujui otomatis selama proses berjalan</value></data>
+	<data name="Chat.ToolApprovalTaskAutoRejectValue"><value>Ditolak otomatis selama proses berjalan</value></data>
+	<data name="Chat.ToolApprovalTaskAutoApproveWarning"><value>Menyetujui perubahan tugas ini mengizinkan alat yang memerlukan persetujuan berjalan tanpa pengawasan. Perintah shell host dapat mengubah mesin yang menjalankan Oscova.</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetLabel"><value>Target eksekusi</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetHost"><value>Host</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetContainer"><value>Docker</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetDisabled"><value>Eksekusi shell dinonaktifkan</value></data>
+	<data name="Chat.ToolApprovalExecutionTargetUnavailable"><value>Target eksekusi tidak tersedia</value></data>
+	<data name="Chat.ToolApprovalHostWarning"><value>Berjalan pada mesin yang menjalankan Oscova dengan izin akun sistem operasinya.</value></data>
+	<data name="Chat.ToolApprovalContainerWarning"><value>Berjalan di dalam Docker dengan folder yang diizinkan terpasang.</value></data>
+	<data name="Chat.ToolApprovalScriptWarning"><value>Persetujuan menjalankan seluruh skrip. Perintah di dalamnya tidak disetujui secara terpisah.</value></data>
+	<data name="Chat.ApprovalModeSelectorPrefix"><value>Persetujuan:</value></data>
+	<data name="Chat.ApprovalModeUsePolicy"><value>Gunakan kebijakan agen</value></data>
+	<data name="Chat.ApprovalModeAutoApprove"><value>Setujui otomatis</value></data>
+	<data name="Chat.ApprovalModeAutoReject"><value>Tolak otomatis</value></data>
+	<data name="Chat.ThinkingLabel"><value>Sedang berpikir</value></data>
+	<data name="Chat.ThoughtDurationManyFormat"><value>Berpikir selama {0:F3} detik</value></data>
+	<data name="Chat.ThoughtDurationOneFormat"><value>Berpikir selama {0:F3} detik</value></data>
+	<data name="Chat.ResponseCopyLabel"><value>Salin</value></data>
+	<data name="Chat.ResponseCopiedLabel"><value>Tersalin</value></data>
+	<data name="Chat.ResponseCopyFailed"><value>Tidak dapat menyalin.</value></data>
+	<data name="Chat.RegenerateLabel"><value>Buat ulang</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Attachments"><value>Lampiran</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.ContextProviders"><value>Penyedia konteks</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.CurrentDraft"><value>Draf saat ini</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Instructions"><value>Petunjuk</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.OutputReserve"><value>Cadangan output</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.PriorHistory"><value>Riwayat sebelumnya</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Title"><value>Rincian perkiraan</value></data>
+	<data name="Chat.ContextWindowWarning.Breakdown.Tools"><value>Alat</value></data>
+	<data name="Chat.ContextWindowWarning.ContextWindowLabel"><value>Jendela konteks</value></data>
+	<data name="Chat.ContextWindowWarning.ContinueButton"><value>Tetap lanjutkan</value></data>
+	<data name="Chat.ContextWindowWarning.DialogBody"><value>Anda masih dapat mengirimkannya, tetapi model mungkin gagal, memotong konteks, atau melewatkan detail sebelumnya.</value></data>
+	<data name="Chat.ContextWindowWarning.DialogLead"><value>Draf ini mungkin terlalu besar untuk model yang dipilih.</value></data>
+	<data name="Chat.ContextWindowWarning.DialogTitle"><value>Peringatan jendela konteks</value></data>
+	<data name="Chat.ContextWindowWarning.EstimatedInputLabel"><value>Perkiraan input</value></data>
+	<data name="Chat.ContextWindowWarning.OutputReserveLabel"><value>Output yang dicadangkan</value></data>
+	<data name="Chat.ContextWindowWarning.OverageLabel"><value>Perkiraan kelebihan</value></data>
+	<data name="Chat.ContextWindowWarning.ProviderLabel"><value>Penyedia</value></data>
+	<data name="Chat.ContextWindowWarning.SummaryFormat"><value>{0} memperkirakan {1:N0} token input ditambah {2:N0} token output yang dicadangkan untuk jendela {3:N0} token, sekitar {4:N0} token lebih banyak.</value></data>
+	<data name="Chat.Activity.CommandRanTitle"><value>Menjalankan perintah</value></data>
+	<data name="Chat.Activity.Collapse"><value>Tutup ruang kerja</value></data>
+	<data name="Chat.Activity.DetailsTitle"><value>Ruang kerja</value></data>
+	<data name="Chat.Activity.FileReadTitle"><value>Membaca berkas</value></data>
+	<data name="Chat.Activity.FileUpdatedTitle"><value>Memperbarui berkas</value></data>
+	<data name="Chat.Activity.InProgress"><value>Sedang berlangsung</value></data>
+	<data name="Chat.Activity.JumpToLatest"><value>Lompat ke yang terbaru</value></data>
+	<data name="Chat.Activity.ManyActivitiesFormat"><value>{0} aktivitas</value></data>
+	<data name="Chat.Activity.MemoryReadTitle"><value>Membaca memori</value></data>
+	<data name="Chat.Activity.OneActivity"><value>1 aktivitas</value></data>
+	<data name="Chat.Activity.Open"><value>Buka ruang kerja</value></data>
+	<data name="Chat.Activity.SkillUsedTitle"><value>Menggunakan keterampilan</value></data>
+	<data name="Chat.Activity.StatusSuccess"><value>Berhasil</value></data>
+	<data name="Chat.Activity.UseStandardView"><value>Kembali ke obrolan</value></data>
+	<data name="Chat.Activity.UseWideView"><value>Buka tampilan penuh</value></data>
+	<data name="Chat.Activity.WebSearchedTitle"><value>Menelusuri web</value></data>
+	<data name="Chat.Activity.WorkspaceSearchedTitle"><value>Menelusuri ruang kerja</value></data>
+	<data name="Chat.ResizeThreadListLabel"><value>Ubah ukuran daftar percakapan</value></data>
+	<data name="Chat.ResizeDetailsPanelLabel"><value>Ubah ukuran panel ruang kerja</value></data>
+	<data name="Chat.Artifacts.Tab"><value>Artefak</value></data>
+	<data name="Chat.Artifacts.EmptyTitle"><value>Belum ada artefak</value></data>
+	<data name="Chat.Artifacts.EmptyDescription"><value>Berkas yang dibuat atau diperbarui oleh utas ini akan muncul di sini.</value></data>
+	<data name="Chat.Artifacts.Download"><value>Unduh artefak</value></data>
+	<data name="Chat.Artifacts.Loading"><value>Memuat pratinjau artefak</value></data>
+	<data name="Chat.Artifacts.UpdatedFormat"><value>Diperbarui {0}</value></data>
+	<data name="Chat.Artifacts.PreviewTooLarge"><value>Berkas ini terlalu besar untuk dipratinjau di sini.</value></data>
+	<data name="Chat.Artifacts.PreviewUnavailable"><value>Pratinjau ini tidak lagi tersedia.</value></data>
+	<data name="Chat.Artifacts.DownloadOnly"><value>Pratinjau tidak tersedia untuk jenis berkas ini.</value></data>
+	<data name="Chat.Artifacts.FileType"><value>Berkas</value></data>
+	<data name="Chat.IncognitoChatDisclosure"><value>Obrolan ini tidak disimpan atau ditambahkan ke memori. Ini akan dihapus saat Anda keluar, setelah sekitar 30 menit tidak aktif, atau saat Oscova dimulai ulang. Lampiran akan dihapus bersamanya. Model dan alat eksternal mungkin masih menerima apa yang Anda kirimkan.</value></data>
+	<data name="Chat.IncognitoChatDisclosureSummary"><value>Tidak disimpan · Dihapus setelah ~30 mnt</value></data>
+	<data name="Chat.IncognitoChatExpiredToast"><value>Obrolan penyamaran kedaluwarsa dan dihapus.</value></data>
+	<data name="Chat.IncognitoChatLabel"><value>Penyamaran</value></data>
+	<data name="Chat.IncognitoChatUnavailableTooltip"><value>Mode penyamaran dikunci setelah obrolan dimulai. Mulai obrolan baru untuk mengubahnya.</value></data>
+	<data name="Chat.ContextUsage.AriaLabelFormat"><value>Perkiraan penggunaan konteks: {0:N0}% digunakan, {1:N0}% bebas</value></data>
+	<data name="Chat.ContextUsage.DialogTitle"><value>Penggunaan konteks</value></data>
+	<data name="Chat.ContextUsage.UsedLabel"><value>Digunakan</value></data>
+	<data name="Chat.ContextUsage.FreeInputLabel"><value>Ruang bebas</value></data>
+	<data name="Chat.ContextUsage.TotalLabel"><value>Jendela konteks</value></data>
+	<data name="Chat.ContextUsage.ReservedOutputLabel"><value>Output yang dicadangkan</value></data>
+	<data name="Chat.ContextUsage.SummaryFormat"><value>Perkiraan: {0:N0} dari {1:N0} token digunakan ({2:N0}%).</value></data>
+	<data name="Chat.ContextUsage.UnavailableLabel"><value>Penggunaan konteks tidak tersedia</value></data>
+	<data name="Chat.ContextUsage.UnavailableBody"><value>Atur ukuran jendela konteks untuk penyedia model ini guna melihat penggunaan.</value></data>
+  <data name="Chat.EasterEgg.CozyMessage"><value>Aman, utuh, dan milik Anda seutuhnya.</value></data>
+  <data name="Chat.Slash.CompactComplete"><value>Konteks dipadatkan.</value></data>
+  <data name="Chat.Slash.CompactDescription"><value>Ringkas konteks lama sekarang</value></data>
+  <data name="Chat.Slash.CompactFailed"><value>Konteks tidak dapat dipadatkan.</value></data>
+  <data name="Chat.Slash.CompactNoChange"><value>Tidak ada konteks lama untuk dipadatkan.</value></data>
+  <data name="Chat.HistorySummarizedNotice"><value>Pesan sebelumnya telah diringkas.</value></data>
+  <data name="Chat.Slash.ContextDescription"><value>Tampilkan perkiraan penggunaan konteks</value></data>
+  <data name="Chat.Slash.ContextFailed"><value>Penggunaan konteks tidak dapat dimuat.</value></data>
+  <data name="Chat.Slash.MenuLabel"><value>Perintah percakapan</value></data>
+  <data name="Chat.Slash.NewDescription"><value>Mulai obrolan baru</value></data>
+  <data name="Chat.Slash.RenameDescription"><value>Ganti nama obrolan ini</value></data>
+  <data name="Chat.Slash.ResearchDescription"><value>Riset sebuah topik dan simpan laporan bersumber</value></data>
+  <data name="Chat.Slash.UnknownCommandFormat"><value>Perintah tidak dikenal atau tidak tersedia: {0}</value></data>
+  <data name="Chat.ToolActivity.GenericLabel" xml:space="preserve">
+    <value>Aktivitas alat</value>
+  </data>
+  <data name="Chat.ToolActivity.ListSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="Chat.ToolActivity.CategoriesAndMoreFormat" xml:space="preserve">
+    <value>{0} dan lainnya</value>
+  </data>
+  <data name="Chat.ToolActivity.RunningCountFormat" xml:space="preserve">
+    <value>{0} sedang berjalan</value>
+  </data>
+  <data name="Chat.ToolActivity.FailedCountFormat" xml:space="preserve">
+    <value>{0} gagal. Perluas untuk melihat detail</value>
+  </data>
+  <data name="Chat.ToolActivity.TechnicalDetails" xml:space="preserve">
+    <value>Detail teknis</value>
+  </data>
+  <data name="Chat.ToolActivity.ResultTruncated" xml:space="preserve">
+    <value>Menampilkan 1.600 karakter pertama</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowFullResult" xml:space="preserve">
+    <value>Tampilkan hasil lengkap</value>
+  </data>
+  <data name="Chat.ToolActivity.ShowLess" xml:space="preserve">
+    <value>Tampilkan lebih sedikit</value>
+  </data>
+  <data name="Chat.UserQuestion.CustomAnswer"><value>Jawaban Anda sendiri</value></data>
+  <data name="Chat.UserQuestion.Recommended"><value>Disarankan</value></data>
+  <data name="Chat.UserQuestion.SubmitAnswers"><value>Kirim jawaban</value></data>
+  <data name="Chat.UserQuestion.Position"><value>{0} dari {1}</value></data>
+  <data name="Chat.UserQuestion.Answered"><value>Sudah dijawab</value></data>
+  <data name="Chat.UserQuestion.Dismissed"><value>Dibatalkan</value></data>
+  <data name="Chat.UserQuestion.Obsolete"><value>Pertanyaan ini sudah tidak aktif.</value></data>
+  <data name="Chat.UserQuestion.Unfinished"><value>Pertanyaan ini tidak dapat diselesaikan. Kirim pesan baru untuk melanjutkan.</value></data>
+  <data name="Chat.UserQuestion.AnswerRequired"><value>Pilih jawaban atau tulis jawaban Anda sendiri untuk setiap pertanyaan.</value></data>
+  <data name="Chat.UserQuestion.SubmitFailed"><value>Jawaban Anda tidak dapat dikirim. Coba lagi.</value></data>
+  <data name="Chat.UserQuestion.DismissFailed"><value>Pertanyaan ini tidak dapat dibatalkan. Coba lagi.</value></data>
+  <data name="Chat.Project.Add" xml:space="preserve"><value>Tambah proyek</value></data>
+  <data name="Chat.Project.Name" xml:space="preserve"><value>Nama proyek</value></data>
+  <data name="Chat.Project.HostFolder" xml:space="preserve"><value>Folder proyek di perangkat yang dipilih</value></data>
+  <data name="Chat.Project.AccessHelp" xml:space="preserve"><value>Pilih folder yang sudah ada di perangkat yang dipilih. Perintah shell native memiliki izin sistem operasi akun perangkat tersebut.</value></data>
+  <data name="Chat.Project.General" xml:space="preserve"><value>Umum</value></data>
+  <data name="Chat.Project.Unavailable" xml:space="preserve"><value>Proyek tidak tersedia</value></data>
+  <data name="Chat.Project.Remove" xml:space="preserve"><value>Hapus proyek</value></data>
+  <data name="Chat.Project.RemoveConfirm" xml:space="preserve"><value>Hapus referensi proyek dan hentikan proses aktifnya? Percakapan dan file tetap disimpan.</value></data>
+  <data name="Chat.Project.Files" xml:space="preserve"><value>File</value></data>
+  <data name="Chat.Project.Changes" xml:space="preserve"><value>Perubahan</value></data>
+  <data name="Chat.Project.PrivateData" xml:space="preserve"><value>Data pribadi</value></data>
+  <data name="Chat.Project.EmptyFolder" xml:space="preserve"><value>Folder ini kosong.</value></data>
+  <data name="Chat.Project.ListLimit" xml:space="preserve"><value>Menampilkan hingga 500 entri. Buka folder yang lebih spesifik.</value></data>
+  <data name="Chat.Project.ChangesLimit" xml:space="preserve"><value>Menampilkan hingga 2.000 perubahan. Kurangi perubahan melalui klien Git.</value></data>
+  <data name="Chat.Project.RepositoryScope" xml:space="preserve"><value>Perubahan repositori mencakup suntingan semua percakapan dan alat lain.</value></data>
+  <data name="Chat.Project.Choose" xml:space="preserve"><value>Pilih proyek untuk meninjau perubahan Git.</value></data>
+  <data name="Chat.Project.SendFirst" xml:space="preserve"><value>Kirim pesan untuk menjelajahi folder agen.</value></data>
+  <data name="Chat.Project.NoChanges" xml:space="preserve"><value>Tidak ada perubahan.</value></data>
+  <data name="Chat.Project.staged" xml:space="preserve"><value>Dalam staging</value></data>
+  <data name="Chat.Project.unstaged" xml:space="preserve"><value>Belum staging</value></data>
+  <data name="Chat.Project.untracked" xml:space="preserve"><value>Belum dilacak</value></data>
+  <data name="Chat.Project.Read.Ready" xml:space="preserve"><value>Siap</value></data>
+  <data name="Chat.Project.Read.Binary" xml:space="preserve"><value>File biner tidak dapat dipratinjau.</value></data>
+  <data name="Chat.Project.Read.TooLarge" xml:space="preserve"><value>Pratinjau dibatasi 256 KiB dan 5.000 baris per sisi.</value></data>
+  <data name="Chat.Project.Read.Unavailable" xml:space="preserve"><value>File atau repositori tidak tersedia. Segarkan dan periksa akses.</value></data>
+  <data name="Chat.Project.Read.NotRepository" xml:space="preserve"><value>Folder ini bukan repositori Git.</value></data>
+  <data name="Chat.Project.Read.GitMissing" xml:space="preserve"><value>Instal Git pada host Oscova untuk meninjau perubahan.</value></data>
+  <data name="Chat.Project.Read.Unsupported" xml:space="preserve"><value>Tata letak, konfigurasi, atau jenis file Git ini tidak didukung.</value></data>
+  <data name="Chat.Project.Read.RefreshRequired" xml:space="preserve"><value>Perubahan yang dipilih telah berubah. Segarkan daftar.</value></data>
+  <data name="Chat.ToolCard.Status.Cancelled" xml:space="preserve"><value>Dibatalkan</value></data>
+  <data name="Chat.FollowUps.Label" xml:space="preserve"><value>Pesan lanjutan</value></data>
+  <data name="Chat.FollowUps.SteeringBadge" xml:space="preserve"><value>Sedang mengarahkan</value></data>
+  <data name="Chat.FollowUps.Steer" xml:space="preserve"><value>Arahkan</value></data>
+  <data name="Chat.FollowUps.Delete" xml:space="preserve"><value>Hapus</value></data>
+  <data name="Chat.FollowUps.More" xml:space="preserve"><value>Tindakan lainnya</value></data>
+  <data name="Chat.FollowUps.Edit" xml:space="preserve"><value>Edit pesan</value></data>
+<data name="Chat.Branch.Label" xml:space="preserve"><value>Buat cabang di chat baru</value></data>
+<data name="Chat.Branch.Failed" xml:space="preserve"><value>Cabang chat tidak dapat dibuat. Coba lagi.</value></data>
+<data name="Chat.Branch.ContinuedFrom" xml:space="preserve"><value>Dilanjutkan dari chat</value></data>
+<data name="Chat.Branch.SourceUnavailable" xml:space="preserve"><value>Chat asal tidak tersedia</value></data>
+<data name="Chat.Project.Device" xml:space="preserve"><value>Perangkat</value></data><data name="Chat.Project.ServerDevice" xml:space="preserve"><value>Server ini</value></data><data name="Chat.Project.SelectDevice" xml:space="preserve"><value>Pilih perangkat</value></data><data name="Chat.Project.DeviceUnavailable" xml:space="preserve"><value>Tidak tersedia</value></data><data name="Chat.Project.PermissionDisabled" xml:space="preserve"><value>Minta operator mengaktifkan Proyek untuk akun Anda.</value></data><data name="Chat.Project.NodeRequired" xml:space="preserve"><value>Jalankan Oscova node di komputer Anda untuk menambahkan proyek.</value></data><data name="Chat.Artifacts.NodeUnavailable" xml:space="preserve"><value>File tidak tersedia. Jalankan perangkat proyek, periksa akses dan keberadaan file, lalu buka kembali pratinjau ini.</value></data>
+  <data name="Chat.ToolApprovalProjectWarning" xml:space="preserve"><value>Berjalan di perangkat proyek yang dipilih dengan izin sistem operasi akun perangkat tersebut.</value></data>
+  <data name="Chat.Project.NodeOffline" xml:space="preserve"><value>Node yang dipilih sedang offline. Jalankan Oscova node di perangkat tersebut dan coba lagi.</value></data>
+  <data name="Chat.Project.FolderMissing" xml:space="preserve"><value>Folder proyek tidak ditemukan. Pulihkan folder itu, lalu coba lagi.</value></data>
+  <data name="Chat.Mcp.ConnectionFailed" xml:space="preserve"><value>Koneksi MCP '{0}' tidak dapat dimulai. Buka pengaturan server MCP, periksa konfigurasinya pada perangkat eksekusi, lalu hubungkan kembali.</value></data>
+  <data name="Chat.Mcp.DockerMissing" xml:space="preserve"><value>Koneksi MCP '{0}' tidak dapat dimulai. Instal Docker atau pilih eksekusi MCP native pada perangkat eksekusi.</value></data>
+  <data name="Chat.Workspace.Preview" xml:space="preserve">
+    <value>Pratinjau</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedTitle" xml:space="preserve">
+    <value>Perubahan belum disimpan</value>
+  </data>
+  <data name="Chat.Workspace.UnsavedMessage" xml:space="preserve">
+    <value>Simpan perubahan sebelum melanjutkan atau buang perubahan. Batal mempertahankan berkas yang terbuka.</value>
+  </data>
+  <data name="Chat.Workspace.Discard" xml:space="preserve">
+    <value>Buang</value>
+  </data>
+  <data name="Chat.Workspace.ConflictTitle" xml:space="preserve">
+    <value>Berkas berubah</value>
+  </data>
+  <data name="Chat.Workspace.ConflictMessage" xml:space="preserve">
+    <value>Berkas berubah sejak dibuka. Perubahan Anda belum disimpan.</value>
+  </data>
+  <data name="Chat.Workspace.ConflictActions" xml:space="preserve">
+    <value>Timpa mengganti berkas terbaru dengan perubahan Anda. Muat ulang membuang perubahan setelah konfirmasi.</value>
+  </data>
+  <data name="Chat.Workspace.Overwrite" xml:space="preserve">
+    <value>Timpa dengan perubahan saya</value>
+  </data>
+  <data name="Chat.Workspace.ReloadLatest" xml:space="preserve">
+    <value>Muat ulang versi terbaru</value>
+  </data>
+  <data name="Chat.Workspace.LoadFailed" xml:space="preserve">
+    <value>Berkas tidak dapat dimuat. Periksa akses dan koneksi perangkat, lalu coba lagi.</value>
+  </data>
+  <data name="Chat.Workspace.SaveFailed" xml:space="preserve">
+    <value>Penyimpanan belum dapat dikonfirmasi. Periksa akses, batas 512 KiB dan 5.000 baris, serta koneksi perangkat. Draf tetap ada. Simpan lagi atau muat ulang.</value>
+  </data>
+<data name="Chat.Workspace.ReloadConfirm" xml:space="preserve"><value>Muat ulang berkas terbaru dan buang perubahan yang belum disimpan?</value></data>
+  <data name="Chat.Workspace.TooLarge" xml:space="preserve"><value>Pratinjau dan pengeditan dibatasi hingga 512 KiB dan 5.000 baris.</value></data>
+  <data name="Chat.Browser.NewTab" xml:space="preserve"><value>Tab browser baru</value></data>
+  <data name="Chat.Browser.Address" xml:space="preserve"><value>Cari atau masukkan URL</value></data>
+  <data name="Chat.Browser.Viewport" xml:space="preserve"><value>Halaman browser langsung</value></data>
+  <data name="Chat.Browser.PhoneView" xml:space="preserve"><value>Hanya melihat di perangkat sentuh. Gunakan desktop untuk berinteraksi.</value></data>
+  <data name="Chat.Browser.Failed" xml:space="preserve"><value>Tindakan browser gagal.</value></data>
+  <data name="Chat.Browser.Disconnected" xml:space="preserve"><value>Browser terputus. Buka kembali tab.</value></data>
+  <data name="Chat.Browser.Clipboard" xml:space="preserve"><value>Akses papan klip gagal. Izinkan akses atau tempel dengan papan ketik.</value></data>
+  <data name="Chat.Browser.InvalidAddress" xml:space="preserve"><value>Masukkan alamat HTTP atau HTTPS, nama host, atau pencarian (maksimal 4096 karakter).</value></data>
+  <data name="Chat.Browser.UploadLimit" xml:space="preserve"><value>Pilih hingga 8 berkas dengan total maksimal 32 MiB.</value></data>
+  <data name="Chat.Browser.Cut" xml:space="preserve"><value>Potong</value></data>
+  <data name="Chat.Browser.Copy" xml:space="preserve"><value>Salin</value></data>
+  <data name="Chat.Browser.Paste" xml:space="preserve"><value>Tempel</value></data>
+  <data name="Chat.Browser.SelectAll" xml:space="preserve"><value>Pilih semua</value></data>
+  <data name="Chat.Browser.ChooseFile" xml:space="preserve"><value>Pilih file dari perangkat Anda untuk situs ini</value></data>
+  <data name="Chat.Browser.FileReady" xml:space="preserve"><value>File siap</value></data>
+  <data name="Chat.Browser.SaveToDevice" xml:space="preserve"><value>Simpan ke perangkat</value></data>
+  <data name="Chat.Permissions.AllowOnce" xml:space="preserve">
+    <value>Izinkan sekali</value>
+  </data>
+  <data name="Chat.Permissions.AllowForSession" xml:space="preserve">
+    <value>Izinkan untuk sesi ini</value>
+  </data>
+  <data name="Chat.Permissions.SessionLifetime" xml:space="preserve">
+    <value>Berlaku untuk alat, agen, dan percakapan ini sampai dicabut atau sesi server berakhir. Memuat ulang atau berganti chat mempertahankan izin. Memulai ulang Oscova menghapusnya.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnavailable" xml:space="preserve">
+    <value>Izin sesi tidak tersedia karena permintaan ini tidak memiliki identitas alat, agen, atau target eksekusi tepercaya.</value>
+  </data>
+  <data name="Chat.Permissions.AllowedOnce" xml:space="preserve">
+    <value>Diizinkan sekali</value>
+  </data>
+  <data name="Chat.Permissions.AllowedForSession" xml:space="preserve">
+    <value>Diizinkan untuk sesi ini</value>
+  </data>
+  <data name="Chat.Permissions.Denied" xml:space="preserve">
+    <value>Ditolak</value>
+  </data>
+  <data name="Chat.Permissions.SessionAutoApproved" xml:space="preserve">
+    <value>Disetujui otomatis oleh izin sesi</value>
+  </data>
+  <data name="Chat.Permissions.AutoApproved" xml:space="preserve">
+    <value>Disetujui otomatis</value>
+  </data>
+  <data name="Chat.Permissions.AutoRejected" xml:space="preserve">
+    <value>Ditolak otomatis</value>
+  </data>
+  <data name="Chat.Permissions.FullAccess" xml:space="preserve">
+    <value>Akses penuh</value>
+  </data>
+  <data name="Chat.Permissions.ApprovalExpired" xml:space="preserve">
+    <value>Permintaan persetujuan ini kedaluwarsa. Minta alat lagi.</value>
+  </data>
+  <data name="Chat.Permissions.SessionPermissions" xml:space="preserve">
+    <value>Izin sesi</value>
+  </data>
+  <data name="Chat.Permissions.Revoke" xml:space="preserve">
+    <value>Cabut</value>
+  </data>
+  <data name="Chat.Permissions.RevokeAll" xml:space="preserve">
+    <value>Cabut semua</value>
+  </data>
+  <data name="Chat.Permissions.NoSessionPermissions" xml:space="preserve">
+    <value>Tidak ada izin sesi aktif.</value>
+  </data>
+  <data name="Chat.Permissions.RunningPermission" xml:space="preserve">
+    <value>Giliran berjalan: {0}. Pilihan berlaku untuk eksekusi berikutnya.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningUsePolicy" xml:space="preserve">
+    <value>Ikuti kebijakan alat agen.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoApprove" xml:space="preserve">
+    <value>Lewati permintaan persetujuan. Pembatasan eksekusi tetap berlaku.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningAutoReject" xml:space="preserve">
+    <value>Tolak panggilan yang memerlukan persetujuan.</value>
+  </data>
+  <data name="Chat.Permissions.ModeMeaningFullAccess" xml:space="preserve">
+    <value>Lewati permintaan persetujuan. Jalankan perintah shell tanpa filter di {0}, di luar Docker.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedFullAccess" xml:space="preserve">
+    <value>Tidak digunakan dalam akses penuh. Pencabutan tidak menonaktifkannya.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoApprove" xml:space="preserve">
+    <value>Tidak digunakan saat permintaan persetujuan dilewati.</value>
+  </data>
+  <data name="Chat.Permissions.SessionUnusedAutoReject" xml:space="preserve">
+    <value>Tidak digunakan saat panggilan yang memerlukan persetujuan ditolak.</value>
+  </data>
+  <data name="Chat.ToolApproval.ExecutionEnvironmentWarning" xml:space="preserve">
+    <value>Berjalan di lingkungan eksekusi yang dipilih.</value>
+  </data>
+  <data name="Chat.ToolCard.ToolSearchTitle" xml:space="preserve">
+    <value>Memuat alat</value>
+  </data>
+  <data name="VisualizationTitle" xml:space="preserve"><value>Visualisasi interaktif</value></data>
+  <data name="VisualizationGenerating" xml:space="preserve"><value>Membuat visualisasi</value></data>
+  <data name="VisualizationUnavailable" xml:space="preserve"><value>Visualisasi tidak tersedia</value></data>
+  <data name="VisualizationLocalOnly" xml:space="preserve"><value>Visualisasi dinonaktifkan dalam mode lokal saja.</value></data>
+  <data name="Chat.ComposerOptions" xml:space="preserve"><value>Opsi obrolan</value></data>
+  <data name="Chat.History.LoadingConversation" xml:space="preserve"><value>Memuat percakapan…</value></data>
+  <data name="Chat.History.LoadOlderMessages" xml:space="preserve"><value>Muat pesan sebelumnya</value></data>
+  <data name="Chat.History.LoadingOlderMessages" xml:space="preserve"><value>Memuat pesan sebelumnya…</value></data>
+  <data name="Chat.History.StartOfConversation" xml:space="preserve"><value>Awal percakapan</value></data>
+  <data name="Chat.History.LoadOlderMessagesFailed" xml:space="preserve"><value>Pesan sebelumnya tidak dapat dimuat. Coba lagi.</value></data>
+  <data name="RemoveRecipient" xml:space="preserve"><value>Hapus penerima</value></data>
+  <data name="ConsultAgent" xml:space="preserve"><value>Konsultasikan dengan agen</value></data>
+  <data name="NoMatchingAgents" xml:space="preserve"><value>Tidak ada agen yang cocok</value></data>
+  <data name="Chat.ExpandTable" xml:space="preserve"><value>Perluas tabel</value></data>
+  <data name="Chat.ExpandedTable" xml:space="preserve"><value>Tabel</value></data>
+  <data name="Chat.Goal.Edit" xml:space="preserve"><value>Edit tujuan</value></data>
+  <data name="Chat.Goal.Title" xml:space="preserve">
+    <value>Tujuan</value>
+  </data>
+  <data name="Chat.Goal.Start" xml:space="preserve">
+    <value>Mulai tujuan</value>
+  </data>
+  <data name="Chat.Goal.Save" xml:space="preserve">
+    <value>Simpan tujuan</value>
+  </data>
+  <data name="Chat.Goal.Pause" xml:space="preserve">
+    <value>Jeda</value>
+  </data>
+  <data name="Chat.Goal.Running" xml:space="preserve">
+    <value>Tujuan berjalan</value>
+  </data>
+  <data name="Chat.Goal.Paused" xml:space="preserve">
+    <value>Tujuan dijeda</value>
+  </data>
+  <data name="Chat.Goal.Blocked" xml:space="preserve">
+    <value>Tujuan terhalang</value>
+  </data>
+  <data name="Chat.Goal.Achieved" xml:space="preserve">
+    <value>Tujuan tercapai</value>
+  </data>
+  <data name="Chat.Goal.SaveFailed" xml:space="preserve">
+    <value>Tujuan tidak dapat disimpan</value>
+  </data>
+  <data name="Chat.Goal.ActionFailed" xml:space="preserve">
+    <value>Tujuan tidak dapat diperbarui</value>
+  </data>
+  <data name="Chat.Slash.GoalDescription" xml:space="preserve">
+    <value>Terus bekerja menuju tujuan</value>
+  </data>
+  <data name="Chat.Goal.ClearFirst" xml:space="preserve">
+    <value>Hapus tujuan yang ada sebelum memulai tujuan lain.</value>
+  </data>
+  <data name="Chat.Goal.AnswerOrDismiss" xml:space="preserve">
+    <value>Jawab atau tutup pertanyaan terlebih dahulu</value>
+  </data>
+  <data name="Chat.Goal.ReasonStopped" xml:space="preserve">
+    <value>Dihentikan</value>
+  </data>
+  <data name="Chat.Goal.ReasonRestarted" xml:space="preserve">
+    <value>Aplikasi dimulai ulang</value>
+  </data>
+  <data name="Chat.Goal.ReasonBudget" xml:space="preserve">
+    <value>Anggaran tercapai</value>
+  </data>
+  <data name="Chat.Goal.ReasonIterations" xml:space="preserve">
+    <value>Batas iterasi</value>
+  </data>
+  <data name="Chat.Goal.ReasonProvider" xml:space="preserve">
+    <value>Penyedia tidak tersedia</value>
+  </data>
+  <data name="Chat.Goal.ReasonJudge" xml:space="preserve">
+    <value>Penyelesaian tidak dapat diperiksa</value>
+  </data>
+  <data name="Chat.Goal.ReasonWorker" xml:space="preserve">
+    <value>Tidak dapat melanjutkan</value>
+  </data>
+  <data name="Chat.Goal.ReasonQuestion" xml:space="preserve">
+    <value>Menunggu jawaban Anda</value>
+  </data>
+  <data name="Chat.Goal.ReasonDismissed" xml:space="preserve">
+    <value>Pertanyaan ditutup</value>
+  </data>
+  <data name="Chat.AttachmentReadFailed" xml:space="preserve">
+    <value>Tidak dapat melampirkan '{0}'. Pilih kembali.</value>
+  </data>
+  <data name="Chat.RecipientOwnModelProvider" xml:space="preserve">
+    <value>{0} menggunakan penyedia modelnya sendiri.</value>
+  </data>
+  <data name="Chat.RecipientModelProviderUnavailable" xml:space="preserve">
+    <value>Penyedia model agen tidak tersedia</value>
+  </data>
+  <data name="Chat.Workspace.NewTab" xml:space="preserve"><value>Tab baru</value></data>
+  <data name="Chat.Workspace.ResizeFiles" xml:space="preserve"><value>Ubah ukuran panel file</value></data>
+  <data name="Chat.Workspace.SelectFile" xml:space="preserve"><value>Pilih file dari pohon ruang kerja.</value></data>
+  <data name="Chat.Workspace.FileActions" xml:space="preserve"><value>Tindakan file</value></data>
+  <data name="Chat.Workspace.AddToChat" xml:space="preserve"><value>Tambahkan ke chat</value></data>
+  <data name="Chat.Workspace.RelativePath" xml:space="preserve"><value>Jalur relatif</value></data>
+  <data name="Chat.Workspace.AbsolutePath" xml:space="preserve"><value>Jalur absolut</value></data>
+  <data name="Chat.Workspace.Filename" xml:space="preserve"><value>Nama file</value></data>
+  <data name="Chat.WaitingForSubagentsStatus" xml:space="preserve"><value>Menunggu subagen</value></data>
+  <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>Menunggu jawaban Anda dan subagen</value></data>
+  <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>Menunggu persetujuan</value></data>
+  <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>Terputus</value></data>
+</root>

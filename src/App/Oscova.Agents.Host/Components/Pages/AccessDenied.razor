@@ -1,0 +1,14 @@
+@page "/access-denied"
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<PageTitle>@CommonLoc.GetOrDefault(CommonTextKeys.RouteNotAuthorized, "You are not authorized to view this page.")</PageTitle>
+
+@* Signed-in users who lack a role or permission land here instead of the sign-in form. *@
+<div class="min-h-screen flex items-center justify-center p-6">
+    <div class="alert alert-warning shadow-lg max-w-lg">
+        <div>
+            <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+            <span>@CommonLoc.GetOrDefault(CommonTextKeys.RouteNotAuthorized, "You are not authorized to view this page.")</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,445 @@
+@inject ManagementApiClient ManagementApiClient
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject NotificationHub<TaskStatusUpdate> TaskUpdates
+@inject ILogger<AgentTaskDetailsDialog> Logger
+@implements IDisposable
+@using Oscova.Agents.Core.Utils
+@using Oscova.Agents.Core.Conversation
+@using Oscova.Agents.Utils
+
+@* Presents task details and recent runs from the table-first Tasks page. *@
+<AppDialogShell Title="@_task.Name"
+                Subtitle="@(CommonLoc.GetOrDefault(CommonTextKeys.TaskPageDetailsDialogTitle, "Task details"))"
+                Icon="lucide:bot"
+                MaxWidthClass="max-w-5xl"
+                HelpTopic="@HelpTopics.AgentTaskDetails"
+                CloseResult="@DialogResult.Cancel">
+    <ChildContent>
+        <div class="space-y-5">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="badge badge-soft @_statusBadgeClass">
+                    @if (_isOrphan)
+                    {
+                        <iconify-icon icon="lucide:unlink" width="12" height="12"></iconify-icon>
+                    }
+                    @_statusText
+                </span>
+                @{ var lifecycleText = _isDeleted
+                    ? CommonLoc.GetOrDefault(CommonTextKeys.TaskPredecessorMissing, "Deleted task")
+                    : _task.IsEnabled ? CommonLoc.GetOrDefault(CommonTextKeys.TaskEnabled, "Enabled") : CommonLoc.GetOrDefault(CommonTextKeys.TaskStatusPaused, "Paused"); }
+                @if (!string.Equals(_statusText, lifecycleText, StringComparison.Ordinal))
+                {
+                    <span class="badge badge-ghost">@lifecycleText</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(_creatorAgentName))
+                {
+                    <span class="badge badge-info badge-soft" title="@_creatorAgentName">
+                        <iconify-icon icon="lucide:bot" width="12" height="12"></iconify-icon>
+                        @CommonLoc.GetOrDefault(CommonTextKeys.TaskAgentCreatedBadge, "Agent-created")
+                    </span>
+                }
+            </div>
+
+            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                @RenderSummaryCard(CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderAgent, "Agent"), _agentName, "lucide:user-round")
+                @RenderSummaryCard(CommonLoc.GetOrDefault(CommonTextKeys.TaskModelProviderLabel, "Model Provider"), _modelLabel, "lucide:cpu")
+                @RenderSummaryCard(CommonLoc.GetOrDefault(CommonTextKeys.TaskPageScheduleHeader, "Schedule"), _scheduleText, "lucide:calendar-clock", _scheduleSupportText)
+                @RenderSummaryCard(CommonLoc.GetOrDefault(CommonTextKeys.Status, "Status"), GetLatestRunSummary(), "lucide:activity")
+            </div>
+
+            <div class="rounded-box border border-base-200 bg-base-100 p-4">
+                <div class="mb-2 flex items-center gap-2 text-sm font-medium">
+                    <iconify-icon icon="lucide:file-text" width="16" height="16" class="text-base-content/60"></iconify-icon>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.TaskInstructionLabel, "Instruction")
+                </div>
+                @if (_instructionError is not null)
+                {
+                    <p role="alert" class="text-sm text-error">@_instructionError</p>
+                }
+                else
+                {
+                    <p dir="auto" class="max-h-36 overflow-y-auto whitespace-pre-wrap break-words text-sm text-base-content/70 [overflow-wrap:anywhere]">@_instruction</p>
+                }
+            </div>
+
+            <div class="rounded-box border border-base-200 bg-base-100">
+                <div class="flex flex-col gap-3 border-b border-base-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-base font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageRecentExecutionsTitle, "Recent Executions")</p>
+                        <p class="text-sm text-base-content/60">@CommonLoc.GetOrDefault(CommonTextKeys.TaskPageRecentExecutionsDescription, "Latest runs for this task, including the current live run if one exists.")</p>
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-sm self-start sm:self-auto" disabled="@_isDeleted" @onclick="ViewAllRuns">
+                        <span class="iconify lucide--clock size-4" aria-hidden="true"></span>
+                        @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageViewAllButton, "View all")
+                    </button>
+                </div>
+
+                @if (_isLoadingRuns)
+                {
+                    <div class="flex min-h-48 items-center justify-center">
+                        <span class="loading loading-spinner loading-md"></span>
+                    </div>
+                }
+                else if (_runs.Count == 0)
+                {
+                    <div class="p-5">
+                        <div class="rounded-box bg-base-200/40 px-4 py-8 text-center text-sm text-base-content/60">
+                            @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNoRunsYet, "No runs recorded for this task yet.")
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="max-h-[28rem] overflow-y-auto p-4">
+                        <div class="space-y-3">
+                            @foreach (var run in _runs)
+                            {
+                                <div class="rounded-box border border-base-200 p-4">
+                                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                        <div class="min-w-0">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span class="badge badge-sm badge-soft @GetStatusBadgeClass(run.Status)">
+                                                    @GetStatusText(run.Status)
+                                                </span>
+                                                <span class="break-words text-sm font-medium [overflow-wrap:anywhere]">@FormatRunTimestamp(run)</span>
+                                            </div>
+                                            @if (!string.IsNullOrWhiteSpace(run.ResultSummary))
+                                            {
+                                                <div class="markdown-content mt-2 text-sm text-base-content/70">@((MarkupString)MarkdownRenderer.ToHtml(run.ResultSummary))</div>
+                                            }
+                                            else if (!string.IsNullOrWhiteSpace(run.Error))
+                                            {
+                                                <p class="mt-2 text-sm text-error">@run.Error</p>
+                                            }
+                                        </div>
+                                        @if (HasInspectableMessages(run))
+                                        {
+                                            <button type="button" class="btn btn-ghost btn-sm" @onclick="() => InspectRunAsync(run)">
+                                                <span class="iconify lucide--eye size-4" aria-hidden="true"></span>
+                                                @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageInspectButton, "Inspect")
+                                            </button>
+                                        }
+                                    </div>
+                                    <div class="mt-3 flex flex-wrap gap-2 text-xs text-base-content/55">
+                                        <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatCommonText(CommonTextKeys.TaskStartedAt, "Started {0}", GetStartedText(run))</span>
+                                        @if (run.CompletedAt is not null)
+                                        {
+                                            <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatCommonText(CommonTextKeys.TaskFinishedAt, "Finished {0}", FormatTimestamp(run.CompletedAt.Value))</span>
+                                        }
+                                        @if (run.TokensUsed is { } tokensUsed)
+                                        {
+                                            <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatCommonText(CommonTextKeys.TaskTokensUsed, "{0} tokens", tokensUsed)</span>
+                                        }
+                                        @if (run.LiveMessages is { Count: > 0 } liveMessages)
+                                        {
+                                            <span class="badge badge-ghost badge-sm h-auto max-w-full whitespace-normal text-start [overflow-wrap:anywhere]">@FormatCommonText(CommonTextKeys.TaskMessagesCount, "{0} messages", liveMessages.Count)</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="Close">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_isDeleted" @onclick="ViewAllRuns">
+            <span class="iconify lucide--clock size-4" aria-hidden="true"></span>
+            @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageRunsButton, "Runs")
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_isDeleted" @onclick="EditTask">
+            <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>
+            @CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(_isDeleted || _isRunning || !_task.IsEnabled)" @onclick="RunTask">
+            <span class="iconify lucide--play size-4" aria-hidden="true"></span>
+            @CommonLoc.GetOrDefault(CommonTextKeys.TaskPageRunNowButton, "Run now")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    public const string RunAction = "run";
+    public const string RunsAction = "runs";
+    public const string EditAction = "edit";
+
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private AgentTaskDefinition _task = new();
+    private string _instruction = string.Empty;
+    private string? _instructionError;
+    private AgentTaskRun? _lastRun;
+    private List<AgentTaskRun> _runs = [];
+    private TimeZoneInfo _userTimeZone = TimeZoneInfo.Local;
+    private string _agentName = string.Empty;
+    private string? _creatorAgentName;
+    private string _modelLabel = string.Empty;
+    private string _scheduleText = string.Empty;
+    private string _scheduleSupportText = string.Empty;
+    private string _statusText = string.Empty;
+    private string _statusBadgeClass = "badge-primary";
+    private string? _focusedRunId;
+    private bool _isLoadingRuns;
+    private bool _isRunning;
+    private bool _isDeleted;
+    private bool _isOrphan;
+    private IDisposable? _taskSubscription;
+    private readonly SemaphoreSlim _refreshGate = new(1, 1);
+    private bool _disposed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _task = DialogInstance.Get<AgentTaskDefinition>("Task") ?? new AgentTaskDefinition();
+        _lastRun = DialogInstance.Get<AgentTaskRun?>("LastRun", null);
+        _userTimeZone = TimeZoneResolver.ResolveOrLocal(DialogInstance.Get<string>("UserTimeZoneId", string.Empty));
+        _agentName = DialogInstance.Get<string>("AgentName", string.Empty);
+        _creatorAgentName = DialogInstance.Get<string?>("CreatorAgentName", null);
+        _modelLabel = DialogInstance.Get<string>("ModelLabel", string.Empty);
+        _scheduleText = DialogInstance.Get<string>("ScheduleText", string.Empty);
+        _scheduleSupportText = DialogInstance.Get<string>("ScheduleSupportText", string.Empty);
+        _statusText = DialogInstance.Get<string>("StatusText", string.Empty);
+        _statusBadgeClass = DialogInstance.Get<string>("StatusBadgeClass", "badge-primary");
+        _focusedRunId = DialogInstance.Get<string?>("FocusedRunId", null);
+        _isRunning = DialogInstance.Get<bool>("IsRunning");
+        _isOrphan = DialogInstance.Get<bool>("IsOrphan");
+
+        // The same user-scoped notifications refresh the directory and any open task details.
+        await _refreshGate.WaitAsync();
+        _taskSubscription = TaskUpdates.Subscribe(_task.UserId, OnTaskStatusUpdatedAsync);
+        try
+        {
+            await LoadRunsAsync();
+            await LoadInstructionAsync();
+        }
+        finally
+        {
+            _refreshGate.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        _taskSubscription?.Dispose();
+    }
+
+    private Task OnTaskStatusUpdatedAsync(TaskStatusUpdate update)
+    {
+        if (!string.Equals(update.TaskId, _task.Id, StringComparison.Ordinal)) { return Task.CompletedTask; }
+        return InvokeAsync(async () =>
+        {
+            // Progress and completion notifications can overlap while their HTTP reads yield.
+            await _refreshGate.WaitAsync();
+            try
+            {
+                if (_disposed) { return; }
+                var task = await ManagementApiClient.GetTaskAsync(_task.Id);
+                if (_disposed) { return; }
+                if (task is null)
+                {
+                    // Retain loaded runs and their messages after automatic task deletion.
+                    _isDeleted = true;
+                    _isRunning = update.Status == AgentTaskStatus.Running;
+                    if (_runs.FirstOrDefault() is { } latestRun) { latestRun.Status = update.Status; }
+                    (_statusText, _statusBadgeClass) = AgentTaskStatusDisplay.Get(_task, update.Status, _isOrphan, CommonLoc);
+                    StateHasChanged();
+                    return;
+                }
+                _task = task;
+                await LoadRunsAsync();
+                await LoadInstructionAsync();
+                if (_disposed) { return; }
+                _isRunning = _runs.FirstOrDefault()?.Status == AgentTaskStatus.Running;
+                (_statusText, _statusBadgeClass) = AgentTaskStatusDisplay.Get(_task, _runs.FirstOrDefault()?.Status, _isOrphan, CommonLoc);
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to refresh details for task '{TaskId}'.", _task.Id);
+                if (!_disposed)
+                {
+                    ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.TaskRunsLoadFailed, "Couldn't load runs for this task. Please try again."), ToastType.Error);
+                }
+            }
+            finally
+            {
+                _refreshGate.Release();
+            }
+        });
+    }
+
+    private async Task LoadRunsAsync()
+    {
+        _isLoadingRuns = true;
+        try
+        {
+            var limit = string.IsNullOrWhiteSpace(_focusedRunId) ? 8 : 100;
+            var runs = await ManagementApiClient.GetTaskRunsAsync(_task.Id, limit);
+            if (_disposed) { return; }
+            _runs = [.. runs];
+            var focusedRun = _runs.FirstOrDefault(run => string.Equals(run.Id, _focusedRunId, StringComparison.Ordinal));
+            _lastRun = focusedRun ?? _runs.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load runs for task '{TaskId}'.", _task.Id);
+            if (_disposed) { return; }
+            _runs = [];
+            ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.TaskRunsLoadFailed, "Couldn't load runs for this task. Please try again."), ToastType.Error);
+        }
+        finally
+        {
+            _isLoadingRuns = false;
+        }
+    }
+
+    // An unavailable instruction source must not hide the task's stored run history.
+    private async Task LoadInstructionAsync()
+    {
+        _instructionError = null;
+        _instruction = _task.Instruction;
+        if (_task.InstructionSource is null) { return; }
+        try
+        {
+            var document = await ManagementApiClient.GetTaskInstructionAsync(_task.Id);
+            if (_disposed) { return; }
+            if (document.DefaultContent is null && document.Mode != InstructionSelection.Replace)
+            {
+                _instructionError = CommonLoc.GetOrDefault(CommonTextKeys.TaskInstructionDefaultUnavailable,
+                    "The task's default instruction is unavailable. Enable its plugin and restart.");
+                return;
+            }
+            _instruction = InstructionSelection.Select(document.Mode, document.Content, document.DefaultContent);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load instruction for task '{TaskId}'.", _task.Id);
+            if (_disposed) { return; }
+            _instructionError = ex.Message;
+        }
+    }
+
+    private RenderFragment RenderSummaryCard(string label, string value, string icon, string? supportText = null) => @<div class="rounded-box border border-base-200 bg-base-100 p-4">
+        <div class="flex items-start gap-3">
+            <div class="bg-base-200 text-base-content/65 flex size-9 shrink-0 items-center justify-center rounded-lg">
+                <iconify-icon icon="@icon" width="16" height="16"></iconify-icon>
+            </div>
+            <div class="min-w-0">
+                <div class="text-xs text-base-content/55">@label</div>
+                <div class="mt-1 break-words text-sm font-medium [overflow-wrap:anywhere]">@DisplayValue(value)</div>
+                @if (!string.IsNullOrWhiteSpace(supportText))
+                {
+                    <div class="mt-1 line-clamp-2 text-xs text-base-content/55">@supportText</div>
+                }
+            </div>
+        </div>
+    </div>;
+
+    private string GetLatestRunSummary()
+    {
+        return _lastRun is null
+            ? CommonLoc.GetOrDefault(CommonTextKeys.TaskPageNoExecutionYet, "No execution yet")
+            : FormatRunTimestamp(_lastRun);
+    }
+
+    private string DisplayValue(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? CommonLoc.GetOrDefault(CommonTextKeys.NotSet, "Not set")
+            : value;
+    }
+
+    private async Task InspectRunAsync(AgentTaskRun run)
+    {
+        await DialogService.ShowAsync<SessionInspectorDialog>(new Dictionary<string, object?> { ["Run"] = run, ["UserId"] = _task.UserId });
+    }
+
+    private void RunTask()
+    {
+        DialogInstance.Close(DialogResult.Ok, RunAction);
+    }
+
+    private void ViewAllRuns()
+    {
+        DialogInstance.Close(DialogResult.Ok, RunsAction);
+    }
+
+    private void EditTask()
+    {
+        DialogInstance.Close(DialogResult.Ok, EditAction);
+    }
+
+    private void Close()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+
+    private static bool HasInspectableMessages(AgentTaskRun run)
+    {
+        return run.LiveMessages is { Count: > 0 };
+    }
+
+    private string GetStartedText(AgentTaskRun run)
+    {
+        return run.StartedAt is null
+            ? CommonLoc.GetOrDefault(CommonTextKeys.Unknown, "Unknown")
+            : run.StartedAt.Value.ToUserTime(_userTimeZone).ToString("g");
+    }
+
+    private string FormatTimestamp(DateTimeOffset timestamp)
+    {
+        return timestamp.ToUserTime(_userTimeZone).ToString("g");
+    }
+
+    private string FormatRunTimestamp(AgentTaskRun run)
+    {
+        if (run.Status == AgentTaskStatus.Running)
+        {
+            return run.StartedAt is null
+                ? CommonLoc.GetOrDefault(CommonTextKeys.TaskRunningNow, "Running now")
+                : FormatCommonText(CommonTextKeys.TaskStartedAt, "Started {0}", FormatTimestamp(run.StartedAt.Value));
+        }
+
+        if (run.CompletedAt is not null)
+        {
+            return FormatTimestamp(run.CompletedAt.Value);
+        }
+
+        if (run.StartedAt is not null)
+        {
+            return FormatTimestamp(run.StartedAt.Value);
+        }
+
+        return CommonLoc.GetOrDefault(CommonTextKeys.Unknown, "Unknown");
+    }
+
+    private static string GetStatusBadgeClass(AgentTaskStatus status)
+    {
+        return status switch
+        {
+            AgentTaskStatus.Completed => "badge-success",
+            AgentTaskStatus.Running => "badge-warning",
+            AgentTaskStatus.Failed => "badge-error",
+            AgentTaskStatus.Pending => "badge-neutral",
+            AgentTaskStatus.Skipped => "badge-warning",
+            _ => "badge-ghost"
+        };
+    }
+
+    private string GetStatusText(AgentTaskStatus status)
+    {
+        return AgentTaskStatusDisplay.GetRunText(status, CommonLoc);
+    }
+
+    private string FormatCommonText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+    }
+}

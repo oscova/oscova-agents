@@ -1,0 +1,265 @@
+@using Oscova.Agents.Core
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<AuthText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IDialogService DialogService
+@inject HostOwnershipSettings HostOwnershipSettings
+@inject CliAccessTokenService CliAccessTokenService
+@inject CliAuthFileWriter CliAuthFileWriter
+@inject WebHostRuntimeState RuntimeState
+@inject Oscova.Agents.Infrastructure.Backup.EnvironmentBackupService EnvironmentBackupService
+
+<SplitAuthLayout Title="@(Loc.GetOrDefault(AuthTextKeys.AdminSetupTitle, "Create the first operator"))"
+                 Subtitle="@(Loc.GetOrDefault(AuthTextKeys.AdminSetupSubtitle, "Set up the operator account to start using Oscova Agents."))"
+                 PanelClass="flex flex-col items-stretch p-6 md:p-8 lg:px-16 lg:py-12"
+                 ContentClass="mt-5 md:mt-6">
+    <HeaderAction>
+        <button type="button"
+                class="btn btn-ghost btn-sm border-base-300 gap-2"
+                @onclick="ShowRestoreDialogAsync">
+            <span class="iconify lucide--rotate-ccw size-4"></span>
+            <span>@Loc.GetOrDefault(AuthTextKeys.AdminSetupRestoreButton, "Restore backup")</span>
+        </button>
+    </HeaderAction>
+    <ChildContent>
+    <div class="absolute end-3 top-3 z-10">
+        <HelpTriggerButton Topic="@HelpTopics.AdminSetup" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(_error))
+    {
+        <div class="alert alert-error break-words">
+            <span>@_error</span>
+        </div>
+    }
+
+    <EditForm Model="_model" OnValidSubmit="HandleValidSubmit" class="max-w-full">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-sm text-error break-words" />
+
+        <fieldset class="fieldset w-full">
+            <legend class="fieldset-legend">@Loc.GetOrDefault(AuthTextKeys.FullNameLabel, "Full name")</legend>
+            <label class="input w-full focus:outline-0">
+                <iconify-icon icon="lucide:user" class="text-base-content/80 size-5"></iconify-icon>
+                <InputText class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(AuthTextKeys.FullNameLabel, "Full name")" placeholder="@(Loc.GetOrDefault(AuthTextKeys.FullNamePlaceholder, "Jane Doe"))" @bind-Value="_model.FullName" autocomplete="name" />
+            </label>
+            <p class="fieldset-label break-words whitespace-normal text-xs opacity-70">@Loc.GetOrDefault(AuthTextKeys.FullNameHelp, "Enter your full name.")</p>
+            <ValidationMessage For="@(() => _model.FullName)" class="text-error text-xs" />
+        </fieldset>
+
+
+        <fieldset class="fieldset w-full">
+            <legend class="fieldset-legend">@Loc.GetOrDefault(AuthTextKeys.EmailLabel, "Email")</legend>
+            <label class="input w-full focus:outline-0">
+                <iconify-icon icon="lucide:mail" class="text-base-content/80 size-5"></iconify-icon>
+                <InputText class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(AuthTextKeys.EmailLabel, "Email")" placeholder="@(Loc.GetOrDefault(AuthTextKeys.EmailPlaceholder, "name@company.com"))" type="email" @bind-Value="_model.Email" autocomplete="email" />
+            </label>
+            <p class="fieldset-label break-words whitespace-normal text-xs opacity-70">@Loc.GetOrDefault(AuthTextKeys.EmailHelp, "Use a valid email address.")</p>
+            <ValidationMessage For="@(() => _model.Email)" class="text-error text-xs" />
+        </fieldset>
+
+        <fieldset class="fieldset w-full">
+            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username")</legend>
+            <label class="input w-full focus:outline-0">
+                <iconify-icon icon="lucide:at-sign" class="text-base-content/80 size-5"></iconify-icon>
+                <UsernameInput class="grow focus:outline-0" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Username, "Username")" placeholder="@(Loc.GetOrDefault(AuthTextKeys.UsernamePlaceholder, "operator"))" @bind-Value="_model.Username" autocomplete="username" />
+            </label>
+            <p class="fieldset-label break-words whitespace-normal text-xs opacity-70">@Loc.GetOrDefault(AuthTextKeys.UsernameHelp, "3 or more characters. Must be unique.")</p>
+            <ValidationMessage For="@(() => _model.Username)" class="text-error text-xs" />
+        </fieldset>
+
+        <fieldset class="fieldset w-full">
+            <legend class="fieldset-legend">@CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password")</legend>
+            <label class="input w-full focus:outline-0">
+                <iconify-icon icon="lucide:key-round" class="text-base-content/80 size-5"></iconify-icon>
+                <InputText class="grow focus:outline-0" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.Password, "Password")" placeholder="@(Loc.GetOrDefault(AuthTextKeys.NewPasswordPlaceholder, "At least 6 characters"))" type="@(_showPassword ? "text" : "password")" @bind-Value="_model.Password" autocomplete="new-password" />
+                <label class="swap btn btn-xs btn-ghost btn-circle text-base-content/60">
+                    <input type="checkbox" @bind="@_showPassword" aria-label="@(Loc.GetOrDefault(AuthTextKeys.ShowPasswordLabel, "Show password"))" />
+                    <iconify-icon icon="lucide:eye" class="swap-off size-4"></iconify-icon>
+                    <iconify-icon icon="lucide:eye-off" class="swap-on size-4"></iconify-icon>
+                </label>
+            </label>
+            <p class="fieldset-label break-words whitespace-normal text-xs opacity-70">@Loc.GetOrDefault(AuthTextKeys.PasswordHelp, "Use at least 6 characters with a mix of letters, numbers, and symbols.")</p>
+            <ValidationMessage For="@(() => _model.Password)" class="text-error text-xs" />
+        </fieldset>
+
+        <fieldset class="fieldset w-full">
+            <legend class="fieldset-legend">@Loc.GetOrDefault(AuthTextKeys.ConfirmPasswordLabel, "Confirm password")</legend>
+            <label class="input w-full focus:outline-0">
+                <iconify-icon icon="lucide:key-round" class="text-base-content/80 size-5"></iconify-icon>
+                <InputText class="grow focus:outline-0" aria-label="@Loc.GetOrDefault(AuthTextKeys.ConfirmPasswordLabel, "Confirm password")" placeholder="@(Loc.GetOrDefault(AuthTextKeys.ConfirmPasswordPlaceholder, "Re-enter your password"))" type="@(_showConfirmPassword ? "text" : "password")" @bind-Value="_model.ConfirmPassword" autocomplete="new-password" />
+                <label class="swap btn btn-xs btn-ghost btn-circle text-base-content/60">
+                    <input type="checkbox" @bind="@_showConfirmPassword" aria-label="@(Loc.GetOrDefault(AuthTextKeys.ShowPasswordLabel, "Show password"))" />
+                    <iconify-icon icon="lucide:eye" class="swap-off size-4"></iconify-icon>
+                    <iconify-icon icon="lucide:eye-off" class="swap-on size-4"></iconify-icon>
+                </label>
+            </label>
+            <p class="fieldset-label break-words whitespace-normal text-xs opacity-70">@Loc.GetOrDefault(AuthTextKeys.ConfirmPasswordHelp, "Must match the password exactly.")</p>
+            <ValidationMessage For="@(() => _model.ConfirmPassword)" class="text-error text-xs" />
+        </fieldset>
+
+        <button class="btn btn-primary btn-wide mt-4 max-w-full gap-3 md:mt-6" type="submit" disabled="@_isBusy">
+            @if (_isBusy)
+            {
+                <span class="loading loading-dots loading-sm"></span>
+            }
+            else
+            {
+                <span class="iconify lucide--shield-check size-4" aria-hidden="true"></span>
+                <span>@Loc.GetOrDefault(AuthTextKeys.CreateAdminButton, "Create operator")</span>
+            }
+        </button>
+    </EditForm>
+    </ChildContent>
+</SplitAuthLayout>
+
+@code {
+    private readonly AdminSetupModel _model = new();
+    private string? _error;
+    private bool _isBusy;
+    private bool _showPassword;
+    private bool _showConfirmPassword;
+
+    [Parameter]
+    public EventCallback OnCompleted { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        if (_model.Password != _model.ConfirmPassword)
+        {
+            _error = Loc.GetOrDefault(AuthTextKeys.PasswordsDoNotMatchError, "Passwords do not match.");
+            return;
+        }
+
+        _error = null;
+        _isBusy = true;
+        var admissionHeld = false;
+
+        try
+        {
+            await EnvironmentBackupService.WaitForAdmissionAsync(CancellationToken.None);
+            admissionHeld = true;
+
+            if (Oscova.Agents.Infrastructure.Backup.EnvironmentRestoreBootstrapper.HasPendingOperation())
+            {
+                _error = Loc.GetOrDefault(
+                    AuthTextKeys.AdminSetupRestorePending,
+                    "An environment restore is pending. Wait for Oscova to restart before creating an account.");
+                return;
+            }
+
+            // The internal credential owner does not count as the first operator account.
+            if (await UserManager.Users.AnyAsync(user => user.Id != WellKnownUsers.SystemId))
+            {
+                NavigationManager.NavigateTo("/login", forceLoad: true);
+                return;
+            }
+
+            var existingUser = await UserManager.FindByNameAsync(_model.Username);
+            if (existingUser is not null)
+            {
+                _error = Loc.GetOrDefault(AuthTextKeys.UsernameExistsError, "A user with this username already exists.");
+                return;
+            }
+
+            var existingEmail = await UserManager.FindByEmailAsync(_model.Email);
+            if (existingEmail is not null)
+            {
+                _error = Loc.GetOrDefault(AuthTextKeys.EmailExistsError, "A user with this email already exists.");
+                return;
+            }
+
+            var user = new ApplicationUser { UserName = _model.Username, Email = _model.Email, EmailConfirmed = true, FullName = _model.FullName };
+            var result = await UserManager.CreateAsync(user, _model.Password);
+
+            if (!result.Succeeded)
+            {
+                _error = string.Join(" ", result.Errors.Select(e => e.Description));
+                return;
+            }
+
+            await UserManager.AddToRoleAsync(user, "Admin");
+
+            await WriteFirstAdminCliTokenAsync(user);
+
+            // Force a new circuit so the cookie is picked up by Blazor Server -- handled by forceLoad below
+            NavigationManager.NavigateTo("/login?setup=done", forceLoad: true);
+
+            if (OnCompleted.HasDelegate)
+            {
+                await OnCompleted.InvokeAsync();
+            }
+        }
+        finally
+        {
+            if (admissionHeld)
+            {
+                EnvironmentBackupService.ReleaseAdmission();
+            }
+
+            _isBusy = false;
+        }
+    }
+
+    private async Task WriteFirstAdminCliTokenAsync(ApplicationUser user)
+    {
+        await HostOwnershipSettings.LoadAsync();
+        if (!string.IsNullOrWhiteSpace(HostOwnershipSettings.HostOwnerUserId))
+        {
+            return;
+        }
+
+        var previousOwner = HostOwnershipSettings.HostOwnerUserId;
+        HostOwnershipSettings.HostOwnerUserId = user.Id;
+        if (!await HostOwnershipSettings.TrySaveAsync())
+        {
+            HostOwnershipSettings.HostOwnerUserId = previousOwner;
+            return;
+        }
+
+        var token = await CliAccessTokenService.CreateTokenAsync(user);
+        var host = CliHostUrlSelector.SelectLocalHost(RuntimeState.ActiveUrls);
+        try
+        {
+            await CliAuthFileWriter.WriteLocalTokenAsync(host, token, CancellationToken.None);
+        }
+        catch
+        {
+            HostOwnershipSettings.HostOwnerUserId = previousOwner;
+            await HostOwnershipSettings.TrySaveAsync();
+            throw;
+        }
+    }
+
+    private Task ShowRestoreDialogAsync() => DialogService.ShowAsync<RestoreBackupDialog>();
+
+    private sealed class AdminSetupModel
+    {
+        [Display(Name = nameof(FormValidationText.Username), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [MinLength(3, ErrorMessageResourceName = nameof(FormValidationText.MinimumLength), ErrorMessageResourceType = typeof(FormValidationText))]
+        public string Username { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.Email), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [EmailAddress(ErrorMessageResourceName = nameof(FormValidationText.InvalidEmail), ErrorMessageResourceType = typeof(FormValidationText))]
+        public string Email { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.FullName), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        public string FullName { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.Password), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [MinLength(6, ErrorMessageResourceName = nameof(FormValidationText.MinimumLength), ErrorMessageResourceType = typeof(FormValidationText))]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = string.Empty;
+
+        [Display(Name = nameof(FormValidationText.ConfirmPassword), ResourceType = typeof(FormValidationText))]
+        [Required(ErrorMessageResourceName = nameof(FormValidationText.Required), ErrorMessageResourceType = typeof(FormValidationText))]
+        [Compare(nameof(Password), ErrorMessageResourceName = nameof(FormValidationText.PasswordMismatch), ErrorMessageResourceType = typeof(FormValidationText))]
+        [DataType(DataType.Password)]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

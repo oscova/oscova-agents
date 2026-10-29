@@ -1,0 +1,27 @@
+﻿@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@Title">
+    <ChildContent>
+        <p class="py-4">@Message</p>
+    </ChildContent>
+    <FooterContent>
+        <button class="btn" @onclick="CloseDialog">@CommonLoc.GetOrDefault(CommonTextKeys.Ok, "Ok")</button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Message { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // If parameters weren't passed directly, fall back to the instance bag
+        Title ??= DialogInstance.Get<string>("Title", "Title");
+        Message ??= DialogInstance.Get<string>("Message", string.Empty);
+    }
+
+    private void CloseDialog() => DialogInstance.Close(DialogResult.Ok);
+}

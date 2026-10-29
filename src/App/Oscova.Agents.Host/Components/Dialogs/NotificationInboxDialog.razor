@@ -1,0 +1,142 @@
+@inject HttpClient Http
+@inject NodesApiClient NodesApiClient
+@inject ManagementApiClient UpdateApiClient
+@inject IDialogService DialogService
+@inherits SettingsComponentBase
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject NavigationManager NavigationManager
+
+<AppDialogShell Title="@(CommonLoc.GetOrDefault(CommonTextKeys.NotificationsDialogTitle, "Notifications"))"
+                Icon="lucide:bell"
+                MaxWidthClass="max-w-5xl"
+                HelpTopic="@HelpTopics.NotificationInbox"
+                BodyClass="flex min-h-0 flex-1 flex-col p-0"
+                CloseResult="@DialogResult.Ok">
+    <ChildContent>
+        <div role="tablist" class="tabs tabs-border px-5 pt-3">
+            <button role="tab" aria-selected="@TabSelected(AllTab)" class="tab tab-sm @TabClass(AllTab)" @onclick="() => SelectTab(AllTab)">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsAllTab, "All")</button>
+            <button role="tab" aria-selected="@TabSelected(TasksTab)" class="tab tab-sm @TabClass(TasksTab)" @onclick="() => SelectTab(TasksTab)">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsTasksTab, "Tasks")</button>
+            @if (_entries.Any(entry => entry.IsSystem))
+            {
+                <button role="tab" aria-selected="@TabSelected(SystemTab)" class="tab tab-sm @TabClass(SystemTab)" @onclick="() => SelectTab(SystemTab)">@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsSystemTab, "System")</button>
+            }
+        </div>
+        <div class="min-h-0 flex-1 overflow-y-auto py-2">
+            @if (_filtered.Count == 0)
+            {
+                <div class="flex flex-col items-center gap-2 px-6 py-16 text-center text-base-content/60">
+                    <span class="iconify lucide--bell-off size-9"></span>
+                    <p>@CommonLoc.GetOrDefault(CommonTextKeys.NotificationsEmptyState, "You are all caught up.")</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var entry in _filtered)
+                {
+                    <NotificationRow Entry="@entry" OnClick="@(() => HandleClickAsync(entry))" />
+                    @if (entry.Kind == NotificationKind.PluginSetup && entry.PluginId is not null)
+                    {
+                        <button type="button" class="btn btn-ghost btn-sm mx-5" disabled="@_retrying"
+                                @onclick="() => RetryPluginAsync(entry)">@CommonLoc.GetOrDefault(CommonTextKeys.Retry, "Retry")</button>
+                    }
+                    <hr class="border-base-300 border-dashed" />
+                }
+            }
+        </div>
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+
+    private const string AllTab = "All";
+    private const string TasksTab = "Tasks";
+    private const string SystemTab = "System";
+
+    private readonly List<NotificationEntry> _entries = [];
+    private List<NotificationEntry> _filtered = [];
+    private string _activeTab = AllTab;
+    private bool _retrying;
+
+    private async Task RetryPluginAsync(NotificationEntry entry)
+    {
+        await RunAsync(value => _retrying = value, async () =>
+        {
+            await NodesApiClient.RetryPluginAsync(entry.PluginId!);
+            DialogInstance.Close(DialogResult.Ok);
+            NavigationManager.NavigateTo("/settings/agents-ai/plugins");
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _entries.AddRange(await Http.GetFromJsonAsync<List<NotificationEntry>>(ApiRoutes.Notifications.Base) ?? []);
+            _entries.Sort((left, right) => right.CreatedAt.CompareTo(left.CreatedAt));
+            ApplyFilter();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+    }
+
+    private void SelectTab(string tab)
+    {
+        _activeTab = tab;
+        ApplyFilter();
+    }
+
+    private string TabSelected(string tab) => string.Equals(_activeTab, tab, StringComparison.Ordinal) ? "true" : "false";
+
+    private string TabClass(string tab) => string.Equals(_activeTab, tab, StringComparison.Ordinal) ? "tab-active" : string.Empty;
+
+    private void ApplyFilter()
+    {
+        _filtered = _activeTab switch
+        {
+            TasksTab => _entries.Where(entry => entry.Kind is NotificationKind.TaskSuccess or NotificationKind.TaskFailure).ToList(),
+            SystemTab => _entries.Where(entry => entry.IsSystem || entry.Kind is NotificationKind.SystemError or NotificationKind.SystemWarning).ToList(),
+            _ => [.. _entries]
+        };
+    }
+
+    private async Task HandleClickAsync(NotificationEntry entry)
+    {
+        using var response = await Http.PostAsync(ApiRoutes.Notifications.MarkRead(entry.Id, entry.IsSystem), null);
+        if (response.IsSuccessStatusCode)
+        {
+            var index = _entries.FindIndex(item => string.Equals(item.Id, entry.Id, StringComparison.OrdinalIgnoreCase));
+            if (index >= 0)
+            {
+                _entries[index] = _entries[index] with { IsRead = true };
+                ApplyFilter();
+            }
+        }
+
+        if (await NotificationNavigation.OpenUpdateAsync(entry, DialogService, UpdateApiClient, NavigationManager)) { return; }
+
+        if (entry.Kind == NotificationKind.ChatMessage && !string.IsNullOrWhiteSpace(entry.ThreadId))
+        {
+            DialogInstance.Close(DialogResult.Ok);
+            NavigationManager.NavigateTo($"/?threadId={Uri.EscapeDataString(entry.ThreadId)}");
+            return;
+        }
+
+        if (entry.Kind is NotificationKind.TaskSuccess or NotificationKind.TaskFailure && !string.IsNullOrWhiteSpace(entry.TaskId))
+        {
+            DialogInstance.Close(DialogResult.Ok);
+            NavigationManager.NavigateTo(NotificationNavigation.BuildTaskUrl(entry.TaskId, entry.RunId));
+            return;
+        }
+
+        // Ordinary entries expose the same full details as the notification bell.
+        await DialogService.ShowAsync<NotificationDetailDialog>(new Dictionary<string, object?> { ["Entry"] = entry });
+    }
+
+    private void Close()
+    {
+        DialogInstance.Close(DialogResult.Ok);
+    }
+}

@@ -1,0 +1,915 @@
+@inject IStringLocalizer<ChatText> ChatLoc
+@inject ILogger<AgentEditorForm> Logger
+
+@using System.Globalization
+@using Oscova.Agents.Core.ApiContracts.ModelProviders
+@using Oscova.Agents.Core.ApiContracts.Profile
+@using Oscova.Agents.Definitions
+@using Oscova.Agents.Core.ApiContracts.Agents
+@using Oscova.Agents.Host.Services.Api
+@using Oscova.Agents.Policies
+@using Oscova.Agents.Utils
+@inject ManagementApiClient ManagementApiClient
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject IDialogService DialogService
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<UnsavedChangesGuard @ref="_unsavedChangesGuard" IsDirty="@IsDirty" />
+
+@if (Definition.IsShared && !CanManageSharedAgents)
+{
+    <div class="alert alert-warning alert-soft">
+        <span>@Loc.GetOrDefault(SettingsTextKeys.AgentsSharedAgentWarning, "Shared agent definitions can only be edited by Admin or Moderator users.")</span>
+    </div>
+}
+else
+{
+<div class="custom-settings-agent-editor space-y-6">
+    <div class="custom-settings-group custom-settings-form space-y-4">
+    <ImagePicker PictureUrl="@AgentPictureUrl"
+                          ContainerClass="form-control custom-settings-agent-picture"
+                          Target="@ImageGalleryTarget.AgentProfilePicture"
+                          AgentId="@Definition.Id"
+                          Disabled="@IsPictureUploadDisabled"
+                          DisabledTitle="@(IsPictureUploadDisabled ? Loc.GetOrDefault(SettingsTextKeys.AgentsSaveFirstTitle, "Save the agent first") : null)"
+                          OnChanged="@OnAgentPictureChanged" />
+
+    <div class="form-control">
+        <label for="agent-name" class="label block mb-1 pl-0">
+            <span class="label-text font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.Name, "Name")</span>
+        </label>
+        <label class="input w-full">
+            <span class="iconify lucide--bot text-base-content/60 size-4.5"></span>
+            <input id="agent-name"
+                   type="text"
+                   required
+                   class="grow focus:outline-0"
+                   placeholder="@(Loc.GetOrDefault(SettingsTextKeys.AgentsNamePlaceholder, "Assistant"))"
+                   @bind="_nameDraft"
+                   @bind:event="oninput" />
+        </label>
+        @if (string.IsNullOrWhiteSpace(_nameDraft))
+        {
+            <p class="text-error mt-1 text-xs">@CommonLoc.GetOrDefault(CommonTextKeys.ValidationNameRequired, "Name is required.")</p>
+        }
+    </div>
+
+    <div class="form-control">
+        <label for="agent-description" class="label block mb-1 pl-0">
+            <span class="label-text font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.Description, "Description")</span>
+        </label>
+        <label class="input w-full">
+            <span class="iconify lucide--text text-base-content/60 size-4.5"></span>
+            <input id="agent-description"
+                   type="text"
+                   class="grow focus:outline-0"
+                   placeholder="@(Loc.GetOrDefault(SettingsTextKeys.AgentsDescriptionPlaceholder, "A short description of this agent..."))"
+                   @bind="_descriptionDraft"
+                   @bind:event="oninput" />
+        </label>
+    </div>
+
+    <div class="form-control">
+        <div class="mb-1 flex flex-wrap items-center justify-between gap-3">
+            <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AgentsSystemInstructionLabel, "System Instruction")</span>
+            <div class="flex items-center gap-1">
+                <button type="button"
+                        @ref="_previewButton"
+                        class="btn btn-ghost btn-sm"
+                        disabled="@_isPreviewLoading"
+                        @onclick="PreviewSystemInstructionAsync">
+                    @if (_isPreviewLoading)
+                    {
+                        <span class="loading loading-spinner loading-xs" aria-hidden="true"></span>
+                    }
+                    else
+                    {
+                        <span class="iconify lucide--eye size-4" aria-hidden="true"></span>
+                    }
+                    @ChatLoc.GetOrDefault(ChatTextKeys.ContextUsageDialogTitle, "Context usage")
+                </button>
+                <button type="button"
+                        class="btn btn-ghost btn-sm"
+                        @onclick="OpenSystemInstructionEditorAsync">
+                    <span class="iconify lucide--pencil size-4" aria-hidden="true"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.Edit, "Edit")
+                </button>
+            </div>
+        </div>
+        <button type="button"
+                class="w-full rounded-box border border-base-300 bg-base-100 p-3 text-left hover:bg-base-200"
+                @onclick="OpenSystemInstructionEditorAsync">
+            <pre dir="auto" class="max-h-32 overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed opacity-80">@SystemInstructionPreview</pre>
+        </button>
+        @if (!string.IsNullOrWhiteSpace(_previewError))
+        {
+            <div class="alert alert-error alert-soft mt-3">
+                <span>@_previewError</span>
+            </div>
+        }
+    </div>
+
+    </div>
+
+    <div class="custom-settings-group custom-settings-form custom-settings-agent-options space-y-4">
+    <div class="form-control">
+        <label for="agent-goal-max-iterations" class="label block mb-1 pl-0"><span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.GoalMaxIterations, "Goal max iterations")</span></label>
+        <input id="agent-goal-max-iterations" type="number" min="1" max="2147483647" step="1" class="input input-bordered w-full max-w-xs"
+               @bind="_goalLimitDraft" @bind:event="oninput" placeholder="@Loc.GetOrDefault(SettingsTextKeys.GoalDefault, "Default")" />
+        <p class="mt-1 text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.GoalMaxIterationsHelp, "Limits goal work cycles. Blank uses the default.")</p>
+        @if (!GoalLimitValid)
+        {
+            <p class="mt-1 text-xs text-warning">@Loc.GetOrDefault(SettingsTextKeys.GoalMaxIterationsInvalid, "Enter a whole number from 1 to 2147483647.")</p>
+        }
+    </div>
+    <div class="form-control">
+        <label for="agent-model-provider" class="label block mb-1 pl-0">
+            <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AgentsModelProviderLabel, "Default Model Provider")</span>
+        </label>
+        <select id="agent-model-provider" class="select select-bordered w-full max-w-xs" @bind="_modelOverrideIdDraft">
+            <option value="">@Loc.GetOrDefault(SettingsTextKeys.AgentsModelProviderDefaultOption, "Use app default")</option>
+            @foreach (var provider in AvailableModelProviders)
+            {
+                <option value="@provider.Id">@GetModelProviderOptionLabel(provider)</option>
+            }
+        </select>
+        <p class="mt-1 text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AgentsModelProviderDescription, "Default for tasks, messaging channels and delegated work. Your own chat with this agent or an explicit task provider can override it. Leave unset to use the app default.")</p>
+    </div>
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_useCallerModelForConsultationsDraft"
+                           Label="@Loc[SettingsTextKeys.AgentsUseCallerModelForConsultationsLabel]"
+                           Description="@Loc[SettingsTextKeys.AgentsUseCallerModelForConsultationsDescription]" />
+    </div>
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_isCompactionEnabledDraft"
+                           Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableCompactionLabel, "Enable Compaction")"
+                           Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableCompactionDescription, "Automatically summarize conversation history when the context window limit is reached.")" />
+    </div>
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_isMemoryEnabledDraft"
+                           Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableMemoryLabel, "Enable Memory")"
+                           Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableMemoryDescription, "Load saved memories into context and allow the agent to save and retrieve memory across sessions.")" />
+    </div>
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_isTodoEnabledDraft"
+                           Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableTodoLabel, "Enable Task List")"
+                           Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsEnableTodoDescription, "Let this agent track multi-step work in a session task list. Best for complex, long-running tasks.")" />
+    </div>
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_isSubagentDelegationEnabledDraft"
+                           Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsSubagentDelegationLabel, "Use subagents")"
+                           Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsSubagentDelegationDescription, "Let this agent delegate tasks to separate instances of itself.")" />
+    </div>
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_isLocalOnlyDraft"
+                           Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsLocalOnlyLabel, "Local only")"
+                           Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsLocalOnlyDescription, "Block this agent from using cloud model providers and internet tools, even when global Offline mode is off.")" />
+    </div>
+
+
+
+    <div class="form-control">
+        <SettingsToggleRow @bind-Checked="@_isToolSearchEnabledDraft"
+                           Label="@Loc.GetOrDefault(SettingsTextKeys.AgentsToolSearchToggleLabel, "Tool discovery")"
+                           Description="@Loc.GetOrDefault(SettingsTextKeys.AgentsToolSearchToggleHelp, "Expose only pinned tools upfront; the agent can search for the rest when needed.")" />
+    </div>
+
+    @if (!IsMainAgent)
+    {
+        <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-4 pl-0">
+                <input type="checkbox" class="toggle toggle-primary"
+                       @bind="_isExposedAsToolDraft" />
+                <div class="flex flex-col">
+                    <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AgentsExposeAsToolLabel, "Expose as Tool")</span>
+                    <span class="text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AgentsExposeAsToolDescription, "Allow other agents to invoke this agent as a tool.")</span>
+                </div>
+            </label>
+        </div>
+    }
+
+    @if (CanManageSharedAgents && !IsMainAgent)
+    {
+        <div class="space-y-4">
+            <div class="form-control">
+                <label class="label cursor-pointer justify-start gap-4 pl-0">
+                    <input type="checkbox" class="toggle toggle-primary" @bind="_isSharedDraft" />
+                    <div class="flex flex-col">
+                        <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AgentsShareWithAllUsersLabel, "Share with all users")</span>
+                        <span class="text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AgentsShareWithAllUsersDescription, "Makes this agent visible to other users. The system instruction can include {{ user_context }} which each user personalizes.")</span>
+
+                    </div>
+                </label>
+            </div>
+
+            @if (_isSharedDraft)
+            {
+                <div class="card bg-base-100 shadow-sm">
+                    <div class="card-body gap-4">
+                        <div class="space-y-1">
+                            <h4 class="text-base font-semibold">@Loc.GetOrDefault(SettingsTextKeys.AgentsRestrictUsersTitle, "Restrict to specific users")</h4>
+                            <p class="text-sm opacity-60">@Loc.GetOrDefault(SettingsTextKeys.AgentsRestrictUsersDescription, "Leave all unchecked to share with everyone.")</p>
+                        </div>
+
+                        @if (AvailableUsers.Count == 0)
+                        {
+                            <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoUsersMessage, "No users found.")</div>
+                        }
+                        else
+                        {
+                            <div class="max-h-72 overflow-auto space-y-1">
+                                @foreach (var user in AvailableUsers)
+                                {
+                                    <label class="flex items-start gap-3 cursor-pointer select-none py-1.5"
+                                           @key="user.Id">
+                                        <input type="checkbox"
+                                               class="checkbox checkbox-sm mt-0.5 shrink-0"
+                                               checked="@_allowedUserIds.Contains(user.Id)"
+                                               @onchange="e => OnAllowedUserChanged(user.Id, e.Value is bool b && b)" />
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                                            <span class="text-sm font-medium">@user.UserName</span>
+                                            @if (!string.IsNullOrWhiteSpace(user.FullName))
+                                            {
+                                                <span class="text-xs opacity-60 leading-snug">@user.FullName</span>
+                                            }
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    </div>
+
+    <div class="custom-settings-tools">
+        <h4 class="text-base font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.AgentsAllowedToolsTitle, "Allowed Tools")</h4>
+
+        @if (ToolGroups.Count == 0)
+        {
+            <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoToolsAvailableMessage, "No tools available. Configure MCP servers in Settings -> MCP Servers to add external tools.")</div>
+        }
+        else
+        {
+            @* Shares the same filterable tool table as Settings -> Tools while keeping selection enabled here. *@
+            <SettingsToolsTable ToolGroups="ToolGroups"
+                                ShowSelection="true"
+                                ShowEnabledOnlyFilter="true"
+                                ShowPolicyControls="true"
+                                SelectedToolNames="@_allowedToolNames"
+                                ToolApprovalModes="@_toolApprovalModes"
+                                ShowPinning="@_isToolSearchEnabledDraft"
+                                PinnedToolNames="@_pinnedToolNames"
+                                OnToolApprovalModeChanged="HandleToolApprovalModeChanged"
+                                OnSelectionChanged="HandleAllowedToolsChanged"
+                                OnPinnedToolNamesChanged="HandlePinnedToolNamesChanged"
+                                IsEgressDisabled="@(IsEgressDisabled || _isLocalOnlyDraft)"
+                                HeightClass="h-[28rem]" />
+            @if (_isToolSearchEnabledDraft)
+            {
+                <p class="mt-2 text-xs opacity-60" aria-live="polite">
+                    @FormatSettingsText(SettingsTextKeys.AgentsToolSearchSummary, "{0} pinned - {1} searchable", PinnedToolCount, SearchableToolCount)
+                </p>
+            }
+        }
+    </div>
+
+    <div class="custom-settings-group custom-settings-form">
+        <h4 class="text-base font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.AgentsAgentToolsTitle, "Agent Tools")</h4>
+
+        @if (ExposableAgents.Count == 0)
+        {
+            <div class="text-sm opacity-70">
+                @Loc.GetOrDefault(SettingsTextKeys.AgentsNoAgentToolsAvailableMessage, "No agents are available as tools. Enable \"Expose as Tool\" on a custom agent to use it here.")
+            </div>
+        }
+        else
+        {
+            <div class="space-y-1">
+                @foreach (var exposableAgent in ExposableAgents)
+                {
+                    <label class="flex items-start gap-3 cursor-pointer select-none py-1.5"
+                           @key="exposableAgent.Id">
+                        <input type="checkbox"
+                               class="checkbox checkbox-sm mt-0.5 shrink-0"
+                               checked="@_agentToolIds.Contains(exposableAgent.Id)"
+                               @onchange="e => OnAgentToolChanged(exposableAgent.Id, e.Value is bool b && b)" />
+                        <div class="flex flex-col gap-0.5 min-w-0">
+                            <span class="text-sm font-medium">@exposableAgent.Name</span>
+                            @if (!string.IsNullOrWhiteSpace(exposableAgent.Description))
+                            {
+                                <span class="text-xs opacity-60 leading-snug">@exposableAgent.Description</span>
+                            }
+                        </div>
+                    </label>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="custom-settings-group custom-settings-form">
+        <h4 class="text-base font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.AgentsSkillsTitle, "Skills")</h4>
+
+        @if (AvailableSkills.Count == 0)
+        {
+            <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoSkillsFoundMessage, "No skills found. Add skills in Settings -> Files -> skills folder.")</div>
+        }
+        else
+        {
+            <div class="space-y-1">
+                @foreach (var skill in AvailableSkills)
+                {
+                    <label class="flex items-start gap-3 cursor-pointer select-none py-1.5"
+                           @key="skill.Name">
+                        <input type="checkbox"
+                               class="checkbox checkbox-sm mt-0.5 shrink-0"
+                               checked="@_allowedSkillNames.Contains(skill.Name)"
+                               @onchange="e => OnSkillChanged(skill.Name, e.Value is bool b && b)" />
+                        <div class="flex flex-col gap-0.5 min-w-0">
+                            <span class="text-sm font-medium">@skill.Name</span>
+                            @if (!string.IsNullOrWhiteSpace(skill.Description))
+                            {
+                                <span dir="auto" class="text-xs opacity-60 leading-snug">@skill.Description</span>
+                            }
+                        </div>
+                    </label>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="custom-settings-group custom-settings-form space-y-4">
+        <div>
+            <h4 class="text-base font-semibold mb-3">@Loc.GetOrDefault(SettingsTextKeys.AgentsWorkspaceFoldersTitle, "Workspace Folders")</h4>
+            <p class="text-sm opacity-60 mb-3">@Loc.GetOrDefault(SettingsTextKeys.AgentsWorkspaceFoldersDescription, "Managed workspaces are folders under workspace/. Create them in Settings -> Files, then select them here.")</p>
+
+            @if (DisplayWorkspaces.Count == 0)
+            {
+                <div class="text-sm opacity-70">@Loc.GetOrDefault(SettingsTextKeys.AgentsNoWorkspacesMessage, "No workspace folders found yet. The default workspace is created automatically per user.")</div>
+            }
+            else
+            {
+                <div class="space-y-1">
+                    @foreach (var workspaceName in DisplayWorkspaces)
+                    {
+                        <label class="flex items-start gap-3 select-none py-1.5 cursor-pointer" @key="workspaceName">
+                            <input type="checkbox"
+                                   class="checkbox checkbox-sm mt-0.5 shrink-0"
+                                   checked="@_allowedWorkspaces.Contains(workspaceName)"
+                                   @onchange="e => OnWorkspaceChanged(workspaceName, e.Value is bool b && b)" />
+                            <div class="flex flex-col gap-0.5 min-w-0">
+                                <span class="text-sm font-medium">
+                                    @(IsLibraryWorkspace(workspaceName)
+                                        ? Loc.GetOrDefault(SettingsTextKeys.AgentsLibraryWorkspaceLabel, "Library")
+                                        : workspaceName)
+                                </span>
+                                @if (IsLibraryWorkspace(workspaceName))
+                                {
+                                    <span class="text-xs opacity-60 leading-snug">
+                                        @Loc.GetOrDefault(
+                                            SettingsTextKeys.AgentsLibraryWorkspaceDescription,
+                                                "Selecting Library grants read-only file access and adds the Library Search tools.")
+                                    </span>
+                                }
+                            </div>
+                        </label>
+                    }
+                </div>
+            }
+
+            @if (CanUseSharedFolder)
+            {
+                <label class="flex items-start gap-3 select-none py-1.5 cursor-pointer">
+                    <input type="checkbox"
+                           class="checkbox checkbox-sm mt-0.5 shrink-0"
+                           checked="@_isSharedFolderEnabledDraft"
+                           @onchange="e => _isSharedFolderEnabledDraft = e.Value is bool b && b" />
+                    <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="text-sm font-medium">@Loc.GetOrDefault(SettingsTextKeys.AgentsSharedFolderLabel, "Shared folder")</span>
+                        <span class="text-xs opacity-60 leading-snug">
+                            @Loc.GetOrDefault(
+                                SettingsTextKeys.AgentsSharedFolderDescription,
+                                "Grants read and write access to the folder shared by every permitted user on this server, at /shared.")
+                        </span>
+                    </div>
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        @if (_saveError is not null) { <p role="alert" class="text-sm text-error">@_saveError</p> }
+        <p class="text-xs opacity-60">@Loc.GetOrDefault(SettingsTextKeys.GeneralUnsavedChangesHint, "Changes are not saved automatically.")</p>
+        <button type="button" @ref="_saveButton" class="btn btn-primary btn-sm" disabled="@(_isSaving || !IsDirty || !GoalLimitValid || string.IsNullOrWhiteSpace(_nameDraft))" @onclick="SaveAsync">
+    @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+</button>
+    </div>
+</div>
+}
+
+@code {
+    [Parameter, EditorRequired] public AgentDefinition Definition { get; set; } = default!;
+    [Parameter, EditorRequired] public EventCallback<AgentDefinition> OnSaveRequested { get; set; }
+    [Parameter, EditorRequired] public IReadOnlyList<ToolGroup> ToolGroups { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<AgentReference> ExposableAgents { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<SkillDefinition> AvailableSkills { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<SelectableModelProvider> AvailableModelProviders { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<string> AvailableWorkspaces { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<SelectableUser> AvailableUsers { get; set; } = [];
+    [Parameter] public bool CanManageSharedAgents { get; set; }
+    [Parameter] public bool CanUseSharedFolder { get; set; }
+    [Parameter] public bool IsEgressDisabled { get; set; }
+    [Parameter] public int? GoalMaxIterations { get; set; }
+    private string _goalLimitDraft = string.Empty;
+    private int? _savedGoalLimit;
+    private bool GoalLimitValid => string.IsNullOrWhiteSpace(_goalLimitDraft)
+        || int.TryParse(_goalLimitDraft, NumberStyles.None, CultureInfo.InvariantCulture, out var limit) && limit > 0;
+    private int? DraftGoalLimit => string.IsNullOrWhiteSpace(_goalLimitDraft) ? null : int.Parse(_goalLimitDraft, CultureInfo.InvariantCulture);
+
+    private UnsavedChangesGuard? _unsavedChangesGuard;
+    private string _definitionId = string.Empty;
+    private string _nameDraft = string.Empty;
+    private string _descriptionDraft = string.Empty;
+    private string _systemInstructionDraft = string.Empty;
+    private string? _instructionModeDraft;
+    private string? _saveError;
+    private bool _isSaving;
+    private string? _modelOverrideIdDraft;
+    private bool _useCallerModelForConsultationsDraft;
+    private string? _previewError;
+    private bool _isPreviewLoading;
+    private ElementReference _previewButton;
+    private ElementReference _saveButton;
+    private ElementReference? _focusAfterRender;
+    private bool _isCompactionEnabledDraft = true;
+    private bool _isMemoryEnabledDraft = true;
+    private bool _isTodoEnabledDraft;
+    private bool _isSubagentDelegationEnabledDraft = true;
+    private bool _isLocalOnlyDraft;
+    private bool _isExposedAsToolDraft;
+    private bool _isSharedDraft;
+    private bool _isToolSearchEnabledDraft;
+    private HashSet<string> _allowedToolNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _pinnedToolNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _agentToolIds = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _allowedSkillNames = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string> _allowedWorkspaces = new(StringComparer.OrdinalIgnoreCase);
+    private bool _isSharedFolderEnabledDraft;
+    private HashSet<string> _allowedUserIds = new(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, ToolApprovalMode> _toolApprovalModes =
+        new(StringComparer.OrdinalIgnoreCase);
+
+    private bool IsMainAgent => Definition.IsMain;
+
+    /// <summary>Returns whether the current editor draft may be discarded.</summary>
+    public Task<bool> ConfirmDiscardChangesAsync() =>
+        _unsavedChangesGuard?.ConfirmDiscardChangesAsync() ?? Task.FromResult(true);
+
+    private int PinnedToolCount => _pinnedToolNames.Count(_allowedToolNames.Contains);
+
+    private int SearchableToolCount => Math.Max(0, _allowedToolNames.Count - PinnedToolCount);
+
+    private string SystemInstructionPreview =>
+        Definition.InstructionSource is not null && _instructionModeDraft == InstructionSelection.Default
+            ? Loc.GetOrDefault(SettingsTextKeys.InstructionUseDefault, "Use Default")
+            : string.IsNullOrWhiteSpace(_systemInstructionDraft)
+            ? Loc.GetOrDefault(SettingsTextKeys.AgentsSystemInstructionPlaceholder, "Enter a system instruction to steer the assistant...")
+            : _systemInstructionDraft;
+
+    // Minute-level time is omitted because it destabilizes local-model prompt-cache prefixes.
+    private IReadOnlyList<PromptVariableOption> BaseSystemInstructionVariables =>
+    [
+        new("{{ agent_name }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesAgentName, "The current agent name.")),
+        new("{{ current_date }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesCurrentDate, "The current local date.")),
+        new("{{ user_name }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesUserName, "The current user's display name.")),
+        new("{{ user_nickname }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesUserNickname, "The current user's preferred name.")),
+        new("{{ user_username }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesUserUsername, "The current user's login username.")),
+        new("{{ user_email }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesUserEmail, "The current user's account email.")),
+        new("{{ user_timezone }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesUserTimezone, "The current user's time zone."))
+    ];
+
+    private PromptVariableOption UserContextVariable =>
+        new("{{ user_context }}", Loc.GetOrDefault(SettingsTextKeys.PromptVariablesUserContext, "Personal context the current user saved for this shared agent."));
+
+    private IReadOnlyList<PromptVariableOption> SystemInstructionVariables =>
+        CanManageSharedAgents && !IsMainAgent && _isSharedDraft
+            ? [.. BaseSystemInstructionVariables, UserContextVariable]
+            : BaseSystemInstructionVariables;
+
+    // Disable the picture uploader if we somehow don't yet have a persisted agent id to key uploads against.
+    private bool IsPictureUploadDisabled => string.IsNullOrWhiteSpace(Definition.Id);
+
+    private string AgentPictureUrl =>
+        string.IsNullOrWhiteSpace(Definition.Id)
+            ? string.Empty
+            : $"/{Oscova.Agents.Host.Constants.ApiRoutes.ProfilePictures.AgentById(Definition.Id)}?v={ProfilePictureRefreshState.Version}";
+
+    private IReadOnlyList<string> DisplayWorkspaces =>
+    [
+        UserFileNames.DefaultWorkspaceDirectory,
+        .. AvailableWorkspaces
+            .Where(workspace => !IsDefaultWorkspace(workspace) && !IsAgentPrivateWorkspace(workspace))
+            .OrderBy(workspace => IsLibraryWorkspace(workspace) ? 0 : 1)
+            .ThenBy(workspace => workspace, StringComparer.OrdinalIgnoreCase)
+    ];
+
+    private void OnAgentPictureChanged() => StateHasChanged();
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusAfterRender is { } opener && !_isPreviewLoading && !_isSaving)
+        {
+            // Loading disables the opener before the dialog can remember it.
+            _focusAfterRender = null;
+            await opener.FocusAsync();
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(Definition.Id))
+        {
+            _definitionId = Definition.Id;
+            LoadDrafts();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (_definitionId != Definition.Id)
+        {
+            _definitionId = Definition.Id;
+            LoadDrafts();
+        }
+    }
+
+    private void LoadDrafts()
+    {
+        _savedGoalLimit = GoalMaxIterations;
+        _goalLimitDraft = GoalMaxIterations?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+        _nameDraft = Definition.Name;
+        _descriptionDraft = Definition.Description;
+        _systemInstructionDraft = Definition.SystemInstruction;
+        _instructionModeDraft = Definition.InstructionMode;
+        _modelOverrideIdDraft = NormalizeModelOverrideId(Definition.ModelOverrideId);
+        _useCallerModelForConsultationsDraft = Definition.UseCallerModelForConsultations;
+        _isCompactionEnabledDraft = Definition.IsCompactionEnabled;
+        _isMemoryEnabledDraft = Definition.IsMemoryEnabled;
+        _isTodoEnabledDraft = Definition.IsTodoEnabled;
+        _isSubagentDelegationEnabledDraft = Definition.IsSubagentDelegationEnabled;
+        _isLocalOnlyDraft = Definition.IsLocalOnly;
+        _isSharedFolderEnabledDraft = Definition.IsSharedFolderEnabled;
+        _isExposedAsToolDraft = Definition.IsExposedAsTool;
+        _isSharedDraft = Definition.IsShared;
+        _isToolSearchEnabledDraft = Definition.IsToolSearchEnabled;
+        _allowedToolNames = new HashSet<string>(
+            AvailableSavedToolNames,
+            StringComparer.OrdinalIgnoreCase);
+        _pinnedToolNames = new HashSet<string>(
+            AvailableSavedPinnedToolNames,
+            StringComparer.OrdinalIgnoreCase);
+        _agentToolIds = new HashSet<string>(Definition.AgentToolIds, StringComparer.OrdinalIgnoreCase);
+        _allowedSkillNames = new HashSet<string>(
+            AvailableSavedSkillNames,
+            StringComparer.OrdinalIgnoreCase);
+        _allowedWorkspaces = new HashSet<string>(
+            AvailableSavedWorkspaces,
+            StringComparer.OrdinalIgnoreCase);
+        _allowedUserIds = new HashSet<string>(
+            AvailableSavedUserIds,
+            StringComparer.OrdinalIgnoreCase);
+        _toolApprovalModes = AvailableSavedToolPolicies
+            .ToDictionary(policy => policy.ToolName, policy => policy.ApprovalMode, StringComparer.OrdinalIgnoreCase);
+        ClearInstructionPreview();
+    }
+
+    // Loading and dirty checks use the same available selections from the saved definition.
+    private IEnumerable<string> AvailableSavedToolNames => Definition.AllowedToolNames.Where(name =>
+        ToolGroups.All(group => group.Tools.Count == 0) ||
+        ToolGroups.Any(group => group.Tools.Any(tool => string.Equals(tool.QualifiedName, name, StringComparison.OrdinalIgnoreCase))));
+
+    private IEnumerable<string> AvailableSavedPinnedToolNames => Definition.PinnedToolNames
+        .Where(name => AvailableSavedToolNames.Contains(name, StringComparer.OrdinalIgnoreCase));
+
+    private IEnumerable<string> AvailableSavedSkillNames => Definition.AllowedSkillNames
+        .Where(name => AvailableSkills.Any(skill => skill.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+
+    private IEnumerable<string> AvailableSavedWorkspaces => Definition.AllowedWorkspaces.Where(workspace =>
+        !IsAgentPrivateWorkspace(workspace) && (IsDefaultWorkspace(workspace) ||
+        AvailableWorkspaces.Contains(workspace, StringComparer.OrdinalIgnoreCase)));
+
+    private IEnumerable<string> AvailableSavedUserIds => Definition.AllowedUserIds
+        .Where(id => AvailableUsers.Any(user => string.Equals(user.Id, id, StringComparison.OrdinalIgnoreCase)));
+
+    private IEnumerable<AgentToolPolicy> AvailableSavedToolPolicies => Definition.ToolPolicies.Where(policy =>
+        !string.IsNullOrWhiteSpace(policy.ToolName) && policy.ApprovalMode != ToolApprovalMode.Default &&
+        AvailableSavedToolNames.Contains(policy.ToolName, StringComparer.OrdinalIgnoreCase));
+
+    private bool IsDirty =>
+        !GoalLimitValid || DraftGoalLimit != _savedGoalLimit ||
+        !string.Equals(_nameDraft, Definition.Name, StringComparison.Ordinal) ||
+        !string.Equals(_descriptionDraft, Definition.Description, StringComparison.Ordinal) ||
+        !string.Equals(_systemInstructionDraft, Definition.SystemInstruction, StringComparison.Ordinal) ||
+        _instructionModeDraft != Definition.InstructionMode ||
+        !string.Equals(NormalizeModelOverrideId(_modelOverrideIdDraft), NormalizeModelOverrideId(Definition.ModelOverrideId), StringComparison.Ordinal) ||
+        _useCallerModelForConsultationsDraft != Definition.UseCallerModelForConsultations ||
+        _isCompactionEnabledDraft != Definition.IsCompactionEnabled ||
+        _isMemoryEnabledDraft != Definition.IsMemoryEnabled ||
+        _isTodoEnabledDraft != Definition.IsTodoEnabled ||
+        _isSubagentDelegationEnabledDraft != Definition.IsSubagentDelegationEnabled ||
+        _isLocalOnlyDraft != Definition.IsLocalOnly ||
+        _isSharedFolderEnabledDraft != Definition.IsSharedFolderEnabled ||
+        _isExposedAsToolDraft != Definition.IsExposedAsTool ||
+        _isSharedDraft != Definition.IsShared ||
+        _isToolSearchEnabledDraft != Definition.IsToolSearchEnabled ||
+        !_allowedToolNames.SetEquals(AvailableSavedToolNames) ||
+        !_pinnedToolNames.SetEquals(AvailableSavedPinnedToolNames) ||
+        !_agentToolIds.SetEquals(Definition.AgentToolIds) ||
+        !_allowedSkillNames.SetEquals(AvailableSavedSkillNames) ||
+        !_allowedWorkspaces.SetEquals(AvailableSavedWorkspaces) ||
+        !_allowedUserIds.SetEquals(AvailableSavedUserIds) ||
+        !AreToolPoliciesEqual();
+
+    private bool AreToolPoliciesEqual()
+    {
+        var current = BuildToolPolicies();
+        var saved = AvailableSavedToolPolicies.ToList();
+        return current.Count == saved.Count &&
+               current.All(policy => saved.Any(existing =>
+                   string.Equals(existing.ToolName, policy.ToolName, StringComparison.OrdinalIgnoreCase) &&
+                   existing.ApprovalMode == policy.ApprovalMode));
+    }
+
+    private static string? NormalizeModelOverrideId(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    }
+
+    private static string GetModelProviderOptionLabel(SelectableModelProvider provider)
+    {
+        return string.IsNullOrWhiteSpace(provider.ModelId)
+            ? provider.Name
+            : $"{provider.Name} ({provider.ModelId})";
+    }
+
+    private List<AgentToolPolicy> BuildToolPolicies()
+    {
+        return [.. _toolApprovalModes
+            .Where(pair => _allowedToolNames.Contains(pair.Key) && pair.Value != ToolApprovalMode.Default)
+            .OrderBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(pair => new AgentToolPolicy { ToolName = pair.Key, ApprovalMode = pair.Value })];
+    }
+
+    private Task HandleToolApprovalModeChanged((string ToolName, ToolApprovalMode Mode) change)
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task OpenSystemInstructionEditorAsync()
+    {
+        PromptDocument? document;
+        try { document = Definition.InstructionSource is null ? null : await ManagementApiClient.GetAgentInstructionAsync(Definition.Id); }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Could not load instruction default for agent {AgentId}.", Definition.Id);
+            _previewError = ex.Message;
+            return;
+        }
+        var result = await DialogService.ShowAsync<PromptEditorDialog>(new Dictionary<string, object?>
+        {
+            ["Title"] = Loc.GetOrDefault(SettingsTextKeys.AgentsSystemInstructionLabel, "System Instruction"),
+            ["FileName"] = "system-instruction.md",
+            ["InitialContent"] = _systemInstructionDraft,
+            ["DefaultContent"] = document?.DefaultContent,
+            ["InstructionMode"] = _instructionModeDraft,
+            ["Variables"] = SystemInstructionVariables,
+            ["SaveContentAsync"] = (Func<SavePromptRequest, Task>)(request =>
+            {
+                _systemInstructionDraft = request.Content;
+                _instructionModeDraft = request.Mode;
+                return Task.CompletedTask;
+            })
+        });
+
+        if (result == DialogResult.Ok)
+        {
+            ClearInstructionPreview();
+            StateHasChanged();
+        }
+    }
+
+    private async Task PreviewSystemInstructionAsync()
+    {
+        var draft = new AgentDefinition
+        {
+            Id = Definition.Id,
+            IsMain = Definition.IsMain,
+            OwnerUserId = Definition.OwnerUserId
+        };
+        ApplyDraft(draft);
+        _isPreviewLoading = true;
+        _previewError = null;
+        try
+        {
+            var preview = await ManagementApiClient.GetAgentInstructionPreviewAsync(Definition.Id, draft);
+            await DialogService.ShowAsync<ContextUsageDialog>(new Dictionary<string, object?>
+            {
+                ["AgentPreview"] = preview,
+                ["IsMainAgentPreview"] = IsMainAgent
+            });
+            _focusAfterRender = _previewButton;
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Could not estimate context for agent {AgentId}.", Definition.Id);
+            _previewError = FormatSettingsText(
+                SettingsTextKeys.AgentsPreviewInstructionFailed,
+                "Could not estimate context usage: {0}", exception.Message);
+        }
+        finally
+        {
+            _isPreviewLoading = false;
+        }
+    }
+
+    private void ClearInstructionPreview()
+    {
+        _previewError = null;
+    }
+
+
+
+
+
+    private Task HandleAllowedToolsChanged()
+    {
+        _pinnedToolNames.RemoveWhere(name => !_allowedToolNames.Contains(name));
+        // Refresh the save bar after the shared tools table mutates the selected tool set.
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task HandlePinnedToolNamesChanged()
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void OnAgentToolChanged(string agentId, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _agentToolIds.Add(agentId);
+        }
+        else
+        {
+            _agentToolIds.Remove(agentId);
+        }
+    }
+
+    private void OnSkillChanged(string skillName, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _allowedSkillNames.Add(skillName);
+        }
+        else
+        {
+            _allowedSkillNames.Remove(skillName);
+        }
+    }
+
+    private void OnWorkspaceChanged(string workspaceName, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _allowedWorkspaces.Add(workspaceName);
+        }
+        else
+        {
+            _allowedWorkspaces.Remove(workspaceName);
+        }
+    }
+
+
+
+
+
+
+
+    private static bool IsDefaultWorkspace(string workspaceName)
+    {
+        return string.Equals(workspaceName, UserFileNames.DefaultWorkspaceDirectory, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsLibraryWorkspace(string workspaceName)
+    {
+        return string.Equals(workspaceName, UserFileNames.LibraryWorkspaceDirectory, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsAgentPrivateWorkspace(string workspaceName)
+    {
+        return string.Equals(workspaceName, UserFileNames.AgentPrivateDirectory, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void OnAllowedUserChanged(string userId, bool isChecked)
+    {
+        if (isChecked)
+        {
+            _allowedUserIds.Add(userId);
+        }
+        else
+        {
+            _allowedUserIds.Remove(userId);
+        }
+    }
+
+
+
+    private async Task SaveAsync()
+    {
+        if (_isSaving || !IsDirty || !GoalLimitValid || string.IsNullOrWhiteSpace(_nameDraft)) { return; }
+        _saveError = null;
+        _isSaving = true;
+        try
+        {
+            if (DraftGoalLimit != _savedGoalLimit)
+            {
+                await ManagementApiClient.SaveAgentGoalLimitAsync(Definition.Id, DraftGoalLimit);
+                _savedGoalLimit = DraftGoalLimit;
+            }
+            var draft = new AgentDefinition
+            {
+                Id = Definition.Id, IsMain = Definition.IsMain, OwnerUserId = Definition.OwnerUserId,
+                InstructionSource = Definition.InstructionSource, DefaultInstruction = Definition.DefaultInstruction
+            };
+            ApplyDraft(draft);
+            await OnSaveRequested.InvokeAsync(draft);
+            ApplyDraft(Definition);
+        }
+        catch (Exception ex)
+        {
+            if (ex is not AgentCallableNameCollisionException) { Logger.LogError(ex, "Could not save agent {AgentId}.", Definition.Id); }
+            _saveError = ex.Message;
+            _focusAfterRender = _saveButton;
+        }
+        finally { _isSaving = false; }
+    }
+
+    // Save and preview share the editor's single mapping of editable fields.
+    private void ApplyDraft(AgentDefinition target)
+    {
+        target.Name = _nameDraft;
+        target.Description = _descriptionDraft;
+        target.SystemInstruction = _systemInstructionDraft;
+        target.InstructionMode = _instructionModeDraft;
+        target.ModelOverrideId = NormalizeModelOverrideId(_modelOverrideIdDraft);
+        target.UseCallerModelForConsultations = _useCallerModelForConsultationsDraft;
+        target.IsCompactionEnabled = _isCompactionEnabledDraft;
+        target.IsMemoryEnabled = _isMemoryEnabledDraft;
+        target.IsTodoEnabled = _isTodoEnabledDraft;
+        target.IsSubagentDelegationEnabled = _isSubagentDelegationEnabledDraft;
+        target.IsLocalOnly = _isLocalOnlyDraft;
+        target.IsSharedFolderEnabled = _isSharedFolderEnabledDraft;
+        target.IsExposedAsTool = _isExposedAsToolDraft;
+        target.IsToolSearchEnabled = _isToolSearchEnabledDraft;
+        target.AllowedToolNames = _allowedToolNames.ToList();
+        target.PinnedToolNames = [.. _pinnedToolNames
+            .Where(_allowedToolNames.Contains)
+            .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)];
+        target.AgentToolIds = _agentToolIds.ToList();
+        target.AllowedSkillNames = _allowedSkillNames.ToList();
+        target.AllowedWorkspaces = _allowedWorkspaces.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList();
+        target.ToolPolicies = BuildToolPolicies();
+        if (CanManageSharedAgents && !IsMainAgent)
+        {
+            target.IsShared = _isSharedDraft;
+            target.AllowedUserIds = _isSharedDraft ? _allowedUserIds.ToList() : [];
+        }
+        else
+        {
+            target.IsShared = false;
+            target.AllowedUserIds = [];
+        }
+    }
+
+    private string FormatSettingsText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+}
+@using Oscova.Agents.Core.ApiContracts.Prompts

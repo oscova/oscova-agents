@@ -1,0 +1,40 @@
+@inject IStringLocalizer<ChatText> Loc
+
+@if (!string.IsNullOrWhiteSpace(Text))
+{
+    <div class="border-base-300 bg-base-200/50 rounded-box mt-3 max-w-full overflow-hidden border p-3">
+        <p class="mb-2 text-xs font-medium text-base-content/60">
+            @Loc.GetOrDefault(ChatTextKeys.ToolCardResultLabel, "Result")
+        </p>
+        <pre class="@PreviewClass" dir="auto">@VisibleText</pre>
+        @if (IsTruncated)
+        {
+            @if (!_showFull)
+            {
+                <p class="text-base-content/60 text-xs">@Loc.GetOrDefault(ChatTextKeys.ToolActivityResultTruncated, "Showing the first 1,600 characters")</p>
+            }
+            <button type="button" class="btn btn-ghost btn-sm" aria-expanded="@(_showFull ? "true" : "false")"
+                    @onclick="() => _showFull = !_showFull">
+                @(_showFull ? Loc.GetOrDefault(ChatTextKeys.ToolActivityShowLess, "Show less")
+                    : Loc.GetOrDefault(ChatTextKeys.ToolActivityShowFullResult, "Show full result"))
+            </button>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public bool Wrap { get; set; } = true;
+
+    private string PreviewClass => Wrap
+        ? "max-h-40 max-w-full overflow-auto whitespace-pre-wrap break-all pe-2 text-xs leading-relaxed"
+        : "max-h-40 max-w-full overflow-auto whitespace-pre pe-2 text-xs leading-relaxed";
+
+    private const int PreviewLength = 1600;
+    private bool _showFull;
+    private bool IsTruncated => Text is { Length: > PreviewLength };
+    private string? VisibleText => IsTruncated && !_showFull ? Text![..PreviewLength] : Text;
+}

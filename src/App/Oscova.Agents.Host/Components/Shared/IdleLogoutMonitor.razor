@@ -1,0 +1,116 @@
+@implements IAsyncDisposable
+@inject UserServiceScope UserScope
+@inject IdleLogoutActivityState Activity
+@inject IJSRuntime JS
+@inject ILogger<IdleLogoutMonitor> Logger
+
+@code {
+    private IJSObjectReference? _module;
+    private bool _disposed;
+
+    protected override void OnInitialized()
+    {
+        UserScope.PrivacySettings.Changed += OnSettingsChanged;
+        Activity.Submitted += OnSubmitted;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            var module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/idleLogout.js");
+            if (_disposed)
+            {
+                await DisposeModuleAsync(module);
+                return;
+            }
+
+            _module = module;
+            await InvokeModuleAsync(
+                "initialize",
+                UserScope.PrivacySettings.IdleLogoutMinutes,
+                "/auth/logout-redirect",
+                UserScope.UserId);
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Automatic sign-out browser operation '{Operation}' failed.", "import");
+        }
+    }
+
+    private void OnSettingsChanged(object? sender, EventArgs args) =>
+        _ = InvokeAsync(() => InvokeModuleAsync(
+            "setTimeoutMinutes",
+            UserScope.PrivacySettings.IdleLogoutMinutes));
+
+    private void OnSubmitted(object? sender, EventArgs args)
+    {
+        if (UserScope.PrivacySettings.IdleLogoutMinutes > 0)
+        {
+            _ = InvokeAsync(() => InvokeModuleAsync("recordSubmit"));
+        }
+    }
+
+    private async Task InvokeModuleAsync(string operation, params object?[] args)
+    {
+        if (_disposed || _module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.InvokeVoidAsync(operation, args);
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Automatic sign-out browser operation '{Operation}' failed.", operation);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        UserScope.PrivacySettings.Changed -= OnSettingsChanged;
+        Activity.Submitted -= OnSubmitted;
+
+        if (_module is not null)
+        {
+            await DisposeModuleAsync(_module);
+            _module = null;
+        }
+    }
+
+    private async ValueTask DisposeModuleAsync(IJSObjectReference module)
+    {
+        try
+        {
+            await module.InvokeVoidAsync("dispose");
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Automatic sign-out browser operation '{Operation}' failed.", "dispose");
+        }
+
+        try
+        {
+            await module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+}

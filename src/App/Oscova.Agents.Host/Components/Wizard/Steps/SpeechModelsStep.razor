@@ -1,0 +1,116 @@
+@using Oscova.Agents.Speech
+@inject ISpeechProviderCatalog SpeechCatalog
+@inject UserServiceScope UserScope
+@using Oscova.Agents.Host.Components.Settings
+@inject IStringLocalizer<WizardText> Loc
+
+<div class="space-y-5">
+    <div>
+        <h2 class="text-lg font-semibold">@Loc.GetOrDefault(WizardTextKeys.WizardSpeechQuestion, "Do you want voice features?")</h2>
+        <p class="text-base-content/65 mt-1 text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardSpeechIntro, "Download models for installed local speech plugins here. For OpenAI speech, install Oscova OpenAI and configure it in Settings > Speech.")</p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+        <div class="flex min-w-0 flex-col gap-4">
+            <label class="@ChoiceClass(_enableAsr, _hasLocalAsr)">
+                <span class="flex items-start gap-3">
+                    <input type="checkbox" class="checkbox checkbox-primary mt-1" @bind="_enableAsr" disabled="@(!_hasLocalAsr)" />
+                    <span class="min-w-0">
+                        <span class="flex items-center gap-2 font-medium">
+                            <span class="iconify lucide--mic size-4"></span>
+                            @Loc.GetOrDefault(WizardTextKeys.WizardSpeechListenChoiceTitle, "Let Oscova listen")
+                        </span>
+                        <span class="text-base-content/65 mt-1 block text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardSpeechListenChoiceDescription, "Use your microphone to turn speech into text.")</span>
+                    </span>
+                </span>
+            </label>
+
+            @if (_enableAsr)
+            {
+                <SpeechModelDownloadCard Kind="SpeechModelKind.Asr" />
+            }
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-4">
+            <label class="@ChoiceClass(_enableTts, _hasLocalTts)">
+                <span class="flex items-start gap-3">
+                    <input type="checkbox" class="checkbox checkbox-primary mt-1" @bind="_enableTts" disabled="@(!_hasLocalTts)" />
+                    <span class="min-w-0">
+                        <span class="flex items-center gap-2 font-medium">
+                            <span class="iconify lucide--volume-2 size-4"></span>
+                            @Loc.GetOrDefault(WizardTextKeys.WizardSpeechSpeakChoiceTitle, "Let Oscova speak")
+                        </span>
+                        <span class="text-base-content/65 mt-1 block text-sm">@Loc.GetOrDefault(WizardTextKeys.WizardSpeechSpeakChoiceDescription, "Read replies out loud using a local voice model.")</span>
+                    </span>
+                </span>
+            </label>
+
+            @if (_enableTts)
+            {
+                <SpeechModelDownloadCard Kind="SpeechModelKind.Tts" />
+            }
+        </div>
+    </div>
+
+    @if (!_hasLocalAsr || !_hasLocalTts)
+    {
+        <div role="alert" class="alert alert-info alert-soft text-sm">
+            <iconify-icon icon="lucide:info" class="size-4"></iconify-icon>
+            <div>
+                @foreach (var plugin in MissingPlugins)
+                {
+                    <p>@MissingPluginNotice(plugin)</p>
+                }
+            </div>
+        </div>
+    }
+    else if (!_enableAsr && !_enableTts)
+    {
+        <div role="alert" class="alert alert-info alert-soft text-sm">
+            <iconify-icon icon="lucide:info" class="size-4"></iconify-icon>
+            <span>@Loc.GetOrDefault(WizardTextKeys.WizardSpeechSkipNotice, "Speech becomes available after a local model is downloaded or a hosted provider is configured.")</span>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _enableAsr;
+    private bool _enableTts;
+    private bool _hasLocalAsr;
+    private bool _hasLocalTts;
+
+    protected override void OnInitialized()
+    {
+        _hasLocalAsr = SpeechCatalog.Recognition.Any(provider => provider.Type == SpeechProviderKeys.Local);
+        _hasLocalTts = SpeechCatalog.Synthesis.Any(provider => provider.Type == SpeechProviderKeys.Local);
+        // Installed local voice starts on, so the user only downloads its model.
+        _enableAsr = _hasLocalAsr;
+        _enableTts = _hasLocalTts;
+    }
+
+    // Plugin names are product names, so they stay untranslated inside the localized notice.
+    private IEnumerable<string> MissingPlugins =>
+    [
+        .. _hasLocalAsr ? Array.Empty<string>() : ["Oscova Local Speech Recognition"],
+        .. _hasLocalTts ? Array.Empty<string>() : ["Oscova Local Speech Synthesis"]
+    ];
+
+    // Only administrators can install plugins, so other users are pointed to them.
+    private string MissingPluginNotice(string plugin) => string.Format(CultureInfo.CurrentCulture, UserScope.IsInRole("Admin")
+        ? Loc.GetOrDefault(WizardTextKeys.WizardSpeechPluginMissingAdminNotice, "{0} is not installed. Install it in Settings > Plugins.")
+        : Loc.GetOrDefault(WizardTextKeys.WizardSpeechPluginMissingUserNotice, "{0} is not installed. Your administrator can install it."), plugin);
+
+    private static string ChoiceClass(bool selected, bool available)
+    {
+        if (!available)
+        {
+            return "rounded-box border border-base-300 bg-base-100 p-4 opacity-60 cursor-not-allowed";
+        }
+
+        var selectedClass = selected
+            ? "border-primary bg-primary/5 ring-primary/25 ring-2"
+            : "border-base-300 bg-base-100 hover:border-primary/50 hover:bg-base-200/50";
+
+        return $"rounded-box cursor-pointer border p-4 transition {selectedClass}";
+    }
+}

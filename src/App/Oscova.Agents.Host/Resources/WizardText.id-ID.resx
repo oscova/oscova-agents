@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Wizard.Title">
+		<value>Selamat Datang di Oscova Agents</value>
+
+	</data>
+	<data name="Wizard.ProductName">
+		<value>Oscova Agents</value>
+
+	</data>
+	<data name="Wizard.SubtitleLanguage">
+		<value>Pilih bahasa Anda.</value>
+
+	</data>
+	<data name="Wizard.SubtitleProfilePicture">
+		<value>Pilih foto profil Anda.</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep1">
+		<value>Pilih penyedia model bahasa</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep2">
+		<value>Atur suara (opsional)</value>
+
+	</data>
+	<data name="Wizard.SubtitleStep3">
+		<value>Beri nama asisten Anda</value>
+
+	</data>
+	<data name="Wizard.StepLanguageTitle">
+		<value>Bahasa</value>
+
+	</data>
+	<data name="Wizard.StepProfilePictureTitle">
+		<value>Foto profil</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureQuestion">
+		<value>Pilih foto profil Anda</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureHint">
+		<value>Pertahankan yang ini atau pilih yang lain.</value>
+
+	</data>
+	<data name="Wizard.ProfilePictureLaterNotice">
+		<value>Anda dapat mengubah foto profil nanti dari Profil Anda.</value>
+
+	</data>
+	<data name="Wizard.LanguageRestartHint">
+		<value>Penyiapan akan dimulai ulang dalam bahasa baru setelah memuat ulang halaman.</value>
+
+	</data>
+	<data name="Wizard.AgentNameFallback">
+		<value>Olivia</value>
+
+	</data>
+	<data name="Wizard.SaveFailed">
+		<value>Penyiapan gagal disimpan. Silakan coba lagi.</value>
+
+	</data>
+	<data name="Wizard.StepLlmTitle">
+		<value>Model</value>
+
+	</data>
+	<data name="Wizard.StepSpeechTitle">
+		<value>Suara</value>
+
+	</data>
+	<data name="Wizard.StepIdentityTitle">
+		<value>Identitas</value>
+
+	</data>
+	<data name="Wizard.StepLabel">
+		<value>Langkah {0} dari {1} — {2}</value>
+
+	</data>
+	<data name="Wizard.SkipStep">
+		<value>Lewati langkah</value>
+
+	</data>
+	<data name="Wizard.SkipAll">
+		<value>Lewati semua</value>
+
+	</data>
+	<data name="Wizard.LaterSetupNotice">
+		<value>Anda dapat melewati langkah ini dan mengaturnya nanti di Pengaturan.</value>
+
+	</data>
+	<data name="Wizard.Back">
+		<value>Kembali</value>
+
+	</data>
+	<data name="Wizard.Continue">
+		<value>Lanjutkan</value>
+
+	</data>
+	<data name="Wizard.Finish">
+		<value>Selesai</value>
+
+	</data>
+	<data name="Wizard.LlmQuestion">
+		<value>Bagaimana seharusnya Oscova berpikir?</value>
+
+	</data>
+	<data name="Wizard.LlmQuestionHint">
+		<value>Pilih penyedia model untuk disiapkan sekarang.</value>
+
+	</data>
+	<data name="Wizard.LlmProviderLegend">
+		<value>Penyedia model</value>
+
+	</data>
+	<data name="Wizard.LlmScrollHint">
+		<value>Gulir untuk melihat semua penyedia yang tersedia.</value>
+
+	</data>
+	<data name="Wizard.LlmEndpointChoiceDescription">
+		<value>Endpoint server lokal</value>
+
+	</data>
+	<data name="Wizard.LlmHostedChoiceDescription">
+		<value>Kunci API cloud/terkelola</value>
+
+	</data>
+	<data name="Wizard.LlmLocalChoiceDescription">
+		<value>GGUF lokal melalui LLamaSharp</value>
+
+	</data>
+	<data name="Wizard.LlmCatalogChoiceDescription">
+		<value>Katalog lokal dan unduhan</value>
+
+	</data>
+	<data name="Wizard.LlmNoChoiceHint">
+		<value>Pilih opsi untuk menyiapkan penyedia model sekarang, atau lewati langkah ini dan tambahkan nanti.</value>
+
+	</data>
+	<data name="Wizard.LlmLocalDownloadHint">
+		<value>Unduh model lokal sekarang, atau lanjutkan dan unduh nanti dari Pengaturan.</value>
+
+	</data>
+	<data name="Wizard.LlmSavedOnContinueHint">
+		<value>Pengaturan ini disimpan saat Anda melanjutkan.</value>
+
+	</data>
+	<data name="Wizard.LlmLocalNotConfigured">
+		<value>Belum ada model lokal default yang dikonfigurasi. Anda dapat menambahkannya nanti di Pengaturan.</value>
+
+	</data>
+	<data name="Wizard.LlmApiKeyLabel">
+		<value>Kunci API {0}</value>
+
+	</data>
+	<data name="Wizard.LlmBaseUrlLabel">
+		<value>URL dasar {0}</value>
+
+	</data>
+	<data name="Wizard.LlmEnvironmentVariableUnavailable">
+		<value>Variabel lingkungan '{0}' tidak tersedia untuk Oscova.</value>
+
+	</data>
+	<data name="Wizard.LlmProviderModelsDescription">
+		<value>Ambil model dari penyedia ini, lalu pilih satu untuk melanjutkan.</value>
+
+	</data>
+	<data name="Wizard.LlmFetchedModelRequired">
+		<value>Ambil model dan pilih satu sebelum melanjutkan.</value>
+
+	</data>
+	<data name="Wizard.LlmModelDownloadRequired">
+		<value>Unduh model yang dipilih sebelum melanjutkan.</value>
+
+	</data>
+	<data name="Wizard.LlmConnectedNoModels">
+		<value>Berhasil terhubung, tetapi penyedia tidak mengembalikan model apa pun.</value>
+
+	</data>
+	<data name="Wizard.SpeechQuestion">
+		<value>Apakah Anda menginginkan fitur suara?</value>
+
+	</data>
+	<data name="Wizard.SpeechListenChoiceTitle">
+		<value>Izinkan Oscova mendengarkan</value>
+
+	</data>
+	<data name="Wizard.SpeechListenChoiceDescription">
+		<value>Gunakan mikrofon Anda untuk mengubah ucapan menjadi teks.</value>
+
+	</data>
+	<data name="Wizard.SpeechSpeakChoiceTitle">
+		<value>Izinkan Oscova berbicara</value>
+
+	</data>
+	<data name="Wizard.SpeechSpeakChoiceDescription">
+		<value>Bacakan balasan secara lantang menggunakan model suara lokal.</value>
+
+	</data>
+	<data name="Wizard.SpeechIntro">
+		<value>Unduh model untuk plugin suara lokal yang terinstal di sini. Untuk suara OpenAI, instal Oscova OpenAI dan konfigurasikan di Pengaturan &gt; Suara.</value>
+
+	</data>
+	<data name="Wizard.SpeechSkipNotice">
+		<value>Suara tersedia setelah model lokal diunduh atau penyedia terhosting dikonfigurasi.</value>
+
+	</data>
+	<data name="Wizard.SpeechPluginMissingAdminNotice">
+		<value>{0} belum terinstal. Instal di Pengaturan &gt; Plugin.</value>
+	</data>
+	<data name="Wizard.SpeechPluginMissingUserNotice">
+		<value>{0} belum terinstal. Administrator Anda dapat menginstalnya.</value>
+	</data>
+	<data name="Wizard.AgentIntro">
+		<value>Beri nama asisten Anda, pilih gambar profil, dan pilih kepribadian. Anda dapat menyesuaikannya nanti di pengaturan agen utama.</value>
+
+	</data>
+	<data name="Wizard.AgentNameLabel">
+		<value>Nama</value>
+
+	</data>
+	<data name="Wizard.AgentNameRequired">
+		<value>Nama wajib diisi.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaLabel">
+		<value>Kepribadian</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaHint">
+		<value>Ini mengatur instruksi sistem agen. Anda dapat memperbaikinya nanti di Instruksi Sistem agen utama.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaNone">
+		<value>Tanpa persona</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaNoneDescription">
+		<value>Mulai dengan gaya netral dan sesuaikan agen nanti.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaProfessional">
+		<value>Profesional</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaProfessionalDescription">
+		<value>Terstruktur, lugas, dan profesional.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaFriendly">
+		<value>Ramah</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaFriendlyDescription">
+		<value>Hangat, santai, dan mendukung.</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaEfficient">
+		<value>Efisien</value>
+
+	</data>
+	<data name="Wizard.AgentPersonaEfficientDescription">
+		<value>Ringkas dan langsung ke sasaran tanpa basa-basi.</value>
+
+	</data>
+  <data name="Wizard.VaultPasswordRequired"><value>Buka kunci Sandi Brankas Anda sebelum menyimpan penyedia ini.</value></data>
+</root>

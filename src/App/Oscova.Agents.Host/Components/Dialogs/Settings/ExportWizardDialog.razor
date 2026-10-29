@@ -1,0 +1,74 @@
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@(Loc.GetOrDefault(SettingsTextKeys.ImportExportExportDialogTitle, "Export environment"))"
+                Subtitle="@(Loc.GetOrDefault(SettingsTextKeys.ImportExportExportDialogDescription, "Create an encrypted .oscb backup of restorable app data. Models and voices are not included."))"
+                Icon="lucide:download"
+                MaxWidthClass="max-w-xl"
+                HelpTopic="@HelpTopics.ExportEnvironment"
+                CloseResult="@DialogResult.Cancel"
+                ShowBackdropClose="true">
+    <ChildContent>
+        <div class="space-y-4">
+            <div role="alert" class="alert alert-info alert-soft">
+                <span class="iconify lucide--info size-5"></span>
+                <span>@Loc.GetOrDefault(SettingsTextKeys.ImportExportExportPassphraseHint, "Use a passphrase you can keep safe. Restoring this backup requires the same passphrase.")</span>
+            </div>
+
+            <fieldset class="fieldset p-0">
+                <legend class="fieldset-legend">@Loc.GetOrDefault(SettingsTextKeys.ImportExportPassphraseLabel, "Passphrase")</legend>
+                <label class="input w-full">
+                    <span class="iconify lucide--key-round text-base-content/60 size-4.5"></span>
+                    <input class="grow focus:outline-0"
+                           id="export-passphrase"
+                           type="password"
+                           aria-label="@Loc.GetOrDefault(SettingsTextKeys.ImportExportPassphraseLabel, "Passphrase")"
+                           placeholder="@Loc.GetOrDefault(SettingsTextKeys.ImportExportPassphrasePlaceholder, "Enter an export passphrase")"
+                           @bind="_passphrase"
+                           @bind:event="oninput" />
+                </label>
+                @if (_showValidation)
+                {
+                    <p class="fieldset-label text-error">
+                        @Loc.GetOrDefault(SettingsTextKeys.ImportExportPassphraseRequiredError, "Enter a passphrase to continue.")
+                    </p>
+                }
+            </fieldset>
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" @onclick="CancelAsync">@CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")</button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@IsFinishDisabled" @onclick="FinishAsync">
+            <span class="iconify lucide--download size-4"></span>
+            @Loc.GetOrDefault(SettingsTextKeys.ImportExportExportFinishButton, "Start Export")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _passphrase = string.Empty;
+    private bool _showValidation;
+
+    private bool IsFinishDisabled => string.IsNullOrWhiteSpace(_passphrase);
+
+    private Task FinishAsync()
+    {
+        if (IsFinishDisabled)
+        {
+            _showValidation = true;
+            return Task.CompletedTask;
+        }
+
+        DialogInstance.Close(DialogResult.Ok, _passphrase);
+        return Task.CompletedTask;
+    }
+
+    private Task CancelAsync()
+    {
+        DialogInstance.Close<string?>(DialogResult.Cancel, null);
+        return Task.CompletedTask;
+    }
+}

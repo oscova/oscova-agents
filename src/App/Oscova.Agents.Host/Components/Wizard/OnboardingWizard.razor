@@ -1,0 +1,340 @@
+@using Oscova.Agents.Host.Components.Wizard.Steps
+@inject UserServiceScope UserScope
+@inject ManagementApiClient ManagementApiClient
+@inject ProfilePictureRefreshState ProfilePictureRefreshState
+@inject IProfilePictureService ProfilePictures
+@inject IStringLocalizer<WizardText> Loc
+@inject ILogger<OnboardingWizard> Logger
+@inject IToastService ToastService
+@inject SoundCuePlayer Sound
+
+<PageTitle>@Loc.GetOrDefault(WizardTextKeys.WizardTitle, "Welcome to Oscova Agents")</PageTitle>
+
+<AppDialogShell Title="@(Loc.GetOrDefault(WizardTextKeys.WizardTitle, "Welcome to Oscova Agents"))"
+                Subtitle="@(Loc.GetOrDefault(WizardTextKeys.WizardProductName, "Oscova Agents"))"
+                Icon="lucide:sparkles"
+                HelpTopic="@HelpTopics.Onboarding"
+                ModalClass="app-aurora-dialog"
+                MaxWidthClass="max-w-5xl"
+                BodyClass="p-0"
+                FooterClass="border-base-300 flex flex-col gap-3 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-7"
+                ShowCloseButton="false"
+                CanClose="false"
+                ShowBackdropClose="false">
+    <ChildContent>
+        <div class="border-base-300 border-b px-5 py-4 md:px-7">
+            <ul class="steps w-full">
+                @for (var stepNumber = 1; stepNumber <= TotalSteps; stepNumber++)
+                {
+                    <li class="step @(stepNumber <= _currentStep ? "step-primary" : "")">
+                        @StepTitle(stepNumber)
+                    </li>
+                }
+            </ul>
+            <progress class="progress progress-primary mt-4 h-1 w-full" value="@_currentStep" max="@TotalSteps" aria-labelledby="onboarding-progress-label"></progress>
+            <p id="onboarding-progress-label" class="text-base-content/60 mt-2 text-xs">@string.Format(Loc.GetOrDefault(WizardTextKeys.WizardStepLabel, "Step {0} of {1} - {2}"), _currentStep, TotalSteps, CurrentSubtitle)</p>
+        </div>
+
+        <main class="min-h-0 flex-1 overflow-y-auto px-5 py-5 md:min-h-[22rem] md:px-7 md:py-6">
+            <fieldset class="min-w-0" disabled="@_isSaving">
+                @if (_currentStep == 1)
+                {
+                    <LanguageStep />
+                }
+                else if (_currentStep == 2)
+                {
+                    <ProfilePictureStep @ref="_profilePictureStep"
+                                        PreferredName="@_preferredName"
+                                        PreferredNameChanged="@((string value) => { _preferredName = value; _hasCommittedProfilePicture = false; })"
+                                        SelectedSeedName="@_selectedProfilePictureSeedName"
+                                        SelectedSeedNameChanged="@OnProfilePictureSelected" />
+                }
+                else if (_currentStep == 3)
+                {
+                    @if (UserScope.IsInRole("Admin"))
+                    {
+                        <LlmProviderStep @ref="_llmProviderStep"
+                                         RestoreCommittedSelection="@_restoreCommittedModelSelection" />
+                    }
+                    else
+                    {
+                        <SettingsModelProvidersSection />
+                    }
+                }
+                else if (_currentStep == 4)
+                {
+                    <SpeechModelsStep />
+                }
+                else
+                {
+                    <AgentIdentityStep Name="@_agentName"
+                                       NameChanged="@((string value) => _agentName = value)"
+                                       SelectedPersonaId="@_selectedPersonaId"
+                                       SelectedPersonaIdChanged="@((string value) => _selectedPersonaId = value)"
+                                       SelectedProfilePictureSeedName="@_selectedAgentProfilePictureSeedName"
+                                       SelectedProfilePictureSeedNameChanged="@((string? value) => _selectedAgentProfilePictureSeedName = value)" />
+                }
+                </fieldset>
+        </main>
+    </ChildContent>
+
+    <FooterContent>
+        <div class="min-w-0">
+            @if (_currentStep != ProfilePictureStepNumber && _currentStep != TotalSteps)
+            {
+                <button class="btn btn-ghost btn-sm justify-start" disabled="@_isSaving" @onclick="SkipAllAsync">
+                    @Loc.GetOrDefault(WizardTextKeys.WizardSkipAll, "Skip all")
+                </button>
+            }
+            @if (_currentStep != TotalSteps)
+            {
+                <p class="text-base-content/55 mt-1 flex items-center gap-1 text-xs">
+                    <span class="iconify lucide--info size-3.5 shrink-0" aria-hidden="true"></span>
+                    <span>@CurrentLaterNotice</span>
+                </p>
+            }
+        </div>
+        <div class="flex flex-wrap items-center justify-end gap-2">
+            <button class="btn btn-outline btn-sm items-center gap-2" @onclick="Back" disabled="@(_isSaving || _currentStep == 1)">
+                <span class="iconify lucide--chevron-left size-4"></span>
+                <span>@Loc.GetOrDefault(WizardTextKeys.WizardBack, "Back")</span>
+            </button>
+            @if (_currentStep != ProfilePictureStepNumber && _currentStep != TotalSteps)
+            {
+                <button class="btn btn-ghost btn-sm" disabled="@_isSaving" @onclick="SkipStepAsync">
+                    @Loc.GetOrDefault(WizardTextKeys.WizardSkipStep, "Skip step")
+                </button>
+            }
+            @if (_currentStep < TotalSteps)
+            {
+                <button class="btn btn-primary btn-sm items-center gap-2"
+                        @onclick="() => ContinueAsync()"
+                        disabled="@(_isSaving || (_currentStep == ProfilePictureStepNumber && (_selectedProfilePictureSeedName is null || string.IsNullOrWhiteSpace(_preferredName))))">
+                    <span>@Loc.GetOrDefault(WizardTextKeys.WizardContinue, "Continue")</span>
+                    <span class="iconify lucide--chevron-right size-4"></span>
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-primary btn-sm items-center gap-2" @onclick="FinishAsync" disabled="@(_isSaving || string.IsNullOrWhiteSpace(_agentName) || _selectedAgentProfilePictureSeedName is null)">
+                    <span class="iconify lucide--flag size-4"></span>
+                    <span>@Loc.GetOrDefault(WizardTextKeys.WizardFinish, "Finish")</span>
+                </button>
+            }
+        </div>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+
+    private const int ProfilePictureStepNumber = 2;
+    private const int ModelStepNumber = 3;
+    private const int TotalSteps = 5;
+    private int _currentStep = 1;
+    private string _preferredName = string.Empty;
+    private string _agentName = string.Empty;
+    private string _selectedPersonaId = AgentPersonas.Friendly;
+    private string? _selectedProfilePictureSeedName;
+    private string? _selectedAgentProfilePictureSeedName;
+    private ProfilePictureStep? _profilePictureStep;
+    private LlmProviderStep? _llmProviderStep;
+    private bool _hasCommittedProfilePicture;
+    private bool _isSaving;
+    private bool _restoreCommittedModelSelection;
+
+    protected override void OnInitialized()
+    {
+        // Start from the first word of the account's full name so a new user does not retype it.
+        _preferredName = string.IsNullOrWhiteSpace(UserScope.ProfileSettings.Nickname)
+            ? UserScope.DisplayName.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault() ?? string.Empty
+            : UserScope.ProfileSettings.Nickname;
+        var main = UserScope.AppService.MainAgentDefinition;
+        _agentName = string.IsNullOrWhiteSpace(main?.Name) || main.Name == "Assistant"
+            ? Loc.GetOrDefault(WizardTextKeys.WizardAgentNameFallback, "Olivia")
+            : main.Name;
+
+        // Resume after the last completed step so a reload or restart keeps earlier choices.
+        var onboarding = UserScope.OnboardingSettings;
+        _currentStep = Math.Clamp(onboarding.CompletedStep + 1, 1, TotalSteps);
+        // Preselect the pictures each account already shows, so Continue and Finish work without a choice.
+        _selectedProfilePictureSeedName = onboarding.ProfilePictureSeedName ?? ProfilePictures.GetAssignedSeedName(UserScope.UserId);
+        _selectedAgentProfilePictureSeedName = ProfilePictures.GetAssignedSeedName(UserScope.AppService.MainAgentDefinition.Id);
+        _hasCommittedProfilePicture = onboarding.CompletedStep >= ProfilePictureStepNumber;
+        _restoreCommittedModelSelection = onboarding.CompletedStep >= ModelStepNumber;
+    }
+
+    private string CurrentSubtitle => _currentStep switch
+    {
+        1 => Loc.GetOrDefault(WizardTextKeys.WizardSubtitleLanguage, "Choose your language."),
+        2 => Loc.GetOrDefault(WizardTextKeys.WizardSubtitleProfilePicture, "Choose your profile picture."),
+        3 => Loc.GetOrDefault(WizardTextKeys.WizardSubtitleStep1, "Choose how your assistant talks to a language model."),
+        4 => Loc.GetOrDefault(WizardTextKeys.WizardSubtitleStep2, "Download speech models for voice input and replies."),
+        _ => Loc.GetOrDefault(WizardTextKeys.WizardSubtitleStep3, "Name your assistant.")
+    };
+
+    private string StepTitle(int stepNumber) => stepNumber switch
+    {
+        1 => Loc.GetOrDefault(WizardTextKeys.WizardStepLanguageTitle, "Language"),
+        2 => Loc.GetOrDefault(WizardTextKeys.WizardStepProfilePictureTitle, "Profile picture"),
+        3 => Loc.GetOrDefault(WizardTextKeys.WizardStepLlmTitle, "Model"),
+        4 => Loc.GetOrDefault(WizardTextKeys.WizardStepSpeechTitle, "Speech"),
+        _ => Loc.GetOrDefault(WizardTextKeys.WizardStepIdentityTitle, "Identity")
+    };
+
+    private async Task ContinueAsync(bool commitCurrentStep = true)
+    {
+        if (_isSaving) { return; }
+        // A step's commit owns navigation and its input choices until it completes.
+        _isSaving = true;
+        try
+        {
+            if (commitCurrentStep && _currentStep == ProfilePictureStepNumber && _profilePictureStep is not null)
+            {
+                if (!await _profilePictureStep.CommitAsync())
+                {
+                    return;
+                }
+
+                _hasCommittedProfilePicture = true;
+                UserScope.OnboardingSettings.ProfilePictureSeedName = _selectedProfilePictureSeedName;
+            }
+            else if (commitCurrentStep && _currentStep == ModelStepNumber && _llmProviderStep is not null)
+            {
+                if (!await _llmProviderStep.CommitAsync())
+                {
+                    return;
+                }
+
+                _restoreCommittedModelSelection = _llmProviderStep.IsDiscoverableSelection;
+            }
+        }
+        catch (ConfidentialDataLockedException)
+        {
+            ToastService.Show(
+                Loc.GetOrDefault(
+                    WizardTextKeys.WizardVaultPasswordRequired,
+                    "Unlock your Vault Password before saving this provider."),
+                ToastType.Error);
+            return;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save onboarding wizard step.");
+            ShowSaveFailedToast();
+            return;
+        }
+
+        finally { _isSaving = false; }
+
+        if (_currentStep < TotalSteps)
+        {
+            await MoveToStepAsync(_currentStep + 1);
+            return;
+        }
+        await FinishAsync();
+    }
+
+    private async Task MoveToStepAsync(int step)
+    {
+        _isSaving = true;
+        try
+        {
+            UserScope.OnboardingSettings.CompletedStep = step - 1;
+            await UserScope.OnboardingSettings.SaveAsync();
+            _currentStep = step;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save onboarding wizard progress.");
+            ShowSaveFailedToast();
+        }
+        finally { _isSaving = false; }
+    }
+
+    private void Back()
+    {
+        if (_isSaving) { return; }
+        if (_currentStep > 1)
+        {
+            _currentStep--;
+        }
+    }
+
+    private Task SkipStepAsync() => ContinueAsync(commitCurrentStep: false);
+
+    private Task SkipAllAsync()
+    {
+        if (_isSaving) { return Task.CompletedTask; }
+
+        // The profile choices are saved before onboarding can finish, and skipping
+        // optional setup still requires the main agent's identity.
+        return MoveToStepAsync(_hasCommittedProfilePicture ? TotalSteps : ProfilePictureStepNumber);
+    }
+
+    private void OnProfilePictureSelected(string? seedName)
+    {
+        _selectedProfilePictureSeedName = seedName;
+        _hasCommittedProfilePicture = false;
+    }
+
+    private async Task FinishAsync()
+    {
+        if (_isSaving || string.IsNullOrWhiteSpace(_agentName) || _selectedAgentProfilePictureSeedName is null) { return; }
+        _isSaving = true;
+        try
+        {
+            try
+            {
+                UserScope.AppService.MainAgentDefinition.Name = _agentName.Trim();
+                if (AgentPersonas.IsSeeded(_selectedPersonaId))
+                {
+                    UserScope.AppService.MainAgentDefinition.SystemInstruction = string.Empty;
+                    UserScope.AppService.MainAgentDefinition.InstructionSource = $"persona:{_selectedPersonaId}";
+                    UserScope.AppService.MainAgentDefinition.InstructionMode = InstructionSelection.Default;
+                }
+
+                await UserScope.AppService.SaveMainAgentAsync(initializeInstructionSource: AgentPersonas.IsSeeded(_selectedPersonaId));
+
+                // The main agent exists before onboarding, so this replaces its fallback picture.
+                await ManagementApiClient.ApplyAgentSeedPictureAsync(
+                    UserScope.AppService.MainAgentDefinition.Id,
+                    _selectedAgentProfilePictureSeedName);
+                ProfilePictureRefreshState.Refresh();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to save main agent identity from onboarding wizard.");
+                ShowSaveFailedToast();
+
+                // Stay open so the user can retry any failed identity write.
+                return;
+            }
+
+            try
+            {
+                UserScope.OnboardingSettings.IsCompleted = true;
+                UserScope.OnboardingSettings.CompletedAt = DateTimeOffset.UtcNow;
+                await UserScope.OnboardingSettings.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to persist onboarding completion flag.");
+                ShowSaveFailedToast();
+                return;
+            }
+
+            await Sound.PlayAsync(SoundCue.Complete);
+
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        finally { _isSaving = false; }
+    }
+
+    private void ShowSaveFailedToast() =>
+        ToastService.Show(Loc.GetOrDefault(WizardTextKeys.WizardSaveFailed, "Setup could not be saved. Please try again."), ToastType.Error);
+
+    private string CurrentLaterNotice => _currentStep == ProfilePictureStepNumber
+        ? Loc.GetOrDefault(WizardTextKeys.WizardProfilePictureLaterNotice, "You can change your profile picture later from Your Profile.")
+        : Loc.GetOrDefault(WizardTextKeys.WizardLaterSetupNotice, "You can skip this step and set it up later in Settings.");
+}

@@ -1,0 +1,103 @@
+@using Oscova.Agents.Plugins
+@using Oscova.Agents.Infrastructure.Plugins
+@inject PluginContextFactory Contexts
+@inject PluginSettingsUi Ui
+@inject UserServiceScope UserScope
+@inject IUserPermissionService Permissions
+@inject ILogger<PluginSettingsPanel> Logger
+@inject IAgentPluginCatalog Plugins
+@inject PluginPresentationService Presentation
+@inject IChannelManager Channels
+@inject NotificationHub<ChannelStatus> ChannelNotifications
+@implements IAsyncDisposable
+
+@if (_initializationError is not null)
+{
+    <div role="alert" class="alert alert-error">@_initializationError</div>
+}
+@if (_context is not null)
+{
+    @if (Entry.Panel.Heading is not null || Entry.Panel.HeadingKey is not null)
+    {
+        <div class="flex items-center justify-between gap-3 mb-4">
+            <h4 class="text-base font-semibold">@Presentation.Text(Entry.Plugin, Entry.Panel.HeadingKey, Entry.Panel.Heading ?? string.Empty)</h4>
+            @if (Entry.Panel.Help is { } help) { <HelpTriggerButton Topic="@PluginPresentationService.TopicKey(Entry.Plugin, help)" /> }
+        </div>
+    }
+    <ErrorBoundary @key="@((_identity, _modelDraft))">
+        <ChildContent><DynamicComponent Type="@Entry.Panel.ComponentType" Parameters="@_parameters" @key="@_identity" /></ChildContent>
+        <ErrorContent Context="error">
+            @{ RecordRenderFailure(error); }
+            <div class="alert alert-error">@error.Message</div>
+        </ErrorContent>
+    </ErrorBoundary>
+}
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsCatalog.Entry Entry { get; set; } = default!;
+    [Parameter] public Func<PluginSpeechSettingsContext>? GetSpeechSettings { get; set; }
+    [Parameter] public Func<PluginModelProviderSettingsContext>? GetModelProviderSettings { get; set; }
+    private object? _modelDraft;
+    private object? _context;
+    private string? _identity;
+    private Exception? _renderFailure;
+    private string? _initializationError;
+    private bool _disposed;
+    private IDictionary<string, object> _parameters = new Dictionary<string, object>();
+    protected override async Task OnParametersSetAsync()
+    {
+        var identity = Entry.Plugin.Manifest.Id + ":" + Entry.Panel.Id + ":" + Entry.Panel.AssociationId;
+        var modelDraft = GetModelProviderSettings?.Invoke().Draft;
+        if (modelDraft is not null) { identity += ":" + UserScope.UserId + ":" + modelDraft.Id; }
+        if (_identity == identity && ReferenceEquals(_modelDraft, modelDraft)) { return; }
+        await DisposeContextAsync();
+        if (_disposed) { return; }
+        _identity = identity;
+        _modelDraft = modelDraft;
+        _renderFailure = null;
+        _initializationError = null;
+        if (Entry.Panel.Access == PluginSettingsAccess.Operator && !await Permissions.IsOperatorAsync(UserScope.UserId)) { return; }
+        if (modelDraft is not null && (UserScope.ModelProviderSettings.OwnerOf(modelDraft.Id) != UserScope.ModelProviderSettings ||
+            !(await Permissions.GetGrantedAsync(UserScope.UserId)).Contains(UserPermissionKeys.ManagePersonalModelProviders))) { return; }
+        if (_disposed) { return; }
+        try
+        {
+            var bound = await Contexts.CreateSettingsAsync(Entry.Plugin, Entry.Panel, UserScope, Ui, CancellationToken.None,
+                (channelId, require) => new BoundPluginChannelControl(Channels, ChannelNotifications, UserScope.UserId, channelId, require));
+            // Admission can finish after navigation has removed this panel.
+            if (_disposed) { return; }
+            // The speech page retains its draft and save boundary while the plugin owns its controls.
+            _context = Entry.Panel.ContextFactory(bound with
+            {
+                GetSpeechSettings = GetSpeechSettings,
+                GetModelProviderSettings = GetModelProviderSettings
+            });
+            if (!Entry.ContextType.IsInstanceOfType(_context))
+            { throw new InvalidOperationException($"Settings panel '{Entry.Panel.Id}' Context factory does not match its component parameter type."); }
+            _parameters = new Dictionary<string, object> { ["Context"] = _context };
+        }
+        catch (Exception ex)
+        {
+            // Context failures must explain the empty panel as render failures already do.
+            _initializationError = ex.Message;
+            Logger.LogWarning(ex, "Plugin {PluginId} settings panel {PanelId} failed to initialize.", Entry.Plugin.Manifest.Id, Entry.Panel.Id);
+            Plugins.ReportDiagnostic(new(AgentPluginLoadDiagnosticLevel.Warning, Entry.Plugin.PluginDirectory,
+                $"Settings panel '{Entry.Panel.Id}' could not initialize: {ex.Message}"));
+            await DisposeContextAsync();
+        }
+    }
+    private async ValueTask DisposeContextAsync()
+    {
+        var context = _context; _context = null;
+        if (context is IAsyncDisposable asyncDisposable) { await asyncDisposable.DisposeAsync(); }
+        else if (context is IDisposable disposable) { disposable.Dispose(); }
+    }
+    private void RecordRenderFailure(Exception error)
+    {
+        if (ReferenceEquals(_renderFailure, error)) { return; }
+        _renderFailure = error;
+        Logger.LogError(error, "Plugin {PluginId} settings panel {PanelId} failed to render.", Entry.Plugin.Manifest.Id, Entry.Panel.Id);
+    }
+    /// <inheritdoc />
+    public ValueTask DisposeAsync() { _disposed = true; return DisposeContextAsync(); }
+}

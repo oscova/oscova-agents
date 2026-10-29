@@ -1,0 +1,186 @@
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<SettingsText> SettingsLoc
+@inject IDialogService DialogService
+@inject ILogger<PromptEditorDialog> Logger
+@using Oscova.Agents.Core.ApiContracts.Prompts
+
+@* Provides a full-height editor for prompt templates while the settings page stays scan-first. *@
+<AppDialogShell Title="@_title"
+                Subtitle="@_fileName"
+                HelpTopic="@HelpTopics.PromptEditor"
+                Icon="lucide:file-text"
+                MaxWidthClass="max-w-4xl"
+                BoxContentClass="h-[86vh]"
+                BodyClass="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden px-5 py-4"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_isSaving)"
+                FooterClass="modal-action justify-between px-5 pb-5 pt-0"
+                ShowBackdropClose="true">
+    <ChildContent>
+        @if (_defaultContent is not null)
+        {
+            <label class="mb-3 flex items-center gap-3">
+                <span class="text-sm">@SettingsLoc.GetOrDefault(SettingsTextKeys.InstructionModeLabel, "Instruction mode")</span>
+                <select class="select select-bordered select-sm min-w-0" value="@_mode" @onchange="ChangeModeAsync" disabled="@_isSaving">
+                    <option value="default">@SettingsLoc.GetOrDefault(SettingsTextKeys.InstructionUseDefault, "Use Default")</option>
+                    <option value="append">@SettingsLoc.GetOrDefault(SettingsTextKeys.InstructionAppend, "Add to Default")</option>
+                    <option value="replace">@SettingsLoc.GetOrDefault(SettingsTextKeys.InstructionReplace, "Replace Default")</option>
+                </select>
+            </label>
+            @if (_mode != InstructionSelection.Default)
+            {
+                <details class="mb-3 rounded-box border border-base-300 p-3">
+                    <summary class="cursor-pointer text-sm">@SettingsLoc.GetOrDefault(SettingsTextKeys.InstructionDefaultReference, "Default instruction")</summary>
+                    <pre class="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-words text-xs">@_defaultContent</pre>
+                </details>
+            }
+        }
+        <CodeEditor @ref="_editor"
+                    @bind-Value="EditorContent"
+                    FileName="@_fileName"
+                    Disabled="@(_isSaving || UsingDefault)"
+                    HighlightVariables="true"
+                    Class="min-h-0 min-w-0" />
+
+        @if (_variables.Count > 0 && !UsingDefault)
+        {
+            <PromptVariablePicker Variables="@_variables"
+                                  InsertRequested="HandleVariableInsertRequestedAsync" />
+        }
+
+        @if (!string.IsNullOrWhiteSpace(_saveError))
+        {
+            <div class="mt-2 text-sm text-error">@_saveError</div>
+        }
+    </ChildContent>
+    <FooterContent>
+        @if (_defaultContent is not null)
+        {
+            <button type="button" class="btn btn-ghost btn-sm" disabled="@_isSaving" @onclick="RestoreDefaultAsync">
+                @SettingsLoc.GetOrDefault(SettingsTextKeys.PromptsRestoreDefaultButton, "Restore default")
+            </button>
+        }
+        <div class="ms-auto flex gap-2">
+            <button type="button" class="btn btn-ghost btn-sm" disabled="@_isSaving" @onclick="Cancel">
+                @CommonLoc.GetOrDefault(CommonTextKeys.Cancel, "Cancel")
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" disabled="@_isSaving" @onclick="SaveAsync">
+                @if (_isSaving)
+                {
+                    <span class="loading loading-spinner loading-xs"></span>
+                }
+                @CommonLoc.GetOrDefault(CommonTextKeys.Save, "Save")
+            </button>
+        </div>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _title = string.Empty;
+    private string _fileName = string.Empty;
+    private string _content = string.Empty;
+    private string? _defaultContent;
+    private string? _mode;
+    private bool UsingDefault => _defaultContent is not null && _mode == InstructionSelection.Default;
+    private string EditorContent
+    {
+        get => UsingDefault ? _defaultContent! : _content;
+        set { if (!UsingDefault) { _content = value; } }
+    }
+    private IReadOnlyList<PromptVariableOption> _variables = [];
+    private Func<SavePromptRequest, Task>? _saveContentAsync;
+    private CodeEditor? _editor;
+    private bool _isSaving;
+    private string? _saveError;
+
+    protected override void OnInitialized()
+    {
+        _title = DialogInstance.Get<string>("Title", string.Empty);
+        _fileName = DialogInstance.Get<string>("FileName", string.Empty);
+        _content = DialogInstance.Get<string>("InitialContent", string.Empty);
+        _defaultContent = DialogInstance.Get<string?>("DefaultContent", null);
+        _mode = DialogInstance.Get<string?>("InstructionMode", null);
+        _variables = DialogInstance.Get<IReadOnlyList<PromptVariableOption>>("Variables", []);
+        _saveContentAsync = DialogInstance.Get<Func<SavePromptRequest, Task>?>("SaveContentAsync", null);
+    }
+
+    private async Task ChangeModeAsync(ChangeEventArgs args)
+    {
+        if (!UsingDefault && _editor is not null) { _content = await _editor.GetValueAsync(); }
+        _mode = args.Value?.ToString();
+    }
+
+    private async Task HandleVariableInsertRequestedAsync(string token)
+    {
+        if (_editor is not null)
+        {
+            await _editor.InsertTextAsync(token);
+        }
+    }
+
+    private async Task RestoreDefaultAsync()
+    {
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            SettingsLoc.GetOrDefault(SettingsTextKeys.PromptsRestoreDefaultConfirmTitle, "Restore default instruction?"),
+            string.Format(CultureInfo.CurrentCulture,
+                SettingsLoc.GetOrDefault(SettingsTextKeys.PromptsRestoreDefaultConfirmMessage,
+                    "Clear your custom instruction for {0} and switch to Use Default? Click Save afterward to apply the change."),
+                _title));
+        if (result != DialogResult.Ok) { return; }
+
+        _saveError = null;
+        try
+        {
+            _content = string.Empty;
+            _mode = InstructionSelection.Default;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to restore default prompt content");
+            _saveError = ex.Message;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_saveContentAsync is null)
+        {
+            DialogInstance.Close(DialogResult.Cancel);
+            return;
+        }
+
+        _saveError = null;
+        _isSaving = true;
+
+        try
+        {
+            if (_editor is not null && !UsingDefault)
+            {
+                _content = await _editor.GetValueAsync();
+            }
+
+            await _saveContentAsync(new SavePromptRequest { Content = _content, Mode = _mode });
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save prompt content");
+            _saveError = ex.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        if (!_isSaving)
+        {
+            DialogInstance.Close(DialogResult.Cancel);
+        }
+    }
+}

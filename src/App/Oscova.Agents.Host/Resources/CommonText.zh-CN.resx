@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Common.Cancel">
+		<value>取消</value>
+
+	</data>
+	<data name="Common.Actions">
+		<value>操作</value>
+
+	</data>
+	<data name="Common.Close">
+		<value>关闭</value>
+
+	</data>
+	<data name="Common.Connected">
+		<value>已连接</value>
+
+	</data>
+	<data name="Common.CopyName">
+		<value>副本</value>
+
+	</data>
+	<data name="Common.Create">
+		<value>创建</value>
+
+	</data>
+	<data name="Common.Delete">
+		<value>删除</value>
+
+	</data>
+	<data name="Common.Description">
+		<value>描述</value>
+
+	</data>
+	<data name="Common.Disconnected">
+		<value>已断开</value>
+
+	</data>
+	<data name="Common.Download">
+		<value>下载</value>
+
+	</data>
+	<data name="Common.Duplicate">
+		<value>复制</value>
+
+	</data>
+	<data name="Common.Edit">
+		<value>编辑</value>
+
+	</data>
+	<data name="Common.FileTooLarge">
+		<value>文件过大。最大允许大小为 {0}。</value>
+
+	</data>
+	<data name="Common.Import">
+		<value>导入</value>
+
+	</data>
+	<data name="Common.ImportFailed">
+		<value>导入失败：{0}</value>
+
+	</data>
+	<data name="Common.Key"><value>键</value></data>
+	<data name="Common.Loading">
+		<value>正在加载...</value>
+
+	</data>
+	<data name="Common.Name">
+		<value>名称</value>
+
+	</data>
+	<data name="Common.NoFileSelected">
+		<value>未选择文件</value>
+
+	</data>
+	<data name="Common.NoneOption">
+		<value>无</value>
+
+	</data>
+	<data name="Common.Password">
+		<value>密码</value>
+
+	</data>
+	<data name="Common.Refresh">
+		<value>刷新</value>
+
+	</data>
+	<data name="Common.Remove">
+		<value>移除</value>
+
+	</data>
+	<data name="Common.Retry">
+		<value>重试</value>
+
+	</data>
+	<data name="Common.NoResults"><value>无结果</value></data>
+	<data name="Common.Save">
+		<value>保存</value>
+
+	</data>
+	<data name="Common.Search"><value>搜索...</value></data>
+	<data name="Common.Settings">
+		<value>设置</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Title">
+		<value>放弃未保存的更改？</value>
+
+	</data>
+	<data name="Common.UnsavedChanges.Message">
+		<value>此页面上有未保存的更改。现在离开将放弃这些更改。</value>
+
+	</data>
+	<data name="Common.SignOutConfirmTitle">
+		<value>确认退出登录</value>
+
+	</data>
+	<data name="Common.SignOutConfirmMessage">
+		<value>确定要退出登录吗？</value>
+
+	</data>
+	<data name="Common.Upload">
+		<value>上传</value>
+
+	</data>
+	<data name="Common.Username">
+		<value>用户名</value>
+
+	</data>
+	<data name="Common.Assistant"><value>助手</value></data>
+	<data name="Common.Clear"><value>清除</value></data>
+	<data name="Common.ConfirmPassword"><value>确认密码</value></data>
+	<data name="Common.Content"><value>内容</value></data>
+	<data name="Common.CurrentPassword"><value>当前密码</value></data>
+	<data name="Common.Email"><value>电子邮箱</value></data>
+	<data name="Common.FullName"><value>全名</value></data>
+	<data name="Common.PreferredName"><value>常用称呼</value></data>
+	<data name="Common.PreferredNameHelp"><value>你的智能体应该如何称呼你？</value></data>
+	<data name="Common.NewPassword"><value>新密码</value></data>
+	<data name="Common.NotConfigured"><value>未配置</value></data>
+	<data name="Common.NotSet"><value>未设置</value></data>
+	<data name="Common.Page"><value>第 {0} 页</value></data>
+	<data name="Common.Roles"><value>角色</value></data>
+	<data name="Common.System"><value>系统</value></data>
+	<data name="Common.Time"><value>时间</value></data>
+	<data name="Common.Tool"><value>工具</value></data>
+	<data name="Common.Unknown"><value>未知</value></data>
+	<data name="Common.User"><value>用户</value></data>
+	<data name="Dialog.AccountDetailsTitle"><value>账户详情</value></data>
+	<data name="Dialog.AllAgentsOption"><value>所有智能体</value></data>
+	<data name="Dialog.AllThreadsOption"><value>所有对话</value></data>
+	<data name="Dialog.ApplicationLogsTitle"><value>应用程序日志</value></data>
+	<data name="Dialog.ExportFilteredCsv"><value>已过滤的 CSV</value></data>
+	<data name="Dialog.ExportFilteredText"><value>已过滤的文本</value></data>
+	<data name="Dialog.ExportLogsButton"><value>导出</value></data>
+	<data name="Dialog.ExportOriginalJsonLines"><value>原始 JSON Lines</value></data>
+	<data name="Dialog.ChangePasswordTitle"><value>修改密码</value></data>
+	<data name="Dialog.ChatMemory.HeaderAgent"><value>智能体</value></data>
+	<data name="Dialog.ChatMemory.HeaderChunk"><value>分块</value></data>
+	<data name="Dialog.ChatMemory.HeaderContent"><value>内容</value></data>
+	<data name="Dialog.ChatMemory.HeaderThread"><value>对话</value></data>
+	<data name="Dialog.ChatMemoryStoreTitle"><value>对话记忆库</value></data>
+	<data name="Dialog.ClearLogButton"><value>清除</value></data>
+	<data name="Dialog.ClearLogConfirmMessage"><value>确定要清除当前的日志文件吗？此操作无法撤销。</value></data>
+	<data name="Dialog.ClearLogConfirmTitle"><value>确认清除日志</value></data>
+	<data name="Dialog.ClearLogTitleAttribute"><value>清除当前日志文件</value></data>
+	<data name="Dialog.CloseChatMemoryLabel"><value>关闭对话记忆对话框</value></data>
+	<data name="Dialog.CloseLogsLabel"><value>关闭日志对话框</value></data>
+	<data name="Dialog.CloseProfileLabel"><value>关闭个人资料对话框</value></data>
+	<data name="Dialog.ContentTypeCall"><value>调用</value></data>
+	<data name="Dialog.ContentTypeReasoning"><value>推理</value></data>
+	<data name="Dialog.ContentTypeResult"><value>结果</value></data>
+	<data name="Dialog.DataContentBytes"><value>{0} - {1} 字节</value></data>
+	<data name="Dialog.EmailAddressLabel"><value>电子邮箱地址</value></data>
+	<data name="Dialog.FailedLoadChatMemoryError"><value>加载对话记忆失败：</value></data>
+	<data name="Dialog.FailedLoadLogsError"><value>加载日志失败：</value></data>
+	<data name="Dialog.InspectorJsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorVisualTab"><value>可视化</value></data>
+	<data name="Dialog.LogDetailException"><value>异常</value></data>
+	<data name="Dialog.LogDetailMetadata"><value>元数据</value></data>
+	<data name="Dialog.LogEntriesCount"><value>{0} 条记录</value></data>
+	<data name="Dialog.LogEntriesPage"><value>{0} 条记录 - 第 {1} 页，共 {2} 页</value></data>
+	<data name="Dialog.LogLevelAll"><value>所有级别</value></data>
+	<data name="Dialog.LogLevelDebug"><value>Debug</value></data>
+	<data name="Dialog.LogLevelError"><value>Error</value></data>
+	<data name="Dialog.LogLevelFatal"><value>Fatal</value></data>
+	<data name="Dialog.LogLevelInfo"><value>Info</value></data>
+	<data name="Dialog.LogLevelTrace"><value>Trace</value></data>
+	<data name="Dialog.LogLevelWarn"><value>Warn</value></data>
+	<data name="Dialog.LogsHeaderLevel"><value>级别</value></data>
+	<data name="Dialog.LogsHeaderLogger"><value>记录器</value></data>
+	<data name="Dialog.LogsHeaderMessage"><value>消息</value></data>
+	<data name="Dialog.LogsInvalidUserGuid"><value>请输入有效的用户 GUID。</value></data>
+	<data name="Dialog.LogsScope.Mine"><value>我的</value></data>
+	<data name="Dialog.LogsScope.User"><value>用户...</value></data>
+	<data name="Dialog.Logs.UserIdPlaceholder"><value>用户 ID (GUID)</value></data>
+	<data name="Dialog.NoChatMemoryEntries"><value>没有匹配当前筛选条件的对话记忆记录。</value></data>
+	<data name="Dialog.NoLogEntriesMatch"><value>没有匹配当前筛选条件的日志记录。</value></data>
+	<data name="Dialog.NoLogFilesOption"><value>无日志文件</value></data>
+	<data name="Dialog.NoMessagesInSession"><value>会话中暂无消息。</value></data>
+	<data name="Dialog.NoStructuredLogsFound"><value>未找到结构化日志文件。应用程序写入新记录后，日志将显示在此处。</value></data>
+	<data name="Notifications.AllTab"><value>全部</value></data>
+	<data name="Notifications.Clear"><value>清除通知</value></data>
+	<data name="Notifications.DetailKindLabel"><value>类型</value></data>
+	<data name="Notifications.DialogTitle"><value>通知</value></data>
+	<data name="Notifications.EmptyState"><value>你已处理完所有通知。</value></data>
+	<data name="Notifications.MarkAllRead"><value>全部标为已读</value></data>
+	<data name="Notifications.Muted"><value>通知已静音</value></data>
+	<data name="Notifications.JustNow"><value>刚刚</value></data>
+	<data name="Notifications.MinutesAgo"><value>{0} 分钟前</value></data>
+	<data name="Notifications.HoursAgo"><value>{0} 小时前</value></data>
+	<data name="Notifications.Task.CompletedTitle"><value>任务已完成</value></data>
+	<data name="Notifications.Task.NeedsAttentionTitle"><value>任务需要处理</value></data>
+	<data name="Notifications.Task.CompletedInSeconds"><value>在 {0} 秒内完成。</value></data>
+	<data name="Notifications.Task.Skipped"><value>任务已跳过。</value></data>
+	<data name="Notifications.Task.MissingChatProvider"><value>未配置聊天模型提供商。请在“设置 &gt; 智能体与 AI &gt; 模型提供商”中配置一个以运行此任务。</value></data>
+	<data name="Notifications.Task.MissingEmbeddingProvider"><value>未配置嵌入模型提供商。请在“设置 &gt; 智能体与 AI &gt; 模型提供商 &gt; 嵌入提供商”中配置一个以运行此任务。</value></data>
+	<data name="Notifications.Task.HandlerUnavailable"><value>此任务的执行处理程序不可用。请启用或重新安装其插件，并重启应用以运行此任务。</value></data>
+	<data name="Notifications.Task.StepLimitReached"><value>任务在完成前达到了 {0} 步上限而停止。</value></data>
+	<data name="Notifications.Task.Finished"><value>任务运行已完成。</value></data>
+	<data name="Notifications.Task.OutcomeHidden"><value>打开任务以查看结果。</value></data>
+	<data name="Notifications.Task.SkippedLocked"><value>由于保管库密码已被锁定，此任务未运行。请解锁以恢复。</value></data>
+	<data name="Notifications.Settings"><value>通知设置</value></data>
+	<data name="Notifications.SystemTab"><value>系统</value></data>
+	<data name="Notifications.TasksTab"><value>任务</value></data>
+	<data name="Notifications.Title"><value>通知</value></data>
+	<data name="Notifications.ViewAll"><value>查看全部</value></data>
+	<data name="Dialog.PasswordBlankHint"><value>留空以保留当前密码。</value></data>
+	<data name="Dialog.ProfileDescription"><value>更新你的电子邮箱、全名、常用称呼和密码。</value></data>
+	<data name="Dialog.ProfilePictureUpdated"><value>头像已更新。</value></data>
+	<data name="Dialog.ProfilePictureUpdateFailed"><value>无法更新头像：{0}</value></data>
+	<data name="Dialog.WallpaperUpdated"><value>壁纸已更新。</value></data>
+	<data name="Dialog.WallpaperUpdateFailed"><value>无法更新壁纸：{0}</value></data>
+	<data name="Dialog.SaveChangesButton"><value>保存更改</value></data>
+	<data name="Dialog.SearchLogsPlaceholder"><value>搜索日志...</value></data>
+	<data name="Dialog.SessionInspectorTitle"><value>会话检查器</value></data>
+	<data name="Dialog.SessionJsonCopied"><value>会话 JSON 已复制到剪贴板。</value></data>
+	<data name="Dialog.SessionJsonDownloaded"><value>会话证据已下载。</value></data>
+	<data name="Dialog.InspectorConversationTab"><value>对话</value></data>
+	<data name="Dialog.InspectorMessageSummary"><value>{0} 条消息</value></data>
+	<data name="Dialog.MessageCountBadge"><value>{0} 条消息</value></data>
+	<data name="Dialog.NoSystemInstruction"><value>未捕获到系统指令。</value></data>
+	<data name="Dialog.Egress.CloudLabel"><value>云端</value></data>
+	<data name="Dialog.Egress.LocalLabel"><value>本地</value></data>
+	<data name="Dialog.Egress.IndeterminateDescription"><value>部分工具调用无法与工具元数据匹配。</value></data>
+	<data name="Dialog.Egress.IndeterminateTitle"><value>无法完全验证出站</value></data>
+	<data name="Dialog.Egress.NoDataDescription"><value>较早的会话可能不包含提供商出站记录。</value></data>
+	<data name="Dialog.Egress.NoDataTitle"><value>未记录出站数据</value></data>
+	<data name="Dialog.Egress.ReachedInternetDescription"><value>此会话期间使用了云提供商或互联网工具。</value></data>
+	<data name="Dialog.Egress.ReachedInternetTitle"><value>此会话访问了互联网</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceDescription"><value>记录的提供商均为本地，且未检测到互联网工具。</value></data>
+	<data name="Dialog.Egress.StayedOnDeviceTitle"><value>此会话保留在设备上</value></data>
+	<data name="Dialog.Egress.ToolCallCount"><value>{0} 次互联网工具调用</value></data>
+	<data name="Dialog.Egress.UnknownToolCallCount"><value>{0} 次未知工具调用</value></data>
+	<data name="Dialog.Egress.EntryCount"><value>{0} 条已审计的出站记录</value></data>
+	<data name="Dialog.Egress.ProviderKind"><value>提供商</value></data>
+	<data name="Dialog.Egress.ToolKind"><value>工具</value></data>
+	<data name="Dialog.Egress.EmbeddingKind"><value>嵌入</value></data>
+	<data name="Dialog.Egress.ChatSource"><value>对话</value></data>
+	<data name="Dialog.Egress.TaskSource"><value>任务</value></data>
+	<data name="Dialog.Egress.EmbeddingIndexingSource"><value>记忆索引</value></data>
+	<data name="Dialog.Egress.EmbeddingSearchSource"><value>记忆搜索</value></data>
+	<data name="Dialog.Egress.UnknownDestination"><value>未知目标</value></data>
+	<data name="Dialog.EgressAudit.AgentColumn"><value>智能体</value></data>
+	<data name="Dialog.EgressAudit.AllKinds"><value>所有类型</value></data>
+	<data name="Dialog.EgressAudit.AllSources"><value>所有来源</value></data>
+	<data name="Dialog.EgressAudit.ContextColumn"><value>上下文</value></data>
+	<data name="Dialog.EgressAudit.CountSummary"><value>{0} 个事件</value></data>
+	<data name="Dialog.EgressAudit.DestinationColumn"><value>目的地</value></data>
+	<data name="Dialog.EgressAudit.Title"><value>出站审计</value></data>
+	<data name="Dialog.EgressAudit.EmbeddingEvents"><value>嵌入事件</value></data>
+	<data name="Dialog.EgressAudit.InspectAction"><value>检查会话</value></data>
+	<data name="Dialog.EgressAudit.LoadFailed"><value>无法加载数据出站审计详情。</value></data>
+	<data name="Dialog.EgressAudit.ModelMetadata"><value>模型</value></data>
+	<data name="Dialog.EgressAudit.NoEntries"><value>没有符合当前筛选条件的审计条目。</value></data>
+	<data name="Dialog.EgressAudit.PageSummary"><value>{0} 个事件 - 第 {1} 页，共 {2} 页</value></data>
+	<data name="Dialog.EgressAudit.ProviderEvents"><value>提供商事件</value></data>
+	<data name="Dialog.EgressAudit.ProviderIdMetadata"><value>提供商 ID</value></data>
+	<data name="Dialog.EgressAudit.RangeAllTime"><value>全部时间</value></data>
+	<data name="Dialog.EgressAudit.RangeLastThirtyDays"><value>最近 30 天</value></data>
+	<data name="Dialog.EgressAudit.RunMetadata"><value>运行</value></data>
+	<data name="Dialog.EgressAudit.SearchButton"><value>搜索</value></data>
+	<data name="Dialog.EgressAudit.SearchPlaceholder"><value>搜索数据出站</value></data>
+	<data name="Dialog.EgressAudit.SessionUnavailable"><value>此条目的会话已不再可用。</value></data>
+	<data name="Dialog.EgressAudit.SourceColumn"><value>来源</value></data>
+	<data name="Dialog.EgressAudit.TaskMetadata"><value>任务</value></data>
+	<data name="Dialog.EgressAudit.ThreadMetadata"><value>对话</value></data>
+	<data name="Dialog.EgressAudit.ToolEvents"><value>工具事件</value></data>
+	<data name="Dialog.EgressAudit.ToolMetadata"><value>工具</value></data>
+	<data name="Dialog.EgressAudit.TotalEvents"><value>事件总数</value></data>
+	<data name="Dialog.EgressAudit.TypeColumn"><value>类型</value></data>
+	<data name="Dialog.EgressAudit.UserColumn"><value>用户</value></data>
+	<data name="Dialog.SystemInstructionTitle"><value>系统指令</value></data>
+	<data name="Dialog.TokenCountBadge"><value>{0} 个 Token</value></data>
+	<data name="Dialog.UsageInputTokens"><value>输入: {0}</value></data>
+	<data name="Dialog.UsageOutputTokens"><value>输出: {0}</value></data>
+	<data name="Dialog.UsageTotalTokens"><value>总计: {0}</value></data>
+	<data name="Dialog.StoredContent"><value>存储的内容</value></data>
+	<data name="Dialog.ToggleDetailsTitle"><value>展开/折叠详情</value></data>
+	<data name="Dialog.UnableToSubmitChoice"><value>无法提交该选项。</value></data>
+	<data name="Dialog.YourProfileTitle"><value>您的个人资料</value></data>
+	<data name="Common.Validation.NameRequired"><value>名称为必填项。</value></data>
+	<data name="Common.Validation.InstructionRequired"><value>指令为必填项。</value></data>
+	<data name="Common.Task.AgentUnavailable"><value>只有在至少有一个智能体可用时才能创建任务。</value></data>
+	<data name="Common.Task.AgentCreatedBadge"><value>智能体创建</value></data>
+	<data name="Common.Task.CreatedSuccessfully"><value>任务创建成功。</value></data>
+	<data name="Common.Task.CronExpression"><value>Cron: {0}</value></data>
+	<data name="Common.Task.CronExpressionLabel"><value>Cron 表达式</value></data>
+	<data name="Common.Task.CronExpressionRequired"><value>Cron 表达式为必填项。</value></data>
+	<data name="Common.Task.CustomProvider"><value>自定义提供商</value></data>
+	<data name="Common.Task.DefaultModelProvider"><value>使用智能体默认值</value></data>
+	<data name="Common.Task.DefaultModelProviderShort"><value>使用智能体默认值</value></data>
+	<data name="Common.Task.DeleteAfterRun"><value>运行后删除任务</value></data>
+	<data name="Common.Task.DeleteConfirmMessage"><value>确定要删除“{0}”吗？</value></data>
+	<data name="Common.Task.DeleteConfirmTitle"><value>删除任务</value></data>
+	<data name="Common.Task.DeletedSuccessfully"><value>任务已删除。</value></data>
+	<data name="Common.Task.RunsLoadFailed"><value>无法加载此任务的运行记录。请重试。</value></data>
+	<data name="Common.Task.DeletesAfterSuccessfulRun"><value>成功运行后自动删除</value></data>
+	<data name="Common.Task.DialogCreateTitle"><value>创建任务</value></data>
+	<data name="Common.Task.DialogEditTitle"><value>编辑任务</value></data>
+	<data name="Common.Task.DisablesAfterSuccessfulRun"><value>成功运行后自动禁用</value></data>
+	<data name="Common.Task.Enabled"><value>已启用</value></data>
+	<data name="Common.Task.ExternalTrigger.AddParameterButton"><value>添加参数</value></data>
+	<data name="Common.Task.ExternalTrigger.CopyEndpointButton"><value>复制端点</value></data>
+	<data name="Common.Task.ExternalTrigger.EnableLabel"><value>允许外部 Webhook 触发</value></data>
+	<data name="Common.Task.ExternalTrigger.Hint"><value>外部调用者可以通过经过身份验证的 hook 端点触发此任务。</value></data>
+	<data name="Common.Task.ExternalTrigger.KindBoolean"><value>布尔值</value></data>
+	<data name="Common.Task.ExternalTrigger.KindJson"><value>JSON</value></data>
+	<data name="Common.Task.ExternalTrigger.KindNumber"><value>数字</value></data>
+	<data name="Common.Task.ExternalTrigger.KindString"><value>字符串</value></data>
+	<data name="Common.Task.ExternalTrigger.NoParameters"><value>此 Webhook 不需要任何参数。</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameDuplicate"><value>参数名称必须唯一。</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNameInvalid"><value>参数名称必须以字母开头，且只能包含字母、数字、下划线或连字符。</value></data>
+	<data name="Common.Task.ExternalTrigger.ParameterNamePlaceholder"><value>parameterName</value></data>
+	<data name="Common.Task.ExternalTrigger.ParametersLabel"><value>Webhook 参数</value></data>
+	<data name="Common.Task.ExternalTrigger.SlugLabel"><value>Webhook 标识</value></data>
+	<data name="Common.Task.AfterTaskSummary"><value>在此之后: {0}</value></data>
+	<data name="Common.Task.AfterTaskSupport"><value>在所选任务成功后运行</value></data>
+	<data name="Common.Task.RunScope.Label"><value>运行范围</value></data>
+	<data name="Common.Task.RunScope.CustomTitle"><value>自定义任务设置</value></data>
+	<data name="Common.Task.RunScope.InheritSummary"><value>此任务继承所选智能体的工具、记忆、技能和工作区。</value></data>
+	<data name="Common.Task.RunScope.CustomSummary"><value>{0} 个工具，{1} 个工作区</value></data>
+	<data name="Common.Task.RunScope.UseAgentSettingsButton"><value>使用智能体设置</value></data>
+	<data name="Common.Task.RunScope.DialogTitle"><value>任务运行范围</value></data>
+	<data name="Common.Task.RunScope.DialogDescription"><value>自定义运行时设置仅针对此任务替换所选智能体设置。</value></data>
+	<data name="Common.Task.EvaluatedInTimeZone"><value>按 {0} 时区计算</value></data>
+	<data name="Common.Task.NextRun"><value>下次运行 {0}</value></data>
+	<data name="Common.Task.ShowInstructions"><value>显示指令</value></data>
+	<data name="Common.Task.EveryHoursMinutes"><value>每 {0} 小时 {1} 分钟</value></data>
+	<data name="Common.Task.EveryMinutes"><value>每 {0} 分钟</value></data>
+	<data name="Common.Task.FinishedAt"><value>完成于 {0}</value></data>
+	<data name="Common.Task.InstructionLabel"><value>指令</value></data>
+	<data name="Common.Task.InstructionPlaceholder"><value>智能体应该做什么？</value></data>
+	<data name="Common.Task.IntervalInvalid"><value>间隔必须至少为 1 分钟。</value></data>
+	<data name="Common.Task.IntervalLabel"><value>间隔（分钟）</value></data>
+	<data name="Common.Task.KeepLastRunsLabel"><value>保留最近运行记录</value></data>
+	<data name="Common.Task.KeepLastRunsPlaceholder"><value>全部保留</value></data>
+	<data name="Common.Task.KeepLastRunsHint"><value>下一次运行完成后会删除较早的运行记录。留空则保留所有运行记录。</value></data>
+	<data name="Common.Task.KeepLastRunsInvalid"><value>必须至少为 1，或留空以保留所有运行记录。</value></data>
+	<data name="Common.Task.RunDeleteConfirmTitle"><value>删除运行记录</value></data>
+	<data name="Common.Task.RunDeleteConfirmMessage"><value>删除 {0} 开始的运行记录？其对话记录也会被删除。</value></data>
+	<data name="Common.Task.RunDeletedSuccessfully"><value>运行记录已删除。</value></data>
+	<data name="Common.Task.MessagesCount"><value>{0} 条消息</value></data>
+	<data name="Common.Task.ModelProviderLabel"><value>模型提供商</value></data>
+	<data name="Common.Task.NamePlaceholder"><value>例如：每日总结</value></data>
+	<data name="Common.Task.NoOtherTasks"><value>没有其他可链接的任务。</value></data>
+	<data name="Common.Task.OnceAt"><value>在 {0} 运行一次</value></data>
+	<data name="Common.Task.OrphanRowHint"><value>关联的智能体已不存在</value></data>
+	<data name="Common.Task.PausedUntilEnabled"><value>任务已暂停，直到重新启用</value></data>
+	<data name="Common.Task.PredecessorLabel"><value>在任务后运行</value></data>
+	<data name="Common.Task.PredecessorMissing"><value>已删除的任务</value></data>
+	<data name="Common.Task.PredecessorRequired"><value>选择应在其后运行此任务的前序任务。</value></data>
+	<data name="Common.Task.PredecessorSelf"><value>任务不能在其自身之后运行。</value></data>
+	<data name="Common.Task.RunAtLabel"><value>运行时间</value></data>
+	<data name="Common.Task.RunAtTimeZoneHint"><value>保存并计划此任务时将使用您当前的用户时区。</value></data>
+	<data name="Common.Task.RunningNow"><value>正在运行</value></data>
+	<data name="Common.Task.ScheduleAfterTask"><value>在另一任务之后</value></data>
+	<data name="Common.Task.ScheduleCron"><value>Cron</value></data>
+	<data name="Common.Task.ScheduleExamples"><value>示例：工作日 09:30 使用 30 9 * * 1-5，每 6 小时使用 0 */6 * * *。</value></data>
+	<data name="Common.Task.ScheduleInterval"><value>间隔</value></data>
+	<data name="Common.Task.ScheduleOneShot"><value>一次性</value></data>
+	<data name="Common.Task.ScheduleTimeZoneHint"><value>保存此任务时，按您当前的用户时区计算计划时间。</value></data>
+	<data name="Common.Task.ServerLocalTime"><value>服务器本地时间</value></data>
+	<data name="Common.Task.StartedAt"><value>开始于 {0}</value></data>
+	<data name="Common.Task.StatusHealthy"><value>健康</value></data>
+	<data name="Common.Task.StatusIdle"><value>空闲</value></data>
+	<data name="Common.Task.StatusNeedsAttention"><value>需要关注</value></data>
+	<data name="Common.Task.StatusOrphan"><value>孤立</value></data>
+	<data name="Common.Task.StatusPaused"><value>已暂停</value></data>
+	<data name="Common.Task.StatusPending"><value>待处理</value></data>
+	<data name="Common.Task.StatusSkipped"><value>已跳过</value></data>
+	<data name="Common.Task.StatusReady"><value>就绪</value></data>
+	<data name="Common.Task.StatusRunning"><value>运行中</value></data>
+	<data name="Common.Task.TokensUsed"><value>{0} 个 Token</value></data>
+	<data name="Common.Task.UpdatedSuccessfully"><value>任务更新成功。</value></data>
+	<data name="Common.Task.WatchingForNextWindow"><value>正在等待下一个计划时间段</value></data>
+	<data name="Common.Task.Page.AllStatusesOption"><value>所有状态</value></data>
+	<data name="Common.Task.Page.CategoryLabel"><value>编排</value></data>
+	<data name="Common.Task.Page.CompletedMetric"><value>已完成</value></data>
+	<data name="Common.Task.Page.ConfiguredBadge"><value>已配置</value></data>
+	<data name="Common.Task.Page.CreateTaskButton"><value>创建任务</value></data>
+	<data name="Common.Task.Page.Description"><value>在单个屏幕中计划、观察和管理自主智能体工作。选择一项任务以检查其最新执行状态和近期运行记录。</value></data>
+	<data name="Common.Task.Page.DetailsDialogTitle"><value>任务详情</value></data>
+	<data name="Common.Task.Page.DirectoryDescription"><value>选择一项任务以查看详情和近期执行记录。</value></data>
+	<data name="Common.Task.Page.DirectoryTitle"><value>任务目录</value></data>
+	<data name="Common.Task.Page.DisabledOption"><value>已禁用</value></data>
+	<data name="Common.Task.Page.EmptyDescription"><value>创建您的第一个自主工作流，在此处查看计划、运行和实时执行历史记录。</value></data>
+	<data name="Common.Task.Page.EmptyTitle"><value>暂无智能体任务</value></data>
+	<data name="Common.Task.Page.FailedBadge"><value>失败</value></data>
+	<data name="Common.Task.Page.InspectButton"><value>检查</value></data>
+	<data name="Common.Task.Page.LatestRunHeader"><value>最新运行</value></data>
+	<data name="Common.Task.Page.LiveBadge"><value>运行中</value></data>
+	<data name="Common.Task.Page.NeverBadge"><value>从未</value></data>
+	<data name="Common.Task.Page.NeverRunOption"><value>从未运行</value></data>
+	<data name="Common.Task.Page.NewTaskButton"><value>新建任务</value></data>
+	<data name="Common.Task.Page.NoExecutionYet"><value>暂无执行记录</value></data>
+	<data name="Common.Task.Page.NoRunsYet"><value>此任务尚未记录任何运行。</value></data>
+	<data name="Common.Task.Page.OpenBadge"><value>开启</value></data>
+	<data name="Common.Task.Page.RecentExecutionsDescription"><value>此任务的最新运行记录，包括当前的实时运行（如果存在）。</value></data>
+	<data name="Common.Task.Page.RecentExecutionsTitle"><value>近期执行</value></data>
+	<data name="Common.Task.Page.RunNowButton"><value>立即运行</value></data>
+	<data name="Common.Task.Page.RunsButton"><value>运行记录</value></data>
+	<data name="Common.Task.Page.ScheduleHeader"><value>计划</value></data>
+	<data name="Common.Task.Page.SearchPlaceholder"><value>搜索任务或智能体</value></data>
+	<data name="Common.Task.Page.SelectTaskDescription"><value>从列表中选择一项任务，以保持其执行摘要、最新状态和近期运行记录可见。</value></data>
+	<data name="Common.Task.Page.SelectTaskTitle"><value>选择任务</value></data>
+	<data name="Common.Task.Page.StateHeader"><value>状态</value></data>
+	<data name="Common.Task.Page.TaskHeader"><value>任务</value></data>
+	<data name="Common.Task.Page.Title"><value>智能体运维</value></data>
+	<data name="Common.Task.Page.TotalTasksMetric"><value>任务总数</value></data>
+	<data name="Common.Task.Page.ViewAllButton"><value>查看全部</value></data>
+	<data name="Common.Task.Page.ViewRunsButton"><value>查看运行记录</value></data>
+	<data name="Admin.Title"><value>管理</value></data>
+	<data name="Admin.Description"><value>创建用户并确保访问安全。</value></data>
+	<data name="Admin.AuthMode.Label"><value>身份验证模式</value></data>
+	<data name="Admin.AuthMode.Description"><value>在标准密码登录与简化的 Home 个人资料选择流程之间切换。</value></data>
+	<data name="Admin.AuthMode.StandardLabel"><value>标准</value></data>
+	<data name="Admin.AuthMode.StandardDescription"><value>使用现有的用户名和密码登录界面。</value></data>
+	<data name="Admin.AuthMode.HomeLabel"><value>Home</value></data>
+	<data name="Admin.AuthMode.HomeDescription"><value>显示个人资料选择器，然后使用 PIN 码登录。</value></data>
+	<data name="Admin.AuthMode.PinRequirementTitle"><value>PIN 码要求</value></data>
+	<data name="Admin.AuthMode.PinRequirementDescription"><value>个人资料需要 PIN 码才能通过 Home 模式登录。</value></data>
+	<data name="Admin.AuthMode.HomeRequiresPin"><value>启用 Home 模式前，必须设置至少一个操作员 PIN 码。</value></data>
+	<data name="Admin.AuthMode.PasswordFallbackHint"><value>登录界面仍可使用密码登录。</value></data>
+	<data name="Admin.AuthMode.SaveButton"><value>保存身份验证设置</value></data>
+	<data name="Admin.AuthSettings.Saved"><value>身份验证设置已保存。</value></data>
+	<data name="Admin.User.CreateTitle"><value>创建用户</value></data>
+	<data name="Admin.User.CreateDescription"><value>为新用户设置用户名、电子邮件和密码。</value></data>
+	<data name="Admin.User.CreateButton"><value>创建用户</value></data>
+	<data name="Admin.User.DirectoryTitle"><value>用户目录</value></data>
+	<data name="Admin.User.FullNamePlaceholder"><value>张三</value></data>
+	<data name="Admin.User.UsernamePlaceholder"><value>zhangsan</value></data>
+	<data name="Admin.User.EmailPlaceholder"><value>zhangsan@example.com</value></data>
+	<data name="Admin.User.YouBadge"><value>你</value></data>
+	<data name="Admin.User.EditTitleAttribute"><value>编辑用户</value></data>
+	<data name="Admin.User.DeleteTitleAttribute"><value>删除用户</value></data>
+	<data name="Admin.User.ProfileTitle"><value>个人资料</value></data>
+	<data name="Admin.User.SaveProfileButton"><value>保存资料</value></data>
+	<data name="Admin.User.SaveRolesButton"><value>保存角色</value></data>
+	<data name="Admin.User.PasswordResetTitle"><value>重置密码</value></data>
+	<data name="Admin.User.ResetPasswordButton"><value>重置密码</value></data>
+	<data name="Admin.User.ResetPasswordCurrentUserHint"><value>使用个人资料对话框更改您自己的密码。</value></data>
+	<data name="Admin.User.PinLoginTitle"><value>PIN 码登录</value></data>
+	<data name="Admin.User.PinHeader"><value>PIN 码</value></data>
+	<data name="Admin.User.PinNewLabel"><value>新 PIN 码</value></data>
+	<data name="Admin.User.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Admin.User.PinConfirmLabel"><value>确认 PIN 码</value></data>
+	<data name="Admin.User.PinRepeatPlaceholder"><value>重复 PIN 码</value></data>
+	<data name="Admin.User.PinChangeButton"><value>更改 PIN 码</value></data>
+	<data name="Admin.User.PinSetButton"><value>设置 PIN 码</value></data>
+	<data name="Admin.User.PinClearButton"><value>清除 PIN 码</value></data>
+	<data name="Admin.User.PinHashesHint"><value>普通登录 PIN 以哈希值形式存储。</value></data>
+	<data name="Admin.User.CannotDeleteOwnAccount"><value>您不能删除自己的账户。</value></data>
+	<data name="Admin.User.DeleteConfirmTitle"><value>确认删除</value></data>
+	<data name="Admin.User.DeleteConfirmMessage"><value>确定要删除用户“{0}”吗？此操作无法撤消。</value></data>
+	<data name="Admin.GitHubSkills.ManageButton"><value>管理 GitHub 令牌</value></data>
+	<data name="Admin.OAuth.ManageButton"><value>管理提供商</value></data>
+	<data name="Admin.OAuth.Title"><value>OAuth 提供商</value></data>
+	<data name="Admin.OAuth.Description"><value>配置用于已关联账户和未来集成的共享 Google 与 Microsoft OAuth 应用。</value></data>
+	<data name="Admin.OAuth.SecretHint"><value>留空以保留当前存储的密钥。清除客户端 ID 以禁用提供商。</value></data>
+	<data name="Admin.OAuth.LoadingProviders"><value>正在加载提供商设置...</value></data>
+	<data name="Admin.OAuth.GoogleDescription"><value>Gmail、Calendar、YouTube</value></data>
+	<data name="Admin.OAuth.MicrosoftDescription"><value>Outlook、To-Do、Graph 集成</value></data>
+	<data name="Admin.OAuth.ConfiguredStatus"><value>已配置</value></data>
+	<data name="Admin.OAuth.ClientIdLabel"><value>客户端 ID</value></data>
+	<data name="Admin.OAuth.ClientIdPlaceholder"><value>{0} 客户端 ID</value></data>
+	<data name="Admin.OAuth.ClientSecretLabel"><value>客户端密钥</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderExists"><value>留空以保留当前密钥</value></data>
+	<data name="Admin.OAuth.SecretPlaceholderNew"><value>粘贴客户端密钥</value></data>
+	<data name="Admin.OAuth.SecretExists"><value>已存储密钥。</value></data>
+	<data name="Admin.OAuth.SecretNotStored"><value>尚未存储密钥。</value></data>
+	<data name="Admin.OAuth.SaveButton"><value>保存 {0}</value></data>
+	<data name="Admin.OAuth.ConfigurationSaved"><value>{0} 配置已保存。</value></data>
+	<data name="Common.Back"><value>返回</value></data>
+	<data name="Common.Forward"><value>前进</value></data>
+	<data name="Common.Completed"><value>已完成</value></data>
+	<data name="Common.No"><value>否</value></data>
+	<data name="Common.Ok"><value>确定</value></data>
+	<data name="Common.Parameter"><value>参数</value></data>
+	<data name="Common.ProfilePicture"><value>头像</value></data>
+	<data name="Common.ProfilePicture.AgentMissing"><value>在更改头像前请先保存智能体。</value></data>
+	<data name="Common.ProfilePictureChange"><value>更改头像</value></data>
+	<data name="Common.ProfilePicture.ChooseFromGallery"><value>内置图片</value></data>
+	<data name="Common.ProfilePicture.Current"><value>当前</value></data>
+	<data name="Common.ProfilePicture.GalleryDescription"><value>选择内置头像或上传您自己的图片。</value></data>
+	<data name="Common.ProfilePicture.GalleryEmpty"><value>当前没有可用的内置图片。</value></data>
+	<data name="Common.ProfilePicture.GalleryLoadFailed"><value>无法加载图片图库。</value></data>
+	<data name="Common.ProfilePicture.GalleryTitle"><value>选择图片</value></data>
+	<data name="Common.ProfilePictureRequirements"><value>PNG、JPEG 或 WebP。最大 2 MB。</value></data>
+	<data name="Common.ProfilePicture.SeedOptionLabel"><value>内置图片 {0}</value></data>
+	<data name="Common.ProfilePicture.Selected"><value>已选择</value></data>
+	<data name="Common.ProfilePicture.UnsupportedType"><value>文件必须是 PNG、JPEG 或 WebP 图片。</value></data>
+	<data name="Common.ProfilePicture.UploadOwn"><value>上传您自己的图片</value></data>
+	<data name="Common.ProfilePicture.UseSelected"><value>使用此图片</value></data>
+	<data name="Common.Wallpaper"><value>壁纸</value></data>
+	<data name="Common.Wallpaper.Change"><value>更改壁纸</value></data>
+	<data name="Common.Wallpaper.ChooseFromGallery"><value>内置壁纸</value></data>
+	<data name="Common.Wallpaper.Current"><value>当前</value></data>
+	<data name="Common.Wallpaper.Effects"><value>壁纸和毛玻璃效果</value></data>
+	<data name="Common.Wallpaper.EffectsDescription"><value>关闭以移除壁纸并使用不透明的纯色表面。</value></data>
+	<data name="Common.Wallpaper.GalleryDescription"><value>选择内置壁纸或上传您自己的图片。</value></data>
+	<data name="Common.Wallpaper.GalleryEmpty"><value>当前没有可用的内置壁纸。</value></data>
+	<data name="Common.Wallpaper.GalleryLoadFailed"><value>无法加载壁纸库。</value></data>
+	<data name="Common.Wallpaper.GalleryTitle"><value>选择壁纸</value></data>
+	<data name="Common.Wallpaper.Requirements"><value>PNG、JPEG 或 WebP。最大 10 MB。推荐 1920 × 1080。</value></data>
+	<data name="Common.Wallpaper.SeedOptionLabel"><value>内置壁纸 {0}</value></data>
+	<data name="Common.Wallpaper.Selected"><value>已选择</value></data>
+	<data name="Common.Wallpaper.UnsupportedType"><value>文件必须是 PNG、JPEG 或 WebP 图片。</value></data>
+	<data name="Common.Wallpaper.UploadOwn"><value>上传您自己的壁纸</value></data>
+	<data name="Common.Wallpaper.UseSelected"><value>使用此壁纸</value></data>
+	<data name="Common.Required"><value>必填</value></data>
+	<data name="Common.Started"><value>已启动</value></data>
+	<data name="Common.Status"><value>状态</value></data>
+	<data name="Common.Summary"><value>摘要</value></data>
+	<data name="Common.Value"><value>值</value></data>
+	<data name="Common.Yes"><value>是</value></data>
+	<data name="Common.Download.Complete"><value>下载完成！</value></data>
+	<data name="Common.Download.Failed"><value>下载失败。</value></data>
+	<data name="Common.Download.DownloadingModel"><value>正在下载模型</value></data>
+	<data name="Common.Download.UrlInvalid"><value>下载 URL 必须是有效的 http 或 https 地址。</value></data>
+	<data name="Common.ErrorPage.Title"><value>错误</value></data>
+	<data name="Common.ErrorPage.Heading"><value>错误。</value></data>
+	<data name="Common.ErrorPage.Message"><value>处理您的请求时发生错误。</value></data>
+	<data name="Common.ErrorPage.RequestId"><value>请求 ID：</value></data>
+	<data name="Common.ErrorPage.DevelopmentMode"><value>开发模式</value></data>
+	<data name="Common.ErrorPage.DevelopmentModeDetails"><value>切换到 Development 环境将显示有关所发生错误的更多详细信息。</value></data>
+	<data name="Common.ErrorPage.DevelopmentWarning"><value>已部署的应用程序不应启用 Development 环境。这可能会导致向最终用户显示异常中的敏感信息。对于本地调试，可通过将 ASPNETCORE_ENVIRONMENT 环境变量设置为 Development 并重启应用程序来启用 Development 环境。</value></data>
+	<data name="Common.Route.NotAuthorized"><value>您无权查看此页面。</value></data>
+	<data name="Common.Route.NotFound"><value>抱歉，找不到您请求的页面。</value></data>
+	<data name="Common.Validation.AllowedRange"><value>允许范围：{0} - {1}</value></data>
+	<data name="Common.Validation.EnterValidNumber"><value>请输入有效数字。</value></data>
+	<data name="Common.Validation.EnterWholeNumber"><value>请输入整数。</value></data>
+	<data name="Common.Validation.MaximumLength"><value>最大长度为 {0}。</value></data>
+	<data name="Common.Validation.MaximumValue"><value>最大值：{0}</value></data>
+	<data name="Common.Validation.MinimumLength"><value>最小长度为 {0}。</value></data>
+	<data name="Common.Validation.MinimumValue"><value>最小值：{0}</value></data>
+	<data name="Common.Validation.SelectOption"><value>选择一个选项</value></data>
+	<data name="Common.Validation.SelectValidOption"><value>请选择一个有效选项。</value></data>
+	<data name="Common.Validation.Submit"><value>提交</value></data>
+	<data name="Common.Validation.ThisFieldRequired"><value>此字段为必填项。</value></data>
+	<data name="Common.Task.RunsTitle"><value>运行记录 - {0}</value></data>
+	<data name="Admin.User.DeleteTitle"><value>删除用户</value></data>
+	<data name="Dialog.ConfirmNewPasswordLabel"><value>确认新密码</value></data>
+	<data name="Dialog.ContentTypeException"><value>异常</value></data>
+	<data name="Dialog.CurrentPasswordLabel"><value>当前密码</value></data>
+	<data name="Dialog.JsonTab"><value>JSON</value></data>
+	<data name="Dialog.InspectorEgressTab"><value>数据出站</value></data>
+	<data name="Dialog.NewPasswordLabel"><value>新密码</value></data>
+	<data name="Dialog.PasswordLeaveBlankHelper"><value>留空以保留当前密码。</value></data>
+	<data name="Dialog.ReasoningTitle"><value>推理</value></data>
+	<data name="Dialog.VisualTab"><value>可视化</value></data>
+	<data name="Common.Task.ScheduleKindLabel"><value>计划类型</value></data>
+  <data name="Common.SignOut"><value>退出登录</value></data>
+  <data name="Common.Unlock"><value>解锁</value></data>
+  <data name="Dialog.VaultPassword.Title"><value>保管库密码</value></data>
+  <data name="Dialog.VaultPassword.Description"><value>更改用于解锁已保存凭据和受保护数据的密码。</value></data>
+  <data name="Dialog.VaultPassword.Current"><value>当前保管库密码</value></data>
+  <data name="Dialog.VaultPassword.New"><value>新保管库密码</value></data>
+  <data name="Dialog.VaultPassword.Confirm"><value>确认保管库密码</value></data>
+  <data name="Dialog.VaultPassword.RecoveryWarning"><value>请妥善保存此密码。Oscova 无法恢复该密码，缺少该密码将无法打开受保护的数据。</value></data>
+  <data name="Dialog.VaultPassword.ChangeButton"><value>更改密码</value></data>
+  <data name="Dialog.VaultPassword.ChangeSuccess"><value>您的保管库密码已更改。</value></data>
+  <data name="Dialog.VaultPassword.LengthError"><value>保管库密码必须在 12 到 256 个字符之间。</value></data>
+  <data name="Dialog.VaultPassword.ManageButton"><value>更改保管库密码</value></data>
+  <data name="Dialog.VaultPassword.ConfirmationError"><value>两次输入的保管库密码不一致。</value></data>
+  <data name="Dialog.VaultPassword.SetupTitle"><value>创建您的保管库密码</value></data>
+  <data name="Dialog.VaultPassword.SetupDescription"><value>只有你知道这个密码。</value></data>
+  <data name="Dialog.VaultPassword.SetupEncrypts"><value>它会加密此设备上的聊天、记忆、设置和已保存的密钥。</value></data>
+  <data name="Dialog.VaultPassword.SetupSeparate"><value>它与你的登录密码是分开的。</value></data>
+  <data name="Dialog.VaultPassword.CreateButton"><value>创建保管库</value></data>
+  <data name="Dialog.VaultPassword.UnlockTitle"><value>解锁您的保管库</value></data>
+  <data name="Dialog.VaultPassword.UnlockDescription"><value>输入您的保管库密码以解锁已保存的凭据和受保护的数据。</value></data>
+  <data name="Dialog.VaultPassword.Incorrect"><value>保管库密码不正确。</value></data>
+  <data name="Dialog.VaultPassword.StateLoadFailed"><value>无法加载保管库状态。</value></data>
+  <data name="Dialog.DuressCredentials.AccountPassword"><value>账户密码</value></data>
+  <data name="Dialog.DuressCredentials.AccountPasswordError"><value>您的账户密码不正确。</value></data>
+  <data name="Dialog.DuressCredentials.Agents"><value>要删除的智能体</value></data>
+  <data name="Dialog.DuressCredentials.Confirmation"><value>确认胁迫密码</value></data>
+  <data name="Dialog.DuressCredentials.ConfirmationError"><value>两次输入的胁迫密码不一致。</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspace"><value>默认工作区始终保留。</value></data>
+  <data name="Dialog.DuressCredentials.DefaultWorkspaceError"><value>无法选择默认工作区。</value></data>
+  <data name="Dialog.DuressCredentials.DeleteThreads"><value>删除所有对话</value></data>
+  <data name="Dialog.DuressCredentials.ClearSharedFolder"><value>为所有用户清空共享文件夹</value></data>
+  <data name="Dialog.DuressCredentials.Description"><value>使用第二个密码正常登录，同时永久销毁您选定的私人数据。</value></data>
+  <data name="Dialog.DuressCredentials.DifferentError"><value>胁迫密码必须与您的账户密码不同。</value></data>
+  <data name="Dialog.DuressCredentials.LengthError"><value>胁迫密码必须在 12 到 256 个字符之间。</value></data>
+  <data name="Dialog.DuressCredentials.LoadFailed"><value>无法加载胁迫凭据选项。</value></data>
+  <data name="Dialog.DuressCredentials.NoTargets"><value>没有可供选择的智能体、任务或工作区。</value></data>
+  <data name="Dialog.DuressCredentials.OpenButton"><value>设置胁迫凭据</value></data>
+  <data name="Dialog.DuressCredentials.Password"><value>胁迫密码</value></data>
+  <data name="Dialog.DuressCredentials.PriorSelections"><value>无法显示已保存的选择。此表单从空开始，保存将替换完整策略。</value></data>
+  <data name="Dialog.DuressCredentials.Save"><value>保存胁迫凭据</value></data>
+  <data name="Dialog.DuressCredentials.SaveSuccess"><value>已保存胁迫凭据。</value></data>
+  <data name="Dialog.DuressCredentials.SelectionTooLarge"><value>您选择的项目过多。请移除部分项目后重试。</value></data>
+  <data name="Dialog.DuressCredentials.SharedAgentError"><value>无法选择共享智能体。</value></data>
+  <data name="Dialog.DuressCredentials.TargetNameTooLong"><value>所选名称过长。</value></data>
+  <data name="Dialog.DuressCredentials.Tasks"><value>要删除的任务</value></data>
+  <data name="Dialog.DuressCredentials.Title"><value>胁迫凭据</value></data>
+  <data name="Dialog.DuressCredentials.TwoFactorError"><value>启用双重验证时无法设置胁迫凭据。</value></data>
+  <data name="Dialog.DuressCredentials.Unavailable"><value>所选项目之一已不可用。请重新打开表单并重新选择。</value></data>
+  <data name="Dialog.DuressCredentials.Workspaces"><value>要清空的工作区</value></data>
+  <data name="Dialog.DuressCredentials.WorkspaceClearing"><value>工作区内容将被删除，但工作区本身会被保留。</value></data>
+  <data name="Dialog.Security.Title"><value>安全</value></data>
+  <data name="Dialog.DuressCredentials.Pin"><value>胁迫 PIN（可选）</value></data>
+  <data name="Dialog.DuressCredentials.PinConfirmation"><value>确认胁迫 PIN</value></data>
+  <data name="Dialog.DuressCredentials.PinHelp"><value>两种胁迫凭据都会永久删除相同的选定数据。保存会替换所有选择。将两个 PIN 字段留空可移除胁迫 PIN。必须先分配登录 PIN。</value></data>
+  <data name="Dialog.DuressCredentials.PinError"><value>输入相同的 6–64 位数字 PIN（0–9），或将两项留空。</value></data>
+  <data name="Dialog.DuressCredentials.PinRequired"><value>请先设置登录 PIN，再配置胁迫 PIN。</value></data>
+  <data name="Dialog.DuressCredentials.PinDifferent"><value>请选择与登录 PIN 不同的 PIN。</value></data>
+  <data name="Admin.User.PinNotAllowedError"><value>无法使用此 PIN。请选择其他 PIN。</value></data>
+  <data name="Admin.User.PinLengthError"><value>PIN 必须为 6–64 位数字（0–9）。</value></data>
+  <data name="Common.Reconnect.Title" xml:space="preserve"><value>连接到 Oscova</value></data>
+  <data name="Common.Reconnect.Connecting" xml:space="preserve"><value>正在重新连接…</value></data>
+  <data name="Common.Reconnect.Countdown" xml:space="preserve"><value>将在 {0} 秒后重试。</value></data>
+  <data name="Common.Reconnect.Failed" xml:space="preserve"><value>无法重新连接。请检查网络连接后重试。</value></data>
+  <data name="Common.Reconnect.Expired" xml:space="preserve"><value>会话已结束。请重新加载以继续。未保存的更改可能会丢失。</value></data>
+  <data name="Common.Reconnect.Paused" xml:space="preserve"><value>会话已暂停。请恢复会话以继续。</value></data>
+  <data name="Common.Reconnect.Resuming" xml:space="preserve"><value>正在恢复会话…</value></data>
+  <data name="Common.Reconnect.ResumeFailed" xml:space="preserve"><value>无法恢复会话。请重试。</value></data>
+  <data name="Common.Reconnect.Updating" xml:space="preserve"><value>Oscova 重启后此页面会重新加载。你可能需要重新登录。</value></data>
+  <data name="Common.Reload" xml:space="preserve"><value>重新加载</value></data>
+  <data name="Common.Resume" xml:space="preserve"><value>恢复</value></data>
+	<data name="Common.Task.NotifyOnCompletion"><value>完成时通知</value></data>
+	<data name="Common.Task.NotifyOnCompletionHint"><value>任务成功运行后，向应用收件箱发送额外通知。失败通知始终显示在应用收件箱中。</value></data>
+<data name="Notifications.Task.SkippedLowBattery" xml:space="preserve"><value>此任务已跳过，因为电脑正在使用电池且电量低于设定阈值。准备好后可手动运行。</value></data>
+<data name="Notifications.Task.BatteryInformationUnavailable" xml:space="preserve"><value>无法获取运行 Oscova 的电脑的电池或电源连接信息。</value></data>
+<data name="Admin.ExecutionPermissionsTitle" xml:space="preserve"><value>执行权限</value></data><data name="Admin.PermissionProjects" xml:space="preserve"><value>项目</value></data><data name="Admin.PermissionWorkspaceShell" xml:space="preserve"><value>工作区 Shell</value></data><data name="Admin.PermissionProjectShell" xml:space="preserve"><value>项目 Shell</value></data><data name="Admin.ExecutionPermissionsHint" xml:space="preserve"><value>禁用权限会阻止新任务，并请求取消受影响的运行中任务。</value></data><data name="Admin.ExecutionPermissionsSaved" xml:space="preserve"><value>执行权限已保存。</value></data>  <data name="Common.DialogOperatorVaultTitle" xml:space="preserve">
+    <value>正在等待操作员</value>
+  </data>
+  <data name="Common.DialogOperatorVaultDescription" xml:space="preserve">
+    <value>操作员需要先解锁自己的保险库，然后选择“重试”继续。</value>
+  </data>
+  <data name="Common.AdminPermissionApprovedSkills" xml:space="preserve">
+    <value>从已批准的仓库安装技能</value>
+  </data>
+  <data name="Common.AdminPermissionCustomSkills" xml:space="preserve">
+    <value>上传、创建和编辑自定义技能</value>
+  </data>
+  <data name="Common.AdminPermissionPersonalMcp" xml:space="preserve">
+    <value>管理个人 MCP 连接</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedTitle" xml:space="preserve">
+    <value>工作已中断</value>
+  </data>
+  <data name="Notifications.Execution.InterruptedBody" xml:space="preserve">
+    <value>设置已更改，受影响的工作正在停止。开始新的运行前，请检查设置。</value>
+  </data>
+  <data name="Governance.Applying" xml:space="preserve"><value>正在停止受影响的工作并应用更改…</value></data>
+  <data name="Governance.SharedProviders" xml:space="preserve"><value>提供商由操作员配置。保留操作员的默认选项，或选择其他可用提供商。</value></data>
+  <data name="Governance.OperatorDefault" xml:space="preserve"><value>操作员默认选项：{0}</value></data>
+  <data name="Governance.ProviderUnavailable" xml:space="preserve"><value>所选提供商不可用。请选择其他提供商。</value></data>
+  <data name="Governance.ConfirmInterruption" xml:space="preserve"><value>此更改将停止正在使用此资源的工作。立即应用吗？</value></data>
+  <data name="Governance.ChangesSaved" xml:space="preserve"><value>更改已保存。</value></data>
+  <data name="Notifications.Providers.AttentionTitle" xml:space="preserve"><value>选择可用的模型提供商</value></data>
+  <data name="Notifications.Providers.AttentionBody" xml:space="preserve"><value>已保存的模型提供商不可用。请在设置中选择可用提供商，并检查代理和任务的提供商选项。</value></data>
+  <data name="Notifications.Plugins.SetupTitle" xml:space="preserve"><value>插件设置需要处理</value></data>
+  <data name="Notifications.Plugins.SetupBody" xml:space="preserve"><value>无法在 {1} 上准备 {0}。{2} 修正设置后请重试。</value></data>
+  <data name="Notifications.Plugins.DeviceUnavailable" xml:space="preserve"><value>在 {0} 上暂不可用。已通知操作员。</value></data>
+  <data name="Common.AdminPermissionPersonalModels" xml:space="preserve"><value>管理个人模型提供商</value></data>
+  <data name="Common.AdminPermissionSharedFolder" xml:space="preserve"><value>共享文件夹</value></data>
+  <data name="ModelBudgetTitle" xml:space="preserve"><value>模型预算</value></data>
+  <data name="ModelBudgetDaily" xml:space="preserve"><value>每日限额（美元）</value></data>
+  <data name="ModelBudgetMonthly" xml:space="preserve"><value>每月限额（美元）</value></data>
+  <data name="ModelBudgetAlerts" xml:space="preserve"><value>达到限额的 80% 时通知我</value></data>
+  <data name="ModelBudgetBlank" xml:space="preserve"><value>以美元估算。将限额留空表示不限制。共享提供商的所有使用者共用一个预算。</value></data>
+  <data name="ModelBudgetIncomplete" xml:space="preserve"><value>估算不完整。部分用量无法定价或读取。</value></data>
+  <data name="ModelBudgetLocal" xml:space="preserve"><value>本地推理：无估算费用。</value></data>
+  <data name="ModelBudgetOwnerExceeded" xml:space="preserve"><value>{0} 的预算已用完。您仍可继续本次操作。</value></data>
+  <data name="ModelBudgetSharedExceeded" xml:space="preserve"><value>{0} 的预算已用完。请联系操作员或选择其他模型提供商。</value></data>
+  <data name="ModelBudgetContinue" xml:space="preserve"><value>仍然继续</value></data>
+  <data name="ModelBudgetTaskSkipped" xml:space="preserve"><value>模型预算已用完。本次尝试已跳过，任务仍按计划运行。</value></data>
+  <data name="ModelBudgetSearchPaused" xml:space="preserve"><value>嵌入预算已用完，语义搜索和索引已暂停。请在预算重置或所有者调整限额后重试。</value></data>
+  <data name="ModelBudgetThreshold" xml:space="preserve"><value>{0} 已达到某项支出限额的至少 80%。请打开“模型和提供商”查看预算。</value></data>
+  <data name="ModelBudgetSet" xml:space="preserve"><value>设置预算</value></data>
+  <data name="ModelBudgetEdit" xml:space="preserve"><value>编辑预算</value></data>
+  <data name="ModelBudgetDailyUsage" xml:space="preserve"><value>今日 ${0:0.##} / ${1:0.##}</value></data>
+  <data name="ModelBudgetMonthlyUsage" xml:space="preserve"><value>本月 ${0:0.##} / ${1:0.##}</value></data>
+  <data name="ModelBudgetReset" xml:space="preserve"><value>预算已用完。重置时间：{0:g}。</value></data>
+  <data name="ModelBudgetSharedReset" xml:space="preserve"><value>预算已用完。重置时间：{0:g}。请选择其他提供商或联系管理员。</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdle" xml:space="preserve"><value>我使用提供商时等待</value></data>
+  <data name="Common.Task.WaitForOwnerProviderIdleHint" xml:space="preserve"><value>计划启动会等待你对任务提供商的活动请求结束。立即运行、Webhook 和链式任务会立即启动。</value></data>
+  <data name="Common.Task.InstructionDefaultUnavailable" xml:space="preserve"><value>任务的默认指令不可用。请启用其插件并重新启动。</value></data>
+  <data name="Notifications.Channels.SavedNotApplied" xml:space="preserve"><value>设置已保存，但无法应用。现有连接仍在运行。请检查设置并重试。</value></data>
+  <data name="Common.ReleaseNotes" xml:space="preserve"><value>发行说明</value></data>
+  <data name="Common.RecordLabel.DeletedAgent" xml:space="preserve"><value>已删除的智能体</value></data>
+  <data name="Common.RecordLabel.DeletedProvider" xml:space="preserve"><value>已删除的提供商</value></data>
+  <data name="Common.RecordLabel.DeletedMcpServer" xml:space="preserve"><value>已删除的 MCP 服务器</value></data>
+  <data name="Common.RecordLabel.OwnDestination" xml:space="preserve"><value>自有目标</value></data>
+  <data name="Common.RecordLabel.OtherUsersAgents" xml:space="preserve"><value>其他用户的智能体</value></data>
+  <data name="Common.RecordLabel.UsersOwnProviders" xml:space="preserve"><value>用户自有提供商</value></data>
+  <data name="Common.RecordLabel.UsersOwnModels" xml:space="preserve"><value>用户自有模型</value></data>
+  <data name="Common.RecordLabel.UsersOwnTools" xml:space="preserve"><value>用户自有工具</value></data>
+  <data name="Dialog.LogsScope.Label" xml:space="preserve"><value>日志范围</value></data>
+  <data name="Dialog.LogsFile.Label" xml:space="preserve"><value>日志文件</value></data>
+  <data name="Common.PreviousPage" xml:space="preserve"><value>上一页</value></data>
+  <data name="Common.NextPage" xml:space="preserve"><value>下一页</value></data>
+  <data name="Common.TimeRange" xml:space="preserve"><value>时间范围</value></data>
+  <data name="Common.Validation.EnterValidEmail" xml:space="preserve"><value>请输入有效的电子邮件地址。</value></data>
+	<data name="Common.Task.ApprovalModeLabel"><value>审批模式</value></data>
+	<data name="Common.Task.ApprovalModeAutoReject"><value>自动拒绝需要审批的工具</value></data>
+	<data name="Common.Task.ApprovalModeAutoApprove"><value>自动批准需要审批的工具</value></data>
+	<data name="Common.Task.ApprovalModeHint"><value>后台任务没有可交互的用户。需要审批的工具必须自动决定是否执行。</value></data>
+  <data name="Common.Task.ExternalTrigger.EndpointLabel" xml:space="preserve"><value>Webhook 端点</value></data>
+  <data name="Common.Task.ExternalTrigger.ParameterKindLabel" xml:space="preserve"><value>参数类型</value></data>
+</root>

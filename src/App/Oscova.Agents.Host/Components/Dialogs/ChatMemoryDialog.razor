@@ -1,0 +1,318 @@
+@inject ManagementApiClient ManagementApiClient
+@inject ChatApiClient ChatApiClient
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryStoreTitle, "Chat Memory Store")"
+                Icon="lucide:database-zap"
+                MaxWidthClass="max-w-7xl"
+                HelpTopic="@HelpTopics.ChatMemory"
+                BodyClass="px-5 pb-5 flex min-h-0 flex-col overflow-y-auto">
+    <ChildContent>
+		@if (!string.IsNullOrWhiteSpace(_error))
+		{
+			<div role="alert" class="alert alert-error mb-3">
+				<span class="font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.DialogFailedLoadChatMemoryError, "Failed to load chat memory:")</span>
+				<span class="truncate">@_error</span>
+			</div>
+		}
+
+		<div class="mb-3 flex flex-wrap items-center gap-2">
+			<select class="select select-sm w-52"
+					aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderAgent, "Agent")"
+					value="@_selectedAgentId"
+					@onchange="OnAgentChangedAsync">
+				<option value="">@CommonLoc.GetOrDefault(CommonTextKeys.DialogAllAgentsOption, "All Agents")</option>
+				@foreach (var agent in _availableAgents)
+				{
+					<option value="@agent.Id">@agent.Label</option>
+				}
+			</select>
+
+			<select class="select select-sm w-64"
+					aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderThread, "Thread")"
+					value="@_selectedThreadId"
+					@onchange="OnThreadChangedAsync">
+				<option value="">@CommonLoc.GetOrDefault(CommonTextKeys.DialogAllThreadsOption, "All Threads")</option>
+				@foreach (var thread in _availableThreads)
+				{
+					<option value="@thread.Id">@thread.Label</option>
+				}
+			</select>
+
+			<div class="ml-auto flex items-center gap-1">
+				@if (_isLoading)
+				{
+					<span class="loading loading-dots loading-sm"></span>
+				}
+				<button class="btn btn-ghost btn-sm"
+						disabled="@_isLoading"
+						@onclick="RefreshAsync">
+					<span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
+					@CommonLoc.GetOrDefault(CommonTextKeys.Refresh, "Refresh")
+				</button>
+			</div>
+		</div>
+
+		<div class="custom-settings-table-container flex-1 overflow-x-auto overflow-y-auto rounded-lg border border-base-300">
+			<table class="table table-xs table-pin-rows custom-settings-adaptive-table custom-dialog-data-table custom-memory-data-table">
+				<thead>
+					<tr>
+						<th class="w-10"></th>
+						<th class="w-44">@CommonLoc.GetOrDefault(CommonTextKeys.Time, "Time")</th>
+						<th class="w-40">@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderAgent, "Agent")</th>
+						<th class="w-48">@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderThread, "Thread")</th>
+						<th class="w-24">@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderChunk, "Chunk")</th>
+						<th>@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderContent, "Content")</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (_page is null || _page.Entries.Count == 0)
+					{
+						<tr>
+							<td colspan="6" class="py-8 text-center opacity-60">
+								@if (_isLoading)
+								{
+									<span>@CommonLoc.GetOrDefault(CommonTextKeys.Loading, "Loading...")</span>
+								}
+								else
+								{
+									<span>@CommonLoc.GetOrDefault(CommonTextKeys.DialogNoChatMemoryEntries, "No chat-memory entries match the current filters.")</span>
+								}
+							</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var entry in _page.Entries)
+						{
+							var isExpanded = _expandedKeys.Contains(entry.Key);
+
+							<tr class="hover:bg-base-200/60">
+								<td>
+									<button class="btn btn-ghost btn-xs btn-square"
+											title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogToggleDetailsTitle, "Toggle details")"
+											@onclick="() => ToggleExpanded(entry.Key)">
+										<iconify-icon icon="@(isExpanded ? "lucide:chevron-down" : "lucide:chevron-right")"
+													  width="14"
+													  height="14"></iconify-icon>
+									</button>
+								</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.Time, "Time")" class="whitespace-nowrap font-mono text-xs">@FormatTimestamp(entry.TimestampUtc)</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderAgent, "Agent")" class="text-xs" title="@GetAgentLabel(entry.AgentId)">
+									<div class="flex flex-wrap items-center gap-1">
+										<span>@GetAgentLabel(entry.AgentId)</span>
+									</div>
+								</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderThread, "Thread")" class="text-xs" title="@entry.ThreadId">
+									<div class="flex flex-col gap-1">
+										@if (!string.IsNullOrWhiteSpace(GetThreadTitle(entry.ThreadId)))
+										{
+											<span class="opacity-70">@GetThreadTitle(entry.ThreadId)</span>
+										}
+										else
+										{
+											<span class="font-mono">@entry.ThreadId</span>
+										}
+									</div>
+								</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderChunk, "Chunk")" class="text-xs">@entry.ChunkIndex</td>
+								<td data-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderContent, "Content")" class="text-xs break-all">@GetPreview(entry.Content)</td>
+							</tr>
+
+							@if (isExpanded)
+							{
+								<tr>
+									<td colspan="6" class="bg-base-200/70">
+										<div class="flex flex-col gap-3 p-3">
+											<div class="flex flex-wrap items-center gap-2 text-xs">
+												<span class="badge badge-ghost badge-sm font-mono">@CommonLoc.GetOrDefault(CommonTextKeys.Key, "Key")</span>
+												<span class="font-mono break-all">@entry.Key</span>
+											</div>
+											<div class="flex flex-wrap items-center gap-2 text-xs">
+												<span class="badge badge-ghost badge-sm font-mono">@CommonLoc.GetOrDefault(CommonTextKeys.DialogChatMemoryHeaderThread, "Thread")</span>
+												<span class="font-mono break-all">@entry.ThreadId</span>
+											</div>
+											<div>
+												<div class="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">@CommonLoc.GetOrDefault(CommonTextKeys.DialogStoredContent, "Stored Content")</div>
+												<pre class="max-h-64 overflow-x-auto whitespace-pre-wrap rounded-box bg-base-100 p-3 text-xs font-mono">@entry.Content</pre>
+											</div>
+										</div>
+									</td>
+								</tr>
+							}
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+
+		@if (_page is not null)
+		{
+			<div class="mt-3 flex items-center justify-between">
+				<span class="text-xs opacity-70">@FormatCommonText(CommonTextKeys.Page, "Page {0}", _page.CurrentPage)</span>
+				<div class="join">
+					<button class="join-item btn btn-sm"
+							aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.PreviousPage, "Previous page")"
+							disabled="@(_isLoading || _page.CurrentPage <= 1)"
+							@onclick="() => GoToPageAsync(_page.CurrentPage - 1)">&lt;</button>
+					<button class="join-item btn btn-sm"
+							aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.NextPage, "Next page")"
+							disabled="@(_isLoading || !_page.HasNextPage)"
+							@onclick="() => GoToPageAsync(_page.CurrentPage + 1)">&gt;</button>
+				</div>
+			</div>
+		}
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+	[CascadingParameter]
+	public DialogInstance DialogInstance { get; set; } = default!;
+
+	private TimeZoneInfo? UserTimeZone { get; set; }
+
+	private readonly HashSet<string> _expandedKeys = [];
+	private readonly Dictionary<string, ChatThread> _threadsById = new(StringComparer.Ordinal);
+	private readonly List<AgentOption> _availableAgents = [];
+	private readonly List<ThreadOption> _availableThreads = [];
+
+	private ChatMemoryPage? _page;
+	private string _selectedAgentId = string.Empty;
+	private string _selectedThreadId = string.Empty;
+	private string? _error;
+	private bool _isLoading;
+
+	private const int PageSize = 50;
+
+	private string FormatCommonText(string key, string fallback, params object?[] args)
+	{
+		return string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(key, fallback), args);
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserTimeZone = DialogInstance.Get<TimeZoneInfo>("UserTimeZone");
+		await LoadFilterMetadataAsync();
+		await LoadPageAsync(1);
+	}
+
+	private async Task LoadFilterMetadataAsync()
+	{
+		var threads = await ChatApiClient.GetThreadsAsync();
+		_threadsById.Clear();
+		_availableAgents.Clear();
+		_availableThreads.Clear();
+
+		foreach (var thread in threads.OrderByDescending(thread => thread.UpdatedAt))
+		{
+			_threadsById[thread.Id] = thread;
+		}
+
+		foreach (var thread in _threadsById.Values)
+		{
+			if (!string.IsNullOrWhiteSpace(thread.AgentId) &&
+				_availableAgents.All(agent => !string.Equals(agent.Id, thread.AgentId, StringComparison.Ordinal)))
+			{
+				_availableAgents.Add(new AgentOption(thread.AgentId, string.IsNullOrWhiteSpace(thread.AgentName) ? thread.AgentId : thread.AgentName));
+			}
+
+			var threadLabel = string.IsNullOrWhiteSpace(thread.Title)
+				? thread.Id
+				: thread.Title;
+			_availableThreads.Add(new ThreadOption(thread.Id, threadLabel));
+		}
+	}
+
+	private async Task RefreshAsync()
+	{
+		await LoadFilterMetadataAsync();
+		await LoadPageAsync(_page?.CurrentPage ?? 1);
+	}
+
+	private async Task OnAgentChangedAsync(ChangeEventArgs args)
+	{
+		_selectedAgentId = args.Value?.ToString() ?? string.Empty;
+
+		// Reset to the first page whenever the user changes a top-level browse filter.
+		await LoadPageAsync(1);
+	}
+
+	private async Task OnThreadChangedAsync(ChangeEventArgs args)
+	{
+		_selectedThreadId = args.Value?.ToString() ?? string.Empty;
+
+		// Reset to the first page whenever the user changes a top-level browse filter.
+		await LoadPageAsync(1);
+	}
+
+	private async Task GoToPageAsync(int page)
+	{
+		await LoadPageAsync(page);
+	}
+
+	private async Task LoadPageAsync(int page)
+	{
+		try
+		{
+			_error = null;
+			_isLoading = true;
+			StateHasChanged();
+
+			// Calls the HTTP browse endpoint, which then hands off to ChatMemoryService for vector-store access.
+			_page = await ManagementApiClient.GetChatMemoryPageAsync(
+				NullIfEmpty(_selectedAgentId),
+				NullIfEmpty(_selectedThreadId),
+				Math.Max(1, page),
+				PageSize);
+			_expandedKeys.Clear();
+		}
+		catch (Exception ex)
+		{
+			_error = ex.Message;
+		}
+		finally
+		{
+			_isLoading = false;
+			StateHasChanged();
+		}
+	}
+
+	private void ToggleExpanded(string key)
+	{
+		if (!_expandedKeys.Add(key))
+		{
+			_expandedKeys.Remove(key);
+		}
+	}
+
+	private string GetAgentLabel(string agentId)
+	{
+		return _availableAgents.FirstOrDefault(agent => string.Equals(agent.Id, agentId, StringComparison.Ordinal))?.Label ?? agentId;
+	}
+
+	private string GetThreadTitle(string threadId)
+	{
+		return _threadsById.TryGetValue(threadId, out var thread) ? thread.Title : string.Empty;
+	}
+
+	private static string GetPreview(string content)
+	{
+		return content.Length <= 180 ? content : $"{content[..180]}...";
+	}
+
+	private static string? NullIfEmpty(string value)
+	{
+		return string.IsNullOrWhiteSpace(value) ? null : value;
+	}
+
+	private string FormatTimestamp(DateTime timestampUtc)
+	{
+		var userTimeZone = UserTimeZone ?? TimeZoneInfo.Local;
+		var localTime = TimeZoneInfo.ConvertTimeFromUtc(timestampUtc, userTimeZone);
+		return localTime.ToString("yyyy-MM-dd HH:mm:ss");
+	}
+
+	private sealed record AgentOption(string Id, string Label);
+
+	private sealed record ThreadOption(string Id, string Label);
+}

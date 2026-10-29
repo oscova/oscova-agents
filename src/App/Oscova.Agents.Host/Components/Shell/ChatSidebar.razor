@@ -1,0 +1,301 @@
+@inject SettingsPageRegistry SettingsRegistry
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<NavigationText> Loc
+@inject IStringLocalizer<SettingsText> SettingsLoc
+@inject IStringLocalizer<ChatText> ChatLoc
+@inject IJSRuntime JS
+@inject ChatSidebarState SidebarState
+@implements IAsyncDisposable
+
+<nav class="workspace-rail" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Overview, "Overview")">
+    <div class="workspace-brand">
+        <img src="images/oscova-mark-violet.svg" width="28" height="28" alt="Oscova Agents" />
+    </div>
+    <div class="workspace-toggle-slot">
+    @if (ActiveView == ActiveView.Chat)
+    {
+        <button type="button" class="workspace-rail-button workspace-chat-toggle"
+                title="@(IsChatListCollapsed ? ChatLoc[ChatTextKeys.ShowChatsLabel] : Loc[NavigationTextKeys.CloseSidebar])"
+                aria-label="@(IsChatListCollapsed ? ChatLoc[ChatTextKeys.ShowChatsLabel] : Loc[NavigationTextKeys.CloseSidebar])"
+                aria-expanded="@(!IsChatListCollapsed ? "true" : "false")" aria-controls="workspace-chat-list" @onclick="OnToggleChatList">
+            <span class="iconify lucide--panel-left size-4.5" aria-hidden="true"></span>
+        </button>
+    }
+    else if (ActiveView == ActiveView.Settings)
+    {
+        <button type="button" class="workspace-rail-button" title="@Loc[_settingsNavigationOpen ? NavigationTextKeys.CloseSidebar : NavigationTextKeys.ShowSettingsNavigation]"
+                aria-label="@Loc[_settingsNavigationOpen ? NavigationTextKeys.CloseSidebar : NavigationTextKeys.ShowSettingsNavigation]" aria-expanded="@(_settingsNavigationOpen ? "true" : "false")" aria-controls="workspace-settings-navigation"
+                @onclick="() => _settingsNavigationOpen = !_settingsNavigationOpen">
+            <span class="iconify lucide--panel-left size-4.5" aria-hidden="true"></span>
+        </button>
+    }
+    </div>
+    <NavLink href="" class="workspace-rail-button" ActiveClass="active" Match="NavLinkMatch.All"
+             title="@Loc.GetOrDefault(NavigationTextKeys.Chat, "Chat")" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Chat, "Chat")" aria-current="@GetNavCurrent(ActiveView.Chat)">
+        <span class="iconify lucide--messages-square size-4.5" aria-hidden="true"></span>
+    </NavLink>
+    @* Keep conversations and their scheduled work together. *@
+    <NavLink href="tasks" class="workspace-rail-button" ActiveClass="active" Match="NavLinkMatch.All"
+             title="@Loc.GetOrDefault(NavigationTextKeys.Tasks, "Tasks")" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Tasks, "Tasks")" aria-current="@GetNavCurrent(ActiveView.Tasks)">
+        <span class="iconify lucide--calendar-clock size-4.5" aria-hidden="true"></span>
+    </NavLink>
+    <NavLink href="dashboard" class="workspace-rail-button" ActiveClass="active" Match="NavLinkMatch.All"
+             title="@Loc.GetOrDefault(NavigationTextKeys.Dashboard, "Dashboard")" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Dashboard, "Dashboard")" aria-current="@GetNavCurrent(ActiveView.Dashboard)">
+        <span class="iconify lucide--gauge size-4.5" aria-hidden="true"></span>
+    </NavLink>
+    @if (IsAdmin)
+    {
+        <NavLink href="admin" class="workspace-rail-button" ActiveClass="active" Match="NavLinkMatch.All"
+                 title="@Loc.GetOrDefault(NavigationTextKeys.Administration, "Administration")" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Administration, "Administration")" aria-current="@GetNavCurrent(ActiveView.Admin)">
+            <span class="iconify lucide--shield size-4.5" aria-hidden="true"></span>
+        </NavLink>
+    }
+    <NotificationBell Placement="dropdown-right dropdown-start" />
+    <div class="workspace-rail-spacer"></div>
+    <WorkspaceUtilities ActiveView="@ActiveView" OnCustomizerClicked="@OnCustomizerClicked" />
+    @if (ActiveView == ActiveView.Settings)
+    {
+        <button type="button" class="workspace-rail-button active" title="@Loc.GetOrDefault(NavigationTextKeys.Manage, "Settings")"
+                aria-label="@Loc.GetOrDefault(NavigationTextKeys.Manage, "Settings")" aria-expanded="@(_settingsNavigationOpen ? "true" : "false")"
+                aria-controls="workspace-settings-navigation" @onclick="() => _settingsNavigationOpen = true">
+            <span class="iconify lucide--settings size-4.5" aria-hidden="true"></span>
+        </button>
+    }
+    else
+    {
+        <a href="/settings/preferences/general" class="workspace-rail-button" title="@Loc.GetOrDefault(NavigationTextKeys.Manage, "Settings")" aria-label="@Loc.GetOrDefault(NavigationTextKeys.Manage, "Settings")">
+            <span class="iconify lucide--settings size-4.5" aria-hidden="true"></span>
+        </a>
+    }
+    <UserProfileDropdown CurrentUserName="@CurrentUserName" CurrentUserUserName="@CurrentUserUserName" ProfilePictureUrl="@ProfilePictureUrl"
+                         RoleLabel="@RoleLabel" RoleBadgeClass="@RoleBadgeClass" ShowAchievements="@ShowAchievements" OnLogoutClicked="LogoutAsync" />
+</nav>
+
+@if (ActiveView == ActiveView.Settings && _settingsNavigationOpen)
+{
+    <button type="button" class="workspace-settings-backdrop" aria-label="@Loc.GetOrDefault(NavigationTextKeys.CloseSidebar, "Close sidebar")" @onclick="() => _settingsNavigationOpen = false"></button>
+    <aside id="workspace-settings-navigation" class="workspace-settings-panel">
+        <div class="workspace-panel-heading">
+            <span>@Loc.GetOrDefault(NavigationTextKeys.Manage, "Settings")</span>
+            <button type="button" class="workspace-rail-button" aria-label="@Loc.GetOrDefault(NavigationTextKeys.CloseSidebar, "Close sidebar")" @onclick="() => _settingsNavigationOpen = false">
+                <span class="iconify lucide--panel-left size-4" aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="custom-scrollbar min-h-0 grow overflow-y-auto p-2">
+            @foreach (var category in _settingsCategories)
+            {
+                var categorySections = SettingsRegistry.GetSectionsForCategory(category.Key, IsAdmin);
+                if (categorySections.Count == 0)
+                {
+                    continue;
+                }
+                <div class="group collapse">
+                    <input aria-label="@FormatNavigationText(NavigationTextKeys.SettingsMenuTrigger, "{0} menu trigger", SettingsLoc.GetOrDefault(category.LabelKey, category.LabelDefault))"
+                           type="checkbox" class="peer" aria-expanded="@(IsCategoryExpanded(category.Key) ? "true" : "false")"
+                           checked="@IsCategoryExpanded(category.Key)" @onchange="e => ToggleCategoryExpandedAsync(category.Key, e)" />
+                    <div class="collapse-title flex items-center gap-2.5 px-2.5 py-1.5 @(IsCategoryActive(category.Key) ? "bg-base-300/55 rounded-box" : "")">
+                        <iconify-icon icon="@category.Icon" width="16" height="16" class="text-base-content/70 shrink-0"></iconify-icon>
+                        <span class="min-w-0 grow truncate text-sm font-medium">@SettingsLoc.GetOrDefault(category.LabelKey, category.LabelDefault)</span>
+                        <iconify-icon icon="lucide:chevron-right" width="13" height="13" class="text-base-content/55 arrow-icon"></iconify-icon>
+                    </div>
+                    <div class="collapse-content ms-5.5 !p-0">
+                        <div class="mt-0.5 space-y-0.5">
+                            @foreach (var settingsSection in categorySections)
+                            {
+                                <NavLink href="@SettingsRegistry.GetSectionRoute(settingsSection.Key)" class="menu-item menu-item-link" ActiveClass="active" Match="NavLinkMatch.All"
+                                         aria-current="@GetSettingsNavCurrent(settingsSection.Key)" @onclick="() => ExpandAndSaveCategory(settingsSection.Key)">
+                                    <PresentationIcon Icon="@settingsSection.Icon" ImageSource="@settingsSection.IconImageSource" Size="14" Class="text-base-content/70" />
+                                    <span class="grow">@SettingsRegistry.GetSectionLabel(settingsSection.Key, SettingsLoc)</span>
+                                </NavLink>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </aside>
+}
+@code {
+    [Parameter] public string CurrentUserName { get; set; } = "";
+    [Parameter] public string CurrentUserUserName { get; set; } = "";
+    [Parameter, EditorRequired] public string ProfilePictureUrl { get; set; } = default!;
+    [Parameter] public string RoleLabel { get; set; } = "";
+    [Parameter] public string RoleBadgeClass { get; set; } = "";
+    [Parameter] public bool IsAdmin { get; set; }
+    [Parameter] public bool ShowAchievements { get; set; } = true;
+    [Parameter] public ActiveView ActiveView { get; set; } = ActiveView.Chat;
+    [Parameter] public string ActiveSettingsSection { get; set; } = "general";
+    [Parameter] public bool IsChatListCollapsed { get; set; }
+    [Parameter] public EventCallback OnToggleChatList { get; set; }
+    [Parameter] public EventCallback OnCustomizerClicked { get; set; }
+
+    private bool _settingsNavigationOpen = true;
+
+    private const string CategoryStateStorageKey = "oscova.chatSidebar.settingsCategories";
+
+    private IJSObjectReference? _sidebarStateModule;
+
+    protected override void OnParametersSet()
+    {
+        foreach (var category in _settingsCategories)
+        {
+            SidebarState.EnsureCategory(category.Key);
+        }
+
+        if (ActiveView == ActiveView.Settings)
+        {
+            ExpandActiveCategory();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            _sidebarStateModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/sidebarState.js");
+            if (!SidebarState.BrowserStateLoaded)
+            {
+                var savedState = await _sidebarStateModule.InvokeAsync<Dictionary<string, bool>?>("getCategoryState", CategoryStateStorageKey);
+                SidebarState.ApplyBrowserState(savedState);
+                ExpandActiveCategory();
+                StateHasChanged();
+            }
+        }
+        catch (JSException)
+        {
+            SidebarState.ApplyBrowserState(null);
+
+            // Sidebar expansion is a local browser preference; ignore storage failures.
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit can disconnect during navigation or shutdown.
+        }
+    }
+
+    private async Task ToggleCategoryExpandedAsync(string categoryKey, ChangeEventArgs e)
+    {
+        SidebarState.SetExpanded(categoryKey, e.Value is bool expanded && expanded);
+        await SaveCategoryStateAsync();
+    }
+
+    private async Task ExpandAndSaveCategory(string sectionKey)
+    {
+        var activeCategory = SettingsRegistry.GetCategoryForSection(sectionKey);
+        if (activeCategory is not null)
+        {
+            SidebarState.SetExpanded(activeCategory.Key, true);
+        }
+        await SaveCategoryStateAsync();
+        await CloseNarrowSettingsNavigationAsync();
+    }
+
+    // On a phone the settings drawer covers the page, so close it once a section is chosen.
+    private async Task CloseNarrowSettingsNavigationAsync()
+    {
+        try
+        {
+            // A section can be selected before the first render finishes loading the module.
+            _sidebarStateModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/sidebarState.js");
+            if (!await _sidebarStateModule.InvokeAsync<bool>("isDesktop"))
+            {
+                _settingsNavigationOpen = false;
+            }
+        }
+        catch (JSException)
+        {
+            // Leaving the drawer open is harmless when the viewport check fails.
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit can disconnect during navigation or shutdown.
+        }
+    }
+
+    // NavLink applies ActiveClass but never emits aria-current, so the current page is marked here.
+    private string? GetNavCurrent(ActiveView view) =>
+        ActiveView == view ? "page" : null;
+
+    private string? GetSettingsNavCurrent(string sectionKey) =>
+        ActiveView == ActiveView.Settings &&
+        string.Equals(ActiveSettingsSection, sectionKey, StringComparison.Ordinal) ? "page" : null;
+
+    private bool IsCategoryExpanded(string categoryKey) =>
+        SidebarState.IsExpanded(categoryKey);
+
+    private bool IsCategoryActive(string categoryKey) =>
+        ActiveView == ActiveView.Settings &&
+        string.Equals(SettingsRegistry.GetCategoryForSection(ActiveSettingsSection)?.Key, categoryKey, StringComparison.Ordinal);
+
+    private void ExpandActiveCategory()
+    {
+        var activeCategory = SettingsRegistry.GetCategoryForSection(ActiveSettingsSection);
+        if (activeCategory is not null)
+        {
+            SidebarState.SetExpanded(activeCategory.Key, true);
+        }
+    }
+
+    private async Task SaveCategoryStateAsync()
+    {
+        if (_sidebarStateModule is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _sidebarStateModule.InvokeVoidAsync("setCategoryState", CategoryStateStorageKey, SidebarState.Snapshot());
+        }
+        catch (JSException)
+        {
+            // Keep navigation responsive even if browser storage is unavailable.
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit can disconnect during navigation or shutdown.
+        }
+    }
+
+    private string FormatNavigationText(string key, string fallback, params object?[] args)
+    {
+        return string.Format(CultureInfo.CurrentCulture, Loc.GetOrDefault(key, fallback), args);
+    }
+
+    private async Task LogoutAsync()
+    {
+        var confirmDialog = await DialogService.ShowAsync<ConfirmDialog>(
+            CommonLoc.GetOrDefault(CommonTextKeys.SignOutConfirmTitle, "Confirm Sign Out"),
+            CommonLoc.GetOrDefault(CommonTextKeys.SignOutConfirmMessage, "Are you sure you want to sign out?"));
+
+        if (confirmDialog == DialogResult.Ok)
+        {
+            NavigationManager.NavigateTo("/auth/logout-redirect", forceLoad: true);
+        }
+    }
+
+    private static IReadOnlyList<SettingsPageRegistry.SettingsCategoryInfo> _settingsCategories => SettingsPageRegistry.Categories;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_sidebarStateModule is not null)
+        {
+            try
+            {
+                await _sidebarStateModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Nothing to clean up once the browser circuit is gone.
+            }
+        }
+    }
+}
+

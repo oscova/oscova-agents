@@ -1,0 +1,27 @@
+.browser-viewer { display: flex; flex-direction: column; height: 100%; min-height: 0; position: relative; container-type: inline-size; }
+.browser-toolbar { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) 6.5rem; align-items: center; gap: .5rem; padding: .5rem; border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
+.browser-navigation { display: flex; align-items: center; gap: .25rem; }
+.browser-address { width: 100%; max-width: 48rem; min-width: 0; justify-self: center; border-radius: 2rem; text-align: center; }
+.browser-address:focus { text-align: start; }
+.browser-notices { position: absolute; z-index: 10; top: 3.5rem; right: .75rem; width: min(22rem, calc(100% - 1.5rem)); max-height: calc(100% - 4.5rem); overflow: auto; display: grid; gap: .5rem; pointer-events: none; }
+.browser-notice { position: relative; padding: 1rem; font-size: .875rem; overflow-wrap: anywhere; pointer-events: auto; }
+.browser-notice-close { position: absolute; top: .25rem; right: .25rem; }
+.browser-file-request { display: flex; flex-direction: column; gap: .75rem; padding-right: 1.5rem; }
+.browser-file-request input { max-width: 100%; }
+.browser-file-request input::file-selector-button { border: 1px solid currentColor; border-radius: .5rem; padding: .375rem .625rem; margin-right: .5rem; cursor: pointer; }
+.browser-download { display: grid; gap: .5rem; padding-right: 1.5rem; }
+.browser-download + .browser-download { margin-top: 1rem; }
+.browser-download > span { opacity: .7; }
+.browser-download > a { justify-self: end; }
+.browser-page { flex: 1; min-height: 240px; overflow: auto; background: #fff; position: relative; }
+.browser-page canvas { display: block; width: 100%; height: auto; outline-offset: -2px; }
+.browser-pointer-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.browser-agent-pointer { display: none; position: absolute; width: 26px; height: 26px; overflow: visible; transform-origin: 2px 2px; fill: #5b2a8c; stroke: #faf8ff; stroke-width: 2.2; stroke-linejoin: round; filter: drop-shadow(0 1px 2px #2d124e80) drop-shadow(0 0 6px #5b2a8cb3); }
+.browser-error:empty { display: none; }
+.browser-edit-menu { position: fixed; inset: auto; margin: 0; padding: .25rem; }
+.browser-edit-menu button { display: block; width: 100%; text-align: start; }
+.browser-options { position: fixed; inset: auto; margin: 0; padding: .25rem; min-width: 8rem; max-width: min(24rem, 100vw); border-radius: .5rem; }
+.browser-options option { padding: .375rem .75rem; }
+.browser-phone-hint { display: none; }
+@media (pointer: coarse) { .browser-phone-hint { display: block; } }
+@container (max-width: 40rem) { .browser-toolbar { grid-template-columns: auto minmax(0, 1fr); } }

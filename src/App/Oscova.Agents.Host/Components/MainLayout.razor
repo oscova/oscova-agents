@@ -1,0 +1,233 @@
+@using System.Security.Claims
+@using Oscova.Agents.Core
+@using Oscova.Agents.Host.Components.Pages
+@using Oscova.Agents.Host.Components.Wizard
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject AuthSettings AuthSettings
+@inject UserServiceManager UserServiceManager
+@inject ILogger<MainLayout> Logger
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnvironment
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+
+@if (_isInitialized && _isAuthenticated)
+{
+    <IdleLogoutMonitor />
+}
+
+@if (!_isInitialized)
+{
+    <div class="min-h-screen flex items-center justify-center">
+        <span class="loading loading-dots loading-lg"></span>
+    </div>
+}
+else if (!_hasUsers)
+{
+    <AdminSetup OnCompleted="HandleAdminCompleted" />
+}
+else if (IsLoginRoute)
+{
+    @Body
+}
+else if (!_isAuthenticated)
+{
+    @if (AuthSettings.Mode == AuthMode.Standard)
+    {
+        <LoginPanel OnSuccess="HandleLoginSuccess" RedirectOnSuccess="true" />
+    }
+    else
+    {
+        <HomeLoginPanel />
+    }
+}
+else
+{
+    <div class="size-full @AuthenticatedContentClass">
+        @Body
+    </div>
+    @if (ShowEntryAurora)
+    {
+        <div class="app-entry-aurora-cover app-aurora-backdrop" aria-hidden="true"></div>
+    }
+}
+
+<ToastProvider />
+<DialogProvider />
+
+@code {
+    private bool _isInitialized;
+    private bool _isAuthenticated;
+    private bool _hasUsers;
+    private bool _shouldShowOnboarding;
+    private bool _isOnboardingDialogOpen;
+    private bool _playDashboardRevealAfterOnboarding;
+    private IJSObjectReference? _dashboardRevealModule;
+    private const string ForceOnboardingEnvironmentVariable = "OSCOVA_FORCE_ONBOARDING";
+    private const string DashboardRevealOverlayId = "dashboard-reveal-overlay";
+    private bool IsLoginRoute => LoginNavigation.IsLoginRoute(NavigationManager);
+    private bool IsOnboardingActive => _shouldShowOnboarding || _isOnboardingDialogOpen;
+    private bool ShowEntryAurora => IsOnboardingActive || _playDashboardRevealAfterOnboarding;
+    private string? AuthenticatedContentClass => IsOnboardingActive
+        ? "app-entry-content-preparing"
+        : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+        AuthSettings.Changed += OnAuthSettingsChanged;
+        await RefreshStateAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_isAuthenticated)
+        {
+            return;
+        }
+
+        if (!_isInitialized)
+        {
+            _isInitialized = true;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (_playDashboardRevealAfterOnboarding)
+        {
+            await PlayDashboardRevealAsync();
+            _playDashboardRevealAfterOnboarding = false;
+            await InvokeAsync(StateHasChanged);
+        }
+
+        if (_shouldShowOnboarding && !_isOnboardingDialogOpen)
+        {
+            _isOnboardingDialogOpen = true;
+            _ = ShowOnboardingDialogAsync();
+        }
+    }
+
+    private async Task RefreshStateAsync()
+    {
+        // Startup creates the credential-owning system row before any person completes setup.
+        _hasUsers = await UserManager.Users.AnyAsync(user => user.Id != WellKnownUsers.SystemId);
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = state.User.Identity?.IsAuthenticated ?? false;
+        _isInitialized = !_isAuthenticated;
+
+        _shouldShowOnboarding = false;
+        if (_isAuthenticated)
+        {
+            var userId = state.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                try
+                {
+                    var scope = await UserServiceManager.GetOrCreateScopeAsync(userId);
+                    _shouldShowOnboarding = ShouldForceOnboardingForDevelopment() || !scope.OnboardingSettings.IsCompleted;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Failed to evaluate onboarding state for user '{UserId}'.", userId);
+                }
+            }
+        }
+    }
+
+    private bool ShouldForceOnboardingForDevelopment()
+    {
+        if (!HostEnvironment.IsDevelopment())
+        {
+            return false;
+        }
+
+        var value = Environment.GetEnvironmentVariable(ForceOnboardingEnvironmentVariable);
+        return string.Equals(value, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(value, "1", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(value, "yes", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task ShowOnboardingDialogAsync()
+    {
+        var result = DialogResult.Cancel;
+
+        try
+        {
+            result = await DialogService.ShowAsync<OnboardingWizard>();
+        }
+        finally
+        {
+            _shouldShowOnboarding = false;
+            _isOnboardingDialogOpen = false;
+            _playDashboardRevealAfterOnboarding = result == DialogResult.Ok;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task PlayDashboardRevealAsync()
+    {
+        try
+        {
+            _dashboardRevealModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/dashboardReveal.js");
+            await _dashboardRevealModule.InvokeVoidAsync("playDashboardReveal", DashboardRevealOverlayId);
+        }
+        catch (JSException ex)
+        {
+            Logger.LogDebug(ex, "Dashboard reveal animation was skipped.");
+        }
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        await RefreshStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleAdminCompleted()
+    {
+        await RefreshStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLoginSuccess()
+    {
+        await RefreshStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+        AuthSettings.Changed -= OnAuthSettingsChanged;
+        _ = DisposeDashboardRevealAsync();
+    }
+
+    private async Task DisposeDashboardRevealAsync()
+    {
+        if (_dashboardRevealModule is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _dashboardRevealModule.InvokeVoidAsync("disposeDashboardReveal", DashboardRevealOverlayId);
+            await _dashboardRevealModule.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (JSException ex)
+        {
+            Logger.LogDebug(ex, "Dashboard reveal animation cleanup was skipped.");
+        }
+    }
+
+    private void OnAuthSettingsChanged(object? sender, EventArgs args)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+	<resheader name="version"><value>1.3</value></resheader>
+	<resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+	<data name="Auth.Login.Title"><value>Iniciar sesión</value></data>
+	<data name="Auth.Login.Subtitle"><value>Acceso fluido, conexión segura: tu puerta de entrada a una experiencia personalizada.</value></data>
+	<data name="Auth.ShowPasswordLabel"><value>Mostrar contraseña</value></data>
+	<data name="Auth.LoggingInButton"><value>Iniciando sesión...</value></data>
+	<data name="Auth.LoginButton"><value>Iniciar sesión</value></data>
+	<data name="Auth.InvalidCredentialsError"><value>Nombre de usuario o contraseña no válidos.</value></data>
+	<data name="Auth.InvalidLoginTicketError"><value>Tu sesión de inicio de sesión expiró. Inténtalo de nuevo.</value></data>
+	<data name="Auth.InvalidProfileError"><value>Ese perfil ya no está disponible.</value></data>
+	<data name="Auth.LoginFailedError"><value>No se pudo iniciar sesión. Inténtalo de nuevo.</value></data>
+	<data name="Auth.Home.Title"><value>¿Quién está usando Oscova Agents?</value></data>
+	<data name="Auth.Home.Subtitle"><value>Elige un perfil para continuar o usa el inicio de sesión con contraseña.</value></data>
+	<data name="Auth.Home.NoProfilesMessage"><value>Aún no hay perfiles disponibles.</value></data>
+	<data name="Auth.Home.ProfileFallbackName"><value>Usuario</value></data>
+	<data name="Auth.Home.ProfilesLabel"><value>Perfiles</value></data>
+	<data name="Auth.Home.PinHelp"><value>Introduce el PIN para iniciar sesión.</value></data>
+	<data name="Auth.Home.SwitchProfileButton"><value>Cambiar</value></data>
+	<data name="Auth.Home.PinLabel"><value>PIN</value></data>
+	<data name="Auth.Home.PinPlaceholder"><value>6–64 (0–9)</value></data>
+	<data name="Auth.Home.ShowPinLabel"><value>Mostrar PIN</value></data>
+	<data name="Auth.Home.SigningInButton"><value>Iniciando sesión...</value></data>
+	<data name="Auth.Home.ContinueButton"><value>Continuar</value></data>
+	<data name="Auth.Home.AdminPasswordSignInButton"><value>Inicio de sesión con contraseña</value></data>
+	<data name="Auth.Home.PinSessionExpiredError"><value>Tu sesión de inicio de sesión expiró. Inténtalo de nuevo.</value></data>
+	<data name="Auth.Home.ChooseProfileFirstError"><value>Elige primero un perfil.</value></data>
+	<data name="Auth.Home.MissingPinError"><value>Este perfil aún no tiene PIN. Pide al operador que configure uno.</value></data>
+	<data name="Auth.Home.InvalidPinError"><value>PIN no válido.</value></data>
+	<data name="Auth.Home.PinValidationError"><value>El PIN debe tener 6–64 dígitos (0–9).</value></data>
+	<data name="Auth.AdminLogin.BackButton"><value>Volver al inicio de sesión por perfil</value></data>
+	<data name="Auth.AdminSetup.Title"><value>Crear el primer operador</value></data>
+	<data name="Auth.AdminSetup.Subtitle"><value>Configura la cuenta del operador para empezar a usar Oscova Agents.</value></data>
+	<data name="Auth.AdminSetup.FullNameLabel"><value>Nombre completo</value></data>
+	<data name="Auth.AdminSetup.FullNamePlaceholder"><value>Jane Doe</value></data>
+	<data name="Auth.AdminSetup.FullNameHelp"><value>Introduce tu nombre completo.</value></data>
+	<data name="Auth.AdminSetup.EmailLabel"><value>Correo electrónico</value></data>
+	<data name="Auth.AdminSetup.EmailPlaceholder"><value>name@company.com</value></data>
+	<data name="Auth.AdminSetup.EmailHelp"><value>Usa una dirección de correo electrónico válida.</value></data>
+	<data name="Auth.AdminSetup.UsernamePlaceholder"><value>operador</value></data>
+	<data name="Auth.AdminSetup.UsernameHelp"><value>3 o más caracteres. Debe ser único.</value></data>
+	<data name="Auth.AdminSetup.NewPasswordPlaceholder"><value>Al menos 6 caracteres</value></data>
+	<data name="Auth.AdminSetup.PasswordHelp"><value>Usa al menos 6 caracteres con una mezcla de letras, números y símbolos.</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordLabel"><value>Confirmar contraseña</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordPlaceholder"><value>Vuelve a introducir tu contraseña</value></data>
+	<data name="Auth.AdminSetup.ConfirmPasswordHelp"><value>Debe coincidir exactamente con la contraseña.</value></data>
+	<data name="Auth.AdminSetup.CreateAdminButton"><value>Crear operador</value></data>
+	<data name="Auth.AdminSetup.RestoreTitle"><value>Restaurar desde copia</value></data>
+	<data name="Auth.AdminSetup.RestoreDescription"><value>Usa esto solo en una instalación nueva. Selecciona una copia .oscb cifrada e introduce su frase de contraseña.</value></data>
+	<data name="Auth.AdminSetup.RestoreFileLabel"><value>Archivo de copia</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseLabel"><value>Frase de contraseña de la copia</value></data>
+	<data name="Auth.AdminSetup.RestorePassphrasePlaceholder"><value>Introduce la frase de contraseña de la copia</value></data>
+	<data name="Auth.AdminSetup.RestoreButton"><value>Restaurar copia</value></data>
+	<data name="Auth.AdminSetup.RestoreChooseFileButton"><value>Elegir archivo de copia</value></data>
+	<data name="Auth.AdminSetup.RestoreFileRequired"><value>Selecciona un archivo de copia.</value></data>
+	<data name="Auth.AdminSetup.RestoreUnsupportedFile"><value>Solo se admiten archivos de copia .oscb.</value></data>
+	<data name="Auth.AdminSetup.RestorePassphraseRequired"><value>Introduce la frase de contraseña de la copia.</value></data>
+	<data name="Auth.AdminSetup.RestoreFreshInstallOnly"><value>La restauración solo está disponible en una instalación nueva.</value></data>
+	<data name="Auth.AdminSetup.RestorePending"><value>Hay una restauración del entorno pendiente. Espera a que Oscova se reinicie antes de crear una cuenta.</value></data>
+	<data name="Auth.AdminSetup.Created"><value>Operador creado. Inicia sesión con tu nueva cuenta.</value></data>
+	<data name="Auth.AdminSetup.RestoreFailed"><value>No se pudo restaurar la copia.</value></data>
+	<data name="Auth.AdminSetup.RestoreInProgress"><value>Restaurar la copia puede tardar un minuto. Mantén esta ventana abierta mientras Oscova prepara el reinicio.</value></data>
+	<data name="Auth.AdminSetup.RestoreRestarting"><value>Copia restaurada. Oscova se está reiniciando...</value></data>
+	<data name="Auth.AdminSetup.PasswordsDoNotMatchError"><value>Las contraseñas no coinciden.</value></data>
+	<data name="Auth.AdminSetup.UsernameExistsError"><value>Ya existe un usuario con este nombre de usuario.</value></data>
+	<data name="Auth.AdminSetup.EmailExistsError"><value>Ya existe un usuario con este correo electrónico.</value></data>
+	<data name="Auth.CliAuth.Title"><value>Aprobar acceso de CLI</value></data>
+	<data name="Auth.CliAuth.Subtitle"><value>Autoriza este terminal para usar tu cuenta de Oscova.</value></data>
+	<data name="Auth.CliAuth.CodeLabel"><value>Código</value></data>
+	<data name="Auth.CliAuth.ClientLabel"><value>Cliente</value></data>
+	<data name="Auth.CliAuth.MachineLabel"><value>Equipo</value></data>
+	<data name="Auth.CliAuth.ApproveButton"><value>Aprobar</value></data>
+	<data name="Auth.CliAuth.DenyButton"><value>Denegar</value></data>
+	<data name="Auth.CliAuth.ApprovedMessage"><value>Acceso de CLI aprobado. Puedes volver a tu terminal.</value></data>
+	<data name="Auth.CliAuth.DeniedMessage"><value>Acceso de CLI denegado.</value></data>
+	<data name="Auth.CliAuth.InvalidCodeMessage"><value>Este código de aprobación de CLI no es válido.</value></data>
+	<data name="Auth.CliAuth.ExpiredCodeMessage"><value>Este código de aprobación de CLI ha expirado.</value></data>
+	<data name="Auth.ToggleThemeLabel"><value>Cambiar tema</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Title"><value>Tus agentes, listos cuando tú lo estés.</value></data>
+	<data name="Auth.Hero.Dynamic.Current.Description"><value>El sistema operativo para agentes del hogar y la oficina, en tu propio equipo.</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Title"><value>Controla el entorno de ejecución. Conserva el control.</value></data>
+	<data name="Auth.Hero.Dynamic.Ownership.Description"><value>Agentes persistentes, datos locales y decisiones explícitas sobre cuándo algo llega a la nube.</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Title"><value>Privacidad que puedes inspeccionar.</value></data>
+	<data name="Auth.Hero.Dynamic.VisiblePrivacy.Description"><value>Sin telemetría, con decisiones explícitas sobre la nube y pruebas claras cuando los datos salen del equipo.</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Title"><value>Más que una ventana de chat.</value></data>
+	<data name="Auth.Hero.Dynamic.DurableAgents.Description"><value>Los agentes mantienen sus herramientas, memoria, programaciones y canales listos entre conversaciones.</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Title"><value>Modelos pequeños. Trabajo serio.</value></data>
+	<data name="Auth.Hero.Dynamic.LocalModels.Description"><value>El contexto optimizado y los flujos de trabajo locales ayudan a sacar más partido del equipo que posees.</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Title"><value>Útil incluso sin internet.</value></data>
+	<data name="Auth.Hero.Dynamic.OfflineOperation.Description"><value>Las ejecuciones principales de los agentes y la voz pueden permanecer locales en tu propio equipo.</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Title"><value>El trabajo privado permanece protegido.</value></data>
+	<data name="Auth.Hero.Dynamic.ProtectedWork.Description"><value>Todos los agentes almacenan chats y ejecuciones de tareas cifrados, incluidos el agente principal y los subagentes.</value></data>
+  <data name="Auth.SignIn.Mismatch"><value>No coincide. Inténtalo de nuevo.</value></data>
+  <data name="Auth.SignIn.RetryCountdown"><value>No coincide. Inténtalo de nuevo en {0} segundos.</value></data>
+  <data name="Auth.SignIn.WaitCountdown"><value>Inténtalo de nuevo en {0} segundos.</value></data>
+  <data name="Auth.SignIn.TryAgain"><value>Reintentar</value></data>
+</root>

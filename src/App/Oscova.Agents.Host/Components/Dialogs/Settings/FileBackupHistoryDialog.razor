@@ -1,0 +1,244 @@
+@inject UserServiceScope UserScope
+@inject SettingsApiClient SettingsApiClient
+@inject IDialogService DialogService
+@inject IToastService ToastService
+@inject ILogger<FileBackupHistoryDialog> Logger
+@inject IStringLocalizer<SettingsText> Loc
+@inject IStringLocalizer<CommonText> CommonLoc
+
+<AppDialogShell Title="@DialogTitle"
+                Icon="lucide:history"
+                MaxWidthClass="max-w-6xl"
+                HelpTopic="@HelpTopics.FileBackupHistory"
+                BoxContentClass="h-[85vh]"
+                BodyClass="flex min-h-0 min-w-0 flex-1 flex-col gap-4 px-5 py-4"
+                CloseResult="@DialogResult.Cancel"
+                CanClose="@(!_isRestoring)"
+                ShowBackdropClose="true">
+    <ChildContent>
+        @if (_isLoading)
+        {
+            <div class="flex flex-1 items-center justify-center">
+                <span class="loading loading-dots loading-md"></span>
+            </div>
+        }
+        else if (_loadError is not null)
+        {
+            <div role="alert" class="alert alert-error">
+                <iconify-icon icon="lucide:circle-alert"></iconify-icon>
+                <span>@_loadError</span>
+            </div>
+        }
+        else if (_backups.Count == 0)
+        {
+            <div class="flex flex-1 items-center justify-center text-center opacity-70">
+                <div>
+                    <iconify-icon icon="lucide:history" width="40" height="40" class="mb-3"></iconify-icon>
+                    <p class="text-sm">@Loc.GetOrDefault(SettingsTextKeys.FilesBackupNoVersions, "No restore points are available for this file yet.")</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="grid min-h-0 flex-1 gap-4 lg:grid-cols-[15rem_minmax(0,1fr)]">
+                <div class="min-h-0 overflow-y-auto rounded-box border border-base-300">
+                    <div class="divide-y divide-base-300">
+                        @foreach (var backup in _backups)
+                        {
+                            var isSelected = string.Equals(_selectedBackupId, backup.Id, StringComparison.Ordinal);
+                            <button type="button"
+                                    class="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm @(isSelected ? "cursor-default bg-base-200" : "cursor-pointer hover:bg-base-200/70")"
+                                    aria-pressed="@(isSelected ? "true" : "false")"
+                                    disabled="@(_isLoadingSelected || _isRestoring)"
+                                    @onclick="() => SelectBackupAsync(backup)">
+                                <span class="whitespace-nowrap font-medium leading-tight">@FormatBackupTitle(backup.CreatedUtc)</span>
+                                <span class="shrink-0 text-xs opacity-70">
+                                    @string.Format(
+                                        CultureInfo.CurrentCulture,
+                                        Loc.GetOrDefault(SettingsTextKeys.FilesBackupVersionSize, "{0}"),
+                                        ByteSize.Format(backup.SizeBytes))
+                                </span>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="min-h-0 min-w-0 overflow-hidden">
+                    @if (_isLoadingSelected)
+                    {
+                        <div class="flex h-full min-h-80 items-center justify-center rounded-box border border-base-300">
+                            <span class="loading loading-spinner loading-md"></span>
+                        </div>
+                    }
+                    else if (_selectedBackup is not null)
+                    {
+                        <FileDiffView OldText="@_selectedBackup.Content"
+                                      NewText="@_currentContent"
+                                      OldTitle="@FormatBackupTitle(_selectedBackup.Backup.CreatedUtc)"
+                                      NewTitle="@CurrentVersionTitle" />
+                    }
+                </div>
+            </div>
+        }
+
+        @if (_restoreError is not null)
+        {
+            <div role="alert" class="alert alert-error">
+                <iconify-icon icon="lucide:circle-alert"></iconify-icon>
+                <span>@_restoreError</span>
+            </div>
+        }
+    </ChildContent>
+    <FooterContent>
+        <button type="button" class="btn btn-ghost btn-sm" disabled="@_isRestoring" @onclick="Cancel">
+            @CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" disabled="@(_selectedBackup is null || _isRestoring)" @onclick="RestoreAsync">
+            @if (_isRestoring)
+            {
+                <span class="loading loading-spinner loading-xs"></span>
+            }
+            else
+            {
+                <iconify-icon icon="lucide:rotate-ccw"></iconify-icon>
+            }
+            @Loc.GetOrDefault(SettingsTextKeys.FilesBackupRestoreButton, "Restore")
+        </button>
+    </FooterContent>
+</AppDialogShell>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private string _relativePath = string.Empty;
+    private string _fileName = string.Empty;
+    private string _currentContent = string.Empty;
+    private List<FileBackupSummary> _backups = [];
+    private FileBackupTextDocument? _selectedBackup;
+    private string? _selectedBackupId;
+    private bool _isLoading = true;
+    private bool _isLoadingSelected;
+    private bool _isRestoring;
+    private string? _loadError;
+    private string? _restoreError;
+
+    private string DialogTitle =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            Loc.GetOrDefault(SettingsTextKeys.FilesBackupHistoryTitle, "History: {0}"),
+            _fileName);
+
+    private string CurrentVersionTitle =>
+        Loc.GetOrDefault(SettingsTextKeys.FilesBackupCurrentVersionLabel, "Current");
+
+    protected override async Task OnInitializedAsync()
+    {
+        _relativePath = DialogInstance.Get<string>("RelativePath", string.Empty);
+        _fileName = DialogInstance.Get<string>("FileName", string.Empty);
+        _currentContent = DialogInstance.Get<string>("CurrentContent", string.Empty);
+
+        await LoadBackupsAsync();
+    }
+
+    private async Task LoadBackupsAsync()
+    {
+        _loadError = null;
+        _isLoading = true;
+
+        try
+        {
+            _backups = (await SettingsApiClient.ListFileBackupsAsync(_relativePath)).ToList();
+            if (_backups.Count > 0)
+            {
+                await SelectBackupAsync(_backups[0]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load file backup history for {RelativePath}", _relativePath);
+            _loadError = Loc.GetOrDefault(SettingsTextKeys.FilesBackupLoadError, "Backup history could not be loaded.");
+        }
+
+        _isLoading = false;
+    }
+
+    private async Task SelectBackupAsync(FileBackupSummary backup)
+    {
+        if (string.Equals(_selectedBackupId, backup.Id, StringComparison.Ordinal) && _selectedBackup is not null)
+        {
+            return;
+        }
+
+        _selectedBackupId = backup.Id;
+        _selectedBackup = null;
+        _restoreError = null;
+        _isLoadingSelected = true;
+
+        try
+        {
+            _selectedBackup = await SettingsApiClient.ReadFileBackupTextAsync(_relativePath, backup.Id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(
+                ex,
+                "Failed to read file backup {BackupId} for {RelativePath}",
+                backup.Id,
+                _relativePath);
+            _loadError = Loc.GetOrDefault(SettingsTextKeys.FilesBackupLoadError, "Backup history could not be loaded.");
+        }
+
+        _isLoadingSelected = false;
+    }
+
+    private async Task RestoreAsync()
+    {
+        if (_selectedBackup is null)
+        {
+            return;
+        }
+
+        var result = await DialogService.ShowAsync<ConfirmDialog>(
+            Loc.GetOrDefault(SettingsTextKeys.FilesBackupRestoreConfirmTitle, "Restore version"),
+            Loc.GetOrDefault(SettingsTextKeys.FilesBackupRestoreConfirmMessage, "Restore this version? The current file will be backed up first."));
+        if (result != DialogResult.Ok)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        _restoreError = null;
+
+        try
+        {
+            await SettingsApiClient.RestoreFileBackupAsync(_relativePath, _selectedBackup.Backup.Id);
+            ToastService.Show(
+                Loc.GetOrDefault(SettingsTextKeys.FilesBackupRestoreSuccessToast, "Version restored."),
+                ToastType.Success);
+            DialogInstance.Close(DialogResult.Ok);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(
+                ex,
+                "Failed to restore file backup {BackupId} for {RelativePath}",
+                _selectedBackup.Backup.Id,
+                _relativePath);
+            _restoreError = Loc.GetOrDefault(SettingsTextKeys.FilesBackupRestoreError, "The version could not be restored.");
+            ToastService.Show(_restoreError, ToastType.Error);
+        }
+
+        _isRestoring = false;
+    }
+
+    private void Cancel()
+    {
+        DialogInstance.Close(DialogResult.Cancel);
+    }
+
+    private string FormatBackupTitle(DateTimeOffset createdUtc)
+    {
+        return TimeZoneInfo.ConvertTime(createdUtc, UserScope.UiSettings.GetTimeZone()).ToString("g", CultureInfo.CurrentCulture);
+    }
+}

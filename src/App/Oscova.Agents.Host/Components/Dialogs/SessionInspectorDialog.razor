@@ -1,0 +1,584 @@
+@inject IJSRuntime JS
+@inject IToastService ToastService
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IStringLocalizer<ChatText> ChatLoc
+@inject ManagementApiClient ManagementApiClient
+@inject ILogger<SessionInspectorDialog> Logger
+@inject NotificationHub<TaskStatusUpdate> TaskUpdates
+@implements IDisposable
+
+<AppDialogShell Title="@(CommonLoc.GetOrDefault(CommonTextKeys.DialogSessionInspectorTitle, "Session Inspector"))"
+                Subtitle="@GetSummaryLabel()"
+                Icon="lucide:scan-search"
+                MaxWidthClass="max-w-7xl"
+                TitleClass="truncate text-base font-semibold"
+                BodyClass="flex min-h-0 flex-1 flex-col p-0"
+                HelpTopic="@HelpTopics.SessionInspector"
+                CloseResult="@DialogResult.Ok">
+    <ChildContent>
+        <div class="border-base-200 border-b px-5 pt-4">
+            <div role="tablist" class="tabs tabs-border">
+                <button type="button" role="tab" aria-selected="@(_activeTab == ConversationTab ? "true" : "false")" class="tab gap-2 @(_activeTab == ConversationTab ? "tab-active" : string.Empty)" @onclick="() => SetActiveTab(ConversationTab)">
+                    <iconify-icon icon="lucide:messages-square" width="15" height="15"></iconify-icon>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.DialogInspectorConversationTab, "Conversation")
+                </button>
+                <button type="button" role="tab" aria-selected="@(_activeTab == EgressTab ? "true" : "false")" class="tab gap-2 @(_activeTab == EgressTab ? "tab-active" : string.Empty)" @onclick="() => SetActiveTab(EgressTab)">
+                    <span class="iconify lucide--cloud size-3.5"></span>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.DialogInspectorEgressTab, "Egress")
+                </button>
+                <button type="button" role="tab" aria-selected="@(_activeTab == JsonTab ? "true" : "false")" class="tab gap-2 @(_activeTab == JsonTab ? "tab-active" : string.Empty)" @onclick="() => SetActiveTab(JsonTab)">
+                    <iconify-icon icon="lucide:braces" width="15" height="15"></iconify-icon>
+                    @CommonLoc.GetOrDefault(CommonTextKeys.DialogInspectorJsonTab, "JSON")
+                </button>
+            </div>
+        </div>
+
+        @if (_activeTab == ConversationTab)
+        {
+            <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                @if (!_messages.Any() && string.IsNullOrWhiteSpace(_systemInstruction))
+                {
+                    <div class="flex h-56 items-center justify-center">
+                        <p class="text-base-content/60 text-sm">@CommonLoc.GetOrDefault(CommonTextKeys.DialogNoMessagesInSession, "No messages in session.")</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="space-y-3">
+                        @RenderEgressSummary()
+
+                        @if (!string.IsNullOrWhiteSpace(_systemInstruction))
+                        {
+                            <section class="rounded-box border border-base-200 bg-base-100 p-3">
+                                <div class="mb-2 flex flex-wrap items-center gap-2">
+                                    <h4 class="text-sm font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.DialogSystemInstructionTitle, "System instruction")</h4>
+                                    <span class="badge badge-ghost badge-sm">@FormatTokenBadge(AgentTokenCounter.CountTokens(_systemInstruction))</span>
+                                </div>
+                                <pre dir="auto" class="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-box bg-base-200 p-3 font-mono text-xs">@_systemInstruction</pre>
+                            </section>
+                        }
+
+                        @foreach (var message in _messages)
+                        {
+                            @RenderMessage(message)
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else if (_activeTab == EgressTab)
+        {
+            <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                <EgressAuditDetailsPanel Entries="@_egressEntries"
+                                         Summary="@BuildEgressSummary()"
+                                         IsLoading="@false"
+                                         Error="@_egressLoadError"
+                                         ShowUserColumn="@false"
+                                         ShowFilters="@false"
+                                         CurrentPage="1"
+                                         TotalPages="1"
+                                         TotalCount="@_egressEntries.Count" />
+            </div>
+        }
+        else
+        {
+            <div class="flex min-h-0 flex-1 flex-col px-5 py-4">
+                <div class="mb-3 flex justify-end gap-2">
+                    <button class="btn btn-ghost btn-sm" @onclick="CopyJsonAsync">
+                        <span class="iconify lucide--copy size-4" aria-hidden="true"></span>
+                        @CommonLoc.GetOrDefault(CommonTextKeys.CopyName, "Copy")
+                    </button>
+                    <button class="btn btn-ghost btn-sm" @onclick="DownloadJsonAsync">
+                        <span class="iconify lucide--download size-4" aria-hidden="true"></span>
+                        @CommonLoc.GetOrDefault(CommonTextKeys.Download, "Download")
+                    </button>
+                </div>
+                <pre dir="ltr" class="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap break-words rounded-box bg-base-200 p-4 font-mono text-xs">@_sessionJson</pre>
+            </div>
+        }
+    </ChildContent>
+</AppDialogShell>
+
+@code {
+    private const string ConversationTab = "conversation";
+    private const string EgressTab = "egress";
+    private const string JsonTab = "json";
+
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    private static readonly JsonSerializerOptions IndentedJsonOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
+    private AgentTaskRun? _run;
+    private IList<ChatMessage> _messages = [];
+    private string? _systemInstruction;
+    private string? _threadId;
+    private IReadOnlyList<EgressAuditEntry> _egressEntries = [];
+    private string? _egressLoadError;
+    private string _sessionJson = string.Empty;
+    private string _activeTab = ConversationTab;
+    private IJSObjectReference? _utilsModule;
+    private IDisposable? _taskSubscription;
+    private readonly SemaphoreSlim _refreshGate = new(1, 1);
+    private bool _disposed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _run = DialogInstance.Get<AgentTaskRun>("Run");
+
+        if (_run is not null)
+        {
+            RefreshFromRun();
+            _run.LiveMessagesChanged += OnLiveMessagesChanged;
+            await _refreshGate.WaitAsync();
+            _taskSubscription = TaskUpdates.Subscribe(DialogInstance.Get<string>("UserId")!, OnTaskStatusUpdatedAsync);
+            try
+            {
+                // History may have captured this run before its last notification.
+                await RefreshRunSnapshotAsync();
+                await LoadRunEgressAsync();
+            }
+            finally { _refreshGate.Release(); }
+            return;
+        }
+
+        _messages = DialogInstance.Get<IList<ChatMessage>>("Messages") ?? [];
+        _systemInstruction = DialogInstance.Get<string>("SystemInstruction");
+        _threadId = DialogInstance.Get<string>("ThreadId");
+        _egressEntries = DialogInstance.Get<IReadOnlyList<EgressAuditEntry>>("EgressEntries") ?? [];
+        RefreshSessionJson();
+    }
+
+    private async void OnLiveMessagesChanged()
+    {
+        await InvokeAsync(() =>
+        {
+            if (_disposed) { return; }
+            RefreshFromRun();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        _taskSubscription?.Dispose();
+        if (_run is not null)
+        {
+            _run.LiveMessagesChanged -= OnLiveMessagesChanged;
+        }
+    }
+
+    private Task OnTaskStatusUpdatedAsync(TaskStatusUpdate update)
+    {
+        if (_run is null || !string.Equals(update.TaskId, _run.TaskId, StringComparison.Ordinal)) { return Task.CompletedTask; }
+        return InvokeAsync(async () =>
+        {
+            await _refreshGate.WaitAsync();
+            try
+            {
+                if (!await RefreshRunSnapshotAsync()) { return; }
+                await LoadRunEgressAsync();
+                if (!_disposed) { StateHasChanged(); }
+            }
+            finally { _refreshGate.Release(); }
+        });
+    }
+
+    private async Task<bool> RefreshRunSnapshotAsync()
+    {
+        if (_disposed || _run is null) { return false; }
+        try
+        {
+            // HTTP run snapshots receive new messages through the user-scoped notification boundary.
+            var updated = await ManagementApiClient.GetTaskRunAsync(_run.TaskId, _run.Id);
+            if (_disposed || updated is null) { return false; }
+            _run.LiveMessagesChanged -= OnLiveMessagesChanged;
+            _run = updated;
+            _run.LiveMessagesChanged += OnLiveMessagesChanged;
+            RefreshFromRun();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to refresh task run {RunId} in the session inspector.", _run.Id);
+            return false;
+        }
+    }
+
+    private void RefreshFromRun()
+    {
+        if (_run?.GetLiveMessagesSnapshot() is { } snapshot)
+        {
+            _messages = snapshot;
+        }
+
+        _systemInstruction = _run?.SystemInstruction;
+        RefreshSessionJson();
+    }
+
+    private void RefreshSessionJson()
+    {
+        _sessionJson = BuildSessionJson();
+    }
+
+    private string BuildSessionJson()
+    {
+        var export = _run is not null
+            ? SessionEvidenceExport.ForTaskRun(_run.TaskId, _run.Id, _systemInstruction, [.. _messages], _egressEntries)
+            : SessionEvidenceExport.ForChatThread(_threadId ?? string.Empty, _systemInstruction, [.. _messages], _egressEntries);
+        return JsonSerializer.Serialize(export, IndentedJsonOptions);
+    }
+
+    private async Task LoadRunEgressAsync()
+    {
+        if (_run is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _egressEntries = await ManagementApiClient.GetRunEgressAsync(_run.TaskId, _run.Id);
+            _egressLoadError = null;
+            RefreshSessionJson();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Failed to load egress audit entries for task run {RunId}.", _run.Id);
+            _egressEntries = [];
+            _egressLoadError = CommonLoc.GetOrDefault(CommonTextKeys.EgressAuditLoadFailed, "Could not load egress audit details.");
+            RefreshSessionJson();
+        }
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        _activeTab = tab;
+    }
+
+    private async Task CopyJsonAsync()
+    {
+        var json = BuildSessionJson();
+        _sessionJson = json;
+        _utilsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/utils.js");
+        // The helper reports denied clipboard writes without throwing.
+        if (!await _utilsModule.InvokeAsync<bool>("copyToClipboard", json))
+        {
+            ToastService.Show(ChatLoc.GetOrDefault(ChatTextKeys.ResponseCopyFailed, "Unable to copy."), ToastType.Error);
+            return;
+        }
+        ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.DialogSessionJsonCopied, "Session JSON copied to clipboard."), ToastType.Success);
+    }
+
+    private async Task DownloadJsonAsync()
+    {
+        var json = BuildSessionJson();
+        _sessionJson = json;
+        var fileName = _run is not null
+            ? $"oscova-evidence-task-{SanitizeFileNamePart(_run.TaskId)}-{SanitizeFileNamePart(_run.Id)}-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}.json"
+            : $"oscova-evidence-chat-{SanitizeFileNamePart(_threadId)}-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}.json";
+        var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+
+        _utilsModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/utils.js");
+        await _utilsModule.InvokeVoidAsync("downloadFile", fileName, base64);
+        ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.DialogSessionJsonDownloaded, "Session evidence downloaded."), ToastType.Success);
+    }
+
+    private RenderFragment RenderMessage(ChatMessage message) => @<div class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-3">
+        <div class="flex justify-center pt-1">
+            <div class="@GetRoleIconClass(message.Role) flex size-8 items-center justify-center rounded-full">
+                <iconify-icon icon="@GetRoleIcon(message.Role)" width="15" height="15"></iconify-icon>
+            </div>
+        </div>
+        <div class="border-base-200 min-w-0 rounded-box border bg-base-100 p-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-sm font-medium">@GetRoleLabel(message)</span>
+                @if (message.CreatedAt is { } createdAt)
+                {
+                    <span class="text-base-content/60 text-xs">@createdAt.ToLocalTime().ToString("HH:mm:ss", CultureInfo.CurrentCulture)</span>
+                }
+            </div>
+            <div class="mt-2 space-y-2">
+                @foreach (var content in message.Contents)
+                {
+                    @RenderContent(content)
+                }
+            </div>
+        </div>
+    </div>;
+
+    private RenderFragment RenderEgressSummary() => @<section class="@GetEgressSummaryClass()">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div class="flex min-w-0 gap-3">
+                <div class="@GetEgressIconClass() flex size-9 shrink-0 items-center justify-center rounded-full">
+                    <iconify-icon icon="@GetEgressIcon()" width="16" height="16" aria-hidden="true"></iconify-icon>
+                </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-medium">@GetEgressTitle()</h4>
+                    <p class="text-base-content/70 mt-1 text-xs">@GetEgressDescription()</p>
+                </div>
+            </div>
+            <span class="badge badge-sm @(HasNoEgressData && _egressLoadError is null ? "badge-success" : "badge-warning")">@FormatEgressEntryCount()</span>
+        </div>
+    </section>;
+
+    private bool HasRecordedEgressData => _egressEntries.Count > 0;
+
+    private bool HasNoEgressData => !HasRecordedEgressData;
+
+    private string GetEgressSummaryClass()
+    {
+        var colorClass = HasNoEgressData
+            ? "bg-base-100"
+            : "bg-warning/10";
+        return $"rounded-box p-3 {colorClass}";
+    }
+
+    private string GetEgressIconClass()
+    {
+        if (HasNoEgressData)
+        {
+            return "bg-base-200 text-base-content/60";
+        }
+
+        return "bg-warning/20 text-warning";
+    }
+
+    private string GetEgressIcon()
+    {
+        if (HasNoEgressData)
+        {
+            return "lucide:circle-help";
+        }
+
+        return "lucide:cloud";
+    }
+
+    private string GetEgressTitle()
+    {
+        if (HasNoEgressData)
+        {
+            return CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressNoDataTitle, "No egress data recorded");
+        }
+
+        return CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressReachedInternetTitle, "This session reached the internet");
+    }
+
+    private string GetEgressDescription()
+    {
+        if (HasNoEgressData)
+        {
+            return CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressNoDataDescription, "Older sessions may not include provider egress records.");
+        }
+
+        return CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressReachedInternetDescription, "Cloud providers or internet tools were used during this session.");
+    }
+
+    private string FormatEgressEntryCount()
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.DialogEgressEntryCount, "{0} audited egress entries"),
+            _egressEntries.Count);
+    }
+
+    private EgressAuditSummary BuildEgressSummary()
+    {
+        return SessionEvidenceExport.BuildSummary(_egressEntries);
+    }
+
+    private static string SanitizeFileNamePart(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "unknown";
+        }
+
+        var cleaned = new string(value.Select(ch => char.IsLetterOrDigit(ch) || ch is '-' or '_' ? ch : '-').ToArray());
+        var trimmed = cleaned.Trim('-');
+        return trimmed.Length == 0 ? "unknown" : trimmed;
+    }
+
+    private RenderFragment RenderContent(AIContent content) => builder =>
+    {
+        builder.OpenRegion(0);
+        switch (content)
+        {
+            case TextContent textContent when !string.IsNullOrWhiteSpace(textContent.Text):
+                builder.OpenElement(1, "p");
+                builder.AddAttribute(2, "class", "text-base-content/80 whitespace-pre-wrap text-sm");
+                builder.AddAttribute(3, "dir", "auto");
+                builder.AddContent(4, textContent.Text);
+                builder.CloseElement();
+                break;
+            case TextReasoningContent reasoningContent:
+                builder.AddContent(5, RenderReasoning(reasoningContent));
+                break;
+            case FunctionCallContent functionCall:
+                builder.AddContent(6, RenderFunctionCall(functionCall));
+                break;
+            case FunctionResultContent functionResult:
+                builder.AddContent(7, RenderFunctionResult(functionResult));
+                break;
+            case ErrorContent errorContent:
+                builder.AddContent(8, RenderError(errorContent));
+                break;
+            case UsageContent usageContent:
+                builder.OpenElement(9, "p");
+                builder.AddAttribute(10, "class", "text-base-content/50 text-xs");
+                builder.AddContent(11, FormatUsage(usageContent));
+                builder.CloseElement();
+                break;
+            case DataContent dataContent:
+                builder.OpenElement(12, "p");
+                builder.AddAttribute(13, "class", "text-base-content/50 text-xs");
+                builder.AddContent(14, FormatDataContent(dataContent));
+                builder.CloseElement();
+                break;
+            case UriContent uriContent:
+                builder.OpenElement(15, "p");
+                builder.AddAttribute(16, "class", "text-base-content/50 break-all font-mono text-xs");
+                builder.AddAttribute(17, "dir", "ltr");
+                builder.AddContent(18, uriContent.Uri);
+                builder.CloseElement();
+                break;
+            case not TextContent:
+                builder.OpenElement(19, "p");
+                builder.AddAttribute(20, "class", "text-base-content/50 text-xs");
+                builder.AddContent(21, content.GetType().Name);
+                builder.CloseElement();
+                break;
+        }
+        builder.CloseRegion();
+    };
+
+    private RenderFragment RenderReasoning(TextReasoningContent reasoningContent) => @<div class="collapse collapse-arrow rounded-box bg-base-200">
+        <input type="checkbox" aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogContentTypeReasoning, "Reasoning")" />
+        <div class="collapse-title min-h-0 px-3 py-2 text-xs font-medium">@CommonLoc.GetOrDefault(CommonTextKeys.DialogContentTypeReasoning, "Reasoning")</div>
+        <div class="collapse-content px-3 pb-3">
+            <pre dir="auto" class="whitespace-pre-wrap font-mono text-xs">@reasoningContent.Text</pre>
+        </div>
+    </div>;
+
+    private RenderFragment RenderFunctionCall(FunctionCallContent functionCall) => @<div class="rounded-box bg-base-200 p-3">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+            <span class="badge badge-warning badge-sm">@CommonLoc.GetOrDefault(CommonTextKeys.DialogContentTypeCall, "call")</span>
+            <span class="font-mono text-xs font-semibold">@functionCall.Name</span>
+            <span class="text-base-content/40 ms-auto font-mono text-xs">@functionCall.CallId</span>
+        </div>
+        @if (functionCall.Arguments is not null)
+        {
+            <pre dir="ltr" class="overflow-x-auto rounded-box bg-base-300 p-2 font-mono text-xs">@FormatJson(functionCall.Arguments)</pre>
+        }
+    </div>;
+
+    private RenderFragment RenderFunctionResult(FunctionResultContent functionResult) => @<div class="rounded-box bg-base-200 p-3">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+            <span class="badge badge-success badge-sm">@CommonLoc.GetOrDefault(CommonTextKeys.DialogContentTypeResult, "result")</span>
+            <span class="text-base-content/40 font-mono text-xs">@functionResult.CallId</span>
+        </div>
+        <pre dir="auto" class="overflow-x-auto whitespace-pre-wrap rounded-box bg-base-300 p-2 font-mono text-xs">@FormatResult(functionResult.Result)</pre>
+    </div>;
+
+    private static RenderFragment RenderError(ErrorContent errorContent) => @<div role="alert" class="alert alert-error alert-soft py-2 text-xs">
+        <span dir="auto" class="font-medium">@errorContent.Message</span>
+        @if (!string.IsNullOrWhiteSpace(errorContent.ErrorCode))
+        {
+            <span class="opacity-70">[@errorContent.ErrorCode]</span>
+        }
+    </div>;
+
+    private string GetSummaryLabel()
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.DialogInspectorMessageSummary, "{0} messages"),
+            _messages.Count);
+    }
+
+    private string FormatTokenBadge(int tokenCount)
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.DialogTokenCountBadge, "{0} tokens"),
+            tokenCount);
+    }
+
+    private static string GetRoleIconClass(ChatRole role)
+    {
+        if (role == ChatRole.User) return "bg-primary/10 text-primary";
+        if (role == ChatRole.Assistant) return "bg-success/10 text-success";
+        if (role == ChatRole.Tool) return "bg-warning/10 text-warning";
+        return "bg-base-200 text-base-content/60";
+    }
+
+    private static string GetRoleIcon(ChatRole role)
+    {
+        if (role == ChatRole.User) return "lucide:user";
+        if (role == ChatRole.Assistant) return "lucide:bot";
+        if (role == ChatRole.Tool) return "lucide:wrench";
+        return "lucide:settings";
+    }
+
+    private string GetRoleLabel(ChatMessage message)
+    {
+        if (!string.IsNullOrWhiteSpace(message.AuthorName)) return message.AuthorName;
+        if (message.Role == ChatRole.User) return CommonLoc.GetOrDefault(CommonTextKeys.User, "User");
+        if (message.Role == ChatRole.Assistant) return CommonLoc.GetOrDefault(CommonTextKeys.Assistant, "Assistant");
+        if (message.Role == ChatRole.Tool) return CommonLoc.GetOrDefault(CommonTextKeys.Tool, "Tool");
+        return CommonLoc.GetOrDefault(CommonTextKeys.System, "System");
+    }
+
+    private string FormatUsage(UsageContent usageContent)
+    {
+        var parts = new List<string>();
+        if (usageContent.Details.InputTokenCount is { } inputTokens)
+        {
+            parts.Add(string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(CommonTextKeys.DialogUsageInputTokens, "Input: {0}"), inputTokens));
+        }
+        if (usageContent.Details.OutputTokenCount is { } outputTokens)
+        {
+            parts.Add(string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(CommonTextKeys.DialogUsageOutputTokens, "Output: {0}"), outputTokens));
+        }
+        if (usageContent.Details.TotalTokenCount is { } totalTokens)
+        {
+            parts.Add(string.Format(CultureInfo.CurrentCulture, CommonLoc.GetOrDefault(CommonTextKeys.DialogUsageTotalTokens, "Total: {0}"), totalTokens));
+        }
+        return string.Join("  ", parts);
+    }
+
+    private string FormatDataContent(DataContent dataContent)
+    {
+        return string.Format(
+            CultureInfo.CurrentCulture,
+            CommonLoc.GetOrDefault(CommonTextKeys.DialogDataContentBytes, "{0} - {1} bytes"),
+            dataContent.MediaType,
+            dataContent.Data.Length);
+    }
+
+    private static string FormatJson(object? value)
+    {
+        if (value is null) return "null";
+        try
+        {
+            return JsonSerializer.Serialize(value, IndentedJsonOptions);
+        }
+        catch
+        {
+            return value.ToString() ?? string.Empty;
+        }
+    }
+
+    private static string FormatResult(object? value)
+    {
+        if (value is null) return "null";
+        if (value is string text) return text;
+        return FormatJson(value);
+    }
+}

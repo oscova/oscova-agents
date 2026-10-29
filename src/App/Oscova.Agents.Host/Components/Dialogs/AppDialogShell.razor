@@ -1,0 +1,221 @@
+@implements IAsyncDisposable
+@inject IStringLocalizer<CommonText> CommonLoc
+@inject IJSRuntime JS
+
+@* Provides the shared chrome for DialogInstance-backed dialogs while each dialog owns its workflow body. *@
+<dialog id="@DialogInstance.DialogId"
+        class="@ModalCssClass"
+        aria-labelledby="@TitleId"
+        aria-describedby="@(HasSubtitle ? SubtitleId : null)">
+    <div class="custom-dialog-box @BoxClass">
+        @if (HeaderContent is not null)
+        {
+            @HeaderContent
+        }
+        else if (HasHeader)
+        {
+            <div class="custom-dialog-header flex items-center justify-between gap-3 px-5 py-4">
+                <div class="flex min-w-0 items-center gap-3">
+                    @if (!string.IsNullOrWhiteSpace(Icon))
+                    {
+                        <span class="custom-dialog-icon flex shrink-0 items-center justify-center">
+                            <iconify-icon icon="@Icon" width="18" height="18"></iconify-icon>
+                        </span>
+                    }
+                    <div class="min-w-0">
+                        <h3 id="@TitleId" class="@TitleClass">@Title</h3>
+                        @if (!string.IsNullOrWhiteSpace(Subtitle))
+                        {
+                            <p id="@SubtitleId" class="text-base-content/60 mt-1 text-xs">@Subtitle</p>
+                        }
+                    </div>
+                </div>
+                <div class="flex shrink-0 items-center gap-1">
+                    @if (!string.IsNullOrWhiteSpace(HelpTopic))
+                    {
+                        <HelpTriggerButton Topic="@HelpTopic" />
+                    }
+                    @if (ShowCloseButton)
+                    {
+                        <button type="button"
+                                class="btn btn-sm btn-circle btn-ghost"
+                                aria-label="@CloseButtonLabel"
+                                disabled="@(!CanClose)"
+                                @onclick="CloseAsync">
+                            <span class="iconify lucide--x size-4"></span>
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="@BodyClass">
+            @ChildContent
+        </div>
+
+        @if (FooterContent is not null)
+        {
+            <div class="custom-dialog-footer @FooterClass">
+                @FooterContent
+            </div>
+        }
+    </div>
+
+    @if (ShowBackdropClose)
+    {
+        <form method="dialog" class="modal-backdrop">
+            <button type="button" disabled="@(!CanClose)" @onclick="CloseAsync">@CloseButtonLabel</button>
+        </form>
+    }
+</dialog>
+
+@code {
+    [CascadingParameter]
+    public DialogInstance DialogInstance { get; set; } = default!;
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public string? HelpTopic { get; set; }
+
+    [Parameter]
+    public string ModalClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string MaxWidthClass { get; set; } = "max-w-2xl";
+
+    [Parameter]
+    public string BoxContentClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string BodyClass { get; set; } = "px-5 py-4";
+
+    [Parameter]
+    public string FooterClass { get; set; } = "modal-action px-5 pb-5 pt-0";
+
+    [Parameter]
+    public string TitleClass { get; set; } = "truncate text-lg font-semibold";
+
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = true;
+
+    [Parameter]
+    public bool ShowBackdropClose { get; set; }
+
+    [Parameter]
+    public bool CanClose { get; set; } = true;
+
+    [Parameter]
+    public DialogResult CloseResult { get; set; } = DialogResult.Cancel;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    private IJSObjectReference? _uiModule;
+    private DotNetObjectReference<AppDialogShell>? _selfRef;
+    private bool _isOpened;
+    private bool _disposed;
+
+    private string TitleId => $"{DialogInstance.DialogId}-title";
+    private string SubtitleId => $"{DialogInstance.DialogId}-subtitle";
+    private bool HasSubtitle => !string.IsNullOrWhiteSpace(Subtitle);
+    private string ModalCssClass => string.IsNullOrWhiteSpace(ModalClass) ? "modal" : $"modal {ModalClass}";
+
+    private bool HasHeader => !string.IsNullOrWhiteSpace(Title) || ShowCloseButton || !string.IsNullOrWhiteSpace(HelpTopic);
+
+    private string BoxClass => string.Join(
+        " ",
+        new[] { "modal-box flex max-h-[90vh] w-11/12 flex-col p-0", MaxWidthClass, BoxContentClass }
+            .Where(value => !string.IsNullOrWhiteSpace(value)));
+
+    private string CloseButtonLabel => CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _isOpened)
+        {
+            return;
+        }
+
+        _isOpened = true;
+        try
+        {
+            _uiModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/ui-services.js");
+
+            // A dialog closed during the import round trip is already disposed; using it then would kill the circuit.
+            if (_disposed)
+            {
+                await _uiModule.DisposeAsync();
+                return;
+            }
+
+            _selfRef = DotNetObjectReference.Create(this);
+            await _uiModule.InvokeVoidAsync("showModal", DialogInstance.DialogId, _selfRef);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit can disconnect during navigation or shutdown.
+        }
+    }
+
+    /// <summary>Runs the .NET close path when the browser reports an Escape cancel on this dialog.</summary>
+    [JSInvokable]
+    public Task OnDialogCancelled() => CloseAsync();
+
+    private async Task CloseAsync()
+    {
+        if (!CanClose)
+        {
+            return;
+        }
+
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+        else
+        {
+            DialogInstance.Close(CloseResult);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+        if (_uiModule is not null)
+        {
+            // DialogProvider already closes the element before it drops the entry, and the node is
+            // gone by the time this runs, so only the module handle is left to release here.
+            try
+            {
+                await _uiModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The circuit can disconnect during navigation or shutdown.
+            }
+            catch (OperationCanceledException)
+            {
+                // Sign-out and navigation cancel pending interop, and the module is released with the page.
+            }
+        }
+
+        _selfRef?.Dispose();
+    }
+}

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Navigation.Overview">
+		<value>अवलोकन</value>
+	</data>
+	<data name="Navigation.Chat">
+		<value>चैट</value>
+	</data>
+	<data name="Navigation.Tasks">
+		<value>कार्य</value>
+	</data>
+	<data name="Navigation.Manage">
+		<value>सेटिंग्स</value>
+	</data>
+	<data name="Navigation.Orchestration">
+		<value>ऑर्केस्ट्रेशन</value>
+	</data>
+	<data name="Navigation.AgentTasks">
+		<value>एजेंट कार्य</value>
+	</data>
+	<data name="Navigation.Administration">
+		<value>प्रशासन</value>
+	</data>
+	<data name="Navigation.ToggleSidebarHover">
+		<value>साइडबार होवर टॉगल करें</value>
+	</data>
+	<data name="Navigation.CloseSidebar">
+		<value>साइडबार बंद करें</value>
+	</data>
+	<data name="Navigation.ToggleSidebar">
+		<value>साइडबार टॉगल करें</value>
+	</data>
+	<data name="Navigation.ToggleTheme">
+		<value>थीम टॉगल करें</value>
+	</data>
+	<data name="Navigation.OpenCustomization">
+		<value>कस्टमाइज़ेशन खोलें</value>
+	</data>
+	<data name="Navigation.SettingsMenuTrigger">
+		<value>{0} मेनू ट्रिगर</value>
+	</data>
+	<data name="Navigation.ToggleLayoutSidebar"><value>लेआउट साइडबार टॉगल करें</value></data>
+	<data name="Navigation.Customization"><value>कस्टमाइज़ेशन</value></data>
+	<data name="Navigation.Reset"><value>रीसेट करें</value></data>
+	<data name="Navigation.CustomizationResetToast"><value>कस्टमाइज़ेशन डिफ़ॉल्ट पर रीसेट कर दिया गया।</value></data>
+	<data name="Navigation.FullScreen"><value>फ़ुल स्क्रीन</value></data>
+	<data name="Navigation.Theme"><value>थीम</value></data>
+	<data name="Navigation.Sidebar"><value>साइडबार</value></data>
+	<data name="Navigation.SidebarThemeAvailability"><value>(*केवल लाइट थीम में उपलब्ध)</value></data>
+	<data name="Navigation.Light"><value>लाइट</value></data>
+	<data name="Navigation.Dark"><value>डार्क</value></data>
+	<data name="Navigation.FontFamily"><value>फ़ॉन्ट परिवार</value></data>
+	<data name="Navigation.Direction"><value>दिशा</value></data>
+	<data name="Navigation.LeftToRight"><value>बाएँ से दाएँ</value></data>
+	<data name="Navigation.RightToLeft"><value>दाएँ से बाएँ</value></data>
+	<data name="Navigation.LeftToRightShort"><value>LTR</value></data>
+	<data name="Navigation.RightToLeftShort"><value>RTL</value></data>
+	<data name="Navigation.Account"><value>खाता</value></data>
+	<data name="Navigation.Logs"><value>लॉग्स</value></data>
+	<data name="Navigation.ChatMemory"><value>चैट मेमोरी</value></data>
+	<data name="Navigation.LogOut"><value>लॉग आउट</value></data>
+	<data name="Navigation.Role.Admin"><value>ऑपरेटर</value></data>
+	<data name="Navigation.Role.Moderator"><value>मॉडरेटर</value></data>
+	<data name="Navigation.Role.User"><value>उपयोगकर्ता</value></data>
+	<data name="Navigation.HelpButtonAriaLabel"><value>सहायता खोलें</value></data>
+	<data name="Navigation.Dashboard"><value>डैशबोर्ड</value></data>
+	<data name="Navigation.Dashboard.Window"><value>पिछले 30 दिन</value></data>
+	<data name="Navigation.Dashboard.Loading"><value>डैशबोर्ड लोड हो रहा है...</value></data>
+	<data name="Navigation.Dashboard.Error"><value>डैशबोर्ड मेट्रिक्स लोड नहीं किए जा सके।</value></data>
+	<data name="Navigation.Dashboard.Empty"><value>अभी तक कोई मेट्रिक्स नहीं</value></data>
+	<data name="Navigation.Dashboard.EmptyHint"><value>इस डैशबोर्ड को भरना शुरू करने के लिए चैट या एजेंट कार्य चलाएं।</value></data>
+	<data name="Navigation.Dashboard.LastThirtyDays"><value>पिछले 30 दिनों की गतिविधि</value></data>
+	<data name="Navigation.Dashboard.TotalTokens"><value>कुल टोकन</value></data>
+	<data name="Navigation.Dashboard.EstimatedCost"><value>अनुमानित लागत</value></data>
+	<data name="Navigation.Dashboard.ProviderRatedUsage"><value>मानक इनपुट और आउटपुट दरें</value></data>
+	<data name="Navigation.Dashboard.CostUnavailable"><value>उपलब्ध नहीं</value></data>
+	<data name="Navigation.Dashboard.PartialEstimate"><value>आंशिक अनुमान</value></data>
+	<data name="Navigation.Dashboard.EstimateExplanation"><value>रिपोर्ट किए गए इनपुट और आउटपुट टोकन पर मानक USD दरें लागू होती हैं। कैश किया गया इनपुट इनपुट दर पर गिना जाता है। अन्य शुल्क शामिल नहीं हैं।</value></data>
+	<data name="Navigation.Dashboard.Egress"><value>डेटा निकास</value></data>
+	<data name="Navigation.Dashboard.ToolCalls"><value>टूल कॉल्स</value></data>
+	<data name="Navigation.Dashboard.TaskRuns"><value>कार्य निष्पादन</value></data>
+	<data name="Navigation.Dashboard.Agents"><value>एजेंट्स</value></data>
+	<data name="Navigation.Dashboard.ModelProviders"><value>मॉडल प्रदाता</value></data>
+	<data name="Navigation.Dashboard.McpServers"><value>MCP सर्वर</value></data>
+	<data name="Navigation.Dashboard.Skills"><value>स्किल्स</value></data>
+	<data name="Navigation.Dashboard.InputOutput"><value>इनपुट / आउटपुट</value></data>
+	<data name="Navigation.Dashboard.Cloud"><value>क्लाउड</value></data>
+	<data name="Navigation.Dashboard.Local"><value>लोकल</value></data>
+	<data name="Navigation.Dashboard.AuditedEvents"><value>ऑडिट की गई डेटा-निकास घटनाएं</value></data>
+	<data name="Navigation.Dashboard.OpenEgressAudit"><value>{0} घटनाओं के लिए डेटा निकास ऑडिट विवरण खोलें</value></data>
+	<data name="Navigation.Dashboard.EgressAuditAction"><value>ऑडिट</value></data>
+	<data name="Navigation.Dashboard.TokenBreakdown"><value>टोकन विवरण</value></data>
+	<data name="Navigation.Dashboard.ByProvider"><value>प्रदाता अनुसार</value></data>
+	<data name="Navigation.Dashboard.ByAgent"><value>एजेंट अनुसार</value></data>
+	<data name="Navigation.Dashboard.ByModel"><value>मॉडल अनुसार</value></data>
+	<data name="Navigation.Dashboard.ToolUsage"><value>टूल उपयोग</value></data>
+	<data name="Navigation.Dashboard.Timeline"><value>हाल की गतिविधि</value></data>
+	<data name="Navigation.Dashboard.AdminUsage"><value>प्रति उपयोगकर्ता उपयोग (प्रशासन)</value></data>
+	<data name="Navigation.Dashboard.StorageByUser"><value>उपयोगकर्ता अनुसार संग्रहण</value></data>
+	<data name="Navigation.Dashboard.Date"><value>दिनांक</value></data>
+	<data name="Navigation.Dashboard.Provider"><value>प्रदाता</value></data>
+	<data name="Navigation.Dashboard.Agent"><value>एजेंट</value></data>
+	<data name="Navigation.Dashboard.Model"><value>मॉडल</value></data>
+	<data name="Navigation.Dashboard.Tool"><value>टूल</value></data>
+	<data name="Navigation.Dashboard.Succeeded"><value>सफल</value></data>
+	<data name="Navigation.Dashboard.Failed"><value>विफल</value></data>
+	<data name="Navigation.Dashboard.User"><value>उपयोगकर्ता</value></data>
+	<data name="Navigation.Dashboard.Tokens"><value>टोकन</value></data>
+	<data name="Navigation.Dashboard.File"><value>फ़ाइल</value></data>
+	<data name="Navigation.Dashboard.Files"><value>फ़ाइलें</value></data>
+	<data name="Navigation.Dashboard.Other"><value>अन्य</value></data>
+	<data name="Navigation.Dashboard.IncognitoBucket"><value>गुप्त</value></data>
+	<data name="Navigation.Dashboard.BackgroundBucket"><value>पृष्ठभूमि कार्य</value></data>
+	<data name="Navigation.Dashboard.UsageOverview"><value>उपयोग अवलोकन</value></data>
+	<data name="Navigation.Dashboard.UsageOverviewHint"><value>दिन के अनुसार इनपुट, आउटपुट और डेटा निकास</value></data>
+	<data name="Navigation.Dashboard.InputTokens"><value>इनपुट टोकन</value></data>
+	<data name="Navigation.Dashboard.OutputTokens"><value>आउटपुट टोकन</value></data>
+	<data name="Navigation.Dashboard.OperationalStatus"><value>परिचालन स्थिति</value></data>
+	<data name="Navigation.Dashboard.TaskSuccessRate"><value>कार्य सफलता दर</value></data>
+	<data name="Navigation.Dashboard.AverageTaskDuration"><value>औसत कार्य अवधि</value></data>
+	<data name="Navigation.Dashboard.Fallbacks"><value>फ़ॉलबैक</value></data>
+	<data name="Navigation.Dashboard.LocalCloudMix"><value>लोकल / क्लाउड मिश्रण</value></data>
+	<data name="Navigation.Dashboard.Distribution"><value>उपयोग वितरण</value></data>
+	<data name="Navigation.Dashboard.TokenMix"><value>टोकन मिश्रण</value></data>
+	<data name="Navigation.Dashboard.SecondsShort"><value>से</value></data>
+	<data name="Navigation.Dashboard.MinutesShort"><value>मि</value></data>
+	<data name="Navigation.Achievements"><value>उपलब्धियां</value></data>
+  <data name="Navigation.ShowSettingsNavigation" xml:space="preserve"><value>सेटिंग नेविगेशन दिखाएँ</value></data>
+</root>
