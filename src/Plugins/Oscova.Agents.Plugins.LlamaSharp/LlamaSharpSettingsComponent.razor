@@ -1,0 +1,50 @@
+@inject IStringLocalizer<PluginText> Loc
+
+<div class="mb-3">
+    <label class="label-text block mb-1" for="llama-offload-mode">@Loc[PluginTextKeys.OffloadMode]</label>
+    <select id="llama-offload-mode" class="select select-bordered w-full" value="@(Custom ? "custom" : "full")"
+            disabled="@(!LlamaSharpAgentPlugin.IsCudaEdition)" @onchange="ChangeModeAsync">
+        <option value="full">@Loc[PluginTextKeys.FullOffload]</option>
+        <option value="custom">@Loc[PluginTextKeys.CustomOffload]</option>
+    </select>
+</div>
+@if (Custom)
+{
+    <div class="mb-3">
+        <label class="label-text block mb-1" for="llama-gpu-layers">@Loc[PluginTextKeys.GpuLayers]</label>
+        <input id="llama-gpu-layers" class="input input-bordered w-full" type="text" inputmode="numeric" value="@Layers"
+               disabled="@(!LlamaSharpAgentPlugin.IsCudaEdition)" aria-describedby="llama-gpu-help llama-gpu-error"
+               aria-invalid="@(Invalid ? "true" : "false")" @oninput="ChangeLayersAsync" />
+        <div id="llama-gpu-help" class="text-xs opacity-70 mt-1">@Loc[PluginTextKeys.GpuLayersHelp]</div>
+        @if (Invalid)
+        {
+            <div id="llama-gpu-error" class="text-error text-xs mt-1" role="alert">@Loc[PluginTextKeys.GpuLayersInvalid]</div>
+        }
+    </div>
+}
+@if (!LlamaSharpAgentPlugin.IsCudaEdition)
+{
+    <p class="text-xs opacity-70 mt-1">@Loc[PluginTextKeys.CudaEditionRequired]</p>
+}
+
+@code {
+    [Parameter, EditorRequired] public PluginSettingsContext Context { get; set; } = default!;
+    private PluginModelProviderSettingsContext Draft => Context.GetModelProviderSettings!();
+    private bool Custom => Draft.Draft.Options?.ContainsKey(LlamaSharpModelProvider.GpuLayersOption) == true;
+    private string Layers => Draft.Draft.Options?.GetValueOrDefault(LlamaSharpModelProvider.GpuLayersOption) ?? string.Empty;
+    private bool Invalid => Draft.FieldErrors.ContainsKey(LlamaSharpModelProvider.GpuLayersOption);
+
+    private Task ChangeModeAsync(ChangeEventArgs args) => SetLayersAsync(args.Value?.ToString() == "custom" ? "1" : null);
+    private Task ChangeLayersAsync(ChangeEventArgs args) => SetLayersAsync(args.Value?.ToString() ?? string.Empty);
+
+    private async Task SetLayersAsync(string? value)
+    {
+        var draft = Draft;
+        var options = new Dictionary<string, string>(draft.Draft.Options ?? new Dictionary<string, string>(), StringComparer.Ordinal);
+        if (value is null) { options.Remove(LlamaSharpModelProvider.GpuLayersOption); }
+        else { options[LlamaSharpModelProvider.GpuLayersOption] = value; }
+
+        draft.Draft.Options = options;
+        await draft.ChangedAsync();
+    }
+}

@@ -13,7 +13,7 @@ public sealed class AgentTemplatesPluginTests
     public void LoadDirectory_ContributesEightEmbeddedTemplates()
     {
         using var root = TestPluginRoot.Create();
-        root.AddPluginFromProjectOutput("src/Oscova.Agents.Plugins.AgentTemplates", "oscova.agent-templates");
+        root.AddPluginFromProjectOutput(Path.Combine("src", "Plugins", "Oscova.Agents.Plugins.AgentTemplates"), "oscova.agent-templates");
         var catalog = AgentPluginLoader.LoadDirectory(root.RootPath);
         Assert.Empty(catalog.Diagnostics);
         var plugin = Assert.Single(catalog.Plugins);

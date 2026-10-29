@@ -143,6 +143,8 @@ public sealed class TaskRunScopeResolver
             IsSubagentDelegationEnabled = scope.IsSubagentDelegationEnabled,
             // Task scope can change runtime capabilities, but it must retain the agent's storage classification.
             IsExposedAsTool = selectedAgent.IsExposedAsTool,
+            // Shared-folder access follows the selected agent, with user permission checked during directory resolution.
+            IsSharedFolderEnabled = selectedAgent.IsSharedFolderEnabled,
             AgentToolIds = [.. scope.AgentToolIds],
             AllowedSkillNames = [.. scope.AllowedSkillNames],
             AllowedWorkspaces = [.. scope.AllowedWorkspaces],

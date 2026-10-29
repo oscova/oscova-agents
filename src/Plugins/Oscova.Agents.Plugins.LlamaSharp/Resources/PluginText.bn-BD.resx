@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>GPU অফলোড মোড</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>সম্পূর্ণ GPU অফলোড</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>কাস্টম GPU লেয়ার</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>GPU লেয়ার</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>1–2147483647 লিখুন। মডেলের লেয়ার সংখ্যার চেয়ে বেশি মান সব উপলব্ধ লেয়ার অফলোড করে। আংশিক বরাদ্দ নির্ভরযোগ্যভাবে অনুমান করা যায় না।</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>1 থেকে 2147483647 পর্যন্ত পূর্ণসংখ্যা লিখুন।</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>GPU লেয়ার সেটিংয়ের জন্য NVIDIA CUDA সংস্করণ প্রয়োজন। মূল সংস্করণ এই মান সংরক্ষণ করে কিন্তু উপেক্ষা করে। ব্যবহার করতে CUDA ইনস্টল করে পুনরায় চালু করুন।</value></data>
+</root>

@@ -62,7 +62,7 @@ public sealed class GoogleWorkspaceTests
     public void Loader_PreservesAccountMetadataAndSharedFrameworkIdentity()
     {
         using var root = TestPluginRoot.Create();
-        root.AddPluginFromProjectOutput(Path.Combine("src", "Oscova.Agents.Plugins.GoogleWorkspace"), "oscova.google-workspace");
+        root.AddPluginFromProjectOutput(Path.Combine("src", "Plugins", "Oscova.Agents.Plugins.GoogleWorkspace"), "oscova.google-workspace");
         Assert.Empty(AgentPluginLoader.LoadDirectory(root.RootPath, new HashSet<string>()).Plugins);
         var catalog = AgentPluginLoader.LoadDirectory(root.RootPath);
         Assert.Empty(catalog.Diagnostics);

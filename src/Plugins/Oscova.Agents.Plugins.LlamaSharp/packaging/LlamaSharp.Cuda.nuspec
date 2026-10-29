@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Oscova.Agents.Plugins.LlamaSharp.Cuda</id>
+    <version>$rootVersion$</version>
+    <authors>Oscova</authors>
+    <description>Local GGUF inference with NVIDIA CUDA 13 on Windows x64 and Linux x64. Requires a compatible GPU, driver and CUDA runtime. Replaces the base LLamaSharp edition after restarting Oscova.</description>
+    <license type="expression">Apache-2.0</license>
+    <readme>README.md</readme>
+    <repository type="git" url="https://github.com/oscova/oscova-agents" />
+    <tags>$tags$</tags>
+    <packageTypes><packageType name="OscovaPlugin" /></packageTypes>
+    <dependencies><group targetFramework="net10.0">
+      <dependency id="Oscova.Agents" version="$frameworkRange$" />
+      <dependency id="LLamaSharp" version="[$runtimeVersion$]" />
+      <dependency id="LLamaSharp.Backend.Cuda13.Windows" version="[$runtimeVersion$]" />
+      <dependency id="LLamaSharp.Backend.Cuda13.Linux" version="[$runtimeVersion$]" />
+    </group></dependencies>
+    <frameworkReferences><group targetFramework="net10.0"><frameworkReference name="Microsoft.AspNetCore.App" /></group></frameworkReferences>
+  </metadata>
+  <files>
+    <file src="$assembly$" target="runtimes/win-x64/lib/net10.0/Oscova.Agents.Plugins.LlamaSharp.dll" />
+    <file src="$assembly$" target="runtimes/linux-x64/lib/net10.0/Oscova.Agents.Plugins.LlamaSharp.dll" />
+    <file src="$cpu$\win-x64\native\avx\*.dll" exclude="$cpu$\win-x64\native\avx\*mtmd.dll" target="runtimes/win-x64/native/avx" />
+    <file src="$cpu$\win-x64\native\avx2\*.dll" exclude="$cpu$\win-x64\native\avx2\*mtmd.dll" target="runtimes/win-x64/native/avx2" />
+    <file src="$cpu$\win-x64\native\avx512\*.dll" exclude="$cpu$\win-x64\native\avx512\*mtmd.dll" target="runtimes/win-x64/native/avx512" />
+    <file src="$cpu$\win-x64\native\noavx\*.dll" exclude="$cpu$\win-x64\native\noavx\*mtmd.dll" target="runtimes/win-x64/native/noavx" />
+    <file src="$cpu$\linux-x64\native\avx\*.so" exclude="$cpu$\linux-x64\native\avx\*mtmd.so" target="runtimes/linux-x64/native/avx" />
+    <file src="$cpu$\linux-x64\native\avx2\*.so" exclude="$cpu$\linux-x64\native\avx2\*mtmd.so" target="runtimes/linux-x64/native/avx2" />
+    <file src="$cpu$\linux-x64\native\avx512\*.so" exclude="$cpu$\linux-x64\native\avx512\*mtmd.so" target="runtimes/linux-x64/native/avx512" />
+    <file src="$cpu$\linux-x64\native\noavx\*.so" exclude="$cpu$\linux-x64\native\noavx\*mtmd.so" target="runtimes/linux-x64/native/noavx" />
+    <file src="$satellites$" target="lib/net10.0" />
+    <file src="$manifest$" target="oscova-plugin.json" />
+    <file src="$readme$" target="README.md" />
+    <file src="$licenses$" target="licenses" />
+  </files>
+</package>

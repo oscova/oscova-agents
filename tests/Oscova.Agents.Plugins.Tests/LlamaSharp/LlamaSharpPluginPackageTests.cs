@@ -37,7 +37,7 @@ public sealed class LlamaSharpPluginPackageTests
 
         var llamaSharp = Assert.Single(dependencies, dependency =>
             string.Equals(dependency.Id, "LLamaSharp", StringComparison.Ordinal));
-        var llamaSharpVersion = NuGetVersion.Parse("0.27.0");
+        var llamaSharpVersion = NuGetVersion.Parse("0.30.0");
         Assert.Equal(llamaSharpVersion, llamaSharp.VersionRange.MinVersion);
         Assert.Equal(llamaSharpVersion, llamaSharp.VersionRange.MaxVersion);
         Assert.True(llamaSharp.VersionRange.IsMinInclusive);

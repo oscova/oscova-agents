@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.AI;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
@@ -45,6 +47,9 @@ public class ModelProviderConfig
     /// Gets or sets the credential lookup key.
     /// </summary>
     public string? CredentialKey { get; set; }
+
+    /// <summary>Gets or sets non-secret, provider-owned configuration options.</summary>
+    public IReadOnlyDictionary<string, string>? Options { get; set; }
 
     /// <summary>
     /// Gets or sets whether the provider supports image input.
@@ -100,6 +105,7 @@ public class ModelProviderConfig
             IsLocalEndpoint = IsLocalEndpoint,
             ModelId = ModelId,
             CredentialKey = CredentialKey,
+            Options = Options is null ? null : new Dictionary<string, string>(Options, StringComparer.Ordinal),
             SupportsImages = SupportsImages,
             ContextWindowSize = ContextWindowSize,
             InputCostPerMillionTokens = InputCostPerMillionTokens,
@@ -123,6 +129,7 @@ public class ModelProviderConfig
                && IsLocalEndpoint == other.IsLocalEndpoint
                && string.Equals(ModelId, other.ModelId, StringComparison.Ordinal)
                && string.Equals(CredentialKey, other.CredentialKey, StringComparison.Ordinal)
+               && AreOptionsEqual(Options, other.Options)
                && SupportsImages == other.SupportsImages
                && ContextWindowSize == other.ContextWindowSize
                && InputCostPerMillionTokens == other.InputCostPerMillionTokens
@@ -150,5 +157,15 @@ public class ModelProviderConfig
         var rightJson = JsonSerializer.Serialize(right);
 
         return string.Equals(leftJson, rightJson, StringComparison.Ordinal);
+    }
+
+    /// <summary>Compares exact option keys and values independently of order and dictionary comparers.</summary>
+    public static bool AreOptionsEqual(IReadOnlyDictionary<string, string>? left, IReadOnlyDictionary<string, string>? right)
+    {
+        if ((left?.Count ?? 0) != (right?.Count ?? 0)) { return false; }
+        if (left is null || left.Count == 0) { return true; }
+
+        return left.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+            .SequenceEqual(right!.OrderBy(pair => pair.Key, StringComparer.Ordinal));
     }
 }

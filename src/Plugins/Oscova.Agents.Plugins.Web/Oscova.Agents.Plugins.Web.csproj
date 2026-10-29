@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>Oscova.Agents.Plugins.Web</PackageId>
+    <Version>$(WebPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Oscova Agents plugin providing web search (web_search) and news (news_search) toolsets for agents. Requires user-supplied API keys.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;web-search;news;tools</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+
+
+
+</Project>

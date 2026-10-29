@@ -170,7 +170,7 @@ public sealed class SlackChannelTests
     public async Task LoadedPlugin_DeclaresTwoSecretsAndTwoFields()
     {
         using var root = TestPluginRoot.Create();
-        root.AddPluginFromProjectOutput(Path.Combine("src", "Oscova.Agents.Plugins.Slack"), "oscova.slack");
+        root.AddPluginFromProjectOutput(Path.Combine("src", "Plugins", "Oscova.Agents.Plugins.Slack"), "oscova.slack");
         Assert.Empty(AgentPluginLoader.LoadDirectory(root.RootPath, new HashSet<string>()).Plugins);
         var catalog = AgentPluginLoader.LoadDirectory(root.RootPath);
         Assert.Empty(catalog.Diagnostics);
@@ -230,7 +230,7 @@ public sealed class SlackChannelTests
             dependencies.Select(dependency => dependency.Id).Order(StringComparer.Ordinal));
         var dependency = Assert.Single(dependencies, dependency => dependency.Id == "SlackNet");
         Assert.Equal("SlackNet", dependency.Id);
-        Assert.Equal("0.18.0", dependency.VersionRange.MinVersion!.ToNormalizedString());
+        Assert.Equal("0.19.0", dependency.VersionRange.MinVersion!.ToNormalizedString());
     }
 
     /// <summary>Disposes the connection-owned transport after failed authentication.</summary>

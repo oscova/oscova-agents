@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>GPU offload mode</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>Full GPU offload</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>Custom GPU layers</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>GPU layers</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>Enter 1–2147483647. Values above the model's layer count offload all available layers. Partial placement cannot be estimated reliably.</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>Enter a whole number from 1 through 2147483647.</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>GPU layer overrides require the NVIDIA CUDA edition. The base edition preserves this value but ignores it. Install CUDA and restart to use it.</value></data>
+</root>

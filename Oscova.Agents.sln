@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents", "src\Oscova.Agents\Oscova.Agents.csproj", "{6FA7696B-68F9-4593-9A4E-993C4E44D76B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Web", "src\Oscova.Agents.Plugins.Web\Oscova.Agents.Plugins.Web.csproj", "{EFE9DF96-530E-42BC-850E-AB39C7B75121}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Web", "src\Plugins\Oscova.Agents.Plugins.Web\Oscova.Agents.Plugins.Web.csproj", "{EFE9DF96-530E-42BC-850E-AB39C7B75121}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.FoundryLocal", "src\Oscova.Agents.Plugins.FoundryLocal\Oscova.Agents.Plugins.FoundryLocal.csproj", "{7F16697F-0C0A-4DAF-96BD-445FF4E335AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.FoundryLocal", "src\Plugins\Oscova.Agents.Plugins.FoundryLocal\Oscova.Agents.Plugins.FoundryLocal.csproj", "{7F16697F-0C0A-4DAF-96BD-445FF4E335AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.LlamaSharp", "src\Oscova.Agents.Plugins.LlamaSharp\Oscova.Agents.Plugins.LlamaSharp.csproj", "{790C7DFC-C4B8-4961-912B-1DA75BBDFE53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.LlamaSharp", "src\Plugins\Oscova.Agents.Plugins.LlamaSharp\Oscova.Agents.Plugins.LlamaSharp.csproj", "{790C7DFC-C4B8-4961-912B-1DA75BBDFE53}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
@@ -21,31 +21,33 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Echo"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Tests", "tests\Oscova.Agents.Plugins.Tests\Oscova.Agents.Plugins.Tests.csproj", "{CB607229-D5A9-4F2D-95B0-808B8E0452FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Discord", "src\Oscova.Agents.Plugins.Discord\Oscova.Agents.Plugins.Discord.csproj", "{57DD3484-88BA-4779-84DD-26A929D7CE8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Discord", "src\Plugins\Oscova.Agents.Plugins.Discord\Oscova.Agents.Plugins.Discord.csproj", "{57DD3484-88BA-4779-84DD-26A929D7CE8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Telegram", "src\Oscova.Agents.Plugins.Telegram\Oscova.Agents.Plugins.Telegram.csproj", "{92B4D0BE-E8BE-4A37-9B31-14239869DA38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Telegram", "src\Plugins\Oscova.Agents.Plugins.Telegram\Oscova.Agents.Plugins.Telegram.csproj", "{92B4D0BE-E8BE-4A37-9B31-14239869DA38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Slack", "src\Oscova.Agents.Plugins.Slack\Oscova.Agents.Plugins.Slack.csproj", "{3629C15D-6715-4BD4-B8E8-825C92B686A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Slack", "src\Plugins\Oscova.Agents.Plugins.Slack\Oscova.Agents.Plugins.Slack.csproj", "{3629C15D-6715-4BD4-B8E8-825C92B686A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.GoogleWorkspace", "src\Oscova.Agents.Plugins.GoogleWorkspace\Oscova.Agents.Plugins.GoogleWorkspace.csproj", "{A4BD01B4-CA20-4876-B03F-13EA2D969CE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.GoogleWorkspace", "src\Plugins\Oscova.Agents.Plugins.GoogleWorkspace\Oscova.Agents.Plugins.GoogleWorkspace.csproj", "{A4BD01B4-CA20-4876-B03F-13EA2D969CE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.MicrosoftGraph", "src\Oscova.Agents.Plugins.MicrosoftGraph\Oscova.Agents.Plugins.MicrosoftGraph.csproj", "{64CA5298-50A9-4D08-922B-EC1301C112D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.MicrosoftGraph", "src\Plugins\Oscova.Agents.Plugins.MicrosoftGraph\Oscova.Agents.Plugins.MicrosoftGraph.csproj", "{64CA5298-50A9-4D08-922B-EC1301C112D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.AgentTemplates", "src\Oscova.Agents.Plugins.AgentTemplates\Oscova.Agents.Plugins.AgentTemplates.csproj", "{334AF988-647C-468E-A536-96E3B739CC11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.AgentTemplates", "src\Plugins\Oscova.Agents.Plugins.AgentTemplates\Oscova.Agents.Plugins.AgentTemplates.csproj", "{334AF988-647C-468E-A536-96E3B739CC11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Browser", "src\Oscova.Agents.Plugins.Browser\Oscova.Agents.Plugins.Browser.csproj", "{0918A7E1-EDAF-46A5-9BD2-86FDC1163A01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Browser", "src\Plugins\Oscova.Agents.Plugins.Browser\Oscova.Agents.Plugins.Browser.csproj", "{0918A7E1-EDAF-46A5-9BD2-86FDC1163A01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.LocalSpeechRecognition", "src\Oscova.Agents.Plugins.LocalSpeechRecognition\Oscova.Agents.Plugins.LocalSpeechRecognition.csproj", "{29722EE0-130F-442E-A505-D0EB36393296}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.LocalSpeechRecognition", "src\Plugins\Oscova.Agents.Plugins.LocalSpeechRecognition\Oscova.Agents.Plugins.LocalSpeechRecognition.csproj", "{29722EE0-130F-442E-A505-D0EB36393296}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.LocalSpeechSynthesis", "src\Oscova.Agents.Plugins.LocalSpeechSynthesis\Oscova.Agents.Plugins.LocalSpeechSynthesis.csproj", "{4265E8D0-00BD-4C90-BB80-CF69E09DAC94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.LocalSpeechSynthesis", "src\Plugins\Oscova.Agents.Plugins.LocalSpeechSynthesis\Oscova.Agents.Plugins.LocalSpeechSynthesis.csproj", "{4265E8D0-00BD-4C90-BB80-CF69E09DAC94}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{07D57EEB-2F50-60C4-C011-FE4FA775C9A8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Mxc", "src\Oscova.Agents.Plugins.Mxc\Oscova.Agents.Plugins.Mxc.csproj", "{C6856AB0-C35E-458A-B946-9D03D5359EDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Mxc", "src\Plugins\Oscova.Agents.Plugins.Mxc\Oscova.Agents.Plugins.Mxc.csproj", "{C6856AB0-C35E-458A-B946-9D03D5359EDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.OpenAI", "src\Oscova.Agents.Plugins.OpenAI\Oscova.Agents.Plugins.OpenAI.csproj", "{F0ED2C6D-DE63-45D3-96EF-02CD11891A18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.OpenAI", "src\Plugins\Oscova.Agents.Plugins.OpenAI\Oscova.Agents.Plugins.OpenAI.csproj", "{F0ED2C6D-DE63-45D3-96EF-02CD11891A18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.ElevenLabs", "src\Oscova.Agents.Plugins.ElevenLabs\Oscova.Agents.Plugins.ElevenLabs.csproj", "{8AB94028-CFE9-44D4-A09B-881A79427B6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.ElevenLabs", "src\Plugins\Oscova.Agents.Plugins.ElevenLabs\Oscova.Agents.Plugins.ElevenLabs.csproj", "{8AB94028-CFE9-44D4-A09B-881A79427B6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oscova.Agents.Plugins.Docker", "src\Plugins\Oscova.Agents.Plugins.Docker\Oscova.Agents.Plugins.Docker.csproj", "{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -285,28 +287,43 @@ Global
 		{8AB94028-CFE9-44D4-A09B-881A79427B6D}.Release|x64.Build.0 = Release|Any CPU
 		{8AB94028-CFE9-44D4-A09B-881A79427B6D}.Release|x86.ActiveCfg = Release|Any CPU
 		{8AB94028-CFE9-44D4-A09B-881A79427B6D}.Release|x86.Build.0 = Release|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Debug|x64.Build.0 = Debug|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Debug|x86.Build.0 = Debug|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Release|x64.ActiveCfg = Release|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Release|x64.Build.0 = Release|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Release|x86.ActiveCfg = Release|Any CPU
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6FA7696B-68F9-4593-9A4E-993C4E44D76B} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{EFE9DF96-530E-42BC-850E-AB39C7B75121} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{7F16697F-0C0A-4DAF-96BD-445FF4E335AC} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{790C7DFC-C4B8-4961-912B-1DA75BBDFE53} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{EFE9DF96-530E-42BC-850E-AB39C7B75121} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{7F16697F-0C0A-4DAF-96BD-445FF4E335AC} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{790C7DFC-C4B8-4961-912B-1DA75BBDFE53} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
 		{646E8549-A600-4995-9713-B18B8E7F289E} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{25887231-9F02-41B6-A64F-398C3B520DEB} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{CB607229-D5A9-4F2D-95B0-808B8E0452FC} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
-		{92B4D0BE-E8BE-4A37-9B31-14239869DA38} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{3629C15D-6715-4BD4-B8E8-825C92B686A4} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{A4BD01B4-CA20-4876-B03F-13EA2D969CE9} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{64CA5298-50A9-4D08-922B-EC1301C112D6} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{334AF988-647C-468E-A536-96E3B739CC11} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{0918A7E1-EDAF-46A5-9BD2-86FDC1163A01} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{29722EE0-130F-442E-A505-D0EB36393296} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{4265E8D0-00BD-4C90-BB80-CF69E09DAC94} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
-		{C6856AB0-C35E-458A-B946-9D03D5359EDB} = {07D57EEB-2F50-60C4-C011-FE4FA775C9A8}
-		{F0ED2C6D-DE63-45D3-96EF-02CD11891A18} = {07D57EEB-2F50-60C4-C011-FE4FA775C9A8}
-		{8AB94028-CFE9-44D4-A09B-881A79427B6D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{57DD3484-88BA-4779-84DD-26A929D7CE8B} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{92B4D0BE-E8BE-4A37-9B31-14239869DA38} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{3629C15D-6715-4BD4-B8E8-825C92B686A4} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{A4BD01B4-CA20-4876-B03F-13EA2D969CE9} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{64CA5298-50A9-4D08-922B-EC1301C112D6} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{334AF988-647C-468E-A536-96E3B739CC11} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{0918A7E1-EDAF-46A5-9BD2-86FDC1163A01} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{29722EE0-130F-442E-A505-D0EB36393296} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{4265E8D0-00BD-4C90-BB80-CF69E09DAC94} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{C6856AB0-C35E-458A-B946-9D03D5359EDB} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{F0ED2C6D-DE63-45D3-96EF-02CD11891A18} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{8AB94028-CFE9-44D4-A09B-881A79427B6D} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
+		{750BAED5-48E3-4DCB-9D3E-96D08EC54A67} = {58D3A2C3-F96F-5E57-2C6B-ECE59D6A18FC}
 	EndGlobalSection
 EndGlobal

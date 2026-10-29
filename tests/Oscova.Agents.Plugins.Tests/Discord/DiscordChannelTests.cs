@@ -91,7 +91,7 @@ public sealed class DiscordChannelTests
     public async Task LoadedPlugin_DeclaresChannelAndCredentials_AndFailsWithoutToken()
     {
         using var root = TestPluginRoot.Create();
-        root.AddPluginFromProjectOutput(Path.Combine("src", "Oscova.Agents.Plugins.Discord"), "oscova.discord");
+        root.AddPluginFromProjectOutput(Path.Combine("src", "Plugins", "Oscova.Agents.Plugins.Discord"), "oscova.discord");
         Assert.Empty(AgentPluginLoader.LoadDirectory(root.RootPath, new HashSet<string>()).Plugins);
         var catalog = AgentPluginLoader.LoadDirectory(root.RootPath);
         Assert.Empty(catalog.Diagnostics);

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <IsPackable>true</IsPackable>
+    <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
+    <PackageId>Oscova.Agents.Plugins.Mxc</PackageId>
+    <Version>$(MxcPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Microsoft MXC operating-system containment for shell commands run by Oscova Agents.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;mxc;sandbox</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Mxc.Sdk" Version="1.0.1" />
+    <PackageReference Remove="Microsoft.Extensions.Logging.Abstractions" />
+    <EmbeddedResource Include="Help/**/*.md" />
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+
+</Project>

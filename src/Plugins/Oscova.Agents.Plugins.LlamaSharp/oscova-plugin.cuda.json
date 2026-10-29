@@ -1,0 +1,17 @@
+{
+  "id": "oscova.llamasharp",
+  "name": "Oscova LLamaSharp NVIDIA CUDA",
+  "version": "$version$",
+  "frameworkVersionRange": "[$frameworkVersion$]",
+  "supportedRuntimeIdentifiers": ["win-x64", "linux-x64"],
+  "hardwareRequirements": {
+    "win-x64": { "backend": "cuda", "cudaMajor": 13 },
+    "linux-x64": { "backend": "cuda", "cudaMajor": 13 }
+  },
+  "assembly": "Oscova.Agents.Plugins.LlamaSharp.dll",
+  "entryType": "Oscova.Agents.Plugins.LlamaSharp.LlamaSharpAgentPlugin",
+  "dependencyAssets": [
+    { "packageId": "LLamaSharp.Backend.Cuda13.Windows", "path": "LLamaSharpRuntimes/win-x64/", "rid": "win-x64" },
+    { "packageId": "LLamaSharp.Backend.Cuda13.Linux", "path": "LLamaSharpRuntimes/linux-x64/", "rid": "linux-x64" }
+  ]
+}

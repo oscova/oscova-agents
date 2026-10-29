@@ -25,6 +25,8 @@ public static class PluginSettingsSlots
     public const string SpeechRecognition = "settings.speech.recognition";
     /// <summary>Names the selected speech synthesis provider's settings destination.</summary>
     public const string SpeechSynthesis = "settings.speech.synthesis";
+    /// <summary>Names the selected model provider's draft settings destination.</summary>
+    public const string ModelProvider = "settings.model-provider";
     /// <summary>Names an independent page in a host-supported settings category.</summary>
     public const string Page = "settings.page";
 }
@@ -86,6 +88,8 @@ public sealed record PluginSettingsContext(AgentPluginContext Plugin, string Plu
     public Func<string, CancellationToken, Task<IPluginChannelControl>>? ResolveChannelAsync { get; init; }
     /// <summary>Reads the current speech draft and admitted controls supplied by the host page.</summary>
     public Func<PluginSpeechSettingsContext>? GetSpeechSettings { get; init; }
+    /// <summary>Reads the unsaved model draft and field errors supplied by the owning editor.</summary>
+    public Func<PluginModelProviderSettingsContext>? GetModelProviderSettings { get; init; }
     /// <summary>Tracks a device operation until disposal and requests its cancellation when authority changes.</summary>
     public Func<Action, IDisposable>? RegisterOperation { get; init; }
 }
