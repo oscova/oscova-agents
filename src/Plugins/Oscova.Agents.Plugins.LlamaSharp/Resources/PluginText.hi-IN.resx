@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>GPU ऑफलोड मोड</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>पूर्ण GPU ऑफलोड</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>कस्टम GPU लेयर</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>GPU लेयर</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>1–2147483647 दर्ज करें। मॉडल की लेयर संख्या से अधिक मान सभी उपलब्ध लेयर ऑफलोड करते हैं। आंशिक आवंटन का विश्वसनीय अनुमान नहीं लगाया जा सकता।</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>1 से 2147483647 तक पूर्णांक दर्ज करें।</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>GPU लेयर सेटिंग के लिए NVIDIA CUDA संस्करण आवश्यक है। मूल संस्करण यह मान सहेजता है लेकिन इसे अनदेखा करता है। उपयोग के लिए CUDA इंस्टॉल करें और पुनः आरंभ करें।</value></data>
+</root>

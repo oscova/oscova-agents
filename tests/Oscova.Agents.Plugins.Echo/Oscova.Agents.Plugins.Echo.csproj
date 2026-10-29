@@ -39,7 +39,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.311" />
+	  <PackageReference Update="Meziantou.Analyzer" Version="3.0.317" />
 	  <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
 	  <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
 	</ItemGroup>

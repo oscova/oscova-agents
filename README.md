@@ -88,24 +88,26 @@ See the [documentation](https://oscova.ai/docs/) for setup, agents, tasks, priva
 
 ## What is in this repository
 
-The Oscova application, CLI and Avatar Engine are closed source and ship as free binaries. This repository holds the open-source parts under the Apache-2.0 license: the agent framework that Oscova is built on and its official plugins.
+Oscova is open source: the framework and plugins under Apache-2.0, the app under AGPL-3.0. The `main` branch holds the agent framework that Oscova is built on and its official plugins, updated with every release. The app's source follows on the [`app` branch](https://github.com/oscova/oscova-agents/tree/app), sometimes a while after a release. The Oscova Avatar Engine is a free, closed-source Windows app.
+
+Every release passes thousands of automated tests, run internally, including end-to-end browser tests.
 
 | Project | Purpose |
 |---|---|
 | [Oscova.Agents](src/Oscova.Agents/README.md) | Agent framework and plugin contract, built on the Microsoft Agent Framework |
-| [Agent Templates](src/Oscova.Agents.Plugins.AgentTemplates/README.md) | Editable starter agents for research, writing, planning and email |
-| [Browser](src/Oscova.Agents.Plugins.Browser/README.md) | Visible browser navigation, page reading and interaction |
-| [Discord](src/Oscova.Agents.Plugins.Discord/README.md), [Telegram](src/Oscova.Agents.Plugins.Telegram/README.md), [Slack](src/Oscova.Agents.Plugins.Slack/README.md) | Chat channel transports |
-| [Docker](src/Oscova.Agents.Plugins.Docker/README.md) | Docker execution for shell commands |
-| [Microsoft MXC](src/Oscova.Agents.Plugins.Mxc/README.md) | Native operating-system containment for shell commands |
-| [ElevenLabs](src/Oscova.Agents.Plugins.ElevenLabs/README.md), [OpenAI](src/Oscova.Agents.Plugins.OpenAI/README.md) | Cloud speech recognition and synthesis |
-| [Foundry Local](src/Oscova.Agents.Plugins.FoundryLocal/README.md) | Microsoft Foundry Local model discovery and inference |
-| [LLamaSharp](src/Oscova.Agents.Plugins.LlamaSharp/README.md) | Local GGUF inference |
-| [Local Speech Recognition](src/Oscova.Agents.Plugins.LocalSpeechRecognition/README.md) | Offline Whisper recognition |
-| [Local Speech Synthesis](src/Oscova.Agents.Plugins.LocalSpeechSynthesis/README.md) | Offline Kokoro synthesis |
-| [Google Workspace](src/Oscova.Agents.Plugins.GoogleWorkspace/README.md) | Gmail, Google Calendar and YouTube tools |
-| [Microsoft Graph](src/Oscova.Agents.Plugins.MicrosoftGraph/README.md) | Outlook mail and Microsoft To Do tools |
-| [Web](src/Oscova.Agents.Plugins.Web/README.md) | Web and news search |
+| [Agent Templates](src/Plugins/Oscova.Agents.Plugins.AgentTemplates/README.md) | Editable starter agents for research, writing, planning and email |
+| [Browser](src/Plugins/Oscova.Agents.Plugins.Browser/README.md) | Visible browser navigation, page reading and interaction |
+| [Discord](src/Plugins/Oscova.Agents.Plugins.Discord/README.md), [Telegram](src/Plugins/Oscova.Agents.Plugins.Telegram/README.md), [Slack](src/Plugins/Oscova.Agents.Plugins.Slack/README.md) | Chat channel transports |
+| [Docker](src/Plugins/Oscova.Agents.Plugins.Docker/README.md) | Docker execution for shell commands |
+| [Microsoft MXC](src/Plugins/Oscova.Agents.Plugins.Mxc/README.md) | Native operating-system containment for shell commands |
+| [ElevenLabs](src/Plugins/Oscova.Agents.Plugins.ElevenLabs/README.md), [OpenAI](src/Plugins/Oscova.Agents.Plugins.OpenAI/README.md) | Cloud speech recognition and synthesis |
+| [Foundry Local](src/Plugins/Oscova.Agents.Plugins.FoundryLocal/README.md) | Microsoft Foundry Local model discovery and inference |
+| [LLamaSharp](src/Plugins/Oscova.Agents.Plugins.LlamaSharp/README.md) | Local GGUF inference |
+| [Local Speech Recognition](src/Plugins/Oscova.Agents.Plugins.LocalSpeechRecognition/README.md) | Offline Whisper recognition |
+| [Local Speech Synthesis](src/Plugins/Oscova.Agents.Plugins.LocalSpeechSynthesis/README.md) | Offline Kokoro synthesis |
+| [Google Workspace](src/Plugins/Oscova.Agents.Plugins.GoogleWorkspace/README.md) | Gmail, Google Calendar and YouTube tools |
+| [Microsoft Graph](src/Plugins/Oscova.Agents.Plugins.MicrosoftGraph/README.md) | Outlook mail and Microsoft To Do tools |
+| [Web](src/Plugins/Oscova.Agents.Plugins.Web/README.md) | Web and news search |
 
 ## Build a .NET plugin
 
@@ -124,13 +126,21 @@ dotnet pack src/Oscova.Agents -c Release -o artifacts/nuget
 dotnet build Oscova.Agents.sln -c Release -p:RestoreAdditionalProjectSources="$(pwd)/artifacts/nuget"
 ```
 
+On Windows, clone into a short path such as `C:\src` or enable long paths, because the build passes the 260-character path limit otherwise.
+
 To build the latest release instead, check out its tag, for example `git checkout v3.4.1`.
+
+To build and run the full app, check out the `app` branch (`git checkout app`). After the build, start it from the checkout and open http://localhost:11317:
+
+```bash
+dotnet run --project src/App/Oscova.Agents.Host --launch-profile http
+```
 
 ## Report a bug or request a feature
 
-Open a [new issue](https://github.com/oscova/oscova-agents/issues/new/choose) and choose **Bug report** or **Feature request**. Each form asks for what we need, such as your Oscova version (`oscova version`), operating system and the steps to reproduce. Bugs and ideas for the closed-source application, CLI and Avatar Engine are welcome here too.
+Open a [new issue](https://github.com/oscova/oscova-agents/issues/new/choose) and choose **Bug report** or **Feature request**. Each form asks for what we need, such as your Oscova version (`oscova version`), operating system and the steps to reproduce. Bugs and ideas for the application, CLI and Avatar Engine are welcome here too.
 
-Pull requests are limited to maintainers. If you would like to contribute a change, open an issue to discuss it first.
+Pull requests are accepted from collaborators only. See [CONTRIBUTING.md](CONTRIBUTING.md). If you would like to suggest a change, open an issue to discuss it first.
 
 ## Security
 
@@ -138,4 +148,6 @@ Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
 
 ## License
 
-The code in this repository is licensed under [Apache-2.0](LICENSE). The Oscova application, CLI and Avatar Engine are distributed separately as binaries.
+The framework and plugins are licensed under [Apache-2.0](LICENSE). The app, published under `src/App/` on the `app` branch, is licensed under AGPL-3.0 with a plugin exception: plugins built only against the Apache-2.0 framework are not covered by the AGPL. The official build uses a proprietary theme that is not included in this repository. The Oscova Avatar Engine is distributed separately as a free binary.
+
+The official `Oscova.Agents.App` NuGet packages ship under their `EULA.txt` until their version's source is published on the `app` branch. From then on, `src/App/LICENSE` applies.

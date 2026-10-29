@@ -4,3 +4,5 @@
 *.sln text eol=crlf
 *.png binary
 **/licenses/*.txt -whitespace
+# The generated product guide is embedded as checked out, so it stays LF on every platform.
+src/App/Oscova.Agents.Infrastructure/ProductGuideSkill/** text eol=lf

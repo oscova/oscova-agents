@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>GPU 卸载模式</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>全部卸载至 GPU</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>自定义 GPU 层数</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>GPU 层数</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>输入 1–2147483647。超过模型层数的值会卸载所有可用层。无法可靠估算部分卸载的内存分配。</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>请输入 1 到 2147483647 之间的整数。</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>GPU 层数设置需要 NVIDIA CUDA 版本。基础版本保留此值，但忽略它。请安装 CUDA 版本并重启以使用此设置。</value></data>
+</root>

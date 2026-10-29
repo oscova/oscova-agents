@@ -181,7 +181,7 @@ public sealed class TelegramChannelTests
     public async Task LoadedPlugin_DeclaresNotifyingChannelAndRequiresTokenAtStart()
     {
         using var root = TestPluginRoot.Create();
-        root.AddPluginFromProjectOutput(Path.Combine("src", "Oscova.Agents.Plugins.Telegram"), "oscova.telegram");
+        root.AddPluginFromProjectOutput(Path.Combine("src", "Plugins", "Oscova.Agents.Plugins.Telegram"), "oscova.telegram");
         Assert.Empty(AgentPluginLoader.LoadDirectory(root.RootPath, new HashSet<string>()).Plugins);
         var catalog = AgentPluginLoader.LoadDirectory(root.RootPath);
         Assert.Empty(catalog.Diagnostics);

@@ -7,6 +7,24 @@ namespace Oscova.Agents.Tests.Framework.Tasks;
 
 public sealed class TaskRunScopeResolverTests
 {
+    /// <summary>Task scopes retain the selected agent's shared-folder choice without changing the original definition.</summary>
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public void Resolve_SharedFolderGrant_FollowsSelectedAgent(bool explicitScope, bool enabled)
+    {
+        var selectedAgent = new AgentDefinition { IsSharedFolderEnabled = enabled };
+
+        var surface = new TaskRunScopeResolver().ResolveOrThrow(
+            explicitScope ? new TaskRunScope() : null, selectedAgent, _ => []);
+
+        Assert.Equal(enabled, surface.EffectiveAgent.IsSharedFolderEnabled);
+        Assert.Equal(enabled, selectedAgent.IsSharedFolderEnabled);
+        Assert.NotSame(selectedAgent, surface.EffectiveAgent);
+    }
+
     [Fact]
     public void FromAgent_DoesNotCopyToolsControlledByDedicatedScopeFlags()
     {

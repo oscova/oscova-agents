@@ -1,5 +1,18 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)../../Directory.Build.targets" Condition="Exists('$(MSBuildThisFileDirectory)../../Directory.Build.targets')" />
+  <!-- Settings of an enclosing checkout; a standalone clone has none. -->
+  <Import Project="$(MSBuildThisFileDirectory)../Directory.Build.targets" Condition="Exists('$(MSBuildThisFileDirectory)../Directory.Build.targets')" />
+
+  <!-- Only host composition selects the encrypted engine. -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'Oscova.Agents.Infrastructure' Or
+                        '$(MSBuildProjectName)' == 'Oscova.Agents.Host' Or
+                        '$(MSBuildProjectName)' == 'Oscova.Agents.App'">
+    <PackageReference Remove="SQLitePCLRaw.lib.e_sqlite3" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" ExcludeAssets="all" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" ExcludeAssets="all" />
+    <PackageReference Include="SQLitePCLRaw.config.e_sqlite3" Version="3.0.3" ExcludeAssets="all" />
+    <PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.3" ExcludeAssets="all" />
+    <PackageReference Include="SourceGear.sqlite3" Version="3.50.4.5" ExcludeAssets="all" />
+  </ItemGroup>
 
   <!-- The author-owned JSON declaration replaces the SDK's private compile dependency in publication metadata. -->
   <UsingTask TaskName="ExportPluginFrameworkRange" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
@@ -46,13 +59,45 @@
     </Task>
   </UsingTask>
 
-  <Target Name="ReadPluginFrameworkRange" BeforeTargets="GenerateNuspec;SetLocalSpeechNuspecProperties" Condition="'$(PackageType)' == 'OscovaPlugin'">
+  <UsingTask TaskName="ReadPluginHardwareTags" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)/Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ManifestPath ParameterType="System.String" Required="true" />
+      <Tags ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var manifest = File.ReadAllText(ManifestPath);
+        var tags = new List<string>();
+        foreach (Match entry in Regex.Matches(manifest, "\"([a-z]+-(?:x64|arm64))\"\\s*:\\s*\\{([^}]+)\\}"))
+        {
+            var backend = Regex.Match(entry.Groups[2].Value, "\"backend\"\\s*:\\s*\"(cpu|cuda|metal|managed)\"");
+            if (!backend.Success) { continue; }
+            var prefix = "oscova-hardware." + entry.Groups[1].Value + ".";
+            tags.Add(prefix + backend.Groups[1].Value);
+            var major = Regex.Match(entry.Groups[2].Value, "\"cudaMajor\"\\s*:\\s*([1-9][0-9]*)");
+            if (backend.Groups[1].Value == "cuda" && major.Success) { tags.Add(prefix + "cuda" + major.Groups[1].Value); }
+        }
+        Tags = string.Join(" ", tags);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="ReadPluginFrameworkRange" BeforeTargets="GenerateNuspec;SetLocalSpeechNuspecProperties;SetLlamaSharpNuspecProperties" Condition="'$(PackageType)' == 'OscovaPlugin'">
     <PropertyGroup>
-      <_PluginManifestName Condition="'$(LocalSpeechEdition)' != 'Cuda'">oscova-plugin.json</_PluginManifestName>
-      <_PluginManifestName Condition="'$(LocalSpeechEdition)' == 'Cuda'">oscova-plugin.cuda.json</_PluginManifestName>
+      <_PluginManifestName>oscova-plugin.json</_PluginManifestName>
+      <_PluginManifestName Condition="'$(LocalSpeechEdition)' == 'Cuda' or '$(LlamaSharpEdition)' == 'Cuda'">oscova-plugin.cuda.json</_PluginManifestName>
       <PluginFrameworkVersionRange>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/$(_PluginManifestName)')), '&quot;frameworkVersionRange&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value.Replace('$frameworkVersion$', '$(OscovaAgentsVersion)'))</PluginFrameworkVersionRange>
       <ContinuePackingAfterGeneratingNuspec Condition="'$(NuspecFile)' == ''">false</ContinuePackingAfterGeneratingNuspec>
       <_ExportGeneratedManifest Condition="'$(NuspecFile)' == ''">true</_ExportGeneratedManifest>
+    </PropertyGroup>
+    <ReadPluginHardwareTags ManifestPath="$(MSBuildProjectDirectory)/$(_PluginManifestName)">
+      <Output TaskParameter="Tags" PropertyName="_PluginHardwareTags" />
+    </ReadPluginHardwareTags>
+    <PropertyGroup>
+      <PackageTags>$(PackageTags) $(_PluginHardwareTags)</PackageTags>
     </PropertyGroup>
     <Error Condition="'$(PluginFrameworkVersionRange)' == ''" Text="Plugin manifest must declare frameworkVersionRange before packaging." />
   </Target>

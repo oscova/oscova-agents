@@ -36,3 +36,17 @@ CLAUDE.md
 *.bak
 *.tmp
 /Versions.local.props
+
+# App runtime files
+/src/App/Oscova.Agents.Host/Assistant/Temp
+/src/App/Oscova.Agents.Host/App_Data/AppSettings.json
+/src/App/Oscova.Agents.Host/kokoro.onnx
+/src/App/Oscova.Agents.Host/app.db
+/src/App/Oscova.Agents.Host/app.db-shm
+/src/App/Oscova.Agents.Host/app.db-wal
+/src/App/Oscova.Agents.Host/ggml-base.bin
+/src/App/Oscova.Agents.Host/wwwroot/tts/
+/src/App/Oscova.Agents.Host/Migrations
+/src/App/Oscova.Agents.Host/app_data
+node_modules/
+/src/App/Oscova.Agents.Host/wwwroot/custom-theme-bundle.css

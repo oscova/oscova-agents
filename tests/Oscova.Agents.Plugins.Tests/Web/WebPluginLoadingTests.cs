@@ -9,7 +9,7 @@ public sealed class WebPluginLoadingTests
     {
         using var pluginRoot = TestPluginRoot.Create();
         pluginRoot.AddPluginFromProjectOutput(
-            Path.Combine("src", "Oscova.Agents.Plugins.Web"),
+            Path.Combine("src", "Plugins", "Oscova.Agents.Plugins.Web"),
             "oscova.web");
 
         var catalog = AgentPluginLoader.LoadDirectory(pluginRoot.RootPath);

@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <IsPackable>true</IsPackable>
+    <LlamaSharpEdition Condition="'$(LlamaSharpEdition)' == ''">Cpu</LlamaSharpEdition>
+    <LlamaSharpRuntimeVersion>0.30.0</LlamaSharpRuntimeVersion>
+    <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
+    <PackageId>Oscova.Agents.Plugins.LlamaSharp</PackageId>
+    <PackageId Condition="'$(LlamaSharpEdition)' == 'Cuda'">Oscova.Agents.Plugins.LlamaSharp.Cuda</PackageId>
+    <DefineConstants Condition="'$(LlamaSharpEdition)' == 'Cuda'">$(DefineConstants);LLAMASHARP_CUDA</DefineConstants>
+    <NuspecFile Condition="'$(LlamaSharpEdition)' == 'Cuda'">$(MSBuildProjectDirectory)/packaging/LlamaSharp.Cuda.nuspec</NuspecFile>
+    <NuspecBasePath>$(MSBuildProjectDirectory)</NuspecBasePath>
+    <Version>$(LlamaSharpPluginVersion)</Version>
+    <PackageType>OscovaPlugin</PackageType>
+    <Description>Oscova Agents plugin providing local GGUF inference through LLamaSharp.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>oscova;oscova-agents;plugin;llamasharp;gguf;local-models</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!-- Keep the full closure available to the offline package-install acceptance. -->
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LLamaSharp" Version="[$(LlamaSharpRuntimeVersion)]" />
+    <PackageReference Include="LLamaSharp.Backend.Cuda13.Windows" Version="[$(LlamaSharpRuntimeVersion)]" ExcludeAssets="all" PrivateAssets="all" Condition="'$(LlamaSharpEdition)' == 'Cuda'" />
+    <PackageReference Include="LLamaSharp.Backend.Cuda13.Linux" Version="[$(LlamaSharpRuntimeVersion)]" ExcludeAssets="all" PrivateAssets="all" Condition="'$(LlamaSharpEdition)' == 'Cuda'" />
+    <!-- Use the backend package only as the binary source for standard runtime assets. -->
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="[$(LlamaSharpRuntimeVersion)]" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <Content Remove="oscova-plugin*.json" />
+    <AssemblyMetadata Include="LlamaSharpRuntimeVersion" Value="$(LlamaSharpRuntimeVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="oscova-plugin.json" Pack="true" PackagePath="\" Condition="'$(LlamaSharpEdition)' == 'Cpu'">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="oscova-plugin.cuda.json" Condition="'$(LlamaSharpEdition)' == 'Cuda'" TargetPath="oscova-plugin.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="licenses\*.txt" Pack="true" PackagePath="licenses\" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\**\*" Exclude="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\win-x64\**\*mtmd*" Pack="true" PackagePath="runtimes\win-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\linux-x64\**\*" Exclude="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\linux-x64\**\*mtmd*" Pack="true" PackagePath="runtimes\linux-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-x64\**\*" Exclude="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-x64\**\*mtmd*" Pack="true" PackagePath="runtimes\osx-x64\%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-arm64\**\*" Exclude="$(PkgLLamaSharp_Backend_Cpu)\LLamaSharpRuntimes\osx-arm64\**\*mtmd*" Pack="true" PackagePath="runtimes\osx-arm64\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <Target Name="SetLlamaSharpNuspecProperties" BeforeTargets="GenerateNuspec" DependsOnTargets="ReadPluginFrameworkRange" Condition="'$(LlamaSharpEdition)' == 'Cuda'">
+    <PropertyGroup>
+      <NuspecProperties>rootVersion=$(Version);frameworkRange=$(PluginFrameworkVersionRange);runtimeVersion=$(LlamaSharpRuntimeVersion);assembly=$(TargetPath);satellites=$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(OutputPath)', '**', 'Oscova.Agents.Plugins.LlamaSharp.resources.dll'));manifest=$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'stamped', 'oscova-plugin.cuda.json'));readme=$(MSBuildProjectDirectory)/README.md;licenses=$(MSBuildProjectDirectory)/licenses/*.txt;cpu=$([System.IO.Path]::Combine('$(PkgLLamaSharp_Backend_Cpu)', 'LLamaSharpRuntimes'));tags=$(PackageTags.Replace(';', ' '))</NuspecProperties>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="ValidateLlamaSharpEdition" BeforeTargets="PrepareForBuild;GenerateNuspec">
+    <Error Condition="'$(LlamaSharpEdition)' != 'Cpu' and '$(LlamaSharpEdition)' != 'Cuda'" Text="LlamaSharpEdition must be Cpu or Cuda." />
+  </Target>
+
+
+
+</Project>

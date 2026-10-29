@@ -326,3 +326,13 @@ dotnet_diagnostic.RCS1142.severity = none       # add typeparam element to doc c
 dotnet_diagnostic.RCS1181.severity = none       # convert comment to documentation comment
 dotnet_diagnostic.CA1848.severity = none        # LoggerMessage delegates (~4 lines per call site)
 dotnet_diagnostic.CA1031.severity = none        # do not catch general exception types
+
+# App code keeps the stricter blank-line style.
+[src/App/**/*.cs]
+dotnet_style_allow_multiple_blank_lines_experimental = false:warning
+dotnet_style_allow_statement_immediately_after_block_experimental = false:warning
+
+# EF-generated migration code is maintained by the migration tooling.
+[src/App/Oscova.Agents.Infrastructure/Migrations/*.cs]
+dotnet_diagnostic.IDE0005.severity = none
+dotnet_diagnostic.RCS1021.severity = none

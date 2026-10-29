@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>GPU آف لوڈ موڈ</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>مکمل GPU آف لوڈ</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>حسب ضرورت GPU تہیں</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>GPU تہیں</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>&#x2066;1–2147483647&#x2069; درج کریں۔ ماڈل کی تہوں کی تعداد سے بڑی قدر تمام دستیاب تہیں آف لوڈ کرتی ہے۔ جزوی تقسیم کا قابل اعتماد اندازہ نہیں لگایا جا سکتا۔</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>1 سے 2147483647 تک مکمل عدد درج کریں۔</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>GPU تہوں کی ترتیب کے لیے NVIDIA CUDA ایڈیشن درکار ہے۔ بنیادی ایڈیشن یہ قدر محفوظ کرتا ہے مگر اسے نظر انداز کرتا ہے۔ استعمال کے لیے CUDA نصب کر کے دوبارہ شروع کریں۔</value></data>
+</root>

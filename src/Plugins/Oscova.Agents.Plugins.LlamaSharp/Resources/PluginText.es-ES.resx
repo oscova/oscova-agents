@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>Modo de descarga a GPU</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>Descarga completa a GPU</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>Capas GPU personalizadas</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>Capas GPU</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>Introduzca 1–2147483647. Los valores superiores al número de capas del modelo descargan todas las capas disponibles. La distribución parcial no puede estimarse con fiabilidad.</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>Introduzca un entero entre 1 y 2147483647.</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>La configuración de capas GPU requiere la edición NVIDIA CUDA. La edición base conserva este valor pero lo ignora. Instale CUDA y reinicie para usarlo.</value></data>
+</root>

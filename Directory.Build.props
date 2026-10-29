@@ -3,6 +3,29 @@
   <!-- Untracked Debug version overrides for local package testing. Release builds ignore them. -->
   <Import Project="$(MSBuildThisFileDirectory)Versions.local.props" Condition="'$(Configuration)' != 'Release' and Exists('$(MSBuildThisFileDirectory)Versions.local.props')" />
 
+  <!-- App selector, App RID packages, and Host assembly share this version. Change it only with the package version bump script. -->
+  <PropertyGroup>
+    <OscovaAppVersion>3.5.1</OscovaAppVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(EmbedOscovaPackageVersions)' == 'true'">
+    <AssemblyMetadata Include="Oscova.Agents.App" Value="$(OscovaAppVersion)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ICU4NSuppressNuGetBuildTasksPackVersionWarnings>true</ICU4NSuppressNuGetBuildTasksPackVersionWarnings>
+    <EnableGpuAcceleration Condition="'$(EnableGpuAcceleration)' == '' and '$(UseGpu)' == ''">false</EnableGpuAcceleration>
+    <EnableGpuAcceleration Condition="'$(EnableGpuAcceleration)' == '' and '$(UseGpu)' != ''">$(UseGpu)</EnableGpuAcceleration>
+    <UseGpu>$(EnableGpuAcceleration)</UseGpu>
+
+    <SpeechWhisperRuntimeVersion>1.9.0</SpeechWhisperRuntimeVersion>
+    <SpeechOnnxRuntimeCpuVersion>1.24.4</SpeechOnnxRuntimeCpuVersion>
+    <SpeechOnnxRuntimeGpuVersion>1.24.3</SpeechOnnxRuntimeGpuVersion>
+    <SpeechKokoroSharpVersion>0.6.6</SpeechKokoroSharpVersion>
+
+    <DefineConstants Condition="'$(EnableGpuAcceleration)' == 'true'">$(DefineConstants);GPU_ACCELERATION</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup>
     <Authors>Oscova</Authors>
     <Company>oscova.ai</Company>
@@ -42,9 +65,9 @@
   <ItemGroup Condition="'$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Mxc' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Docker' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.AgentTemplates' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Discord' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Telegram' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Slack' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.GoogleWorkspace' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.MicrosoftGraph' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Browser' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Web' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.FoundryLocal' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.LlamaSharp' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.LocalSpeechRecognition' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.LocalSpeechSynthesis' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.OpenAI' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.ElevenLabs'">
     <PackageReference Include="Oscova.Agents" Version="[$(OscovaAgentsVersion)]" IncludeAssets="compile" PrivateAssets="all" />
     <!-- Plugins with a Microsoft.AspNetCore.App framework reference already get the logging abstractions. -->
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" IncludeAssets="compile" PrivateAssets="all" Condition="'$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.GoogleWorkspace' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.MicrosoftGraph' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Browser' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Web' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.FoundryLocal' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.LlamaSharp'" />
-    <PackageReference Update="Meziantou.Analyzer" Version="3.0.266" />
-    <PackageReference Update="Roslynator.Analyzers" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.14" IncludeAssets="compile" PrivateAssets="all" Condition="'$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.GoogleWorkspace' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.MicrosoftGraph' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Browser' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.Web' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.FoundryLocal' Or '$(MSBuildProjectName)' == 'Oscova.Agents.Plugins.LlamaSharp'" />
+    <PackageReference Update="Meziantou.Analyzer" Version="3.0.317" />
+    <PackageReference Update="Roslynator.Analyzers" Version="5.0.1" />
     <PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" PrivateAssets="all" />
   </ItemGroup>
 

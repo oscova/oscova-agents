@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Settings.LlamaSharp.OffloadMode" xml:space="preserve"><value>وضع نقل الطبقات إلى GPU</value></data>
+  <data name="Settings.LlamaSharp.FullOffload" xml:space="preserve"><value>نقل كامل إلى GPU</value></data>
+  <data name="Settings.LlamaSharp.CustomOffload" xml:space="preserve"><value>طبقات GPU مخصصة</value></data>
+  <data name="Settings.LlamaSharp.GpuLayers" xml:space="preserve"><value>طبقات GPU</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersHelp" xml:space="preserve"><value>أدخل &#x2066;1–2147483647&#x2069;. تنقل القيم الأعلى من عدد طبقات النموذج جميع الطبقات المتاحة. لا يمكن تقدير التوزيع الجزئي بشكل موثوق.</value></data>
+  <data name="Settings.LlamaSharp.GpuLayersInvalid" xml:space="preserve"><value>أدخل عدداً صحيحاً من 1 إلى 2147483647.</value></data>
+  <data name="Settings.LlamaSharp.CudaEditionRequired" xml:space="preserve"><value>تتطلب إعدادات طبقات GPU إصدار NVIDIA CUDA. يحتفظ الإصدار الأساسي بهذه القيمة لكنه يتجاهلها. ثبّت CUDA وأعد التشغيل لاستخدامها.</value></data>
+</root>

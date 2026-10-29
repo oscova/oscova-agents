@@ -30,6 +30,9 @@ public sealed class AgentPluginManifest
     /// <summary>Gets the supported release runtime identifiers. An absent list permits every release platform.</summary>
     public IReadOnlyList<string>? SupportedRuntimeIdentifiers { get; init; }
 
+    /// <summary>Gets advisory hardware requirements by release runtime identifier.</summary>
+    public IReadOnlyDictionary<string, PluginHardwareRequirement>? HardwareRequirements { get; init; }
+
     /// <summary>Checks whether the plugin declares support for the supplied release runtime identifier.</summary>
     public bool SupportsRuntimeIdentifier(string runtimeIdentifier) =>
         SupportedRuntimeIdentifiers?.Contains(runtimeIdentifier, StringComparer.Ordinal) ?? true;
