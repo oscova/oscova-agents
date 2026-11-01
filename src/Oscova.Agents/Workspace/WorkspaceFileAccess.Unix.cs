@@ -35,6 +35,8 @@ public sealed partial class WorkspaceFileAccess
     private const int ErrorLoopDarwin = 62;
     private const uint DirectoryMode = 0x4000;
     private const uint SymbolicLinkMode = 0xA000;
+    private const uint RegularFileMode = 0x8000;
+    private const uint PermissionBitsMask = 0x1FF; // 0777: setuid, setgid and sticky bits are not carried.
     private const uint FileTypeMask = 0xF000;
     private const uint DefaultCreateMode = 0x1B6; // 0666, restricted by the process umask.
     private const uint DefaultDirectoryMode = 0x1FF; // 0777, restricted by the process umask.
@@ -79,14 +81,22 @@ public sealed partial class WorkspaceFileAccess
         }
 
         string temporaryName = Path.GetFileName(FileUtil.CreateSiblingTempPath(parent.TargetName));
+        // A rewrite keeps the replaced file's permission bits, so scripts stay executable and private files stay private.
+        uint? existingPermissions = TryGetRegularFileMode(parent.DirectoryDescriptor, parent.TargetName, out uint existingMode)
+            ? existingMode & PermissionBitsMask
+            : null;
         try
         {
             int descriptor = OpenAt(
                 parent.DirectoryDescriptor,
                 temporaryName,
                 UnixWriteOnly | UnixCreate | UnixExclusive | UnixNoFollow | UnixCloseOnExec,
-                DefaultCreateMode);
+                existingPermissions ?? DefaultCreateMode);
             if (descriptor < 0) throw CreateUnixException("Create", path.FullPath, Marshal.GetLastPInvokeError());
+
+            // The umask can narrow the creation mode, so the existing bits are applied again. A mount that
+            // rejects chmod keeps the creation mode, which is never wider than the replaced file's.
+            if (existingPermissions is { } permissions) { _ = FChmod(descriptor, permissions); }
 
             using (var handle = new SafeFileHandle((IntPtr)descriptor, ownsHandle: true))
             using (var stream = new FileStream(handle, FileAccess.Write))
@@ -243,6 +253,23 @@ public sealed partial class WorkspaceFileAccess
             _ = Close(descriptor);
             throw;
         }
+    }
+
+    private static bool TryGetRegularFileMode(int directoryDescriptor, string name, out uint mode)
+    {
+        int result;
+        if (OperatingSystem.IsMacOS())
+        {
+            result = FStatAtDarwin(directoryDescriptor, name, out DarwinStat metadata, AtSymlinkNoFollow);
+            mode = metadata.Mode;
+        }
+        else
+        {
+            result = FStatAtLinux(directoryDescriptor, name, out LinuxStat metadata, AtSymlinkNoFollow);
+            mode = metadata.Mode;
+        }
+
+        return result == 0 && (mode & FileTypeMask) == RegularFileMode;
     }
 
     private static bool TryGetUnixMetadata(
@@ -482,6 +509,9 @@ public sealed partial class WorkspaceFileAccess
 
     [DllImport("libc", EntryPoint = "unlinkat", SetLastError = true)]
     private static extern int UnlinkAt(int directoryDescriptor, [MarshalAs(UnmanagedType.LPUTF8Str)] string path, int flags);
+
+    [DllImport("libc", EntryPoint = "fchmod", SetLastError = true)]
+    private static extern int FChmod(int descriptor, uint mode);
 
     [DllImport("libc", EntryPoint = "close", SetLastError = true)]
     private static extern int Close(int descriptor);

@@ -101,27 +101,23 @@ namespace Oscova.Agents.Avatar
         /// <returns>Response indicating whether the hair selection was accepted.</returns>
         Task<AvatarHairSelectResponse> SelectHairAsync(string avatarName, string hairId);
 
-        /// <summary>
-        /// Retrieves the clothing options configured for an avatar.
-        /// </summary>
-        /// <param name="avatarName">A case-sensitive name returned by <see cref="ListAvatarsAsync"/>.</param>
-        /// <returns>Response containing the avatar name and its available clothing options.</returns>
-        Task<AvatarClothingListResponse> ListClothingOptionsAsync(string avatarName);
+        /// <summary>Retrieves complete outfits curated for the named avatar.</summary>
+        Task<AvatarOutfitListResponse> ListOutfitsAsync(string avatarName);
 
-        /// <summary>
-        /// Selects a configured clothing option for one avatar slot.
-        /// </summary>
-        /// <param name="avatarName">A case-sensitive name returned by <see cref="ListAvatarsAsync"/>.</param>
-        /// <param name="slot">The case-sensitive slot, currently <c>top</c> or <c>bottom</c>.</param>
-        /// <param name="clothingId">A case-sensitive identifier returned by <see cref="ListClothingOptionsAsync"/>.</param>
-        /// <returns>Response indicating whether the clothing selection was accepted.</returns>
-        Task<AvatarClothingSelectResponse> SelectClothingAsync(string avatarName, string slot, string clothingId);
+        /// <summary>Selects both garments of a catalog outfit in one engine operation.</summary>
+        Task<AvatarOutfitSelectResponse> SelectOutfitAsync(string avatarName, string outfitId);
 
         /// <summary>
         /// Retrieves the emotion names reported by the running engine.
         /// </summary>
         /// <returns>Response containing success status, description, and array of emotion names.</returns>
         Task<AvatarEmotionListResponse> ListEmotionsAsync();
+
+        /// <summary>Lists stationary gesture names from the connected Engine.</summary>
+        Task<AvatarGestureListResponse> ListGesturesAsync();
+
+        /// <summary>Plays one catalog gesture. None stops it and blends back to idle.</summary>
+        Task<AvatarGestureResponse> SelectGestureAsync(string gestureName);
 
         /// <summary>
         /// Sets a target emotion with smooth transition.

@@ -59,7 +59,10 @@ internal sealed partial class DiagnosticTestProvider(AgentPluginContext context)
                 .GetType("Oscova.Agents.Infrastructure.Hardware.LocalDiagnosticWorker", throwOnError: true)!;
             await ((Task)owner.GetMethod("StartPassiveCommandAsync", BindingFlags.NonPublic | BindingFlags.Static)!
                 .Invoke(null, [child, cancellationToken])!).ConfigureAwait(false);
-            await File.WriteAllTextAsync(Path.Combine(directory, "descendant"), child.Id.ToString(), cancellationToken).ConfigureAwait(false);
+            // The test reads the marker as soon as it exists, so it appears only once fully written.
+            var marker = Path.Combine(directory, "descendant");
+            await File.WriteAllTextAsync(marker + ".tmp", child.Id.ToString(), cancellationToken).ConfigureAwait(false);
+            File.Move(marker + ".tmp", marker);
         }
 
         if (config.ModelId == "crash") { Environment.Exit(17); }

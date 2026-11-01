@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Plugins.Tests.TestSupport;
@@ -113,6 +114,39 @@ public sealed class NewsToolsetTests
 
         Assert.Equal("The GNews rate limit or quota was reached.", exception.Message);
         Assert.Equal("Try again later.", exception.Fix);
+    }
+
+    /// <summary>Stopping a run cancels a news request that is still waiting on GNews.</summary>
+    [Theory]
+    [InlineData(nameof(NewsToolset.SearchAsync), "query", "agents")]
+    [InlineData(nameof(NewsToolset.GetTopHeadlinesAsync), "category", "world")]
+    public async Task NewsTools_WhenRunIsCancelled_StopWaitingForGNews(string method, string argument, string value)
+    {
+        using var source = new CancellationTokenSource();
+        using var cleanup = new CancellationTokenSource();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var httpClient = new HttpClient(new StubHttpMessageHandler(async (_, ct) =>
+        {
+            entered.TrySetResult();
+            using var handlerCancellation = CancellationTokenSource.CreateLinkedTokenSource(ct, cleanup.Token);
+            await Task.Delay(Timeout.Infinite, handlerCancellation.Token);
+            throw new InvalidOperationException("GNews request continued after cancellation.");
+        }));
+        var toolset = new NewsToolset(new TestToolCredentialResolver("secret-key"), httpClient,
+            LoggerFactory.Create(_ => { }).CreateLogger<NewsToolset>(), () => TimeZoneInfo.Utc);
+        var function = AIFunctionFactory.Create(typeof(NewsToolset).GetMethod(method)!, toolset);
+        var invocation = function.InvokeAsync(new AIFunctionArguments { [argument] = value }, source.Token).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await source.CancelAsync();
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => invocation.WaitAsync(TimeSpan.FromSeconds(2)));
+        }
+        finally
+        {
+            await cleanup.CancelAsync();
+        }
     }
 
     private static NewsToolset CreateToolset(

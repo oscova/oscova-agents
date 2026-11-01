@@ -180,7 +180,8 @@ public sealed class AgentOrchestrator(IAgentRunScopeFactory? runScopeFactory = n
         CancellationToken cancellationToken)
     {
         var providers = await request.ContextProviderFactory(definition, cancellationToken).ConfigureAwait(false);
-        var chatClient = await request.ChatClientFactory(definition, cancellationToken).ConfigureAwait(false);
+        // Innermost, so only the provider sees tool-name aliases.
+        var chatClient = new ProviderToolNameChatClient(await request.ChatClientFactory(definition, cancellationToken).ConfigureAwait(false));
         var options = definition.ToChatClientAgentOptions(providers);
         options.ChatOptions = request.ChatOptionsResolver?.Invoke(definition)?.Clone();
 

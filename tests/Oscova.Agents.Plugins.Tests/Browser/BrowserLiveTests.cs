@@ -133,6 +133,54 @@ public sealed class BrowserLiveTests
         }
     }
 
+    /// <summary>Opening a tab with a URL the browser cannot use leaves no tab behind.</summary>
+    [BrowserFact]
+    [Trait("Category", "Slow")]
+    public async Task Open_WithInvalidUrl_LeavesNoTab()
+    {
+        var root = Directory.CreateTempSubdirectory("oscova-browser-open-");
+        try
+        {
+            var session = new BrowserSessionScope("test", true);
+            await using var browser = new BrowserToolset(CreateContext(root.FullName, session, () => []));
+
+            await Assert.ThrowsAsync<ArgumentException>(() => browser.ExecuteAsync(session, new("open", Text: "example.com")));
+
+            Assert.Empty(browser.GetPages(session.Id));
+        }
+        finally
+        {
+            root.Delete(recursive: true);
+        }
+    }
+
+    /// <summary>A valid URL whose escaped form is longer than its typed form still opens in one tab.</summary>
+    [BrowserFact]
+    [Trait("Category", "Slow")]
+    public async Task Open_WithLongNonAsciiUrl_OpensOneTab()
+    {
+        var root = Directory.CreateTempSubdirectory("oscova-browser-open-");
+        await using var site = LocalSite.Start(response =>
+        {
+            response.Response.ContentType = "text/html";
+            return Encoding.UTF8.GetBytes("<title>Long</title>");
+        });
+        try
+        {
+            var session = new BrowserSessionScope("test", true);
+            await using var browser = new BrowserToolset(CreateContext(root.FullName, session, () => []));
+
+            var page = (await browser.ExecuteAsync(session, new("open", Text: site.Origin + new string('é', 700)))).Page!;
+
+            Assert.StartsWith(site.Origin, page.Url, StringComparison.Ordinal);
+            Assert.Single(browser.GetPages(session.Id));
+        }
+        finally
+        {
+            root.Delete(recursive: true);
+        }
+    }
+
     private static AgentPluginContext CreateContext(string root, BrowserSessionScope session, Func<IReadOnlyList<AllowedDirectory>> directories)
     {
         var template = PluginTestContext.Create(new MissingCredentials(), root, root);

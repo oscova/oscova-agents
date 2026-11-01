@@ -49,6 +49,8 @@ public sealed partial class BrowserToolset(AgentPluginContext context) : IAgentT
                 // Another caller may have restored this saved tab while this command waited for the lock.
                 if (command.PageId is { } restoredId && _pages.ContainsKey(restoredId))
                 { return new(Page: FindPage(session.Id, restoredId).Info); }
+                // A URL the browser cannot open is rejected before a tab exists, so a bad open leaves no blank tab.
+                var url = string.IsNullOrWhiteSpace(command.Text) ? null : ValidateUrl(command.Text);
                 if (_pages.Count >= 8) { throw new ToolFailureException("Eight browser tabs are already live.", "Close a browser tab before opening another."); }
                 var startingRegularContext = !session.IsEphemeral && _regular is null;
                 var browserContext = await GetContextAsync(session).ConfigureAwait(false);
@@ -61,7 +63,7 @@ public sealed partial class BrowserToolset(AgentPluginContext context) : IAgentT
                 pageCommands = state.Commands;
                 _commands.Release();
                 lifecycleHeld = false;
-                if (!string.IsNullOrWhiteSpace(command.Text)) { await NavigateAsync(page, command.Text).ConfigureAwait(false); }
+                if (url is not null) { await NavigateAsync(page, url).ConfigureAwait(false); }
                 // Restoring a saved page for a background action must preserve the viewer's selection.
                 await RefreshAsync(state, focus: command.PageId is null).ConfigureAwait(false);
                 return new(Page: state.Info);
@@ -89,7 +91,7 @@ public sealed partial class BrowserToolset(AgentPluginContext context) : IAgentT
                 case "focus":
                     await RefreshAsync(current, focus: true).ConfigureAwait(false);
                     return new(Page: current.Info);
-                case "navigate": await NavigateAsync(target, command.Text).ConfigureAwait(false); break;
+                case "navigate": await NavigateAsync(target, ValidateUrl(command.Text)).ConfigureAwait(false); break;
                 case "read": return await ObserveAsync(current, command.Reference, command.X == 0 ? 20 : checked((int)command.X)).ConfigureAwait(false);
                 case "click":
                     await ShowTargetAsync(current, command.Reference).ConfigureAwait(false);
@@ -267,11 +269,14 @@ public sealed partial class BrowserToolset(AgentPluginContext context) : IAgentT
         PageChanged?.Invoke(this, new(state.Info, focusRequested: focus));
     }
 
-    private static async Task NavigateAsync(IPage page, string? url)
+    private static async Task NavigateAsync(IPage page, string url) =>
+        await page.GotoAsync(url, new() { WaitUntil = WaitUntilState.DOMContentLoaded }).ConfigureAwait(false);
+
+    private static string ValidateUrl(string? url)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var parsed) || parsed.Scheme is not ("http" or "https") || url!.Length > 4096)
         { throw new ArgumentException("url must be an absolute HTTP or HTTPS URL of at most 4096 characters."); }
-        await page.GotoAsync(parsed.AbsoluteUri, new() { WaitUntil = WaitUntilState.DOMContentLoaded }).ConfigureAwait(false);
+        return parsed.AbsoluteUri;
     }
 
     private static ILocator ResolveReference(PageState state, string? reference)
