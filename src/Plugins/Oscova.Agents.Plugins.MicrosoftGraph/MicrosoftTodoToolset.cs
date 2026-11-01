@@ -323,14 +323,13 @@ public sealed partial class MicrosoftTodoToolset : IAgentToolset
                 throw new ToolFailureException(NotConnectedMessage);
             }
 
-            var todoTask = new TodoTask
-            {
-                Title = string.IsNullOrWhiteSpace(title) ? null : title.Trim(),
-                Body = string.IsNullOrWhiteSpace(body) ? null : CreateHtmlBody(body),
-                Status = string.IsNullOrWhiteSpace(status) ? null : parsedStatus,
-                Importance = string.IsNullOrWhiteSpace(importance) ? null : parsedImportance,
-                DueDateTime = dueDate
-            };
+            // Only supplied fields are assigned: the Graph backing store sends every assigned property, nulls included.
+            var todoTask = new TodoTask();
+            if (!string.IsNullOrWhiteSpace(title)) { todoTask.Title = title.Trim(); }
+            if (!string.IsNullOrWhiteSpace(body)) { todoTask.Body = CreateHtmlBody(body); }
+            if (!string.IsNullOrWhiteSpace(status)) { todoTask.Status = parsedStatus; }
+            if (!string.IsNullOrWhiteSpace(importance)) { todoTask.Importance = parsedImportance; }
+            if (dueDate is not null) { todoTask.DueDateTime = dueDate; }
 
             var task = await client.Me.Todo.Lists[taskListId.Trim()].Tasks[taskId.Trim()].PatchAsync(todoTask, cancellationToken: ct).ConfigureAwait(false);
             if (task is null)

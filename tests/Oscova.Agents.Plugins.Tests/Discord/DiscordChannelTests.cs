@@ -129,6 +129,41 @@ public sealed class DiscordChannelTests
         Assert.Equal(PackageVersions.GetReferenced(typeof(DiscordSocketClient)), dependency.VersionRange.MinVersion!.ToNormalizedString());
     }
 
+    /// <summary>Agent replies in a shared channel are inert text that never notifies everyone, roles or users.</summary>
+    [Fact]
+    public async Task Reply_SuppressesMentionNotifications()
+    {
+        // Arrange: a channel that records each sent message's mention policy.
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath());
+        await using var connection = new DiscordChannelConnection(context, PluginTestContext.Channel((_, _) => Task.CompletedTask, _ => Task.CompletedTask), new DiscordSettings { AuthorizedUserId = "123" });
+        var channel = DispatchProxy.Create<IMessageChannel, MentionRecordingChannel>();
+
+        // Act: send the reply through the adapter's real reply delegate.
+        var reply = typeof(DiscordChannelConnection).GetMethod("ReplyAsync", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        await (Task)reply.Invoke(connection, [channel, "@everyone <@&42> <@456> look", CancellationToken.None])!;
+
+        // Assert: the message was sent with every mention type disabled.
+        var mentions = Assert.Single(((MentionRecordingChannel)(object)channel).Sent);
+        Assert.NotNull(mentions);
+        Assert.Equal(AllowedMentionTypes.None, mentions.AllowedTypes ?? AllowedMentionTypes.None);
+        Assert.Empty(mentions.UserIds ?? []);
+        Assert.Empty(mentions.RoleIds ?? []);
+    }
+
+    /// <summary>Records the allowed mentions passed to each sent message.</summary>
+    public class MentionRecordingChannel : DispatchProxy
+    {
+        public IList<AllowedMentions?> Sent { get; } = [];
+
+        protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
+        {
+            if (targetMethod?.Name != nameof(IMessageChannel.SendMessageAsync)) { throw new NotSupportedException(targetMethod?.Name); }
+            var index = Array.FindIndex(targetMethod.GetParameters(), parameter => parameter.Name == "allowedMentions");
+            Sent.Add((AllowedMentions?)args![index]);
+            return Task.FromResult<IUserMessage>(null!);
+        }
+    }
+
     private static void SetField(Type type, object instance, string name, object value) =>
         type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(instance, value);
 

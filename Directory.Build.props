@@ -5,7 +5,7 @@
 
   <!-- App selector, App RID packages, and Host assembly share this version. Change it only with the package version bump script. -->
   <PropertyGroup>
-    <OscovaAppVersion>3.5.1</OscovaAppVersion>
+    <OscovaAppVersion>3.6.0</OscovaAppVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(EmbedOscovaPackageVersions)' == 'true'">

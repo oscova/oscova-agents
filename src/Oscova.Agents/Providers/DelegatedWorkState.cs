@@ -527,9 +527,13 @@ public sealed class DelegatedWorker
         {
             _updates.Add(update);
             ObservedAt = DateTimeOffset.UtcNow;
+            // A streaming provider can send usage or finish updates after the approval request; only the resumed call or its result ends the wait.
             var status = update.Contents.Any(content => content is ToolApprovalRequestContent)
                 ? DelegatedWorkerStatus.AwaitingApproval
-                : DelegatedWorkerStatus.Running;
+                : Status == DelegatedWorkerStatus.AwaitingApproval &&
+                  !update.Contents.Any(content => content is FunctionCallContent or FunctionResultContent)
+                    ? DelegatedWorkerStatus.AwaitingApproval
+                    : DelegatedWorkerStatus.Running;
             if (IsActive && status != Status)
             {
                 Status = status;

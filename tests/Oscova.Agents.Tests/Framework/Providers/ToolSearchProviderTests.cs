@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Collections;
+using Oscova.Agents.Middleware;
 using Oscova.Agents.Policies;
 using Oscova.Agents.Providers;
 using Oscova.Agents.Tests.Framework.TestTools;
@@ -183,6 +184,27 @@ public sealed class ToolSearchProviderTests
         Assert.Contains(context.Tools!, tool => tool.Name == playSongName);
         Assert.DoesNotContain(playSongName, searchResult);
         Assert.Contains(turnOnMusicName, unpinnedSearchResult);
+    }
+
+    /// <summary>Search results name an unsafe tool the way the provider declares it, so the model calls a name it was offered.</summary>
+    [Fact]
+    public async Task SearchTools_UnsafeToolName_ListsTheProviderDeclaredName()
+    {
+        // Arrange: an MCP-style tool whose real name a provider rejects.
+        const string realName = "café__menu_du_café";
+        var collection = new AgentToolCollection { AIFunctionFactory.Create(() => "menu", realName, "Returns today's café menu.") };
+        var provider = new ToolSearchProvider([realName], [], collection, new AgentToolResolver(collection), new LexicalToolSearchStrategy());
+        using var transport = new TestChatClient();
+        using var client = new ProviderToolNameChatClient(transport);
+        await client.GetResponseAsync([new(ChatRole.User, "Menu")], new ChatOptions { Tools = [collection.Find(realName)!] });
+        var declaredName = Assert.Single(transport.ResponseOptions[0]!.Tools!).Name;
+
+        // Act
+        var result = InvokeSearchTools(provider, "café menu");
+
+        // Assert
+        Assert.Contains($"- {declaredName}: ", result);
+        Assert.DoesNotContain(realName, result);
     }
 
     private sealed class WakeContextProvider : AIContextProvider

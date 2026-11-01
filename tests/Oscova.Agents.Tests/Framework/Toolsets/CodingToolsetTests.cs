@@ -333,6 +333,26 @@ public sealed class CodingToolsetTests : IDisposable
         Assert.Equal("items:\n  - eggs  \n  - eggs \n", File.ReadAllText(path));
     }
 
+    /// <summary>A hunk with only added lines and no header appends them at the end of the file.</summary>
+    [Fact]
+    public void ApplyPatch_WhenHunkOnlyAddsLines_AppendsAtEndOfFile()
+    {
+        var path = WriteWorkspaceFile("patch/append.py", "import os\n\nprint(os.name)\n");
+        const string patch = """
+            *** Begin Patch
+            *** Update File: patch/append.py
+            @@
+            +def added():
+            +    return 1
+            *** End of File
+            *** End Patch
+            """;
+
+        _toolset.ApplyPatch(patch, _workspacePath);
+
+        Assert.Equal("import os\n\nprint(os.name)\ndef added():\n    return 1\n", File.ReadAllText(path).ReplaceLineEndings("\n"));
+    }
+
     [Fact]
     public void ApplyPatch_WhenOnlyTrailingSpacesDiffer_AppliesTheHunk()
     {

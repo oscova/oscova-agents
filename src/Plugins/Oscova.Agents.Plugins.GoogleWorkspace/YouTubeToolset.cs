@@ -359,7 +359,8 @@ public sealed class YouTubeToolset : IAgentToolset
         {
             var request = service.Subscriptions.List("snippet");
             request.Mine = true;
-            request.MaxResults = Math.Min(50, maxChannels);
+            // Full pages: the channel filter runs locally, so the page size must not shrink with maxChannels.
+            request.MaxResults = 50;
             request.PageToken = pageToken;
 
             var response = await request.ExecuteAsync(ct).ConfigureAwait(false);
