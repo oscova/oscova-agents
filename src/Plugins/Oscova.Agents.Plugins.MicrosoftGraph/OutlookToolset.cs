@@ -79,7 +79,8 @@ public sealed partial class OutlookToolset : IAgentToolset
                 // Keep the first version simple: only unread filtering is exposed here.
                 if (unreadOnly)
                 {
-                    request.QueryParameters.Filter = "isRead eq false";
+                    // Graph accepts $orderby only when its property also leads $filter.
+                    request.QueryParameters.Filter = "receivedDateTime ge 1900-01-01T00:00:00Z and isRead eq false";
                 }
             }, cancellationToken: ct).ConfigureAwait(false);
 

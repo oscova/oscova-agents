@@ -197,23 +197,36 @@ public sealed class AvatarMcpToolset(AvatarRuntimeSettingsService settings, Avat
         CancellationToken cancellationToken) =>
         SendAsync(HttpMethod.Post, "/avatarbridge/hair/select", new AvatarHairSelectRequest { AvatarName = avatarName, HairId = hairId }, true, cancellationToken);
 
-    /// <summary>List clothing options for an Avatar.</summary>
-    [McpServerTool(Name = "avatar_clothing_list", ReadOnly = true)]
-    [Description("List clothing options for an Avatar." + PairingGuidance)]
-    public Task<CallToolResult> ListClothingAsync(
-        [Description("Case-sensitive Avatar name returned by avatar_list.")] string avatarName,
+    /// <summary>List the complete outfits curated for one avatar.</summary>
+    [McpServerTool(Name = "avatar_outfit_list", ReadOnly = true)]
+    [Description("List complete outfits configured for one avatar. Use these IDs with avatar_outfit_select." + PairingGuidance)]
+    public Task<CallToolResult> ListOutfitsAsync(
+        [Description("Case-sensitive avatar name returned by avatar_list.")] string avatarName,
         CancellationToken cancellationToken) =>
-        SendAsync(HttpMethod.Get, $"/avatarbridge/clothing/list?AvatarName={Uri.EscapeDataString(avatarName)}", null, true, cancellationToken);
+        SendAsync(HttpMethod.Get, $"/avatarbridge/outfit/list?AvatarName={Uri.EscapeDataString(avatarName)}", null, true, cancellationToken);
 
-    /// <summary>Select clothing for an Avatar slot.</summary>
-    [McpServerTool(Name = "avatar_clothing_select")]
-    [Description("Select clothing for an Avatar slot." + PairingGuidance)]
-    public Task<CallToolResult> SelectClothingAsync(
-        [Description("Case-sensitive Avatar name returned by avatar_list.")] string avatarName,
-        [Description("Clothing slot: top or bottom.")] string slot,
-        [Description("Case-sensitive clothing ID returned by avatar_clothing_list.")] string clothingId,
+    /// <summary>Select both garments of a configured outfit in one operation.</summary>
+    [McpServerTool(Name = "avatar_outfit_select")]
+    [Description("Apply a complete outfit to one avatar. Outfit availability is specific to that avatar." + PairingGuidance)]
+    public Task<CallToolResult> SelectOutfitAsync(
+        [Description("Case-sensitive avatar name returned by avatar_list.")] string avatarName,
+        [Description("Case-sensitive outfit ID returned by avatar_outfit_list for this avatar.")] string outfitId,
         CancellationToken cancellationToken) =>
-        SendAsync(HttpMethod.Post, "/avatarbridge/clothing/select", new AvatarClothingSelectRequest { AvatarName = avatarName, Slot = slot, ClothingId = clothingId }, true, cancellationToken);
+        SendAsync(HttpMethod.Post, "/avatarbridge/outfit/select", new AvatarOutfitSelectRequest { AvatarName = avatarName, OutfitId = outfitId }, true, cancellationToken);
+
+    /// <summary>List stationary gestures.</summary>
+    [McpServerTool(Name = "avatar_list_gestures", ReadOnly = true)]
+    [Description("List stationary gesture names. None returns to idle." + PairingGuidance)]
+    public Task<CallToolResult> ListGesturesAsync(CancellationToken cancellationToken) =>
+        SendAsync(HttpMethod.Get, "/avatarbridge/gesture/list", null, true, cancellationToken);
+
+    /// <summary>Play one stationary gesture.</summary>
+    [McpServerTool(Name = "avatar_select_gesture")]
+    [Description("Play one gesture, then return to idle. A new gesture replaces the current one." + PairingGuidance)]
+    public Task<CallToolResult> SelectGestureAsync(
+        [Description("Case-sensitive name from avatar_list_gestures. None stops the current gesture.")] string gestureName,
+        CancellationToken cancellationToken) =>
+        SendAsync(HttpMethod.Post, "/avatarbridge/gesture/select", new AvatarGestureRequest { GestureName = gestureName }, true, cancellationToken);
 
     /// <summary>List available emotions.</summary>
     [McpServerTool(Name = "avatar_list_emotions", ReadOnly = true)]

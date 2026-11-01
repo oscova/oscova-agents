@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>Não foi possível carregar os avisos de licença incluídos.</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>Cabelo</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>Parte de cima</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>Traje</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>Escolha o cabelo para o avatar selecionado.</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>Escolha uma peça de cima para o avatar selecionado.</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>Escolha um traje para o avatar selecionado.</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>Algumas opções de aparência não puderam ser carregadas. Verifique a conexão com o Engine e atualize.</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>Não foi possível aplicar {0}: {1}. Escolha uma opção disponível e tente novamente.</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

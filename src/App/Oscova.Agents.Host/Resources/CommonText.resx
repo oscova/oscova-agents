@@ -257,10 +257,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>Level</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>Logger</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>Message</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>Enter a valid user GUID.</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>Mine</value></data>
-	<data name="Dialog.LogsScope.User"><value>User...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>User ID (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>No chat-memory entries match the current filters.</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>No log entries match the current filters.</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>No log files</value></data>

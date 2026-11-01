@@ -13,9 +13,10 @@ The bridge service can:
 
 - Pair the Oscova installation and reconnect it after either application restarts.
 - Activate Shared or Exclusive access and probe the current engine session.
-- List avatars and emotions from the running engine.
-- Select avatars and emotions.
-- List and select the hair and clothing options configured for a specific avatar.
+- List avatars, emotions and gestures from the running engine.
+- Select avatars and emotions, and play gestures.
+- List and select hair options configured for a specific avatar.
+- List and select complete outfits curated for a specific avatar.
 - Queue speech clips by URL or engine-local file path.
 - Stop speech and clear the engine speech queue.
 - Apply window, background, graphics, message, camera, and audio settings.
@@ -43,9 +44,11 @@ The host exposes routes under `api/avatarbridge`. Important proxy routes include
 | `POST api/avatarbridge/avatars/select` | Select an avatar. |
 | `GET api/avatarbridge/hair?avatarName=...` | List hair options for an avatar. |
 | `POST api/avatarbridge/hair/select` | Select hair for an avatar. |
-| `GET api/avatarbridge/clothing?avatarName=...` | List clothing options for an avatar. |
-| `POST api/avatarbridge/clothing/select` | Select clothing for one avatar slot. |
+| `GET api/avatarbridge/outfits?avatarName=...` | List complete outfits for an avatar. |
+| `POST api/avatarbridge/outfit/select` | Apply an outfit using `AvatarName` and `OutfitId`. |
 | `GET api/avatarbridge/emotions` | List available emotions. |
+| `GET api/avatarbridge/gestures` | List stationary gestures reported by the Engine. |
+| `POST api/avatarbridge/gestures/select` | Play one gesture, or select `None` to return to idle. |
 | `POST api/avatarbridge/emotions/set` | Select an emotion through the host proxy. |
 | `POST api/avatarbridge/speech/speak` | Synthesize operator text and queue its audio URL. |
 | `POST api/avatarbridge/speech/queue` | Queue a `/tts/` clip URL for avatar speech. Optional `baseUrl` must match the connected Engine. |
@@ -62,6 +65,8 @@ The host exposes routes under `api/avatarbridge`. Important proxy routes include
 
 Some host proxy names differ from the direct engine API. For example, `api/avatarbridge/emotions/set` forwards to the engine's `/avatarbridge/emotion/select`.
 
+`ListOutfitsAsync(avatarName)` returns the avatar's outfit IDs and display names. `SelectOutfitAsync(avatarName, outfitId)` applies its complete garment combination in one engine request. Catalogs are specific to each avatar, so use an ID returned for the intended avatar. Direct outfit selection changes the current Engine session. The settings page saves the selected outfit ID and reapplies it during saved-settings synchronization. The MCP equivalents are `avatar_outfit_list` and `avatar_outfit_select`.
+
 Emotion requests accept `Intensity`, a finite strength from `0` to `1`, inclusive. The host proxy forwards it unchanged. Omitted values default to `1`, and explicit `0` removes emotion influence while speech and blinking continue. `BlendSpeed` remains the transition duration in seconds. The C# call is `SetEmotionAsync(emotionName, blendSpeed, intensity: 0.5f)` and defaults to full intensity when the third argument is omitted.
 
 The bridge service rejects negative, above-one and non-finite intensity before serialization or HTTP transport, returning `Success = false` and `Description = "Intensity must be a finite number between 0 and 1."` The proxy preserves its normal response status convention and returns that result in an HTTP 200 response. Success echoes the accepted intensity. Failure uses `Intensity = 0` without reporting current scene state. Intensity is request-scoped, and settings synchronization continues to request full intensity.
@@ -71,6 +76,14 @@ The bridge service rejects negative, above-one and non-finite intensity before s
 The two `local-engine` routes belong only to the Oscova Host. They are not direct Unreal `/avatarbridge/*` routes. Local start always passes `-BridgeAddress=127.0.0.1` and the effective port from `bridgeUrl`. It rejects unsupported operating systems and URLs that are not absolute `http` URLs for `localhost` or `127.0.0.1`.
 
 The installed check returns `false` outside Windows or when the exact executable is absent. Start returns `204 No Content` after process creation and the immediate exit check, `400 Bad Request` for an unsupported platform or URL, `404 Not Found` when the executable is absent, and a problem response when launch fails.
+
+## Stationary gesture cues
+
+The shared bridge exposes `ListGesturesAsync()` and `SelectGestureAsync(gestureName)`. The request contains `GestureName`. The result reports `Success`, `Description`, `SelectedGesture`, and `DurationSeconds`. The Engine owns animation loading, blending and completion. Gestures are transient actions and are not saved as visual settings.
+
+When a connected Engine reports gestures, chat can process `[gesture:NAME]` alongside `[emotion:NAME]`. Recognized markers are removed before speech synthesis and chat display. Each cue is scheduled relative to its sentence's audio clip using its position in the cleaned text. This is approximate speech timing, not phoneme alignment. Unknown markers and literal examples inside code or escaped brackets remain text. Cancelling speech discards pending cues, and a forced stop also returns the body to idle.
+
+Direct MCP clients use `avatar_list_gestures` and `avatar_select_gesture`. The optional Avatar toolset exposes `list_gestures` and `select_gesture` for authenticated operator runs.
 
 ## Text speech through Assistant
 
@@ -136,7 +149,7 @@ Commands are applied sequentially. A failure does not roll back settings already
 
 Most bridge calls return an avatar response with `Success` and `Description`. Controller failures that happen before the engine response become HTTP problem responses and are logged by the host. The speech queue proxy also rejects URLs that are not absolute `http` or `https` URLs pointing at `/tts/` clips.
 
-Hair and clothing operations require an explicit avatar name. The host does not infer or store a current avatar for these APIs. Clothing selection also requires the `top` or `bottom` slot. Hair and clothing selections are session-scoped and are not included in saved-settings sync.
+Hair and outfit operations require an explicit avatar name. Direct calls affect the current Engine session. Saved hair and outfit choices are restored by settings synchronization. Individual garment selection is available only through the native Engine HTTP API, not the C# bridge or MCP server.
 
 The bridge service converts HTTP, JSON, or disconnected-client failures into non-success avatar responses where possible. For callers, a `200 OK` with `Success = false` means the proxy ran but the bridge/engine rejected the operation. A `400 Bad Request` usually means Oscova rejected the request before forwarding it.
 

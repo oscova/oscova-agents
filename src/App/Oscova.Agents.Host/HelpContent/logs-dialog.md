@@ -8,8 +8,7 @@ The logs dialog helps you browse log files, filter entries, inspect details, exp
 
 ## Find and inspect entries
 
-- Admins can choose **Mine**, **System**, or **User...** scope.
-- For **User...**, enter a valid user GUID and press **Enter**.
+- Admins can choose **Mine** or **System** scope. The dialog never shows other users' logs, so ask a user to export their own logs for support.
 - Choose a severity and log file.
 - Type in **Search logs...** and press **Enter**.
 - Click **Refresh** to reload available files and entries.

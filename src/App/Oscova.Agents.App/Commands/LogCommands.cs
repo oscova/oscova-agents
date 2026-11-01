@@ -22,7 +22,7 @@ public sealed class LogsFilesCommand(CliHostResolver resolver, HostApiClient api
 {
     protected override async Task<int> RunAsync(HttpClient client, OscovaCommandSettings settings, CancellationToken cancellationToken)
     {
-        var files = await client.GetFromJsonAsync<List<string>>(ApiRoutes.Logs.Files(LogScope.Self, targetUserId: null), CliJson.Options, cancellationToken).ConfigureAwait(false) ?? [];
+        var files = await client.GetFromJsonAsync<List<string>>(ApiRoutes.Logs.Files(LogScope.Self), CliJson.Options, cancellationToken).ConfigureAwait(false) ?? [];
 
         if (settings.Json)
         {
@@ -90,8 +90,7 @@ public sealed class LogsReadCommand(CliHostResolver resolver, HostApiClient apiC
             settings.Search,
             settings.Page ?? 1,
             settings.PageSize ?? 100,
-            LogScope.Self,
-            targetUserId: null);
+            LogScope.Self);
 
         using var response = await client.GetAsync(route, cancellationToken).ConfigureAwait(false);
         await CliHttpErrors.EnsureSuccessAsync(response, "Reading logs", cancellationToken).ConfigureAwait(false);
@@ -177,7 +176,7 @@ public sealed class LogsClearCommand(CliHostResolver resolver, HostApiClient api
         using var response = await CliRender.StatusAsync(
             $"Clearing {settings.File}...", settings,
             () => client.DeleteAsync(
-                ApiRoutes.Logs.Clear(settings.File, LogScope.Self, targetUserId: null),
+                ApiRoutes.Logs.Clear(settings.File, LogScope.Self),
                 cancellationToken)).ConfigureAwait(false);
         await CliHttpErrors.EnsureSuccessAsync(response, "Clearing log file", cancellationToken).ConfigureAwait(false);
         var message = $"Cleared {settings.File}.";

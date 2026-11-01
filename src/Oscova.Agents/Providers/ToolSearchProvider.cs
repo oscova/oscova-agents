@@ -8,6 +8,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Oscova.Agents.Collections;
 using Oscova.Agents.Conversations;
+using Oscova.Agents.Middleware;
 
 namespace Oscova.Agents.Providers;
 
@@ -15,6 +16,10 @@ namespace Oscova.Agents.Providers;
 /// Exposes a single <c>search_tools</c> entry point instead of the agent's full tool set.
 /// Discovered tools are added to the live run; previously called tools return from the current session's history.
 /// </summary>
+/// <remarks>
+/// Search results list a tool name the provider rejects under its <see cref="ProviderToolNameChatClient"/> alias,
+/// so compose this provider with that client, as <c>AgentOrchestrator</c> does.
+/// </remarks>
 public sealed class ToolSearchProvider : AIContextProvider
 {
     private const int SearchResultLimit = 5;
@@ -137,7 +142,9 @@ public sealed class ToolSearchProvider : AIContextProvider
                     liveTools.Add(tool);
                 }
 
-                lines.Add($"- {name}: {_tools.Find(name)?.Description}");
+                // The model calls the name it reads, so an unsafe name is listed as the alias its provider was offered.
+                var providerName = ProviderToolNameChatClient.IsProviderSafe(name) ? name : ProviderToolNameChatClient.CreateAlias(name);
+                lines.Add($"- {providerName}: {_tools.Find(name)?.Description}");
             }
         }
 

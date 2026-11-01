@@ -288,10 +288,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>المستوى</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>المسجل</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>الرسالة</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>أدخل معرّف مستخدم (GUID) صالحاً.</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>الخاصة بي</value></data>
-	<data name="Dialog.LogsScope.User"><value>المستخدم...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>معرّف المستخدم (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>لا توجد إدخالات في ذاكرة المحادثة تطابق عوامل التصفية الحالية.</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>لا توجد إدخالات سجل تطابق عوامل التصفية الحالية.</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>لا توجد ملفات سجل</value></data>

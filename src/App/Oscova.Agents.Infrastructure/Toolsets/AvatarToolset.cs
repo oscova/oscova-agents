@@ -76,6 +76,7 @@ public class AvatarToolset : IAgentToolset
                 }
             }
 
+            // Connecting above completed an authenticated handshake; the reply reports the health status as observed.
             var health = await _avatarBridgeService.CheckHealthAsync().ConfigureAwait(false);
             return $"Successfully connected to avatar engine at {baseUrl}. Status: {health.Status}, Version: {health.Version}";
         }
@@ -139,6 +140,49 @@ public class AvatarToolset : IAgentToolset
         catch (Exception ex) when (ex is not ToolFailureException and not OperationCanceledException)
         {
             _logger.LogError(ex, "Failed to select an avatar unexpectedly.");
+            throw;
+        }
+    }
+
+    [DisplayName("list_gestures")]
+    [AgentTool]
+    [Description("Lists stationary gesture names from the connected Engine.\nRequires an authenticated operator run.")]
+    public async Task<string> ListGesturesAsync()
+    {
+        await RequireOperatorAsync().ConfigureAwait(false);
+        try
+        {
+            var result = await _avatarBridgeService.ListGesturesAsync().ConfigureAwait(false);
+            if (!result.Success) { throw BridgeFailure("list avatar gestures", result.Description); }
+
+            return $"Available gestures: {string.Join(", ", result.Gestures)}";
+        }
+        catch (InvalidOperationException) { throw NotConnected(); }
+        catch (Exception ex) when (ex is not ToolFailureException and not OperationCanceledException)
+        {
+            _logger.LogError(ex, "Failed to list avatar gestures.");
+            throw;
+        }
+    }
+
+    [DisplayName("select_gesture")]
+    [AgentTool]
+    [Description("Plays one stationary gesture, then returns to idle.\nRequires an authenticated operator run.")]
+    public async Task<string> SelectGestureAsync(
+        [Description("Case-sensitive name returned by list_gestures. None stops the current gesture.")] string gestureName)
+    {
+        await RequireOperatorAsync().ConfigureAwait(false);
+        try
+        {
+            var result = await _avatarBridgeService.SelectGestureAsync(gestureName).ConfigureAwait(false);
+            if (!result.Success) { throw BridgeFailure("select avatar gesture", result.Description); }
+
+            return $"{result.SelectedGesture}: {result.Description}";
+        }
+        catch (InvalidOperationException) { throw NotConnected(); }
+        catch (Exception ex) when (ex is not ToolFailureException and not OperationCanceledException)
+        {
+            _logger.LogError(ex, "Failed to select avatar gesture {GestureName}.", gestureName);
             throw;
         }
     }

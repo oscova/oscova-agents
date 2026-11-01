@@ -26,21 +26,7 @@
 						@onchange="OnScopeChangedAsync">
 					<option value="self">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsScopeMine, "Mine")</option>
 					<option value="system">@CommonLoc.GetOrDefault(CommonTextKeys.System, "System")</option>
-					<option value="user">@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsScopeUser, "User...")</option>
 				</select>
-				@if (_selectedScope == "user")
-				{
-					<label class="input input-sm w-64">
-						<span class="iconify lucide--id-card text-base-content/60 size-4"></span>
-						<input id="target-user-id" type="text"
-							   placeholder="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsUserIdPlaceholder, "User ID (GUID)")"
-							   aria-label="@CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsUserIdPlaceholder, "User ID (GUID)")"
-							   class="grow focus:outline-0 font-mono"
-							   @bind="_targetUserIdInput"
-							   @bind:event="oninput"
-							   @onkeydown="OnTargetUserKeyDownAsync" />
-					</label>
-				}
 			}
 
 			<select class="select select-sm w-36"
@@ -89,7 +75,7 @@
 					<span class="loading loading-dots loading-sm"></span>
 				}
 				<button class="btn btn-ghost btn-sm"
-						disabled="@(_isLoading || !HasTarget)"
+						disabled="@_isLoading"
 						@onclick="RefreshAsync">
 					<span class="iconify lucide--refresh-cw size-4" aria-hidden="true"></span>
 					@CommonLoc.GetOrDefault(CommonTextKeys.Refresh, "Refresh")
@@ -279,16 +265,13 @@
 	private bool _isLoading;
 	private bool _isAdmin;
 	private string _selectedScope = "self";
-	private string? _selectedTargetUserId;
-	private string _targetUserIdInput = string.Empty;
 	private int _loadVersion;
-	private bool HasTarget => _selectedScope != "user" || Guid.TryParse(_selectedTargetUserId, out _);
 
 	private const int PageSize = 100;
 	private string ExportLabel => CommonLoc.GetOrDefault(CommonTextKeys.DialogExportLogsButton, "Export");
 
 	private string GetExportUrl(string format) => ApiRoutes.Logs.Export(
-		_selectedFile, format, _selectedLevel, _searchTerm, _selectedScope, _selectedTargetUserId);
+		_selectedFile, format, _selectedLevel, _searchTerm, _selectedScope);
 
 	private string FormatCommonText(string key, string fallback, params object?[] args)
 	{
@@ -309,13 +292,12 @@
 		var version = ++_loadVersion;
 		_error = null;
 		_logPage = null;
-		_isLoading = HasTarget;
-		if (!HasTarget) { _availableFiles = []; return; }
+		_isLoading = true;
 		try
 		{
 			StateHasChanged();
 			// A filter change can supersede an in-flight scope load, so it needs that scope's files too.
-			var files = await ManagementApiClient.GetLogFilesAsync(_selectedScope, _selectedTargetUserId);
+			var files = await ManagementApiClient.GetLogFilesAsync(_selectedScope);
 			if (version != _loadVersion) { return; }
 			_availableFiles = [.. files];
 			if (!_availableFiles.Contains(_selectedFile))
@@ -329,8 +311,7 @@
 				_searchTerm,
 				_currentPage,
 				PageSize,
-				_selectedScope,
-				_selectedTargetUserId);
+				_selectedScope);
 			if (version == _loadVersion) { _logPage = page; }
 		}
 		catch (Exception ex)
@@ -369,32 +350,10 @@
 	private async Task OnScopeChangedAsync(ChangeEventArgs args)
 	{
 		_selectedScope = args.Value?.ToString() ?? "self";
-		_selectedTargetUserId = null;
-		_targetUserIdInput = string.Empty;
 		_selectedFile = string.Empty;
 		_currentPage = 1;
 		_error = null;
 
-		await LoadEntriesAsync();
-	}
-
-	private async Task OnTargetUserKeyDownAsync(KeyboardEventArgs args)
-	{
-		if (args.Key != "Enter")
-		{
-			return;
-		}
-
-		if (!Guid.TryParse(_targetUserIdInput?.Trim(), out _))
-		{
-			_error = CommonLoc.GetOrDefault(CommonTextKeys.DialogLogsInvalidUserGuid, "Enter a valid user GUID.");
-			StateHasChanged();
-			return;
-		}
-
-		_selectedTargetUserId = _targetUserIdInput!.Trim();
-		_selectedFile = string.Empty;
-		_currentPage = 1;
 		await LoadEntriesAsync();
 	}
 
@@ -433,7 +392,7 @@
 		{
 			_error = null;
 			_isLoading = true;
-			await ManagementApiClient.ClearLogFileAsync(_selectedFile, _selectedScope, _selectedTargetUserId);
+			await ManagementApiClient.ClearLogFileAsync(_selectedFile, _selectedScope);
 			_expandedEntryTimes.Clear();
 
 			_currentPage = 1;

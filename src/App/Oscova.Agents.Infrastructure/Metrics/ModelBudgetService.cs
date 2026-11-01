@@ -65,7 +65,8 @@ public sealed class ModelBudgetService(
         var now = clock.GetUtcNow();
         var localDate = TimeZoneInfo.ConvertTime(now, zone).Date;
         var month = new DateTime(localDate.Year, localDate.Month, 1);
-        DateTimeOffset Utc(DateTime date) => new(TimeZoneInfo.ConvertTimeToUtc(date, zone));
+        // A skipped local midnight maps to the first valid instant of that day instead of throwing.
+        DateTimeOffset Utc(DateTime date) => new DateTimeOffset(date, zone.GetUtcOffset(date)).ToUniversalTime();
         var dayStart = Utc(localDate);
         var monthStart = Utc(month);
         var provider = catalog.Find(config.Type);

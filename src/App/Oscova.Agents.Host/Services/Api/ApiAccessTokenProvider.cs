@@ -5,7 +5,8 @@ namespace Oscova.Agents.Host.Services.Api;
 
 public sealed class ApiAccessTokenProvider(
     AuthenticationStateProvider authenticationStateProvider,
-    BlazorAccessTokenService accessTokenService)
+    BlazorAccessTokenService accessTokenService,
+    BrowserViewerAccess sessionAccess)
 {
     private string? _token;
     private DateTimeOffset _expiresAt;
@@ -20,6 +21,18 @@ public sealed class ApiAccessTokenProvider(
         var authState = await authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
         var user = authState.User;
         if (user.Identity?.IsAuthenticated != true)
+        {
+            _token = null;
+            _expiresAt = default;
+            return null;
+        }
+
+        // A tab keeps the principal it opened with, so each renewal rechecks sign-out and password changes.
+        try
+        {
+            await sessionAccess.RequireAsync().ConfigureAwait(false);
+        }
+        catch (UnauthorizedAccessException)
         {
             _token = null;
             _expiresAt = default;

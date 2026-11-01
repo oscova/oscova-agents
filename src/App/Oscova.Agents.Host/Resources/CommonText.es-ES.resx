@@ -257,10 +257,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>Nivel</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>Registrador</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>Mensaje</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>Introduce un GUID de usuario válido.</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>Míos</value></data>
-	<data name="Dialog.LogsScope.User"><value>Usuario...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>ID de usuario (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>Ninguna entrada de memoria de chat coincide con los filtros actuales.</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>Ninguna entrada de registro coincide con los filtros actuales.</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>No hay archivos de registro</value></data>

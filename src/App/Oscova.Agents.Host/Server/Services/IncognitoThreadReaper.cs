@@ -81,6 +81,7 @@ public sealed class IncognitoThreadReaper(
                     continue;
                 }
 
+                // No await separates the run check above from the delete's run cancellation, so no lease recheck is needed.
                 await chatSessionService.DeleteThreadAsync(userId, thread.Id, ct).ConfigureAwait(false);
             }
         }

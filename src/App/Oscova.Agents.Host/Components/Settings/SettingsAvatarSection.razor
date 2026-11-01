@@ -127,19 +127,19 @@
             <p class="text-xs mt-2 opacity-60">@GetAppearanceHint(_hairCatalogLoaded, _draft.SelectedHairId, _availableHairOptions, SettingsTextKeys.AvatarChooseHairDescription, "Choose hair for the selected avatar.")</p>
         </div>
         <div class="form-control mt-3 max-w-md">
-            <label class="label pl-0" for="avatar-selected-top">
-                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarTopClothingLabel, "Top")</span>
+            <label class="label pl-0" for="avatar-selected-outfit">
+                <span class="label-text font-medium">@Loc.GetOrDefault(SettingsTextKeys.AvatarOutfitLabel, "Outfit")</span>
             </label>
-            <select id="avatar-selected-top" class="select select-bordered w-full"
-                    disabled="@(!CanSelectTopClothing)"
-                    value="@(_draft.SelectedTopClothingId ?? string.Empty)"
-                    @onchange="OnTopClothingSelectionChanged">
-                @foreach (var option in GetTopClothingOptions())
+            <select id="avatar-selected-outfit" class="select select-bordered w-full"
+                    disabled="@(!CanSelectOutfit)"
+                    value="@(_draft.SelectedOutfitId ?? string.Empty)"
+                    @onchange="OnOutfitSelectionChanged">
+                @foreach (var option in GetOutfitOptions())
                 {
                     <option @key="option.Value" value="@option.Value">@option.Label</option>
                 }
             </select>
-            <p class="text-xs mt-2 opacity-60">@GetAppearanceHint(_topClothingCatalogLoaded, _draft.SelectedTopClothingId, _availableTopClothingOptions, SettingsTextKeys.AvatarChooseTopClothingDescription, "Choose a top for the selected avatar.")</p>
+            <p class="text-xs mt-2 opacity-60">@GetAppearanceHint(_outfitCatalogLoaded, _draft.SelectedOutfitId, _availableOutfitOptions, SettingsTextKeys.AvatarChooseOutfitDescription, "Choose an outfit for the selected avatar.")</p>
         </div>
         <div class="mt-4 flex">
             <button type="button"
@@ -490,7 +490,7 @@
     private List<string> _availableAvatars = new();
     private List<string> _availableEmotions = new();
     private List<SelectOption> _availableHairOptions = new();
-    private List<SelectOption> _availableTopClothingOptions = new();
+    private List<SelectOption> _availableOutfitOptions = new();
     private string _testMessage = string.Empty;
     private CancellationTokenSource? _presentationTest;
     private bool _disposed;
@@ -498,7 +498,7 @@
     private bool _avatarCatalogLoaded;
     private bool _emotionCatalogLoaded;
     private bool _hairCatalogLoaded;
-    private bool _topClothingCatalogLoaded;
+    private bool _outfitCatalogLoaded;
     private bool _isLocalEngineInstalled;
     private bool _isStartingLocalEngine;
     private bool _localEngineStartRequested;
@@ -520,7 +520,7 @@
     private bool CanSelectAvatar => _avatarCatalogLoaded && !IsEngineChecking;
     private bool CanSelectEmotion => _emotionCatalogLoaded && !IsEngineChecking;
     private bool CanSelectHair => _hairCatalogLoaded && !IsEngineChecking;
-    private bool CanSelectTopClothing => _topClothingCatalogLoaded && !IsEngineChecking;
+    private bool CanSelectOutfit => _outfitCatalogLoaded && !IsEngineChecking;
     private bool CanApplyAvatar =>
         IsEngineReachable &&
         _avatarCatalogLoaded &&
@@ -1183,9 +1183,9 @@
     {
         _appearanceCatalogVersion++;
         _hairCatalogLoaded = false;
-        _topClothingCatalogLoaded = false;
+        _outfitCatalogLoaded = false;
         _availableHairOptions = [];
-        _availableTopClothingOptions = [];
+        _availableOutfitOptions = [];
     }
 
     private async Task<bool?> LoadAppearanceCatalogsAsync(string? avatarName, int refreshVersion, bool showToasts)
@@ -1198,7 +1198,7 @@
 
         var appearanceVersion = _appearanceCatalogVersion;
         AvatarHairListResponse? hair = null;
-        AvatarClothingListResponse? clothing = null;
+        AvatarOutfitListResponse? outfits = null;
         try
         {
             hair = await Http.GetFromJsonAsync<AvatarHairListResponse>(
@@ -1211,12 +1211,12 @@
 
         try
         {
-            clothing = await Http.GetFromJsonAsync<AvatarClothingListResponse>(
-                $"{ApiRoutes.AvatarBridge.Clothing}?avatarName={Uri.EscapeDataString(avatarName)}");
+            outfits = await Http.GetFromJsonAsync<AvatarOutfitListResponse>(
+                $"{ApiRoutes.AvatarBridge.Outfits}?avatarName={Uri.EscapeDataString(avatarName)}");
         }
         catch (Exception ex)
         {
-            Logger.LogWarning(ex, "Failed to load clothing choices for avatar {AvatarName}.", avatarName);
+            Logger.LogWarning(ex, "Failed to load outfit choices for avatar {AvatarName}.", avatarName);
         }
 
         // Keep a late catalog response from replacing choices for a newly selected avatar.
@@ -1231,23 +1231,22 @@
             _hairCatalogLoaded = true;
             _availableHairOptions = hairOptions.Select(option => new SelectOption(option.HairId, option.DisplayName)).ToList();
         }
-        if (clothing?.Success == true && clothing.ClothingOptions is { } clothingOptions)
+        if (outfits?.Success == true && outfits.Outfits is { } outfitOptions)
         {
-            _topClothingCatalogLoaded = true;
-            _availableTopClothingOptions = clothingOptions
-                .Where(option => string.Equals(option.Slot, "top", StringComparison.Ordinal))
-                .Select(option => new SelectOption(option.ClothingId, option.DisplayName))
+            _outfitCatalogLoaded = true;
+            _availableOutfitOptions = outfitOptions
+                .Select(option => new SelectOption(option.OutfitId, option.DisplayName))
                 .ToList();
         }
 
-        if (showToasts && (!_hairCatalogLoaded || !_topClothingCatalogLoaded))
+        if (showToasts && (!_hairCatalogLoaded || !_outfitCatalogLoaded))
         {
             ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.AvatarAppearanceCatalogFailedToast,
                 "Some appearance choices could not be loaded. Check the Engine connection and refresh."), ToastType.Warning);
         }
 
         await InvokeAsync(StateHasChanged);
-        return _hairCatalogLoaded && _topClothingCatalogLoaded;
+        return _hairCatalogLoaded && _outfitCatalogLoaded;
     }
 
     private async Task OnAvatarSelectionChanged(ChangeEventArgs args)
@@ -1260,7 +1259,7 @@
 
         _draft.SelectedAvatar = selectedAvatar;
         _draft.SelectedHairId = null;
-        _draft.SelectedTopClothingId = null;
+        _draft.SelectedOutfitId = null;
         ClearAppearanceCatalogs();
         if (selectedAvatar is not null && IsEngineReachable)
         {
@@ -1278,8 +1277,8 @@
     private void OnHairSelectionChanged(ChangeEventArgs args) =>
         _draft.SelectedHairId = NormalizeOptionalSelection(args.Value?.ToString());
 
-    private void OnTopClothingSelectionChanged(ChangeEventArgs args) =>
-        _draft.SelectedTopClothingId = NormalizeOptionalSelection(args.Value?.ToString());
+    private void OnOutfitSelectionChanged(ChangeEventArgs args) =>
+        _draft.SelectedOutfitId = NormalizeOptionalSelection(args.Value?.ToString());
 
     private void OnEmotionSelectionChanged(ChangeEventArgs args)
     {
@@ -1313,8 +1312,8 @@
         _hairCatalogLoaded, _draft.SelectedHairId, _availableHairOptions,
         Loc.GetOrDefault(SettingsTextKeys.AvatarCatalogCheckingHint, "Loading live choices from the Avatar Engine."));
 
-    private IReadOnlyList<SelectOption> GetTopClothingOptions() => GetCatalogOptions(
-        _topClothingCatalogLoaded, _draft.SelectedTopClothingId, _availableTopClothingOptions,
+    private IReadOnlyList<SelectOption> GetOutfitOptions() => GetCatalogOptions(
+        _outfitCatalogLoaded, _draft.SelectedOutfitId, _availableOutfitOptions,
         Loc.GetOrDefault(SettingsTextKeys.AvatarCatalogCheckingHint, "Loading live choices from the Avatar Engine."));
 
     private string GetAppearanceHint(bool loaded, string? selectedId, IReadOnlyList<SelectOption> options, string key, string text)
@@ -1404,7 +1403,7 @@
         }
 
         var hairId = _draft.SelectedHairId;
-        var topClothingId = _draft.SelectedTopClothingId;
+        var outfitId = _draft.SelectedOutfitId;
         try
         {
             using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.AvatarsSelect, new AvatarSelectRequest { AvatarName = avatarName });
@@ -1412,8 +1411,8 @@
             if (response is not null && response.Success)
             {
                 var hairApplied = await ApplyHairAsync(avatarName, hairId);
-                var topApplied = await ApplyTopClothingAsync(avatarName, topClothingId);
-                if (hairApplied && topApplied)
+                var outfitApplied = await ApplyOutfitAsync(avatarName, outfitId);
+                if (hairApplied && outfitApplied)
                 {
                     ToastService.Show(FormatSettingsText(SettingsTextKeys.AvatarAppliedToast,
                         "Appearance applied to '{0}'", response.SelectedAvatar), ToastType.Success);
@@ -1459,34 +1458,33 @@
         return false;
     }
 
-    private async Task<bool> ApplyTopClothingAsync(string avatarName, string? clothingId)
+    private async Task<bool> ApplyOutfitAsync(string avatarName, string? outfitId)
     {
-        if (string.IsNullOrWhiteSpace(clothingId))
+        if (string.IsNullOrWhiteSpace(outfitId))
         {
             return true;
         }
 
         try
         {
-            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.ClothingSelect,
-                new AvatarClothingSelectRequest
+            using var httpResponse = await Http.PostAsJsonAsync(ApiRoutes.AvatarBridge.OutfitSelect,
+                new AvatarOutfitSelectRequest
                 {
                     AvatarName = avatarName,
-                    Slot = "top",
-                    ClothingId = clothingId
+                    OutfitId = outfitId
                 });
-            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarClothingSelectResponse>();
+            var response = await httpResponse.Content.ReadFromJsonAsync<AvatarOutfitSelectResponse>();
             if (response?.Success == true)
             {
                 return true;
             }
 
-            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarTopClothingLabel, "Top"), response?.Description);
+            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarOutfitLabel, "Outfit"), response?.Description);
         }
         catch (Exception ex)
         {
-            Logger.LogWarning(ex, "Failed to apply top clothing to avatar {AvatarName}.", avatarName);
-            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarTopClothingLabel, "Top"), ex.Message);
+            Logger.LogWarning(ex, "Failed to apply outfit to avatar {AvatarName}.", avatarName);
+            ShowAppearanceApplyWarning(Loc.GetOrDefault(SettingsTextKeys.AvatarOutfitLabel, "Outfit"), ex.Message);
         }
 
         return false;
@@ -1871,7 +1869,7 @@
                a.PreferredAccessMode == b.PreferredAccessMode &&
                a.SelectedAvatar == b.SelectedAvatar &&
                a.SelectedHairId == b.SelectedHairId &&
-               a.SelectedTopClothingId == b.SelectedTopClothingId &&
+               a.SelectedOutfitId == b.SelectedOutfitId &&
                a.SelectedEmotion == b.SelectedEmotion &&
                Math.Abs(a.EmotionBlendSpeed - b.EmotionBlendSpeed) < 0.01f &&
                Math.Abs(a.EmotionCueBlendInSeconds - b.EmotionCueBlendInSeconds) < 0.01f &&

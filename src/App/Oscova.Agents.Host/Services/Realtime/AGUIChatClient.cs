@@ -89,6 +89,7 @@ public sealed class AGUIChatClient(HttpClient httpClient, ILogger<AGUIChatClient
             await HandleEventAsync(eventType, sseItem.Data, state).ConfigureAwait(false);
         }
 
+        // The host always ends a run with RUN_FINISHED or RUN_ERROR, and a dropped connection throws before here.
         if (!state.RunFinished)
         {
             await EmitFinalDeltaAsync(state).ConfigureAwait(false);

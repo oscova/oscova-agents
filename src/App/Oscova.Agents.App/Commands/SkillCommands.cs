@@ -98,7 +98,12 @@ public sealed class SkillsRemoveCommand(CliHostResolver resolver, HostApiClient 
 
         await CliHttpErrors.EnsureSuccessAsync(response, "Removing skill", cancellationToken).ConfigureAwait(false);
         var message = $"Removed {settings.SkillName}.";
-        if (!settings.Json && !settings.Quiet &&
+        // Requested JSON results remain available when informational output is quiet.
+        if (settings.Json)
+        {
+            await CliOutput.WriteJsonAsync(new { success = true, message }, cancellationToken).ConfigureAwait(false);
+        }
+        else if (!settings.Quiet &&
             AnsiConsole.Profile.Capabilities.Interactive && AnsiConsole.Profile.Capabilities.Ansi)
         {
             AnsiConsole.Write(CliRender.Card("Skill removed", new Text(message, CliTheme.Value), CliTheme.Success));

@@ -2,14 +2,15 @@ using Oscova.Agents.Core.Avatar;
 
 namespace Oscova.Agents.Host.Services;
 
-/// <summary>Plays reply emotion cues against speech playback and returns the avatar to its base emotion.</summary>
-public sealed class AvatarEmotionCueScheduler(IAvatarBridgeClient avatarBridge, IAvatarRuntimeSettingsService avatarSettings)
+/// <summary>Plays emotion and gesture cues on the existing speech clip timeline.</summary>
+public sealed class AvatarCueScheduler(IAvatarBridgeClient avatarBridge, IAvatarRuntimeSettingsService avatarSettings)
 {
     private readonly Lock _gate = new();
     private CancellationTokenSource _replyCancellation = new();
     private CancellationTokenSource? _windowCancellation;
     private IReadOnlyList<string> _emotions = [];
     private string? _activeEmotion;
+    private Task? _gestureRequest;
 
     /// <summary>Schedules one clip's cues relative to the clip's playback start.</summary>
     public void Schedule(IReadOnlyList<AvatarMarkupCue> cues, IReadOnlyList<string> emotions, TimeSpan clipStartDelay, double clipDurationMs)
@@ -23,7 +24,7 @@ public sealed class AvatarEmotionCueScheduler(IAvatarBridgeClient avatarBridge, 
 
         foreach (var cue in cues)
         {
-            _ = FireCueAsync(cue.Emotion, clipStartDelay + TimeSpan.FromMilliseconds(clipDurationMs * cue.Fraction), replyToken);
+            _ = FireCueAsync(cue, clipStartDelay + TimeSpan.FromMilliseconds(clipDurationMs * cue.Fraction), replyToken);
         }
     }
 
@@ -31,6 +32,7 @@ public sealed class AvatarEmotionCueScheduler(IAvatarBridgeClient avatarBridge, 
     public async Task CancelAsync()
     {
         bool wasShowing;
+        Task? gestureRequest;
         lock (_gate)
         {
             _replyCancellation.Cancel();
@@ -40,6 +42,13 @@ public sealed class AvatarEmotionCueScheduler(IAvatarBridgeClient avatarBridge, 
             _replyCancellation = new CancellationTokenSource();
             wasShowing = _activeEmotion is not null;
             _activeEmotion = null;
+            gestureRequest = _gestureRequest is null ? null : StopGestureAfterAsync(_gestureRequest);
+            _gestureRequest = gestureRequest;
+        }
+
+        if (gestureRequest is not null)
+        {
+            await gestureRequest.ConfigureAwait(false);
         }
 
         if (wasShowing)
@@ -48,11 +57,27 @@ public sealed class AvatarEmotionCueScheduler(IAvatarBridgeClient avatarBridge, 
         }
     }
 
-    private async Task FireCueAsync(string emotion, TimeSpan delay, CancellationToken replyToken)
+    private async Task FireCueAsync(AvatarMarkupCue cue, TimeSpan delay, CancellationToken replyToken)
     {
         try
         {
             await Task.Delay(delay, replyToken).ConfigureAwait(false);
+            replyToken.ThrowIfCancellationRequested();
+            if (cue.Kind == AvatarCueKind.Gesture)
+            {
+                Task request;
+                lock (_gate)
+                {
+                    replyToken.ThrowIfCancellationRequested();
+                    request = SelectGestureAfterAsync(_gestureRequest, cue.Name, replyToken);
+                    _gestureRequest = request;
+                }
+
+                await request.ConfigureAwait(false);
+                return;
+            }
+
+            var emotion = cue.Name;
             var settings = await avatarSettings.GetSettingsAsync().ConfigureAwait(false);
 
             CancellationToken windowToken;
@@ -93,6 +118,23 @@ public sealed class AvatarEmotionCueScheduler(IAvatarBridgeClient avatarBridge, 
         catch (OperationCanceledException)
         {
         }
+    }
+
+    private async Task SelectGestureAfterAsync(Task? previous, string name, CancellationToken token)
+    {
+        if (previous is not null) { await previous.ConfigureAwait(false); }
+
+        token.ThrowIfCancellationRequested();
+        await avatarBridge.SelectGestureAsync(name).ConfigureAwait(false);
+    }
+
+    private async Task StopGestureAfterAsync(Task previous)
+    {
+        // Keep the stop in the request chain so a new reply cannot overtake it.
+        try { await previous.ConfigureAwait(false); }
+        catch (OperationCanceledException) { }
+
+        await avatarBridge.SelectGestureAsync("None").ConfigureAwait(false);
     }
 
     private async Task RestoreBaseAsync()

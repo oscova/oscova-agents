@@ -499,9 +499,9 @@ public static class SettingsTextKeys
     public const string AvatarAvatarHeading = "Settings.Avatar.AvatarHeading";
     public const string AvatarSelectedAvatarLabel = "Settings.Avatar.SelectedAvatarLabel";
     public const string AvatarHairLabel = "Settings.Avatar.HairLabel";
-    public const string AvatarTopClothingLabel = "Settings.Avatar.TopClothingLabel";
+    public const string AvatarOutfitLabel = "Settings.Avatar.OutfitLabel";
     public const string AvatarChooseHairDescription = "Settings.Avatar.ChooseHairDescription";
-    public const string AvatarChooseTopClothingDescription = "Settings.Avatar.ChooseTopClothingDescription";
+    public const string AvatarChooseOutfitDescription = "Settings.Avatar.ChooseOutfitDescription";
     public const string AvatarLoadingAvatarsOption = "Settings.Avatar.LoadingAvatarsOption";
     public const string AvatarLoadingEmotionsOption = "Settings.Avatar.LoadingEmotionsOption";
     public const string AvatarSavedUnverifiedOption = "Settings.Avatar.SavedUnverifiedOption";

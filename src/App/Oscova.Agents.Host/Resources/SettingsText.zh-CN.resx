@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>无法加载随附的许可证声明。</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>发型</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>上装</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>套装</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>为所选虚拟形象选择发型。</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>为所选虚拟形象选择上装。</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>为所选虚拟形象选择套装。</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>部分外观选项未能加载。请检查引擎连接并刷新。</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>无法应用{0}：{1}。请选择可用选项后重试。</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

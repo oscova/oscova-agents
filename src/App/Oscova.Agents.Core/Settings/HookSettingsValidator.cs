@@ -227,6 +227,7 @@ public static class HookSettingsValidator
         return new CommandHookOptions
         {
             FileName = command.FileName?.Trim() ?? string.Empty,
+            // Arguments are edited one per line and stored trimmed, matching the hook editor.
             Arguments = (command.Arguments ?? []).Select(argument => argument?.Trim() ?? string.Empty).ToList(),
             WorkingDirectory = NormalizeNullable(command.WorkingDirectory)
         };

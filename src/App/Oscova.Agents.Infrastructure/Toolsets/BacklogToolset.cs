@@ -167,9 +167,17 @@ public sealed class BacklogToolset(string userId, IContentProtector protector, I
 
         if (selected == "all") { return await store.DeleteAllAsync(null, snapshot: true, ct).ConfigureAwait(false); }
 
-        foreach (var item in items) { await store.DeleteAsync(item.Id, ct).ConfigureAwait(false); }
+        var deleted = 0;
+        foreach (var item in items)
+        {
+            // Only items still done are deleted; one reopened while the user confirmed stays.
+            if (await store.ReadConceptAsync(item.Id, ct).ConfigureAwait(false) is not { } current ||
+                new BacklogItem(item.Id, current.Metadata, current.Body).State != BacklogFile.DoneState) { continue; }
 
-        return $"Deleted {items.Length} done to-do items.";
+            if ((await store.DeleteAsync(item.Id, ct).ConfigureAwait(false)).StartsWith("Deleted", StringComparison.Ordinal)) { deleted++; }
+        }
+
+        return $"Deleted {DeletionConfirmation.Count(deleted, "done to-do item", "done to-do items", all: false)}.";
     }, ct);
 
     private EncryptedKnowledgeStore GetStore() => BacklogFile.CreateStore(userId, userDirectories, protector, fileBackups);

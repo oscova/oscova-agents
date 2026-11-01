@@ -137,6 +137,7 @@ public sealed class OAuthController(
 
         try
         {
+            // Connect is offered only while disconnected, and Disconnect waits for in-flight refreshes.
             await userScope.OAuthTokenService.StoreTokenAsync(normalizedProvider, tokenData, ct);
         }
         catch (ConfidentialDataLockedException)

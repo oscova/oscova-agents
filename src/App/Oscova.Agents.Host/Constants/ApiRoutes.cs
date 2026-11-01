@@ -55,10 +55,12 @@ public static class ApiRoutes
         public const string AvatarsSelect = $"{Base}/avatars/select";
         public const string Hair = $"{Base}/hair";
         public const string HairSelect = $"{Base}/hair/select";
-        public const string Clothing = $"{Base}/clothing";
-        public const string ClothingSelect = $"{Base}/clothing/select";
+        public const string Outfits = $"{Base}/outfits";
+        public const string OutfitSelect = $"{Base}/outfit/select";
         public const string Emotions = $"{Base}/emotions";
         public const string EmotionsSet = $"{Base}/emotions/set";
+        public const string Gestures = $"{Base}/gestures";
+        public const string GesturesSelect = $"{Base}/gestures/select";
         public const string Resolution = $"{Base}/resolution";
         public const string Shutdown = $"{Base}/shutdown";
 
@@ -661,21 +663,21 @@ public static class ApiRoutes
     {
         public const string Base = "api/logs";
 
-        public static string Files(string scope, string? targetUserId)
+        public static string Files(string scope)
         {
-            var query = ScopeQuery(scope, targetUserId);
+            var query = ScopeQuery(scope);
             return $"{Base}/files?{query}";
         }
 
         public static string Page(
             string? fileName, string? level, string? searchTerm, int page, int pageSize,
-            string scope, string? targetUserId)
+            string scope)
         {
             var parameters = new List<string>
             {
                 $"page={page}",
                 $"pageSize={pageSize}",
-                ScopeQuery(scope, targetUserId)
+                ScopeQuery(scope)
             };
 
             if (!string.IsNullOrWhiteSpace(fileName))
@@ -696,18 +698,18 @@ public static class ApiRoutes
             return $"{Base}?{string.Join("&", parameters)}";
         }
 
-        public static string Clear(string fileName, string scope, string? targetUserId) =>
-            $"{Base}?fileName={Uri.EscapeDataString(fileName)}&{ScopeQuery(scope, targetUserId)}";
+        public static string Clear(string fileName, string scope) =>
+            $"{Base}?fileName={Uri.EscapeDataString(fileName)}&{ScopeQuery(scope)}";
 
         public static string Export(
             string fileName, string format, string level, string? searchTerm,
-            string scope, string? targetUserId)
+            string scope)
         {
             var parameters = new List<string>
             {
                 $"fileName={Uri.EscapeDataString(fileName)}",
                 $"format={Uri.EscapeDataString(format)}",
-                ScopeQuery(scope, targetUserId)
+                ScopeQuery(scope)
             };
 
             if (!string.IsNullOrWhiteSpace(level))
@@ -723,16 +725,7 @@ public static class ApiRoutes
             return $"{Base}/export?{string.Join("&", parameters)}";
         }
 
-        private static string ScopeQuery(string scope, string? targetUserId)
-        {
-            var query = $"scope={Uri.EscapeDataString(scope)}";
-            if (!string.IsNullOrWhiteSpace(targetUserId))
-            {
-                query += $"&targetUserId={Uri.EscapeDataString(targetUserId)}";
-            }
-
-            return query;
-        }
+        private static string ScopeQuery(string scope) => $"scope={Uri.EscapeDataString(scope)}";
     }
 
     public static class ChatMemory

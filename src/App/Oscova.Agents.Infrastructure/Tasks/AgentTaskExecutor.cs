@@ -461,22 +461,21 @@ namespace Oscova.Agents.Infrastructure.Tasks
             }
             finally
             {
-                if (wasCancelled)
+                // A finished run cannot keep jobs, because no later run can control them.
+                try
                 {
-                    // A cancelled task cannot retain jobs that its deleted or finished run can no longer control.
-                    try
+                    try { await nodes.CleanupExecutionAsync(task.UserId, agentTaskRun.Id, CancellationToken.None).ConfigureAwait(false); }
+                    finally
                     {
-                        try { await nodes.CleanupExecutionAsync(task.UserId, agentTaskRun.Id, CancellationToken.None).ConfigureAwait(false); }
-                        finally
-                        {
-                            try { await backgroundJobs.CleanupExecutionAsync(agentTaskRun.Id, CancellationToken.None).ConfigureAwait(false); }
-                            finally { await shellExecutors.EvictAsync(agentTaskRun.Id).ConfigureAwait(false); }
-                        }
+                        // A detached descendant can hold a killed job's output open, so the run must not wait on it.
+                        using var jobCleanup = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                        try { await backgroundJobs.CleanupExecutionAsync(agentTaskRun.Id, jobCleanup.Token).ConfigureAwait(false); }
+                        finally { await shellExecutors.EvictAsync(agentTaskRun.Id).ConfigureAwait(false); }
                     }
-                    catch (Exception ex)
-                    {
-                        logger.LogWarning(ex, "Cancelled task run {RunId} for user {UserId}, but execution cleanup failed.", agentTaskRun.Id, task.UserId);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Task run {RunId} for user {UserId} ended, but execution cleanup failed.", agentTaskRun.Id, task.UserId);
                 }
 
                 if (agentTaskRun.Status == AgentTaskStatus.Failed &&

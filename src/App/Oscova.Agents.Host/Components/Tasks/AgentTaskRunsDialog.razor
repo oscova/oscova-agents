@@ -46,7 +46,8 @@
                                     }
                                     else if (run.ResultSummary is not null)
                                     {
-                                        <div class="markdown-content">@((MarkupString)MarkdownRenderer.ToHtml(run.ResultSummary))</div>
+                                        @* Task results are agent replies, so remote images stay links as in chat. *@
+                                        <div class="markdown-content">@((MarkupString)MarkdownRenderer.ToChatHtml(run.ResultSummary, null, null, [], false))</div>
                                     }
                                     else
                                     {

@@ -6,4 +6,6 @@ namespace Oscova.Agents.Core.ApiContracts.Plugins;
 public sealed class UpdatePluginSettingsRequest
 {
     public IReadOnlyList<string> EnabledPluginIds { get; set; } = [];
+
+    public bool ConfirmInterruptions { get; set; }
 }

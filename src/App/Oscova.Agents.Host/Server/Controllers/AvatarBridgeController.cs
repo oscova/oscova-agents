@@ -312,8 +312,8 @@ public class AvatarBridgeController(
         }
     }
 
-    [HttpGet("clothing")]
-    public async Task<ActionResult<AvatarClothingListResponse>> ListClothingOptions([FromQuery] string avatarName)
+    [HttpGet("outfits")]
+    public async Task<ActionResult<AvatarOutfitListResponse>> ListOutfits([FromQuery] string avatarName)
     {
         if (string.IsNullOrWhiteSpace(avatarName))
         {
@@ -322,33 +322,61 @@ public class AvatarBridgeController(
 
         try
         {
-            var result = await _avatarBridgeService.ListClothingOptionsAsync(avatarName);
+            var result = await _avatarBridgeService.ListOutfitsAsync(avatarName);
             return Ok(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to list clothing options for avatar {AvatarName}", avatarName);
-            return Problem("An unexpected error occurred while retrieving available clothing options.");
+            _logger.LogError(ex, "Failed to list outfit options for avatar {AvatarName}", avatarName);
+            return Problem("An unexpected error occurred while retrieving available outfit options.");
         }
     }
 
-    [HttpPost("clothing/select")]
-    public async Task<ActionResult<AvatarClothingSelectResponse>> SelectClothing([FromBody] AvatarClothingSelectRequest request)
+    [HttpPost("outfit/select")]
+    public async Task<ActionResult<AvatarOutfitSelectResponse>> SelectOutfit([FromBody] AvatarOutfitSelectRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.AvatarName) || string.IsNullOrWhiteSpace(request.Slot) || string.IsNullOrWhiteSpace(request.ClothingId))
+        if (string.IsNullOrWhiteSpace(request.AvatarName) || string.IsNullOrWhiteSpace(request.OutfitId))
         {
-            return BadRequest("AvatarName, Slot, and ClothingId are required.");
+            return BadRequest("AvatarName and OutfitId are required.");
         }
 
         try
         {
-            var result = await _avatarBridgeService.SelectClothingAsync(request.AvatarName, request.Slot, request.ClothingId);
+            var result = await _avatarBridgeService.SelectOutfitAsync(request.AvatarName, request.OutfitId);
             return Ok(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to select clothing {ClothingId} for avatar {AvatarName} and slot {Slot}", request.ClothingId, request.AvatarName, request.Slot);
-            return Problem("An unexpected error occurred while selecting avatar clothing.");
+            _logger.LogError(ex, "Failed to select outfit {OutfitId} for avatar {AvatarName}", request.OutfitId, request.AvatarName);
+            return Problem("An unexpected error occurred while selecting avatar outfit.");
+        }
+    }
+
+    [HttpGet("gestures")]
+    public async Task<ActionResult<AvatarGestureListResponse>> ListGestures()
+    {
+        try
+        {
+            return Ok(await _avatarBridgeService.ListGesturesAsync());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to list gestures");
+            return Problem("An unexpected error occurred while retrieving gestures.");
+        }
+    }
+
+    [HttpPost("gestures/select")]
+    public async Task<ActionResult<AvatarGestureResponse>> SelectGesture([FromBody] AvatarGestureRequest request)
+    {
+        try
+        {
+            return Ok(await _avatarBridgeService.SelectGestureAsync(request.GestureName));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to select gesture {GestureName}", request.GestureName);
+            return Problem("An unexpected error occurred while selecting the gesture.");
         }
     }
 

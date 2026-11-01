@@ -123,7 +123,7 @@ For [Avatar MCP](references/avatar-engine-mcp-server.md), `oscova avatar mcp sta
 - Expect `speech/queue` through the host proxy to reject URLs that are not absolute `http` or `https` `/tts/` URLs.
 - Do not use the removed byte-stream speech route. Use `speech/queue` or `speech/queue-file`.
 - Read the JSON `success` and `description` even when the HTTP request succeeds. Command validation and audio download failures can be reported in the body.
-- If hair or clothing choices are empty, first obtain an exact avatar name from `avatar/list`. The engine returns only options configured for that avatar. These selections are available through the API and are not saved by Avatar settings.
+- If hair or outfit choices are empty, first obtain an exact avatar name from `avatar/list`. The engine returns only options configured for that avatar. Select them in Avatar settings and use **Save Settings** to restore them in later Engine sessions.
 
 ## Visual issues
 

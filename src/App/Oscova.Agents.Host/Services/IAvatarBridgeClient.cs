@@ -2,6 +2,9 @@ namespace Oscova.Agents.Host.Services;
 
 public interface IAvatarBridgeClient
 {
+    Task<IReadOnlyList<string>> GetGesturesAsync();
+    Task SelectGestureAsync(string gestureName);
+
     /// <summary>Returns the connected Engine's emotion names in authored order, or an empty list.</summary>
     Task<IReadOnlyList<string>> GetEmotionsAsync();
 

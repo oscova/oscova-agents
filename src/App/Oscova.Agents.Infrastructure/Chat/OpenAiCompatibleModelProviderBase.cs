@@ -5,6 +5,7 @@ using OpenAI.Chat;
 using OpenAI.Models;
 using Oscova.Agents.Llm;
 using System.ClientModel;
+using System.ClientModel.Primitives;
 
 namespace Oscova.Agents.Infrastructure.Chat;
 
@@ -45,10 +46,15 @@ public abstract class OpenAiCompatibleModelProviderBase(
         var apiCredential = new ApiKeyCredential(ResolveApiKeyOrThrow(apiKey));
         var inner = BuildChatCompletionsClient(model, apiCredential, config);
 
-        var configured = inner.AsBuilder()
+        return ValueTask.FromResult(WrapChatClient(ConfigureChatClient(inner, config), config));
+    }
+
+    /// <summary>Applies request defaults.</summary>
+    protected IChatClient ConfigureChatClient(IChatClient inner, ModelProviderConfig config)
+    {
+        return inner.AsBuilder()
             .ConfigureOptions(options => ApplyRequestDefaults(options, config))
             .Build();
-        return ValueTask.FromResult(WrapChatClient(configured, config));
     }
 
     public virtual ValueTask<IEmbeddingGenerator<string, Embedding<float>>> CreateEmbeddingGeneratorAsync(
@@ -169,15 +175,15 @@ public abstract class OpenAiCompatibleModelProviderBase(
 
     protected OpenAIClientOptions BuildClientOptions(ModelProviderConfig config)
     {
+        var options = new OpenAIClientOptions();
         if (TryResolveEndpoint(config, out var uri))
         {
-            return new OpenAIClientOptions
-            {
-                Endpoint = uri
-            };
+            options.Endpoint = uri;
         }
 
-        return new OpenAIClientOptions();
+        // Checks events before the SDK parses them: some error events carry values it rejects, such as an "error" finish reason.
+        options.AddPolicy(new StreamedErrorPolicy(), PipelinePosition.PerCall);
+        return options;
     }
 
     protected bool TryResolveEndpoint(ModelProviderConfig config, out Uri? endpoint)

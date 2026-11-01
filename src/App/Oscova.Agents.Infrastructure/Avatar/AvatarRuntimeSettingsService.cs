@@ -315,22 +315,22 @@ public sealed class AvatarRuntimeSettingsService(
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(snapshot.SelectedTopClothingId))
+            if (!string.IsNullOrWhiteSpace(snapshot.SelectedOutfitId))
             {
                 try
                 {
-                    var clothingFailure = ValidateResponse("top clothing selection", await avatarBridgeService.SelectClothingAsync(
-                        snapshot.SelectedAvatar, "top", snapshot.SelectedTopClothingId).ConfigureAwait(false));
-                    if (clothingFailure is not null)
+                    var outfitFailure = ValidateResponse("outfit selection", await avatarBridgeService.SelectOutfitAsync(
+                        snapshot.SelectedAvatar, snapshot.SelectedOutfitId).ConfigureAwait(false));
+                    if (outfitFailure is not null)
                     {
-                        logger.LogWarning("{Failure} Avatar: {AvatarName}, clothing ID: {ClothingId}.",
-                            clothingFailure, snapshot.SelectedAvatar, snapshot.SelectedTopClothingId);
+                        logger.LogWarning("{Failure} Avatar: {AvatarName}, outfit ID: {OutfitId}.",
+                            outfitFailure, snapshot.SelectedAvatar, snapshot.SelectedOutfitId);
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning(ex, "Could not apply saved top clothing {ClothingId} to avatar {AvatarName}.",
-                        snapshot.SelectedTopClothingId, snapshot.SelectedAvatar);
+                    logger.LogWarning(ex, "Could not apply saved outfit {OutfitId} to avatar {AvatarName}.",
+                        snapshot.SelectedOutfitId, snapshot.SelectedAvatar);
                 }
             }
         }
@@ -363,7 +363,7 @@ public sealed class AvatarRuntimeSettingsService(
         var builder = new StringBuilder();
         Append(builder, "avatar", snapshot.SelectedAvatar);
         Append(builder, "hair", snapshot.SelectedHairId);
-        Append(builder, "topClothing", snapshot.SelectedTopClothingId);
+        Append(builder, "outfit", snapshot.SelectedOutfitId);
         Append(builder, "accessMode", snapshot.PreferredAccessMode.ToString());
         Append(builder, "emotion", snapshot.SelectedEmotion);
         Append(builder, "blend", snapshot.EmotionBlendSpeed);

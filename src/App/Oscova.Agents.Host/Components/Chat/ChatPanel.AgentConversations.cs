@@ -86,6 +86,13 @@ public partial class ChatPanel
                 processedAt: null, segment.Text, segment.FunctionCall, segment.FunctionResult, segment.ExecutionState))];
         }
 
+        // Refreshes keep rendered instances, so expanded tool details stay open while the worker runs.
+        for (var index = 0; index < Math.Min(messages.Count, _selectedAgentMessages.Count); index++)
+        {
+            CopyProjectedMessage(messages[index], _selectedAgentMessages[index]);
+            messages[index] = _selectedAgentMessages[index];
+        }
+
         _selectedAgentMessages = messages;
     }
 

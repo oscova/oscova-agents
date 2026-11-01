@@ -100,6 +100,34 @@ public sealed class WorkspaceFileAccessTests : IDisposable
         Assert.Equal("append", appendedReader.ReadToEnd());
     }
 
+    /// <summary>Rewriting an existing file keeps its permission bits, so scripts stay executable and private files stay private.</summary>
+    [SkippableFact]
+    public void Write_OnUnix_ReplacementKeepsExistingPermissionBits()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Skip.If(true, "Requires Unix file permissions.");
+            return;
+        }
+
+        string script = Path.Combine(_workspace, "run.sh");
+        string secret = Path.Combine(_workspace, "secrets.env");
+        File.WriteAllText(script, "echo one");
+        File.WriteAllText(secret, "KEY=one");
+        UnixFileMode executable = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute |
+            UnixFileMode.GroupRead | UnixFileMode.GroupExecute | UnixFileMode.OtherRead | UnixFileMode.OtherExecute;
+        UnixFileMode ownerOnly = UnixFileMode.UserRead | UnixFileMode.UserWrite;
+        File.SetUnixFileMode(script, executable);
+        File.SetUnixFileMode(secret, ownerOnly);
+
+        WriteText(script, "echo two");
+        WriteText(secret, "KEY=two");
+
+        Assert.Equal(executable, File.GetUnixFileMode(script));
+        Assert.Equal(ownerOnly, File.GetUnixFileMode(secret));
+        Assert.Equal("echo two", File.ReadAllText(script));
+    }
+
     [Fact]
     public void Write_UsesNestedReadOnlyGrantEvenWhenOuterGrantIsWritable()
     {

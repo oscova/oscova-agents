@@ -134,6 +134,12 @@ internal sealed class DebugTestModelProvider : IModelProvider
             {
                 response = Call(ToolNaming.BuildToolsetQualifiedName<DirectoryToolset>(nameof(DirectoryToolset.ListDirectory)), new() { ["path"] = PathHelper.SelfAgentPath });
             }
+            // Two approval pauses leave a completed tool call in a run that is still live.
+            else if (userText >= 0 && snapshot[userText].Text.Trim() == "test approvals" &&
+                snapshot[userText..].SelectMany(message => message.Contents).OfType<FunctionResultContent>().Count() < 2)
+            {
+                response = Call(ToolNaming.BuildToolsetQualifiedName<DirectoryToolset>(nameof(DirectoryToolset.ListDirectory)), new() { ["path"] = PathHelper.SelfAgentPath });
+            }
             else if (last?.Role == ChatRole.User && last.Text.Trim() == "test guide load")
             {
                 response = Call(AgentSkillsProvider.LoadSkillToolName, new() { ["skillName"] = ProductGuideSkillSeed.SkillName });
@@ -180,14 +186,19 @@ internal sealed class DebugTestModelProvider : IModelProvider
                 response = Call(tool.Name, []);
             }
             // This explicit diagnostic invokes an available delegation tool through the ordinary runtime.
-            else if (last?.Role == ChatRole.User && last.Text.Trim() is "test delegation" or "test delegation approval")
+            else if (last?.Role == ChatRole.User && last.Text.Trim() is "test delegation" or "test delegation approval" or "test delegation approvals")
             {
                 var tool = options?.Tools?.OfType<AIFunction>().Single(function =>
                     function.JsonSchema.GetProperty("properties").TryGetProperty("destination", out _) &&
                     function.JsonSchema.GetProperty("properties").TryGetProperty("includeChatHistory", out _))
                     ?? throw new InvalidOperationException("The delegation diagnostic requires one assigned agent tool.");
                 response = new(ChatRole.Assistant, [new FunctionCallContent(Guid.NewGuid().ToString("N"), tool.Name,
-                    new Dictionary<string, object?> { ["query"] = last.Text.Trim() == "test delegation approval" ? "test approval" : "ping", ["destination"] = "delegated" })]);
+                    new Dictionary<string, object?> { ["query"] = last.Text.Trim() switch
+                    {
+                        "test delegation approval" => "test approval",
+                        "test delegation approvals" => "test approvals",
+                        _ => "ping"
+                    }, ["destination"] = "delegated" })]);
             }
             else if (last?.Contents.OfType<FunctionResultContent>().SingleOrDefault() is { } result)
             {

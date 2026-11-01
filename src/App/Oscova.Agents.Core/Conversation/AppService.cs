@@ -923,7 +923,7 @@ public class AppService(
 
         crewService.EvictAgent(agent.Id);
 
-        // When an agent is no longer exposed as a tool, remove it from all other agents' tool lists
+        // Unexposing removes it from this user's tool lists; other users' selections stay inactive until it is exposed again.
         if (!agent.IsExposedAsTool)
         {
             await RemoveAgentFromAllToolListsAsync(agent.Id).ConfigureAwait(false);
@@ -1048,7 +1048,7 @@ public class AppService(
         }
     }
 
-    public async Task<ProviderTestResult> TestProviderAsync(ModelProviderConfig config, CancellationToken cancellationToken = default)
+    public async Task<ProviderTestResult> TestProviderAsync(ModelProviderConfig config, bool passive = false, CancellationToken cancellationToken = default)
     {
         var provider = modelProviderCatalog.Find(config.Type);
         if (provider is null)
@@ -1061,7 +1061,8 @@ public class AppService(
             var errors = ModelProviderValidation.Validate(config, provider);
             if (errors.Count > 0) { return new() { Reason = "invalid-configuration", Message = string.Join(" ", errors.Values) }; }
 
-            if (provider is ILocalModelDiagnosticProvider)
+            // Status probes stay cheap: only an explicit Test loads a local model.
+            if (!passive && provider is ILocalModelDiagnosticProvider)
             {
                 if (localDiagnostics is null) { return new() { Outcome = "skipped", Reason = "unsupported", Message = "Isolated diagnostics are unavailable.", TestKind = "inference" }; }
 
@@ -1387,7 +1388,7 @@ public class AppService(
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             throw new ModelProviderUnavailableException(
-                $"Credential '{config.CredentialKey}' is not available for provider '{config.Id}'.");
+                $"Credential '{config.CredentialKey}' is not available for provider '{config.Name}'.");
         }
 
         return apiKey;

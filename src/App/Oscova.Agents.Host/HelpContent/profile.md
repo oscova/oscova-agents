@@ -11,6 +11,7 @@ Update your own account details, preferred name, password, and profile picture f
 - Enter **Current password** before setting a **New password**.
 - Repeat the new password in **Confirm new password**.
 - Click **Save changes** to apply account and password edits.
+- After a new password or email saves, Oscova signs you out. Sign in again with the updated details.
 
 > **Note:** after a password error, reopen the dialog to confirm whether separate name or email edits saved.
 

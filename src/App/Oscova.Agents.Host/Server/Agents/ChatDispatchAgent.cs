@@ -794,6 +794,7 @@ public sealed class ChatDispatchAgent(
                 var continuationTemplate = await prep.UserScope.CrewService.ReadPromptInstructionAsync(
                     prep.UserScope.UserId, PromptFileNames.GoalContinuationPrompt, runCt).ConfigureAwait(false)
                     ?? AIJudgeLoopEvaluator.DefaultFeedbackMessageTemplate;
+                // The judge follows the agent's own call, whose agent and provider tuple this run's egress ledger already holds.
                 var judgeClient = new ConfigureOptionsChatClient(prep.ChatClient, judgeOptions =>
                 {
                     // Retain the evaluator's response schema while using the worker's selected model options.
@@ -1119,7 +1120,7 @@ public sealed class ChatDispatchAgent(
                     ct: CancellationToken.None).ConfigureAwait(false);
                 assistantProgressPendingPersistence = false;
                 await NotifyThreadChangedAsync(prep.UserScope.UserId).ConfigureAwait(false);
-                QueueTitleGenerationIfNeeded(prep, ((ChatDispatchRunOptions)options!).OnTitleGenerationCompleted);
+                QueueTitleGenerationIfNeeded(prep, egressLedger, ((ChatDispatchRunOptions)options!).OnTitleGenerationCompleted);
                 runCompleted = true;
 
                 logger.LogInformation(
@@ -1449,7 +1450,7 @@ public sealed class ChatDispatchAgent(
                 runtimeHookService, runContextAccessor, agent.Id, userScope.ToolGovernanceSettings,
                 quotaUsageStore, userScope.CrewService.Tools.GetNetworkScope, logger));
 
-    // Teaches emotion tags only when the reply can reach a connected avatar with a known catalog.
+    // Teaches performance tags only when the reply can reach a connected avatar with a known catalog.
     private async Task<AIContextProvider?> CreateAvatarMarkupProviderAsync(UserServiceScope userScope, CancellationToken ct)
     {
         var targets = SpeechOutputPolicy.ResolveTargets(userScope.IsInRole("Admin"), userScope.SpeechSettings.AssistantSpeechOutputMode);
@@ -1460,7 +1461,8 @@ public sealed class ChatDispatchAgent(
         }
 
         var catalog = await avatarBridgeService.ListEmotionsAsync().ConfigureAwait(false);
-        if (!catalog.Success || catalog.Emotions.Count == 0)
+        var gestures = await avatarBridgeService.ListGesturesAsync().ConfigureAwait(false);
+        if ((!catalog.Success || catalog.Emotions.Count == 0) && (!gestures.Success || gestures.Gestures.Count == 0))
         {
             return null;
         }
@@ -1468,7 +1470,15 @@ public sealed class ChatDispatchAgent(
         var template = await userScope.CrewService.ReadPromptInstructionAsync(userScope.UserId, PromptFileNames.AvatarMarkupPrompt, ct).ConfigureAwait(false)
             ?? SeedContentProvider.GetInstruction(PromptFileNames.AvatarMarkupPrompt);
         var emotionNames = string.Join(", ", catalog.Emotions);
-        return new AgentPersonalContextProvider(template, _ => Task.FromResult<object>(new { emotion_names = emotionNames }));
+        if (gestures.Success && gestures.Gestures.Count > 0)
+        {
+            template += "\nUse [gesture:NAME] sparingly before words that benefit from a stationary conversational gesture. "
+                + "Use only a name in this connected Engine catalog: {{gesture_names}}. "
+                + "The marker is removed before speech and triggers once at that point in the audio. None returns to idle.";
+        }
+
+        var gestureNames = string.Join(", ", gestures.Gestures);
+        return new AgentPersonalContextProvider(template, _ => Task.FromResult<object>(new { emotion_names = emotionNames, gesture_names = gestureNames }));
     }
 
     private Task NotifyThreadChangedAsync(string userId)
@@ -1688,7 +1698,7 @@ public sealed class ChatDispatchAgent(
         return string.Equals(thread.Title, ChatDisplayMessageFormatter.BuildPlaceholderTitle(firstUserMessage.Text, firstUserMessage.Attachments, firstUserMessage.WorkspaceFiles), StringComparison.Ordinal);
     }
 
-    private void QueueTitleGenerationIfNeeded(RunPreparation prep, Func<Task>? onCompleted)
+    private void QueueTitleGenerationIfNeeded(RunPreparation prep, EgressLedger turnEgress, Func<Task>? onCompleted)
     {
         var userId = prep.UserScope.UserId;
         var threadId = prep.Thread.Id;
@@ -1716,15 +1726,18 @@ public sealed class ChatDispatchAgent(
         _ = Task.Run(async () =>
         {
             var titleUsage = new UsageLedger();
+            var titleEgress = new EgressLedger();
+            var titleContext = new RunContext
+            {
+                UserId = userId, ExecutionKind = RunExecutionKind.WebChat, ExecutionId = string.Empty,
+                UsageLedger = titleUsage, EgressLedger = titleEgress, CurrentAgentId = prep.AgentDefinition.Id,
+                AirGapped = userScope.PrivacySettings.IsLocalOnly || prep.AgentDefinition.IsLocalOnly
+            };
             try
             {
                 if (!await budgets.AdmitAsync(userId, prep.EffectiveProviderId).ConfigureAwait(false)) { return; }
 
-                await using var titleScope = runContextAccessor.SetContext(new RunContext
-                {
-                    UserId = userId, ExecutionKind = RunExecutionKind.WebChat, ExecutionId = string.Empty,
-                    UsageLedger = titleUsage, AirGapped = userScope.PrivacySettings.IsLocalOnly || prep.AgentDefinition.IsLocalOnly
-                });
+                await using var titleScope = runContextAccessor.SetContext(titleContext);
                 var title = await GenerateTitleAsync(
                     chatClient,
                     userId,
@@ -1765,6 +1778,18 @@ public sealed class ChatDispatchAgent(
                         await budgets.NotifyCompletedAsync(userId, metrics).ConfigureAwait(false);
                     }
                     catch (Exception ex) { logger.LogWarning(ex, "Could not save title usage for provider {ProviderId}.", prep.EffectiveProviderId); }
+                }
+
+                // The turn already audited its own providers, so only a provider first reached by the title, such as its fallback, adds a row.
+                if (titleEgress.Snapshot().Except(turnEgress.Snapshot()).ToArray() is { Length: > 0 } titleOnlyEgress)
+                {
+                    try
+                    {
+                        var incognito = prep.Thread.IsIncognito;
+                        await egressAuditStore.AppendRangeAsync(userId, EgressAuditEventBuilder.BuildRunLines(titleContext, titleOnlyEgress, [],
+                            EgressAuditKinds.SourceChat, incognito ? null : threadId, incognito ? prep.RunId : null, null, DateTimeOffset.UtcNow)).ConfigureAwait(false);
+                    }
+                    catch (Exception ex) { logger.LogWarning(ex, "Could not save title egress audit for thread {ThreadId}.", threadId); }
                 }
 
                 _queuedTitleGenerations.TryRemove(key, out _);

@@ -8,6 +8,7 @@ const VadAssetPath = '/lib/vad/';
 let dotNetRef = null;
 let micVad = null;
 let vadLibraryLoaded = false;
+let startGeneration = 0;
 
 // Dynamically loads the VAD bundle (ort.min.js + vad bundle.min.js) on first use.
 // After loading, window.vad.MicVAD is available.
@@ -51,13 +52,15 @@ function audioToBase64Wav(float32Audio, sampleRate) {
 }
 
 // Creates and starts the MicVAD instance. Calls dotNetRef.OnVadSpeechEnd with base64 WAV on each utterance.
+// Returns false when a stop or a newer start superseded this one while it waited for the microphone.
 export async function start(ref) {
-    if (micVad) return;
+    if (micVad) return true;
+    const generation = ++startGeneration;
     dotNetRef = ref;
 
     await loadVadLibrary();
 
-    micVad = await window.vad.MicVAD.new({
+    const vad = await window.vad.MicVAD.new({
         baseAssetPath: VadAssetPath,
         onnxWASMBasePath: VadAssetPath,
         startOnLoad: true,
@@ -73,6 +76,15 @@ export async function start(ref) {
             dotNetRef?.invokeMethodAsync('OnVadSpeechEnd', base64);
         }
     });
+
+    // A stop during startup wins, so a microphone granted after leaving Chat never keeps listening.
+    if (generation !== startGeneration) {
+        await vad.destroy();
+        return false;
+    }
+
+    micVad = vad;
+    return true;
 }
 
 // Pauses VAD listening (used during TTS playback to prevent echo loops).
@@ -87,6 +99,7 @@ export function resume() {
 
 // Destroys the VAD instance and releases microphone resources.
 export async function stop() {
+    startGeneration++;
     if (!micVad) return;
     micVad.destroy();
     micVad = null;

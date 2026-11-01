@@ -25,7 +25,7 @@ The default local bridge URL is `http://127.0.0.1:11318`. Use that when both pro
 The engine is responsible for the visual runtime:
 
 - The selected avatar model.
-- The hair and clothing options available through the engine API for each avatar.
+- The hair and outfit choices available through the engine API for each avatar.
 - The current emotion and transition speed.
 - The rendered window, background, graphics preset, and selected presentation layout.
 - The message panel used for subtitles, captions, previews, or announcements.

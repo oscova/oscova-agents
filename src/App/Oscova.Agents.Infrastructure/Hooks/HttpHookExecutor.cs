@@ -13,6 +13,8 @@ internal sealed class HttpHookExecutor(
     ISystemCredentialService systemCredentialService,
     RunContextAccessor runContextAccessor)
 {
+    internal const string LocalOnlyClientName = "hooks-local-only";
+
     /// <summary>
     /// Sends a POST hook request with the standard JSON envelope and scalar headers.
     /// </summary>
@@ -28,7 +30,8 @@ internal sealed class HttpHookExecutor(
         try
         {
             var http = definition.Http ?? throw new InvalidOperationException("HTTP hook options are required.");
-            var client = httpClientFactory.CreateClient();
+            // The local-only check sees only the first URI, so local-only runs report redirects instead of following them.
+            var client = httpClientFactory.CreateClient(runContextAccessor.Current?.AirGapped == true ? LocalOnlyClientName : string.Empty);
             using var request = new HttpRequestMessage(HttpMethod.Post, http.Url)
             {
                 Content = JsonContent.Create(envelope, options: HookJsonSerializer.Options)

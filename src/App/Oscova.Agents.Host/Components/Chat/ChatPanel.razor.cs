@@ -1,4 +1,4 @@
-﻿using Oscova.Agents.Host.Server.Security;
+using Oscova.Agents.Host.Server.Security;
 using System.Globalization;
 using Oscova.Agents.Conversations;
 using Microsoft.AspNetCore.Components;
@@ -269,6 +269,7 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
     private string? _liveAnnouncement;
     private bool _isDisposed;
     private IReadOnlyList<string> _avatarEmotions = [];
+    private IReadOnlyList<string> _avatarGestures = [];
     private string? _avatarEmotionsRunId;
     private bool _isSubmitting;
     private bool _slashMenuDismissed;
@@ -545,7 +546,8 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
                 if (ShouldRouteSpeechToAvatar)
                 {
                     _avatarEmotions = await AvatarBridge.GetEmotionsAsync();
-                    if (_avatarEmotions.Count > 0)
+                    _avatarGestures = await AvatarBridge.GetGesturesAsync();
+                    if (_avatarEmotions.Count > 0 || _avatarGestures.Count > 0)
                     {
                         // History loaded before the catalog must re-render without its tags.
                         await InvokeAsync(StateHasChanged);
@@ -632,9 +634,10 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
         var sessionToStop = _ttsSessionId;
         _ttsSessionId = null;
         ResetSpeechPlaybackGeneration();
-        if (_emotionCues is not null)
+        // Leaving Chat sends no further clips; clips the Avatar already accepted finish playing.
+        if (_avatarCues is not null)
         {
-            await _emotionCues.CancelAsync();
+            await _avatarCues.CancelAsync();
         }
 
         if (!string.IsNullOrWhiteSpace(sessionToStop))
@@ -661,8 +664,8 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
         ProfilePictureRefreshState.Changed -= OnProfilePictureChanged;
         DownloadService.DownloadsChanged -= OnDownloadsChangedForSpeech;
 
-        // Stop VAD before disposing the module to release the microphone
-        if (_voiceModeState != VoiceModeState.Inactive && _voiceModeModule is not null)
+        // Stop VAD before disposing the module to release the microphone, including a start still waiting for it
+        if (_voiceModeModule is not null)
         {
             _ = _voiceModeModule.InvokeVoidAsync("stop").AsTask();
         }
@@ -3073,6 +3076,7 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
             if (await AvatarRuntimeSettings.EnsureReadyAsync())
             {
                 _avatarEmotions = await AvatarBridge.GetEmotionsAsync();
+                _avatarGestures = await AvatarBridge.GetGesturesAsync();
             }
         }
         // Explicit tool speech is independent of automatic reply reading.

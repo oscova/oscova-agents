@@ -22,7 +22,7 @@ Section-level **Apply** buttons send current draft values to the live engine imm
 > **Important:**
 > A section-level **Apply** can change the live engine with unsaved draft values. Save afterward if you want those values to survive a restart or the next runtime sync.
 
-The full saved-settings apply sends values in this order: resolution, graphics preset, background color, speech volume, selected avatar, optional hair, optional top, both presentation layouts and their selected mode, then selected emotion.
+The full saved-settings apply sends values in this order: resolution, graphics preset, background color, speech volume, selected avatar, optional hair, optional outfit, both presentation layouts and their selected mode, then selected emotion.
 
 ## Connection
 
@@ -65,7 +65,7 @@ Ordinary Oscova and Avatar Engine restarts do not require pairing again. Oscova 
 
 ## Avatar and expression
 
-**Refresh Avatars** calls the running engine for available avatar names. **Apply Avatar** is disabled until a non-empty avatar is selected.
+**Refresh Avatars** calls the running engine for available avatar names. **Apply Appearance** is disabled until a non-empty avatar is selected.
 
 **Refresh Emotions** calls the running engine for available emotion names. **Apply Expression** is disabled until a non-empty emotion is selected. **Blend Speed** ranges from `0` through `5` in the UI and is sent with the selected emotion.
 
@@ -75,13 +75,15 @@ Choose a blend speed greater than zero. Although the slider reaches zero, the en
 
 Avatar and emotion names are case-sensitive at the engine boundary.
 
-After selecting an avatar, choose its **Hair** and **Top** from the live Engine lists. The lists show display names, while Oscova saves the Engine's exact IDs. Top shows only clothing options in the `top` slot. An empty choice sends no hair or top override; an Engine option named `default` is a real choice.
+After selecting an avatar, choose its **Hair** and **Outfit** from the live Engine lists. The lists show display names, while Oscova saves the Engine's exact IDs. Outfits contain the complete garment combinations curated for that avatar. An empty choice sends no hair or outfit override. An Engine option named `default` is a real choice.
 
-**Apply Appearance** previews the draft by selecting the avatar, then hair, then top. **Save Settings** stores those choices for later Engine sessions. Changing the avatar clears the draft hair and top choices. Saving by itself does not immediately preview the change.
+**Apply Appearance** previews the draft by selecting the avatar, then hair, then outfit. **Save Settings** stores those choices for later Engine sessions. Changing the avatar clears the draft hair and outfit choices. Saving by itself does not immediately preview the change.
 
 
 
-If a saved avatar, hair, top, or emotion is absent from the running Engine catalog, its value remains visible as unverified or unavailable until you replace it. **Apply Appearance** requires a live selected avatar and reports a rejected hair or top choice without hiding the avatar. A rejected saved hair or top choice is logged during background synchronization without blocking avatar speech.
+If a saved avatar, hair, outfit, or emotion is absent from the running Engine catalog, its value remains visible as unverified or unavailable until you replace it. **Apply Appearance** requires a live selected avatar and reports a rejected hair or outfit choice without hiding the avatar. A rejected saved hair or outfit choice is logged during background synchronization without blocking avatar speech.
+
+Older saved top-clothing fields are ignored and removed the next time you save settings. Choose an outfit from the live list when you want Oscova to restore it after an Engine restart.
 
 ## Window and camera
 

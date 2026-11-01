@@ -27,6 +27,12 @@ export function initializeChatComposerEnterGuard() {
             return;
         }
 
+        // Keys that confirm or navigate an input-method composition belong to the input method, never to the composer.
+        if (event.isComposing || event.keyCode === 229) {
+            event.stopPropagation();
+            return;
+        }
+
         const slashMenuOpen = composer.dataset.chatSlashMenuOpen === "true";
         if ((event.key === "Enter" && !event.shiftKey) ||
             (slashMenuOpen && ["ArrowUp", "ArrowDown", "Tab", "Escape"].includes(event.key))) {

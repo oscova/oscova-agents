@@ -61,7 +61,7 @@ public sealed class HostExecutionProvider : IExecutionEnvironmentProvider
             try { _process.Start(); }
             catch { _process.Dispose(); throw; }
 
-            if (!OperatingSystem.IsWindows() && Path.GetFileName(info.FileName) == "setsid")
+            if (!OperatingSystem.IsWindows() && Path.GetFileName(info.FileName) is "setsid" or "perl")
             {
                 _processGroup = _process.Id;
             }
@@ -198,6 +198,15 @@ public sealed class HostExecutionProvider : IExecutionEnvironmentProvider
         if (setsid is not null)
         {
             startInfo.FileName = setsid;
+            startInfo.ArgumentList.Add(posixShell);
+        }
+        else if (File.Exists("/usr/bin/perl"))
+        {
+            // macOS has no setsid; perl gives the job its own process group before exec.
+            startInfo.FileName = "/usr/bin/perl";
+            startInfo.ArgumentList.Add("-e");
+            startInfo.ArgumentList.Add("setpgrp(0, 0) or die $!; exec @ARGV or die $!");
+            startInfo.ArgumentList.Add("--");
             startInfo.ArgumentList.Add(posixShell);
         }
         else

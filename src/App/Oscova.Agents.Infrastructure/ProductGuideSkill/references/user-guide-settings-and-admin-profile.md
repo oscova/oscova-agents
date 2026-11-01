@@ -20,6 +20,8 @@ Profile is your own account record in Oscova Agents: full name, preferred name, 
 
 Leave every password field blank when you only change your name or email. The new password and confirmation must match exactly, and a wrong current password rejects the save. Account fields are processed before the password change, so if a password error appears after you also edited your name or email, close and reopen the dialog to confirm which details saved before retrying the password.
 
+Saving a new password or email address signs you out, so sign in again with the updated details. Other browser tabs signed in to your account stop working within five minutes and ask you to sign in again when reloaded. Signing out in one tab has the same effect on your other tabs.
+
 ## Vault Password
 
 The **Vault Password** unlocks your encrypted data: stored credentials, agent and task definitions, system prompts, user settings, personal context, encrypted files, memory, private notes, chats and task runs. It is separate from your Account Password and must be 12 to 256 characters. You create it after first sign-in, before onboarding or other authenticated pages load.

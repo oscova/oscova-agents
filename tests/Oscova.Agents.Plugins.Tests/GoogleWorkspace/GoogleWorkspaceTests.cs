@@ -6,6 +6,8 @@ using System.Net;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
+using System.Web;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using NuGet.Packaging;
 using Oscova.Agents.Collections;
@@ -284,6 +286,34 @@ public sealed class GoogleWorkspaceTests
 
         Assert.Contains("Range: 2026-10-17 09:00 -> 2026-10-17 17:00", result, StringComparison.Ordinal);
         await Assert.ThrowsAsync<ToolFailureException>(() => new GoogleCalendarToolset(context).ListEventsAsync("next friday"));
+    }
+
+    /// <summary>A filtered upload check reads subscriptions in full pages, so a late or missing match costs few calls.</summary>
+    [Fact]
+    public async Task CheckNewUploads_WithChannelFilter_ReadsSubscriptionsInFullPages()
+    {
+        // Arrange: 120 subscriptions, none matching, served in pages of the requested size.
+        const int total = 120;
+        var subscriptionCalls = 0;
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"),
+            () => new StubHttpMessageHandler(request =>
+            {
+                subscriptionCalls++;
+                var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
+                var start = int.Parse(query["pageToken"] ?? "0", CultureInfo.InvariantCulture);
+                var end = Math.Min(total, start + int.Parse(query["maxResults"]!, CultureInfo.InvariantCulture));
+                var items = Enumerable.Range(start, end - start).Select(index => new { snippet = new { title = $"Channel {index}", description = "" } });
+                var body = JsonSerializer.Serialize(new { items, nextPageToken = end < total ? end.ToString(CultureInfo.InvariantCulture) : null });
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
+            }));
+
+        // Act: ask for one channel by a name no subscription has.
+        var result = await new YouTubeToolset(context).CheckNewUploadsAsync(channelQuery: "Missing", maxChannels: 1);
+
+        // Assert: three full pages are read, not one call per subscription.
+        Assert.Equal("No subscribed channels matched the requested filter.", result);
+        Assert.Equal(3, subscriptionCalls);
     }
 
     private sealed class ZoneClock(TimeZoneInfo zone) : TimeProvider

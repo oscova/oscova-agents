@@ -42,7 +42,8 @@ public static class CliPromptResponder
                         // Serialize each numeric type before the conditional can widen integers to double.
                         Value = field.IsInteger
                             ? JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<long>(BuildPrompt(request.Message, field.Label)).DefaultValue(Convert.ToInt64(field.Default ?? 0))))
-                            : JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<double>(BuildPrompt(request.Message, field.Label)).DefaultValue(field.Default ?? 0))),
+                            : JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<double>(BuildPrompt(request.Message, field.Label)).DefaultValue(field.Default ?? 0)
+                                .Validate(double.IsFinite, "Enter a finite number."))),
                         IsInteger = field.IsInteger
                     },
                     StringComparer.OrdinalIgnoreCase);
@@ -51,7 +52,8 @@ public static class CliPromptResponder
             case ElicitationSchemaType.Enum:
                 var enumValues = request.EnumFields.ToDictionary(
                     field => field.Name,
-                    field => AnsiConsole.Prompt(new SelectionPrompt<string>().Title(BuildPrompt(request.Message, field.Label)).AddChoices(field.Options.Select(option => option.Value))),
+                    field => AnsiConsole.Prompt(new SelectionPrompt<string>().Title(BuildPrompt(request.Message, field.Label))
+                        .UseConverter(Markup.Escape).AddChoices(field.Options.Select(option => option.Value))),
                     StringComparer.OrdinalIgnoreCase);
                 await chatApi.SubmitEnumElicitationAsync(request.RequestId, enumValues, isCancel: false, cancellationToken).ConfigureAwait(false);
                 break;
@@ -161,6 +163,7 @@ public static class CliPromptResponder
         }
     }
 
+    // Agent text is shown literally, never parsed as terminal markup.
     private static string BuildPrompt(string message, string? label) =>
-        string.IsNullOrWhiteSpace(label) ? message : $"{message} ({label})";
+        (string.IsNullOrWhiteSpace(label) ? message : $"{message} ({label})").EscapeMarkup();
 }

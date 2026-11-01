@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>बंडल की गई लाइसेंस सूचनाएँ लोड नहीं की जा सकीं।</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>बाल</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>ऊपरी वस्त्र</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>परिधान</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>चुने गए अवतार के लिए बाल चुनें।</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>चुने गए अवतार के लिए ऊपरी वस्त्र चुनें।</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>चुने गए अवतार के लिए परिधान चुनें।</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>कुछ रूप-रंग विकल्प लोड नहीं हो सके। इंजन कनेक्शन जाँचें और रीफ़्रेश करें।</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>{0} लागू नहीं हो सका: {1}। उपलब्ध विकल्प चुनें और फिर कोशिश करें।</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

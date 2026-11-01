@@ -263,11 +263,12 @@ public sealed class ManagementApiClient(HttpClient httpClient) : ApiClientBase
         return true;
     }
 
-    public async Task<ProviderTestResult> TestModelProviderAsync(ModelProviderConfig config, CancellationToken ct = default)
+    /// <summary>Tests a provider. A passive status probe never runs a local model's isolated inference.</summary>
+    public async Task<ProviderTestResult> TestModelProviderAsync(ModelProviderConfig config, CancellationToken ct = default, bool passive = false)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeout.CancelAfter(TimeSpan.FromSeconds(75));
-        using var response = await httpClient.PostAsJsonAsync(ApiRoutes.ModelProviders.Test, config, timeout.Token).ConfigureAwait(false);
+        using var response = await httpClient.PostAsJsonAsync(passive ? $"{ApiRoutes.ModelProviders.Test}?passive=true" : ApiRoutes.ModelProviders.Test, config, timeout.Token).ConfigureAwait(false);
         await EnsureSuccessAsync(response).ConfigureAwait(false);
         return await response.Content.ReadFromJsonAsync<ProviderTestResult>(cancellationToken: timeout.Token)
 .ConfigureAwait(false) ?? new ProviderTestResult();
@@ -797,10 +798,9 @@ public sealed class ManagementApiClient(HttpClient httpClient) : ApiClientBase
     }
     public async Task<IReadOnlyList<string>> GetLogFilesAsync(
         string scope = "self",
-        string? targetUserId = null,
         CancellationToken ct = default)
     {
-        return await httpClient.GetFromJsonAsync<List<string>>(ApiRoutes.Logs.Files(scope, targetUserId), ct).ConfigureAwait(false) ?? [];
+        return await httpClient.GetFromJsonAsync<List<string>>(ApiRoutes.Logs.Files(scope), ct).ConfigureAwait(false) ?? [];
     }
 
     public async Task<LogPage> GetLogPageAsync(
@@ -810,11 +810,10 @@ public sealed class ManagementApiClient(HttpClient httpClient) : ApiClientBase
         int page,
         int pageSize,
         string scope = "self",
-        string? targetUserId = null,
         CancellationToken ct = default)
     {
         return await httpClient.GetFromJsonAsync<LogPage>(
-                   ApiRoutes.Logs.Page(fileName, level, searchTerm, page, pageSize, scope, targetUserId),
+                   ApiRoutes.Logs.Page(fileName, level, searchTerm, page, pageSize, scope),
                    ct)
 .ConfigureAwait(false) ?? new LogPage
                {
@@ -829,10 +828,9 @@ public sealed class ManagementApiClient(HttpClient httpClient) : ApiClientBase
     public async Task ClearLogFileAsync(
         string fileName,
         string scope = "self",
-        string? targetUserId = null,
         CancellationToken ct = default)
     {
-        using var response = await httpClient.DeleteAsync(ApiRoutes.Logs.Clear(fileName, scope, targetUserId), ct).ConfigureAwait(false);
+        using var response = await httpClient.DeleteAsync(ApiRoutes.Logs.Clear(fileName, scope), ct).ConfigureAwait(false);
         await EnsureSuccessAsync(response).ConfigureAwait(false);
     }
 

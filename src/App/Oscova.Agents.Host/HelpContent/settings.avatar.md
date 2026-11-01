@@ -20,9 +20,9 @@ Use this screen to save Avatar Engine settings in Oscova and apply them to the r
 
 - Select **Save Settings** before **Apply to Live Avatar**.
 - Section **Apply** buttons send only that section's draft values.
-- Select an avatar to load its available **Hair** and **Top** choices from the running engine. The names shown in the lists are the engine's display names.
-- Select **Apply Appearance** to preview the avatar, hair, and top now. Select **Save Settings** to restore those choices on later engine sessions.
-- Changing the avatar clears the draft hair and top choices. A saved choice that the engine cannot verify stays visible so you can replace it deliberately.
+- Select an avatar to load its available **Hair** and **Outfit** choices from the running engine. Each outfit is a complete garment combination curated for that avatar.
+- Select **Apply Appearance** to preview the avatar, hair, and outfit now. Select **Save Settings** to restore those choices on later engine sessions.
+- Changing the avatar clears the draft hair and outfit choices. A saved choice that the engine cannot verify stays visible so you can replace it deliberately.
 - Sliders have a compact number field beside them for exact values.
 
 > **Note:** **Apply to Live Avatar** is disabled while the form has unsaved changes or the engine is offline.

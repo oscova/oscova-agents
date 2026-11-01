@@ -858,8 +858,28 @@ else
                 InstructionSource = Definition.InstructionSource, DefaultInstruction = Definition.DefaultInstruction
             };
             ApplyDraft(draft);
+
+            // Skills and tools assigned while this editor was open, such as by the agent itself, are kept unless removed here.
+            var configuration = await ManagementApiClient.GetAgentConfigurationAsync();
+            if (configuration.CustomAgents.Prepend(configuration.MainAgent).FirstOrDefault(agent => agent.Id == Definition.Id) is { } latest)
+            {
+                draft.AllowedSkillNames = Rebase(latest.AllowedSkillNames, Definition.AllowedSkillNames, draft.AllowedSkillNames);
+                draft.AllowedToolNames = Rebase(latest.AllowedToolNames, Definition.AllowedToolNames, draft.AllowedToolNames);
+                draft.PinnedToolNames = Rebase(latest.PinnedToolNames, Definition.PinnedToolNames, draft.PinnedToolNames);
+                draft.ToolPolicies = RebasePolicies(latest.ToolPolicies, Definition.ToolPolicies, draft.ToolPolicies, draft.AllowedToolNames);
+            }
+
             await OnSaveRequested.InvokeAsync(draft);
             ApplyDraft(Definition);
+
+            // The editor shows the saved lists, including assignments kept from elsewhere.
+            (Definition.AllowedSkillNames, Definition.AllowedToolNames, Definition.PinnedToolNames, Definition.ToolPolicies) =
+                (draft.AllowedSkillNames, draft.AllowedToolNames, draft.PinnedToolNames, draft.ToolPolicies);
+            _allowedSkillNames = new HashSet<string>(AvailableSavedSkillNames, StringComparer.OrdinalIgnoreCase);
+            _allowedToolNames = new HashSet<string>(AvailableSavedToolNames, StringComparer.OrdinalIgnoreCase);
+            _pinnedToolNames = new HashSet<string>(AvailableSavedPinnedToolNames, StringComparer.OrdinalIgnoreCase);
+            _toolApprovalModes = AvailableSavedToolPolicies
+                .ToDictionary(policy => policy.ToolName, policy => policy.ApprovalMode, StringComparer.OrdinalIgnoreCase);
         }
         catch (Exception ex)
         {
@@ -870,9 +890,46 @@ else
         finally { _isSaving = false; }
     }
 
+    // Applies only this editor's own additions and removals to the latest saved list.
+    private static List<string> Rebase(IEnumerable<string> latest, IEnumerable<string> opened, IEnumerable<string> edited)
+    {
+        var comparer = StringComparer.OrdinalIgnoreCase;
+        var removed = opened.Except(edited, comparer);
+        var added = edited.Except(opened, comparer);
+        return [.. latest.Except(removed, comparer).Union(added, comparer)];
+    }
+
+    // Each allowed tool keeps its latest saved approval mode unless this editor changed it.
+    private static List<AgentToolPolicy> RebasePolicies(
+        IEnumerable<AgentToolPolicy> latest, IEnumerable<AgentToolPolicy> opened, IEnumerable<AgentToolPolicy> edited, IEnumerable<string> allowedToolNames)
+    {
+        var comparer = StringComparer.OrdinalIgnoreCase;
+        var openedModes = new Dictionary<string, ToolApprovalMode>(comparer);
+        foreach (var policy in opened) { openedModes[policy.ToolName] = policy.ApprovalMode; }
+
+        var editedModes = new Dictionary<string, ToolApprovalMode>(comparer);
+        foreach (var policy in edited) { editedModes[policy.ToolName] = policy.ApprovalMode; }
+
+        var changedHere = openedModes.Keys.Union(editedModes.Keys, comparer)
+            .Where(tool => openedModes.GetValueOrDefault(tool) != editedModes.GetValueOrDefault(tool))
+            .ToHashSet(comparer);
+        var allowed = allowedToolNames.ToHashSet(comparer);
+        return [.. latest.Where(policy => !changedHere.Contains(policy.ToolName))
+            .Concat(edited.Where(policy => changedHere.Contains(policy.ToolName)))
+            .Where(policy => allowed.Contains(policy.ToolName) && policy.ApprovalMode != ToolApprovalMode.Default)];
+    }
+
     // Save and preview share the editor's single mapping of editable fields.
     private void ApplyDraft(AgentDefinition target)
     {
+        // Saved tools missing from the live catalog are kept; the server prunes only tools that no longer exist.
+        var unavailableToolNames = Definition.AllowedToolNames
+            .Except(AvailableSavedToolNames, StringComparer.OrdinalIgnoreCase)
+            .Where(name => !_allowedToolNames.Contains(name))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var unavailablePinnedToolNames = Definition.PinnedToolNames.Where(unavailableToolNames.Contains).ToList();
+        var unavailableToolPolicies = Definition.ToolPolicies.Where(policy => unavailableToolNames.Contains(policy.ToolName)).ToList();
+
         target.Name = _nameDraft;
         target.Description = _descriptionDraft;
         target.SystemInstruction = _systemInstructionDraft;
@@ -887,14 +944,15 @@ else
         target.IsSharedFolderEnabled = _isSharedFolderEnabledDraft;
         target.IsExposedAsTool = _isExposedAsToolDraft;
         target.IsToolSearchEnabled = _isToolSearchEnabledDraft;
-        target.AllowedToolNames = _allowedToolNames.ToList();
+        target.AllowedToolNames = [.. _allowedToolNames, .. unavailableToolNames];
         target.PinnedToolNames = [.. _pinnedToolNames
             .Where(_allowedToolNames.Contains)
+            .Concat(unavailablePinnedToolNames)
             .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)];
         target.AgentToolIds = _agentToolIds.ToList();
         target.AllowedSkillNames = _allowedSkillNames.ToList();
         target.AllowedWorkspaces = _allowedWorkspaces.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList();
-        target.ToolPolicies = BuildToolPolicies();
+        target.ToolPolicies = [.. BuildToolPolicies(), .. unavailableToolPolicies];
         if (CanManageSharedAgents && !IsMainAgent)
         {
             target.IsShared = _isSharedDraft;

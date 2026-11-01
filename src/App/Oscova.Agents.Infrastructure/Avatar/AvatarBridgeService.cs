@@ -688,16 +688,16 @@ namespace Oscova.Agents.Infrastructure.Avatar
             }
         }
 
-        public async Task<AvatarClothingListResponse> ListClothingOptionsAsync(string avatarName)
+        public async Task<AvatarOutfitListResponse> ListOutfitsAsync(string avatarName)
         {
             try
             {
                 var client = HttpClient;
-                var route = $"/avatarbridge/clothing/list?AvatarName={Uri.EscapeDataString(avatarName)}";
+                var route = $"/avatarbridge/outfit/list?AvatarName={Uri.EscapeDataString(avatarName)}";
 
-                _logger.LogDebug("Sending clothing list request to: {Url}", $"{client.BaseAddress}{route.TrimStart('/')}");
+                _logger.LogDebug("Sending outfit list request to: {Url}", $"{client.BaseAddress}{route.TrimStart('/')}");
 
-                var httpResponse = await client.GetAsync(route).ConfigureAwait(false);
+                using var httpResponse = await client.GetAsync(route).ConfigureAwait(false);
 
                 _logger.LogDebug("Response Status Code: {StatusCode} {ReasonPhrase}", (int)httpResponse.StatusCode, httpResponse.ReasonPhrase);
                 var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -705,24 +705,23 @@ namespace Oscova.Agents.Infrastructure.Avatar
 
                 httpResponse.EnsureSuccessStatusCode();
 
-                return await JsonSerializer.DeserializeAsync<AvatarClothingListResponse>(
+                return await JsonSerializer.DeserializeAsync<AvatarOutfitListResponse>(
                     await httpResponse.Content.ReadAsStreamAsync(), _jsonOptions)
-.ConfigureAwait(false) ?? new AvatarClothingListResponse { Success = false, Description = "Empty response body" };
+.ConfigureAwait(false) ?? new AvatarOutfitListResponse { Success = false, Description = "Empty response body" };
             }
             catch (Exception ex)
             {
                 LogException(ex);
-                return new AvatarClothingListResponse { Success = false, Description = ex.Message };
+                return new AvatarOutfitListResponse { Success = false, Description = ex.Message };
             }
         }
 
-        public async Task<AvatarClothingSelectResponse> SelectClothingAsync(string avatarName, string slot, string clothingId)
+        public async Task<AvatarOutfitSelectResponse> SelectOutfitAsync(string avatarName, string outfitId)
         {
-            var request = new AvatarClothingSelectRequest
+            var request = new AvatarOutfitSelectRequest
             {
                 AvatarName = avatarName,
-                Slot = slot,
-                ClothingId = clothingId
+                OutfitId = outfitId
             };
 
             try
@@ -731,10 +730,10 @@ namespace Oscova.Agents.Infrastructure.Avatar
                 using var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var client = HttpClient;
 
-                _logger.LogDebug("Sending clothing select request to: {Url}", $"{client.BaseAddress}avatarbridge/clothing/select");
-                _logger.LogDebug("Request Body: AvatarName={AvatarName}, Slot={Slot}, ClothingId={ClothingId}", avatarName, slot, clothingId);
+                _logger.LogDebug("Sending outfit select request to: {Url}", $"{client.BaseAddress}avatarbridge/outfit/select");
+                _logger.LogDebug("Request Body: AvatarName={AvatarName}, OutfitId={OutfitId}", avatarName, outfitId);
 
-                var httpResponse = await client.PostAsync("/avatarbridge/clothing/select", content).ConfigureAwait(false);
+                using var httpResponse = await client.PostAsync("/avatarbridge/outfit/select", content).ConfigureAwait(false);
 
                 _logger.LogDebug("Response Status Code: {StatusCode} {ReasonPhrase}", (int)httpResponse.StatusCode, httpResponse.ReasonPhrase);
                 var responseBody = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -742,14 +741,50 @@ namespace Oscova.Agents.Infrastructure.Avatar
 
                 httpResponse.EnsureSuccessStatusCode();
 
-                return await JsonSerializer.DeserializeAsync<AvatarClothingSelectResponse>(
+                return await JsonSerializer.DeserializeAsync<AvatarOutfitSelectResponse>(
                     await httpResponse.Content.ReadAsStreamAsync(), _jsonOptions)
-.ConfigureAwait(false) ?? new AvatarClothingSelectResponse { Success = false, Description = "Empty response body" };
+.ConfigureAwait(false) ?? new AvatarOutfitSelectResponse { Success = false, Description = "Empty response body" };
             }
             catch (Exception ex)
             {
                 LogException(ex);
-                return new AvatarClothingSelectResponse { Success = false, Description = ex.Message };
+                return new AvatarOutfitSelectResponse { Success = false, Description = ex.Message };
+            }
+        }
+
+        public async Task<AvatarGestureListResponse> ListGesturesAsync()
+        {
+            try
+            {
+                using var response = await HttpClient.GetAsync("/avatarbridge/gesture/list").ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                return await JsonSerializer.DeserializeAsync<AvatarGestureListResponse>(
+                    await response.Content.ReadAsStreamAsync().ConfigureAwait(false), _jsonOptions).ConfigureAwait(false)
+                    ?? new AvatarGestureListResponse { Description = "Empty response body" };
+            }
+            catch (Exception ex)
+            {
+                LogException(ex);
+                return new AvatarGestureListResponse { Description = ex.Message };
+            }
+        }
+
+        public async Task<AvatarGestureResponse> SelectGestureAsync(string gestureName)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(new AvatarGestureRequest { GestureName = gestureName });
+                using var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using var response = await HttpClient.PostAsync("/avatarbridge/gesture/select", content).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                return await JsonSerializer.DeserializeAsync<AvatarGestureResponse>(
+                    await response.Content.ReadAsStreamAsync().ConfigureAwait(false), _jsonOptions).ConfigureAwait(false)
+                    ?? new AvatarGestureResponse { Description = "Empty response body" };
+            }
+            catch (Exception ex)
+            {
+                LogException(ex);
+                return new AvatarGestureResponse { Description = ex.Message };
             }
         }
 

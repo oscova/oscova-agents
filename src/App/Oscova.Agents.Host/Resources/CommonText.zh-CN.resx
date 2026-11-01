@@ -288,10 +288,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>级别</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>记录器</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>消息</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>请输入有效的用户 GUID。</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>我的</value></data>
-	<data name="Dialog.LogsScope.User"><value>用户...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>用户 ID (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>没有匹配当前筛选条件的对话记忆记录。</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>没有匹配当前筛选条件的日志记录。</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>无日志文件</value></data>

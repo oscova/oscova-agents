@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>No se pudieron cargar los avisos de licencia incluidos.</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>Cabello</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>Prenda superior</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>Conjunto</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>Elige un peinado para el avatar seleccionado.</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>Elige una prenda superior para el avatar seleccionado.</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>Elige un conjunto para el avatar seleccionado.</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>No se pudieron cargar algunas opciones de apariencia. Comprueba la conexión con el motor y actualiza.</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>No se pudo aplicar {0}: {1}. Elige una opción disponible e inténtalo de nuevo.</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

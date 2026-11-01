@@ -1,5 +1,6 @@
 using Oscova.Agents.App.Cli;
 using Oscova.Agents.Core.Cli;
+using System.Globalization;
 using System.Reflection;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -131,7 +132,7 @@ public sealed class GatewayCommand(
                         return null;
                     }
 
-                    await launcher.LaunchAsync(["start", "--no-interactive"], activeSettings, cancellationToken).ConfigureAwait(false);
+                    activeSettings = await StartLocalHostAsync(activeSettings, activeReport.TargetHostUrl, cancellationToken).ConfigureAwait(false);
                     activeReport = await inspector.InspectAsync(activeSettings, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -191,7 +192,7 @@ public sealed class GatewayCommand(
         var localReport = await inspector.InspectAsync(localSettings, cancellationToken).ConfigureAwait(false);
         if (!localReport.HostRunning)
         {
-            await launcher.LaunchAsync(["start", "--no-interactive"], localSettings, cancellationToken).ConfigureAwait(false);
+            localSettings = await StartLocalHostAsync(localSettings, localReport.TargetHostUrl, cancellationToken).ConfigureAwait(false);
             localReport = await inspector.InspectAsync(localSettings, cancellationToken).ConfigureAwait(false);
         }
 
@@ -231,6 +232,19 @@ public sealed class GatewayCommand(
         CliOutput.Info($"Logged in to {result.HostUrl} as {result.Entry.IdentityUserName}.", quiet: false);
         var settings = WithHost(target.Settings, result.HostUrl);
         return new GatewayTarget(settings, await inspector.InspectAsync(settings, cancellationToken));
+    }
+
+    /// <summary>Starts the local host for this session's target and returns the settings that reach it.</summary>
+    private async Task<OscovaCommandSettings> StartLocalHostAsync(OscovaCommandSettings settings, string targetHostUrl, CancellationToken cancellationToken)
+    {
+        // A selected target binds its own port; the default target keeps the saved port and follows the started host.
+        string[] arguments = string.Equals(targetHostUrl, CliHostUrlSelector.DefaultLocalHost, StringComparison.OrdinalIgnoreCase)
+            ? ["start", "--no-interactive"]
+            : ["start", "--no-interactive", "--port", new Uri(targetHostUrl).Port.ToString(CultureInfo.InvariantCulture)];
+        var runtime = await launcher.LaunchAsync(arguments, settings, cancellationToken).ConfigureAwait(false);
+        return CliHostUrlSelector.PortMatchesAny(targetHostUrl, runtime.Urls)
+            ? settings
+            : WithHost(settings, CliHostUrlSelector.SelectLocalHost(runtime.Urls));
     }
 
     private static OscovaCommandSettings WithHost(OscovaCommandSettings settings, string host) => new()

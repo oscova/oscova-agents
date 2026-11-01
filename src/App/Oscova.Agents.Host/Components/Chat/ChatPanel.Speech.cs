@@ -65,8 +65,8 @@ public partial class ChatPanel
     private string? _speechReceiptRunId;
     private TtsStreamState? _explicitSpeechStream;
     private bool _explicitSpeechQueued;
-    private AvatarEmotionCueScheduler? _emotionCues;
-    private AvatarEmotionCueScheduler EmotionCues => _emotionCues ??= new AvatarEmotionCueScheduler(AvatarBridge, AvatarRuntimeSettings);
+    private AvatarCueScheduler? _avatarCues;
+    private AvatarCueScheduler AvatarCues => _avatarCues ??= new AvatarCueScheduler(AvatarBridge, AvatarRuntimeSettings);
 
     private sealed record PendingAvatarSpeech(string Text, long Generation, TtsStreamState StreamState, IReadOnlyList<AvatarMarkupCue> Cues, double DurationMs);
 
@@ -231,7 +231,7 @@ public partial class ChatPanel
             var started = await NotifyAvatarSpeechQueueAsync(fileUrl, pendingSpeech.Text, pendingSpeech.StreamState);
             if (started && IsSpeechPlaybackEnabled(pendingSpeech.StreamState) && Interlocked.Read(ref _ttsQueueGeneration) == pendingSpeech.Generation)
             {
-                EmotionCues.Schedule(pendingSpeech.Cues, _avatarEmotions, TimeSpan.Zero, pendingSpeech.DurationMs);
+                AvatarCues.Schedule(pendingSpeech.Cues, _avatarEmotions, TimeSpan.Zero, pendingSpeech.DurationMs);
             }
         }
         catch (Exception ex)
@@ -298,7 +298,8 @@ public partial class ChatPanel
         {
             streamState = new TtsStreamState
             {
-                MarkupParser = _avatarEmotions.Count > 0 ? new AvatarMarkupParser(_avatarEmotions) : null
+                MarkupParser = _avatarEmotions.Count > 0 || _avatarGestures.Count > 0
+                    ? new AvatarMarkupParser(_avatarEmotions, _avatarGestures) : null
             };
             if (ShouldRouteSpeechToAvatar)
             {
@@ -508,7 +509,7 @@ public partial class ChatPanel
             var clipStart = Math.Max(now, _avatarQueueEndTimestamp);
             if (IsSpeechPlaybackEnabled(streamState) && Interlocked.Read(ref _ttsQueueGeneration) == capturedGeneration)
             {
-                EmotionCues.Schedule(cues, _avatarEmotions, Stopwatch.GetElapsedTime(now, clipStart), playbackDurationMs);
+                AvatarCues.Schedule(cues, _avatarEmotions, Stopwatch.GetElapsedTime(now, clipStart), playbackDurationMs);
             }
 
             _avatarQueueEndTimestamp = clipStart + (long)(playbackDurationMs * Stopwatch.Frequency / 1000);
@@ -573,8 +574,8 @@ public partial class ChatPanel
 
     private async Task StopAvatarSpeechIfStartedAsync()
     {
-        // Every speech stop path ends the running emotion window too.
-        await EmotionCues.CancelAsync();
+        // Every speech stop path ends the running performance cues too.
+        await AvatarCues.CancelAsync();
         if (_avatarSpeechTarget is not { } target)
         {
             return;
@@ -860,7 +861,12 @@ public partial class ChatPanel
             }
 
             _voiceModeModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/voiceMode.js");
-            await _voiceModeModule.InvokeVoidAsync("start", _dotNetRef);
+            // Leaving Chat or a newer start while the microphone prompt waits cancels this start.
+            if (_isDisposed || !await _voiceModeModule.InvokeAsync<bool>("start", _dotNetRef) || _isDisposed)
+            {
+                return;
+            }
+
             ResetVoiceModeTurnState();
             await ResumeVoiceModeListeningAsync();
         }

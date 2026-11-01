@@ -58,7 +58,8 @@ public sealed class NewsToolset : IAgentToolset
         [Description("Search keywords or phrase.")] string query,
         [Description("Two-letter language code. Defaults to 'en'.")] string language = "en",
         [Description("Optional two-letter country code such as 'us' or 'in'.")] string? country = null,
-        [Description("Maximum number of articles to return (default 10, max 25).")] int maxResults = 10)
+        [Description("Maximum number of articles to return (default 10, max 25).")] int maxResults = 10,
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -80,7 +81,7 @@ public sealed class NewsToolset : IAgentToolset
             queryParameters.Add(new("country", normalizedCountry));
         }
 
-        return ExecuteAsync("search", queryParameters, "news__search");
+        return ExecuteAsync("search", queryParameters, "news__search", cancellationToken);
     }
 
     /// <summary>
@@ -99,7 +100,8 @@ public sealed class NewsToolset : IAgentToolset
         [Description("Optional news category. Defaults to 'general'.")] string? category = null,
         [Description("Optional two-letter country code such as 'us' or 'in'.")] string? country = null,
         [Description("Two-letter language code. Defaults to 'en'.")] string language = "en",
-        [Description("Maximum number of articles to return (default 10, max 25).")] int maxResults = 10)
+        [Description("Maximum number of articles to return (default 10, max 25).")] int maxResults = 10,
+        CancellationToken cancellationToken = default)
     {
         maxResults = Math.Clamp(maxResults, 1, 25);
 
@@ -116,17 +118,18 @@ public sealed class NewsToolset : IAgentToolset
             queryParameters.Add(new("country", normalizedCountry));
         }
 
-        return ExecuteAsync("top-headlines", queryParameters, "news__get_top_headlines");
+        return ExecuteAsync("top-headlines", queryParameters, "news__get_top_headlines", cancellationToken);
     }
 
     private async Task<string> ExecuteAsync(
         string endpoint,
         List<KeyValuePair<string, string>> queryParameters,
-        string operationName)
+        string operationName,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var apiKey = await _credentialResolver.ResolveAsync(CredentialKey).ConfigureAwait(false);
+            var apiKey = await _credentialResolver.ResolveAsync(CredentialKey, cancellationToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new ToolFailureException(MissingCredentialMessage);
@@ -134,8 +137,8 @@ public sealed class NewsToolset : IAgentToolset
 
             queryParameters.Add(new("apikey", apiKey.Trim()));
             var requestUri = $"{BaseUrl}{endpoint}?{BuildQueryString(queryParameters)}";
-            using var response = await _httpClient.GetAsync(requestUri).ConfigureAwait(false);
-            var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -154,7 +157,8 @@ public sealed class NewsToolset : IAgentToolset
         {
             throw;
         }
-        catch (OperationCanceledException)
+        // Only the run's own Stop passes through unlogged; a client timeout is logged as a failed request.
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             throw;
         }

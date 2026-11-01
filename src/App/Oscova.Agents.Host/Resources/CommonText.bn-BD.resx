@@ -288,10 +288,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>স্তর</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>লগার</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>বার্তা</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>একটি বৈধ ব্যবহারকারী GUID লিখুন।</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>আমার</value></data>
-	<data name="Dialog.LogsScope.User"><value>ব্যবহারকারী...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>ব্যবহারকারী আইডি (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>বর্তমান ফিল্টারের সাথে কোনো চ্যাট মেমোরি এন্ট্রি মিলছে না।</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>বর্তমান ফিল্টারের সাথে কোনো লগ এন্ট্রি মিলছে না।</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>কোনো লগ ফাইল নেই</value></data>

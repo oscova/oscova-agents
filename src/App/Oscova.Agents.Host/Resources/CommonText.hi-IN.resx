@@ -288,10 +288,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>स्तर</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>लॉगर</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>संदेश</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>एक मान्य उपयोगकर्ता GUID दर्ज करें।</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>मेरे</value></data>
-	<data name="Dialog.LogsScope.User"><value>उपयोगकर्ता...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>उपयोगकर्ता ID (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>वर्तमान फ़िल्टर से कोई चैट मेमोरी प्रविष्टि मेल नहीं खाती।</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>वर्तमान फ़िल्टर से कोई लॉग प्रविष्टि मेल नहीं खाती।</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>कोई लॉग फ़ाइल नहीं</value></data>

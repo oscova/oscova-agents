@@ -145,34 +145,44 @@ public sealed class NotificationInbox : INotificationInbox, IDisposable
 
     private async Task<List<NotificationEntry>> FilterVisibleForUserAsync(string userId, IReadOnlyList<NotificationEntry> entries)
     {
-        try
+        if (await LoadPreferencesAsync(userId).ConfigureAwait(false) is not { } settings)
         {
-            var settings = new AssistantUiSettings(_settingsRepository, userId, _loggerFactory);
-            await settings.LoadAsync().ConfigureAwait(false);
-            return entries
-                .Where(entry => !ShouldDropNotification(settings, entry.Kind))
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to read notification preferences for user '{UserId}'.", userId);
             return entries.ToList();
         }
+
+        return entries
+            .Where(entry => !ShouldDropNotification(settings, entry.Kind))
+            .ToList();
     }
 
     private async Task<bool> ShouldDropNotificationAsync(string userId, NotificationKind kind, bool forLiveDelivery = false)
     {
-        try
+        if (await LoadPreferencesAsync(userId).ConfigureAwait(false) is not { } settings)
         {
-            var settings = new AssistantUiSettings(_settingsRepository, userId, _loggerFactory);
-            await settings.LoadAsync().ConfigureAwait(false);
-            // Mute applies to live alerts, while the inbox still stores allowed notices.
-            return (forLiveDelivery && settings.AreNotificationsMuted) || ShouldDropNotification(settings, kind);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to read notification preferences for user '{UserId}'.", userId);
             return false;
+        }
+
+        // Mute applies to live alerts, while the inbox still stores allowed notices.
+        return (forLiveDelivery && settings.AreNotificationsMuted) || ShouldDropNotification(settings, kind);
+    }
+
+    /// <summary>Loads a user's notification preferences, or null when they cannot be read, such as while the vault is locked.</summary>
+    private async Task<AssistantUiSettings?> LoadPreferencesAsync(string userId)
+    {
+        // Read failures stay in the log only: as notifications they would re-read the same unreadable preferences.
+        using (_logger.BeginScope(new Dictionary<string, object?> { ["notificationHandled"] = true }))
+        {
+            try
+            {
+                var settings = new AssistantUiSettings(_settingsRepository, userId, _loggerFactory);
+                await settings.LoadAsync().ConfigureAwait(false);
+                return settings;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to read notification preferences for user '{UserId}'.", userId);
+                return null;
+            }
         }
     }
 

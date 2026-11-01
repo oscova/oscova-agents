@@ -581,7 +581,7 @@
                                     Message="@message"
                                     Thread="@ChatThread"
                                     Artifacts="@artifacts"
-                                    AvatarEmotions="@_avatarEmotions"
+                                    AvatarEmotions="@_avatarEmotions" AvatarGestures="@_avatarGestures"
                                     OnSubmitQuestions="@SubmitUserQuestionsAsync"
                                     OnDismissQuestions="@DismissUserQuestionsAsync"
                                     AssistantInitials="@(string.IsNullOrWhiteSpace(message.AgentName) ? ActiveAgentInitials : message.AgentName[..1].ToUpperInvariant())"

@@ -231,7 +231,12 @@ public sealed class McpRemoveCommand(CliHostResolver resolver, HostApiClient api
         McpCommandSupport.ThrowIfMissingServer(response, serverId);
         await CliHttpErrors.EnsureSuccessAsync(response, "Removing MCP server", cancellationToken).ConfigureAwait(false);
         var message = $"Removed MCP server {serverId}.";
-        if (!settings.Json && !settings.Quiet &&
+        // Requested JSON results remain available when informational output is quiet.
+        if (settings.Json)
+        {
+            await CliOutput.WriteJsonAsync(new { success = true, message }, cancellationToken).ConfigureAwait(false);
+        }
+        else if (!settings.Quiet &&
             AnsiConsole.Profile.Capabilities.Interactive && AnsiConsole.Profile.Capabilities.Ansi)
         {
             AnsiConsole.Write(CliRender.Card("MCP server removed", new Text(message, CliTheme.Value), CliTheme.Success));

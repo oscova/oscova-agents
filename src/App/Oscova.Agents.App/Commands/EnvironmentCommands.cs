@@ -5,6 +5,7 @@ using Oscova.Agents.Infrastructure.Backup;
 using Oscova.Agents.Infrastructure.Updates;
 using Oscova.Agents.Core.Backup;
 using Oscova.Agents.Core.Cli;
+using Oscova.Agents.Utils;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -42,15 +43,20 @@ public sealed class EnvironmentExportCommand(CliHostResolver resolver, HostApiCl
 
         var path = settings.Out ?? response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "oscova-environment.oscb";
         await using (var source = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
-        await using (var target = File.Create(path))
         {
+            // The earlier backup is replaced only after the complete archive arrived.
             await CliRender.StatusAsync(
                 "Writing environment backup...", settings,
-                () => source.CopyToAsync(target, cancellationToken)).ConfigureAwait(false);
+                () => FileUtil.WriteStreamAtomicAsync(path, source, cancellationToken)).ConfigureAwait(false);
         }
 
         var message = $"Wrote {Path.GetFullPath(path)}.";
-        if (!settings.Json && !settings.Quiet &&
+        // Requested JSON results remain available when informational output is quiet.
+        if (settings.Json)
+        {
+            await CliOutput.WriteJsonAsync(new { success = true, message }, cancellationToken).ConfigureAwait(false);
+        }
+        else if (!settings.Quiet &&
             AnsiConsole.Profile.Capabilities.Interactive && AnsiConsole.Profile.Capabilities.Ansi)
         {
             AnsiConsole.Write(CliRender.Card("Environment exported", new Text(message, CliTheme.Value), CliTheme.Success));
@@ -138,7 +144,12 @@ public sealed class EnvironmentRestoreCommand(CliHostResolver resolver, HostApiC
         }
 
         const string message = "Restore staged. The host is restarting.";
-        if (!settings.Json && !settings.Quiet &&
+        // Requested JSON results remain available when informational output is quiet.
+        if (settings.Json)
+        {
+            await CliOutput.WriteJsonAsync(new { success = true, message }, cancellationToken).ConfigureAwait(false);
+        }
+        else if (!settings.Quiet &&
             AnsiConsole.Profile.Capabilities.Interactive && AnsiConsole.Profile.Capabilities.Ansi)
         {
             AnsiConsole.Write(CliRender.Card("Environment restore", new Text(message, CliTheme.Value), CliTheme.Success));

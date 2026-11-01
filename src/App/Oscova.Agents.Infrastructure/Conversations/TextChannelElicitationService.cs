@@ -484,7 +484,8 @@ public sealed class TextChannelElicitationService : ITextChannelElicitationServi
             return CheckNumberRange(field, outOfRange, out parseError);
         }
 
-        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var doubleValue))
+        // Only a finite number can be sent as the answer, so NaN and infinities are asked again.
+        if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var doubleValue) || !double.IsFinite(doubleValue))
         {
             parseError = _strings.InvalidNumber;
             return false;

@@ -62,13 +62,14 @@ public sealed class DownloadService(IHttpClientFactory httpClientFactory, ILogge
             return Task.CompletedTask;
         }
 
-        var info = _active.GetOrAdd(destinationPath, _ => new DownloadProgressInfo
+        // Each admitted attempt reports its own transfer from zero, never a failed attempt's bytes or error.
+        var info = _active[destinationPath] = new DownloadProgressInfo
         {
             Id = id,
             Url = url,
             DestinationPath = destinationPath,
             Status = DownloadStatus.Pending,
-        });
+        };
 
         var downloadToken = linkedCts.Token;
 

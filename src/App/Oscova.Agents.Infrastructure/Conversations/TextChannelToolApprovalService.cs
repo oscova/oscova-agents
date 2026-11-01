@@ -143,6 +143,7 @@ public sealed class TextChannelToolApprovalService : ITextChannelToolApprovalSer
 
         if (review.NetworkScope is { } scope)
         {
+            // The switch binds before the concatenation, so it maps the scope name itself.
             lines.Add("Network: " + scope switch
             {
                 "None" => "No network access",

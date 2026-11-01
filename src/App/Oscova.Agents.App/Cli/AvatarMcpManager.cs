@@ -154,7 +154,8 @@ public sealed class AvatarMcpManager(CliPaths paths, ILoggerFactory loggerFactor
         var ready = false;
         await using var app = AvatarMcpHost.Create(port, () => Volatile.Read(ref ready));
         using var process = Process.GetCurrentProcess();
-        var runtime = new AvatarMcpRuntime(process.Id, new DateTimeOffset(process.StartTime.ToUniversalTime()), instanceId, $"http://127.0.0.1:{port}/mcp", appDataPath);
+        var runtime = new AvatarMcpRuntime(process.Id, new DateTimeOffset(process.StartTime.ToUniversalTime()), instanceId,
+            $"http://127.0.0.1:{port}/mcp", appDataPath, ProcessIdentity.GetStartIdentifier(process));
         app.MapGet("/health", () => Results.Json(runtime, CliJson.Options));
         try
         {
@@ -209,7 +210,9 @@ public sealed class AvatarMcpManager(CliPaths paths, ILoggerFactory loggerFactor
             using var stream = File.OpenRead(paths.AvatarMcpRuntimeFilePath);
             var runtime = await JsonSerializer.DeserializeAsync<AvatarMcpRuntime>(stream, CliJson.Options, cancellationToken).ConfigureAwait(false);
             // A descriptor is local data, not authority to probe an arbitrary network address.
-            if (runtime is null || runtime.Pid <= 0 || runtime.StartedAtUtc == default || runtime.InstanceId == Guid.Empty ||
+            // Releases up to 3.5.1 wrote no ProcessStartIdentifier, so 0 marks a legacy descriptor.
+            if (runtime is null || runtime.Pid <= 0 || runtime.ProcessStartIdentifier < 0 ||
+                runtime.StartedAtUtc == default || runtime.InstanceId == Guid.Empty ||
                 !Path.IsPathFullyQualified(runtime.AppDataPath) || !Uri.TryCreate(runtime.Endpoint, UriKind.Absolute, out var uri) ||
                 uri.Scheme != "http" || uri.Host != "127.0.0.1" || uri.AbsolutePath != "/mcp" ||
                 uri.UserInfo.Length != 0 || uri.Query.Length != 0 || uri.Fragment.Length != 0) return null;
@@ -234,9 +237,13 @@ public sealed class AvatarMcpManager(CliPaths paths, ILoggerFactory loggerFactor
         try
         {
             if (OperatingSystem.IsWindows()) _ = process.SafeHandle;
-            if (!process.HasExited && new DateTimeOffset(process.StartTime.ToUniversalTime()) == runtime.StartedAtUtc) return process;
+            // Native creation markers stay stable across Linux readers, unlike reconstructed timestamps.
+            // A legacy descriptor keeps the timestamp check its own release used.
+            if (!process.HasExited && (runtime.ProcessStartIdentifier == 0
+                    ? new DateTimeOffset(process.StartTime.ToUniversalTime()) == runtime.StartedAtUtc
+                    : ProcessIdentity.GetStartIdentifier(process) == runtime.ProcessStartIdentifier)) { return process; }
         }
-        catch (InvalidOperationException) { }
+        catch (Exception exception) when (exception is InvalidOperationException or FileNotFoundException or DirectoryNotFoundException) { }
         catch
         {
             process.Dispose();
@@ -255,4 +262,5 @@ public sealed class AvatarMcpManager(CliPaths paths, ILoggerFactory loggerFactor
 }
 
 /// <summary>Identifies the owned MCP process without storing downstream credentials.</summary>
-public sealed record AvatarMcpRuntime(int Pid, DateTimeOffset StartedAtUtc, Guid InstanceId, string Endpoint, string AppDataPath);
+public sealed record AvatarMcpRuntime(int Pid, DateTimeOffset StartedAtUtc, Guid InstanceId, string Endpoint, string AppDataPath,
+    long ProcessStartIdentifier);

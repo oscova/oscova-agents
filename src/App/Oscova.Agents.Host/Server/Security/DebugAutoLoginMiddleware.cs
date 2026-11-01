@@ -41,10 +41,10 @@ public sealed class DebugAutoLoginMiddleware(RequestDelegate next)
             {
                 endpoint = "/auth/debug-login";
             }
-            else if (string.Equals(context.User.Identity.Name,
-                         username, StringComparison.OrdinalIgnoreCase))
+            // The name claim carries the editable display name, so the configured account is matched by ID.
+            else if (user is not null && context.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.Id)
             {
-                var state = await vault.GetStateAsync(context.User.FindFirstValue(ClaimTypes.NameIdentifier)!, context.RequestAborted);
+                var state = await vault.GetStateAsync(user.Id, context.RequestAborted);
                 if (!state.IsUnlocked) { endpoint = "/api/profile/debug-unlock"; }
             }
 

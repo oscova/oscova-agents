@@ -4,6 +4,7 @@ using System.Net;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text.Json;
+using System.Web;
 using Microsoft.Extensions.AI;
 using NuGet.Packaging;
 using Oscova.Agents.Collections;
@@ -312,6 +313,55 @@ public sealed class MicrosoftGraphTests
         Assert.NotNull(sentDue);
         Assert.Equal("2026-10-20T00:00:00", sentDue.Value.GetProperty("dateTime").GetString());
         Assert.Equal("Line Islands Standard Time", sentDue.Value.GetProperty("timeZone").GetString());
+    }
+
+    /// <summary>A partial task update sends only the supplied field, so Graph keeps the task's other fields.</summary>
+    [Fact]
+    public async Task UpdateTask_SendsOnlySuppliedFields()
+    {
+        // Arrange: capture the PATCH body Graph would receive.
+        string[]? sentFields = null;
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"),
+            () => new StubHttpMessageHandler(async (request, ct) =>
+            {
+                using var sent = JsonDocument.Parse(await request.Content!.ReadAsStringAsync(ct));
+                sentFields = sent.RootElement.EnumerateObject().Select(property => property.Name).ToArray();
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                { Content = new StringContent("{\"id\":\"task-1\",\"title\":\"Updated\"}", Encoding.UTF8, "application/json") };
+            }));
+
+        // Act: rename the task without touching its notes, status, importance or due date.
+        await new MicrosoftTodoToolset(context).UpdateTaskAsync("list-1", "task-1", title: "Updated");
+
+        // Assert: no other field is sent, not even as an explicit null that would clear it.
+        Assert.NotNull(sentFields);
+        Assert.Equal(["title"], sentFields);
+    }
+
+    /// <summary>Unread mail is listed newest first in a query shape Graph accepts.</summary>
+    [Fact]
+    public async Task ListEmails_UnreadOnly_FiltersOnTheSortPropertyFirst()
+    {
+        // Arrange: capture the message list query.
+        Uri? sentUri = null;
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"),
+            () => new StubHttpMessageHandler(request =>
+            {
+                sentUri = request.RequestUri;
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                { Content = new StringContent("{\"value\":[]}", Encoding.UTF8, "application/json") };
+            }));
+
+        // Act
+        await new OutlookToolset(context).ListEmailsAsync(unreadOnly: true);
+
+        // Assert: Graph rejects $orderby unless its property also leads $filter.
+        var query = HttpUtility.ParseQueryString(sentUri!.Query);
+        Assert.StartsWith("receivedDateTime", query["$orderby"], StringComparison.Ordinal);
+        Assert.StartsWith("receivedDateTime ", query["$filter"], StringComparison.Ordinal);
+        Assert.Contains("isRead eq false", query["$filter"], StringComparison.Ordinal);
     }
 
     private static (object Target, string Method, AIFunctionArguments Arguments, string Service) CreateRead(

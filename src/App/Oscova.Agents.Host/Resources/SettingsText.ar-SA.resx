@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>تعذر تحميل إشعارات الترخيص المضمنة.</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>الشعر</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>الملابس العلوية</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>الزي</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>اختر شعرًا للأفاتار المحدد.</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>اختر لباسًا علويًا للأفاتار المحدد.</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>اختر زيًا للصورة الرمزية المحددة.</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>تعذر تحميل بعض خيارات المظهر. تحقق من اتصال المحرك ثم حدّث القائمة.</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>تعذر تطبيق {0}: {1}. اختر خيارًا متاحًا ثم حاول مجددًا.</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

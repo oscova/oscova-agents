@@ -138,6 +138,7 @@ public sealed class CredentialsController(
                         "Create or unlock your Vault Password before saving stored secrets.");
                 }
 
+                // A running channel keeps its start-time token; a saved token applies on its next start or Save Settings.
                 InvalidateModelClientsIfReferenced(userScope, declaration.Key);
                 return NoContent();
             }, ct);

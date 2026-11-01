@@ -9,17 +9,13 @@ The logs dialog shows the Oscova Agents application log files so you can diagnos
 
 Open **Application Logs** from the profile menu, then narrow the entries:
 
-- **Scope:** admins can choose **Mine**, **System** or **User...**.
-- **User ID:** for **User...** scope, enter a valid GUID and press **Enter**.
+- **Scope:** admins can choose **Mine** or **System**. The dialog never shows another user's logs.
 - **Level:** choose **All Levels**, **Trace**, **Debug**, **Info**, **Warn**, **Error** or **Fatal**.
 - **Log file:** choose the structured log archive to inspect.
 - **Search logs...:** type a term and press **Enter**.
 - **Refresh:** reload available files and entries from disk.
 
 
-
-> **Note:**
-> A GUID is a long unique identifier, such as a user ID. The User scope accepts only valid GUID text.
 
 Level filtering is hierarchical. **Info** includes Info, Warn, Error and Fatal entries, and **Warn** includes Warn, Error and Fatal entries.
 
@@ -54,6 +50,8 @@ Select **Clear** to erase the selected log file after confirmation. The button i
 
 Logs may include provider names, URLs, user IDs, file names, integration context, exception details and other sensitive values. Review every log before sharing it outside your team.
 
+The dialog shows each user only their own logs. To help someone troubleshoot, ask them to export their own log and review it before sending it.
+
 ## Troubleshooting
 
 - Check logs after model provider test failures.
@@ -62,7 +60,6 @@ Logs may include provider names, URLs, user IDs, file names, integration context
 - For agent task failures, inspect the task run first, then use logs for lower-level errors.
 - If no log files appear, perform the failing action again and select **Refresh**.
 - If an older entry is missing from a very large log file, it may be outside the newest 50,000 valid entries read by the dialog.
-- If User scope fails, confirm the user ID is a GUID and that you are signed in as an admin.
 
 ## Related articles
 

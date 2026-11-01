@@ -107,7 +107,8 @@
                                             </div>
                                             @if (!string.IsNullOrWhiteSpace(run.ResultSummary))
                                             {
-                                                <div class="markdown-content mt-2 text-sm text-base-content/70">@((MarkupString)MarkdownRenderer.ToHtml(run.ResultSummary))</div>
+                                                @* Task results are agent replies, so remote images stay links as in chat. *@
+                                                <div class="markdown-content mt-2 text-sm text-base-content/70">@((MarkupString)MarkdownRenderer.ToChatHtml(run.ResultSummary, null, null, [], false))</div>
                                             }
                                             else if (!string.IsNullOrWhiteSpace(run.Error))
                                             {

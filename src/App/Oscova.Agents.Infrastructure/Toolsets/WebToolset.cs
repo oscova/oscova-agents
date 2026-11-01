@@ -127,19 +127,22 @@ public sealed class WebToolset : IAgentToolset
                 return $"Unsupported content type '{mediaType}'. web__fetch handles HTML and text pages; use the PDF tool for PDFs.";
             }
 
-            var body = await ReadCappedBodyAsync(response.Content, ct).ConfigureAwait(false);
+            var (body, truncated) = await ReadCappedBodyAsync(response.Content, ct).ConfigureAwait(false);
             if (!raw && IsHtmlMediaType(mediaType))
             {
                 body = MarkdownConverter.Convert(body);
             }
 
-            return body;
+            // The download stops at its byte budget, so the notice leads the content and survives every later trim.
+            return truncated
+                ? "[This page is larger than 5 MB. Only its first 5 MB were downloaded, so later content is missing.]\n\n" + body
+                : body;
         }
 
         return $"Fetch failed: too many redirects from {uri}.";
     }
 
-    private static async Task<string> ReadCappedBodyAsync(HttpContent content, CancellationToken ct)
+    private static async Task<(string Body, bool Truncated)> ReadCappedBodyAsync(HttpContent content, CancellationToken ct)
     {
         var stream = await content.ReadAsStreamAsync(ct).ConfigureAwait(false);
         await using (stream.ConfigureAwait(false))
@@ -161,7 +164,9 @@ public sealed class WebToolset : IAgentToolset
             remaining -= read;
         }
 
-        return GetEncoding(content).GetString(buffer.ToArray());
+        // One more byte past the budget shows whether the body was cut.
+        var truncated = remaining == 0 && await stream.ReadAsync(scratch.AsMemory(0, 1), ct).ConfigureAwait(false) > 0;
+        return (GetEncoding(content).GetString(buffer.ToArray()), truncated);
         }
     }
 

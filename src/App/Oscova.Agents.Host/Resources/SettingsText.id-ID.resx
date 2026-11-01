@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>Pemberitahuan lisensi yang disertakan tidak dapat dimuat.</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>Rambut</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>Pakaian atas</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>Pakaian</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>Pilih rambut untuk avatar yang dipilih.</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>Pilih pakaian atas untuk avatar yang dipilih.</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>Pilih pakaian untuk avatar yang dipilih.</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>Beberapa pilihan tampilan tidak dapat dimuat. Periksa koneksi Engine lalu segarkan.</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>Tidak dapat menerapkan {0}: {1}. Pilih opsi yang tersedia lalu coba lagi.</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

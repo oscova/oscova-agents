@@ -66,7 +66,7 @@ public sealed class DiscordChannelConnection : IChannelConnection
         var channel = await user.CreateDMChannelAsync(options).ConfigureAwait(false);
         foreach (var chunk in TextChannelReplyChunker.Split(text, MessageLimit))
         {
-            await channel.SendMessageAsync(chunk, options: options).ConfigureAwait(false);
+            await channel.SendMessageAsync(chunk, options: options, allowedMentions: AllowedMentions.None).ConfigureAwait(false);
         }
     }
 
@@ -95,8 +95,9 @@ public sealed class DiscordChannelConnection : IChannelConnection
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _lifetime.Token);
         foreach (var chunk in TextChannelReplyChunker.Split(text, MessageLimit))
         {
-            await channel.SendMessageAsync(chunk, options: new RequestOptions { CancelToken = linked.Token })
-                .ConfigureAwait(false);
+            // Replies are inert text: mention markup from the agent never notifies users, roles or the server.
+            await channel.SendMessageAsync(chunk, options: new RequestOptions { CancelToken = linked.Token },
+                allowedMentions: AllowedMentions.None).ConfigureAwait(false);
         }
     }
 

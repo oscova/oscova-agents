@@ -342,6 +342,14 @@ public abstract class TextFileToolsetBase
             .Where(static line => line.Prefix is ' ' or '+')
             .Select(static line => line.Text)
             .ToList();
+        // A hunk with only added lines and no header names no location, so it appends at the end of the file.
+        if (oldLines.Count == 0 && hunk.Header is null)
+        {
+            lines.AddRange(newLines);
+            searchStartIndex = lines.Count;
+            return;
+        }
+
         var matchIndex = FindUniqueMatchIndex(lines, oldLines, searchStartIndex, hunk.Header, ignoreTrailingWhitespace: false);
         // Same tolerance as edit: trailing spaces are ignored only when no exact match exists, indentation stays exact.
         if (matchIndex < 0)

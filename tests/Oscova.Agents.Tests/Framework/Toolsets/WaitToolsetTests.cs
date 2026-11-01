@@ -45,6 +45,33 @@ public sealed class WaitToolsetTests
             work.WaitAsync(agent, session, ["unknown"], TimeSpan.FromSeconds(1), CancellationToken.None));
     }
 
+    /// <summary>A worker paused for approval stays awaiting approval when its provider streams a trailing update.</summary>
+    [Fact]
+    public async Task WaitAsync_WhenApprovalRequestIsFollowedByATrailingUpdate_ReportsTheApproval()
+    {
+        // Arrange: a worker records an approval request, then the usage update a streaming provider sends after it.
+        var agent = new ChatClientAgent(new UnusedChatClient(), new ChatClientAgentOptions { Id = "main" });
+        var session = await agent.CreateSessionAsync();
+        await using var work = new DelegatedWorkState(CancellationToken.None);
+        var recorded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var hold = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        work.Start(session, "helper", agent.Id, null, [], (_, _) => Task.CompletedTask, (worker, ct) =>
+        {
+            var call = new FunctionCallContent("call-1", "directory__list");
+            worker.Record(new AgentResponseUpdate(ChatRole.Assistant, [new ToolApprovalRequestContent("approval-1", call)]));
+            worker.Record(new AgentResponseUpdate(ChatRole.Assistant, [new UsageContent(new UsageDetails { TotalTokenCount = 1 })]));
+            recorded.SetResult();
+            return hold.Task.WaitAsync(ct);
+        });
+        await recorded.Task;
+
+        // Act: the parent waits for the worker.
+        var observed = await work.WaitAsync(agent, session, ["helper"], TimeSpan.FromSeconds(1), CancellationToken.None);
+
+        // Assert: the parent learns the worker needs approval instead of timing out on a running worker.
+        Assert.StartsWith("Subagent 'helper' needs approval.\nhelper: awaiting approval", observed, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task ReflectedWait_WhenCancelled_StopsTheDelay()
     {

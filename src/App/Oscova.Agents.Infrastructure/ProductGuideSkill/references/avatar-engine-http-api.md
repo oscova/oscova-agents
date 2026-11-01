@@ -129,7 +129,7 @@ Some responses add the applied value, such as `selectedAvatar`, `selectedEmotion
 
 Check both the HTTP status and `success`. Runtime command handlers can report validation, download, or asset-loading failure in their JSON response without a protocol-level HTTP error. Their failures generally contain `description`, rather than the pairing protocol's `errorCode`.
 
-A successful `hair/select` response means the avatar and hair IDs were validated, the configured runtime assets loaded, and the runtime event was dispatched. A successful `clothing/select` response similarly means the avatar, slot, and clothing ID were validated and dispatched. These responses do not provide a visual completion acknowledgement. Hair and clothing selections last only for the current engine session and are not saved as Oscova settings.
+A successful `hair/select` response means the avatar and hair IDs were validated, the configured runtime assets loaded, and the runtime event was dispatched. A successful `clothing/select` response similarly means the avatar, slot, and clothing ID were validated and dispatched. These responses do not provide a visual completion acknowledgement. Direct selections last for the current Engine session. Oscova settings can save and restore hair and outfit choices. Individual garment APIs remain native-only and are absent from the C# bridge and MCP server.
 
 ## Message panel behavior
 
@@ -139,6 +139,7 @@ The message panel is a general text surface. It can be used for subtitles, capti
 - `message/display` replaces the current panel text for the request's one-shot `durationSeconds` without changing the global display duration.
 - `message/clear` hides the panel.
 - A queued speech clip with a non-empty `message` replaces the panel text while that clip plays.
+- Speech text stays visible during playback. The configured display delay starts when the queue finishes. New speech cancels that delay; expiry restores Auto layout and gesture framing together.
 - A queued speech clip with an empty `message` leaves the current panel text alone.
 - `presentation/settings` sets Auto, Subtitle, or Side mode, both layouts, and the shared display duration used by ordinary message text and speech messages.
 - `pairing/start` displays the engine-generated code through this same configured panel for its remaining lifetime. Successful pairing replaces it with `Paired` for five seconds. Neither action changes the panel position, style, opacity, or global duration.
@@ -158,11 +159,14 @@ The engine returns a non-success response for invalid input instead of silently 
 | `background/color` | RGB components `0` through `255` |
 | `resolution` | width `1` through `7680`, height `1` through `4320` |
 | `emotion/select` | case-sensitive emotion name, `blendSpeed > 0`, and finite `intensity` from `0` to `1` inclusive (default `1`) |
+| `gesture/select` | Required `GestureName` string matching a case-sensitive name from `gesture/list`. `None` stops the current gesture. |
 | `avatar/select` | case-sensitive avatar name |
 | `hair/list` | required case-sensitive `AvatarName` query value |
 | `hair/select` | case-sensitive `avatarName` and a `hairId` returned for that avatar |
 | `clothing/list` | required case-sensitive `AvatarName` query value |
 | `clothing/select` | case-sensitive `avatarName`, `slot` set to `top` or `bottom`, and a `clothingId` returned for that avatar and slot |
+| `outfit/list` | required case-sensitive `AvatarName` query value |
+| `outfit/select` | case-sensitive `avatarName` and an `outfitId` returned for that avatar |
 | `graphics/preset` | `level` from `0` through `4`, mapping to Low, Medium, High, Epic, and Cinematic. Missing or other levels are rejected |
 
 `speech/queue` requires a non-empty URL beginning with `http://` or `https://`. The download must succeed with a 2xx response and non-empty content. The engine recognizes MP3, WAV, FLAC, Ogg Vorbis, Opus, and Bink audio from the URL extension or response content type. An unsupported type, failed download, or failed local save returns `success: false`.
@@ -179,8 +183,11 @@ Direct engine integrations should use the endpoint table below. The Oscova host 
 | Host proxy route | Engine route |
 | --- | --- |
 | `api/avatarbridge/hair?avatarName=Oliver` | `/avatarbridge/hair/list?AvatarName=Oliver` |
-| `api/avatarbridge/clothing?avatarName=Oliver` | `/avatarbridge/clothing/list?AvatarName=Oliver` |
+| `api/avatarbridge/outfits?avatarName=Olivia` | `/avatarbridge/outfit/list?AvatarName=Olivia` |
+| `api/avatarbridge/outfit/select` | `/avatarbridge/outfit/select` |
 | `api/avatarbridge/emotions/set` | `/avatarbridge/emotion/select` |
+| `api/avatarbridge/gestures` | `/avatarbridge/gesture/list` |
+| `api/avatarbridge/gestures/select` | `/avatarbridge/gesture/select` |
 | `api/avatarbridge/presentation/settings` | `/avatarbridge/presentation/settings` |
 
 The host proxy also rejects `speech/queue` requests unless `url` is an absolute `http` or `https` URL whose path starts with `/tts/`. The engine route itself is documented as accepting an absolute audio URL.
@@ -200,9 +207,13 @@ The host proxy also rejects `speech/queue` requests unless `url` is an absolute 
 | `POST` | `/avatarbridge/avatar/select` | `AvatarSelectRequest` | `AvatarSelectResponse` |
 | `GET` | `/avatarbridge/hair/list?AvatarName={avatarName}` | none | `AvatarHairListResponse` |
 | `POST` | `/avatarbridge/hair/select` | `AvatarHairSelectRequest` | `AvatarHairSelectResponse` |
-| `GET` | `/avatarbridge/clothing/list?AvatarName={avatarName}` | none | `AvatarClothingListResponse` |
-| `POST` | `/avatarbridge/clothing/select` | `AvatarClothingSelectRequest` | `AvatarClothingSelectResponse` |
+| `GET` | `/avatarbridge/clothing/list?AvatarName={avatarName}` | none | native clothing list response |
+| `POST` | `/avatarbridge/clothing/select` | native clothing selection request | native clothing selection response |
+| `GET` | `/avatarbridge/outfit/list?AvatarName={avatarName}` | none | `AvatarOutfitListResponse` |
+| `POST` | `/avatarbridge/outfit/select` | `AvatarOutfitSelectRequest` | `AvatarOutfitSelectResponse` |
 | `GET` | `/avatarbridge/emotion/list` | none | `AvatarEmotionListResponse` |
+| `GET` | `/avatarbridge/gesture/list` | none | `AvatarGestureListResponse` |
+| `POST` | `/avatarbridge/gesture/select` | `AvatarGestureRequest` | `AvatarGestureResponse` |
 | `POST` | `/avatarbridge/emotion/select` | `AvatarEmotionRequest` | `AvatarEmotionResponse` |
 | `POST` | `/avatarbridge/speech/queue` | `AvatarSpeechQueueRequest` | `AvatarSpeechQueueResponse` |
 | `POST` | `/avatarbridge/speech/queue-file` | `AvatarSpeechQueueFileRequest` | `AvatarSpeechQueueFileResponse` |
@@ -219,6 +230,14 @@ The host proxy also rejects `speech/queue` requests unless `url` is an absolute 
 
 > **Note:**
 > The old byte-stream speech route is not exposed by the host proxy. Use `speech/queue` for URL clips or `speech/queue-file` for engine-local files.
+
+## Stationary gestures
+
+`gesture/list` returns `success`, `description`, and `gestures`, including `None`. Use those names rather than assuming a particular animation pack is installed. `gesture/select` accepts `{ "GestureName": "<catalog name>" }` and returns `success`, `description`, `selectedGesture`, and `durationSeconds`.
+
+A successful selection plays once on the body, blends in and out over 0.25 seconds, and returns to its relaxed idle. A new selection replaces the previous gesture. Facial expression and lip sync remain independently controlled. `None`, a forced speech stop, avatar selection, and server shutdown stop the active gesture. A normal speech stop allows the current gesture to finish.
+
+Unknown names, malformed payloads, unavailable animation assets, or an incompatible body return `success: false` with a description, an empty `selectedGesture`, and zero duration. These handler failures use HTTP 200, matching the setting endpoints. Pairing and activation authorization apply to both gesture endpoints.
 
 ## Request examples
 
@@ -273,6 +292,14 @@ List that avatar's clothing options with `GET /avatarbridge/clothing/list?Avatar
 Separate tops and bottoms preserve the other separate clothing choice and hair. A configured full outfit is listed in the `top` slot and replaces both visible garments. Selecting a separate top or bottom clears the full outfit. Selecting `default` for both slots restores the avatar's original clothing and body.
 Select hair and clothing from the options returned for the target avatar. Unavailable or incompatible options leave the current appearance unchanged. Selection responses report `success: true` when validation, asset loading, and runtime event dispatch succeed. Check the visible result separately. On failure, `description` gives the reason.
 Clothing IDs identify garment options, not their current colors. Changing a garment's material color does not change its clothing ID.
+
+For a complete clothing combination, list `GET /avatarbridge/outfit/list?AvatarName=Olivia` and send one returned ID to `POST /avatarbridge/outfit/select`:
+
+```json
+{ "avatarName": "Olivia", "outfitId": "altena-jeans" }
+```
+
+Outfits are curated separately for each avatar. The engine resolves the internal top and bottom together and validates both before changing the visible clothing. A dress or combined outfit hides the separate bottom. Invalid IDs, missing garments or incompatible fitted meshes return `success: false` and preserve the current appearance. Selection does not activate a different avatar or change hair, and lasts only for the current engine session. A successful response confirms application, but does not certify that every animation is free of garment intersections. An avatar without configured outfits returns an empty list.
 
 Select an emotion:
 
@@ -408,6 +435,8 @@ Successful responses expose these fields. Commands include `success` and `descri
 | `hair/list`, `clothing/list` | `avatarName` and `hairOptions` or `clothingOptions`, as shown below |
 | `hair/select` | `selectedAvatar`, `selectedHair` |
 | `clothing/select` | `selectedAvatar`, `selectedSlot`, `selectedClothing` |
+| `outfit/list` | `avatarName`, `outfits`, each containing `outfitId` and `displayName` |
+| `outfit/select` | `selectedAvatar`, `selectedOutfit` |
 | `speech/queue` | `savedFilePath` |
 | `speech/queue-file` | No additional fields |
 | `speech/stop`, `speech/volume` | `stopped` or `volume` |
@@ -456,6 +485,19 @@ Clothing list response:
     { "slot": "bottom", "clothingId": "default", "displayName": "Original Shorts" },
     { "slot": "top", "clothingId": "default", "displayName": "Original T-Shirt" },
     { "slot": "top", "clothingId": "t-shirt-and-jacket", "displayName": "T-Shirt and Jacket" }
+  ]
+}
+```
+
+Outfit list response:
+
+```json
+{
+  "success": true,
+  "description": "Available outfits retrieved successfully.",
+  "avatarName": "Olivia",
+  "outfits": [
+    { "outfitId": "altena-jeans", "displayName": "Altena Blouse & Jeans" }
   ]
 }
 ```

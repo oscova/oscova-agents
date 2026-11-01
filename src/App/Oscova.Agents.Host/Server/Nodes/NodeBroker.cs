@@ -242,7 +242,17 @@ public sealed class NodeBroker(
         { return Task.CompletedTask; }
 
         return Task.WhenAll(_connections.Values.Select(connection =>
-            AcknowledgeAsync(connection, NodeProtocol.StopExecutionProvider, configurationKey, CancellationToken.None)));
+            StopOrDisconnectAsync(connection, NodeProtocol.StopExecutionProvider, configurationKey)));
+    }
+
+    /// <summary>Lets a configuration change proceed past an unresponsive device, which the missed acknowledgement has disconnected.</summary>
+    private async Task StopOrDisconnectAsync(Connection connection, string operation, string argument)
+    {
+        try { await AcknowledgeAsync(connection, operation, argument, CancellationToken.None).ConfigureAwait(false); }
+        catch (IOException ex)
+        {
+            logger.LogWarning(ex, "Disconnected node {NodeId} after it missed a configuration-change stop.", connection.Identity.NodeId);
+        }
     }
 
     /// <summary>Keeps remote shell resources bound to their server plugin until conversation or device cleanup.</summary>
@@ -268,7 +278,7 @@ public sealed class NodeBroker(
                     if (!_providerExecutions.TryGetValue(identity, out var registration))
                     {
                         registration = executions.RegisterConfiguration(key, version, connection.Identity.UserId,
-                            connection.Disconnected, () => CleanupProviderExecutionAsync(connection, executionId, CancellationToken.None));
+                            connection.Disconnected, () => StopProviderExecutionAsync(connection, executionId));
                         added.Add(identity, registration);
                     }
 
@@ -293,6 +303,12 @@ public sealed class NodeBroker(
     private async Task CleanupProviderExecutionAsync(Connection connection, string executionId, CancellationToken ct)
     {
         try { await AcknowledgeAsync(connection, NodeProtocol.CleanupExecution, executionId, ct).ConfigureAwait(false); }
+        finally { ReleaseProviderExecutions(connection, executionId); }
+    }
+
+    private async Task StopProviderExecutionAsync(Connection connection, string executionId)
+    {
+        try { await StopOrDisconnectAsync(connection, NodeProtocol.CleanupExecution, executionId).ConfigureAwait(false); }
         finally { ReleaseProviderExecutions(connection, executionId); }
     }
 

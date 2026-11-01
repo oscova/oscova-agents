@@ -146,7 +146,7 @@ public static class McpRegistryServerMapper
         var arguments = new List<string>();
         AddArguments(package.RuntimeArguments, arguments, required);
 
-        var identifier = FormatIdentifier(package);
+        var identifier = FormatIdentifier(package, arguments);
         if (!string.IsNullOrWhiteSpace(identifier))
         {
             arguments.Add(identifier);
@@ -208,15 +208,18 @@ public static class McpRegistryServerMapper
         }
     }
 
-    private static string? FormatIdentifier(McpRegistryPackage package)
+    private static string? FormatIdentifier(McpRegistryPackage package, List<string> runtimeArguments)
     {
         if (string.IsNullOrWhiteSpace(package.Identifier))
         {
             return null;
         }
 
-        return string.Equals(package.RegistryType, "npm", StringComparison.OrdinalIgnoreCase) &&
-               !string.IsNullOrWhiteSpace(package.Version)
+        // npx, uvx and dnx launch identifier@version, so the selected release runs unless the publisher's
+        // runtime arguments already choose the package (--from) or its version (--version).
+        var pinnable = package.RegistryType?.ToLowerInvariant() is "npm" or "pypi" or "nuget" &&
+            !runtimeArguments.Any(argument => argument.Split('=', ':')[0] is "--from" or "--version");
+        return pinnable && !string.IsNullOrWhiteSpace(package.Version)
             ? $"{package.Identifier}@{package.Version}"
             : package.Identifier;
     }

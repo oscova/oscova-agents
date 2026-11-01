@@ -97,6 +97,7 @@ public sealed class RunContextAccessor
                 }
             }
 
+            // An awaiting caller keeps its own context, because async methods never flow context changes back.
             _accessor.Restore(_previousContext, _previousScope);
         }
     }

@@ -288,10 +288,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>لیول</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>لاگر</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>پیغام</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>ایک درست صارف GUID درج کریں۔</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>میرے</value></data>
-	<data name="Dialog.LogsScope.User"><value>صارف...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>صارف کی شناخت (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>موجودہ فلٹرز سے کوئی چیٹ میموری اندراج مماثل نہیں ہے۔</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>موجودہ فلٹرز سے کوئی لاگ اندراج مماثل نہیں ہے۔</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>کوئی لاگ فائل نہیں ہے</value></data>

@@ -379,11 +379,11 @@ public sealed class AgentDefinitionRepository(
         var writeDirectory = renamedDirectory ? currentDirectory! : targetDirectory;
         Directory.CreateDirectory(writeDirectory);
         EnsureDataDirectory(writeDirectory);
-        var previousAgentContent = renamedDirectory
+        var previousAgentContent = currentDirectory is not null
             ? File.ReadAllText(GetAgentFilePath(writeDirectory))
             : null;
         var toolPoliciesPath = Path.Combine(writeDirectory, AgentToolPoliciesFileName);
-        var previousToolPoliciesContent = renamedDirectory && File.Exists(toolPoliciesPath)
+        var previousToolPoliciesContent = currentDirectory is not null && File.Exists(toolPoliciesPath)
             ? File.ReadAllText(toolPoliciesPath)
             : null;
 
@@ -400,7 +400,8 @@ public sealed class AgentDefinitionRepository(
 
             await catalog.ReloadAsync(ct).ConfigureAwait(false);
         }
-        catch when (renamedDirectory)
+        // A failed save of an existing agent restores its previous definition and tool policies.
+        catch when (currentDirectory is not null)
         {
             if (directoryMoved)
             {

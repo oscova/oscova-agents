@@ -288,10 +288,7 @@
 	<data name="Dialog.LogsHeaderLevel"><value>Tingkat</value></data>
 	<data name="Dialog.LogsHeaderLogger"><value>Pencatat</value></data>
 	<data name="Dialog.LogsHeaderMessage"><value>Pesan</value></data>
-	<data name="Dialog.LogsInvalidUserGuid"><value>Masukkan GUID pengguna yang valid.</value></data>
 	<data name="Dialog.LogsScope.Mine"><value>Milik saya</value></data>
-	<data name="Dialog.LogsScope.User"><value>Pengguna...</value></data>
-	<data name="Dialog.Logs.UserIdPlaceholder"><value>ID Pengguna (GUID)</value></data>
 	<data name="Dialog.NoChatMemoryEntries"><value>Tidak ada entri memori obrolan yang cocok dengan filter saat ini.</value></data>
 	<data name="Dialog.NoLogEntriesMatch"><value>Tidak ada entri log yang cocok dengan filter saat ini.</value></data>
 	<data name="Dialog.NoLogFilesOption"><value>Tidak ada berkas log</value></data>

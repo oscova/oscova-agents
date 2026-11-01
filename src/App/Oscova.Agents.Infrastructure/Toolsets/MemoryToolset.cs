@@ -45,8 +45,10 @@ public sealed class MemoryToolset(
         var agentId = CurrentAgentId();
         maxResults = maxResults <= 0 ? 5 : Math.Min(maxResults, 50);
         var agent = await agentDefinitions.GetAgentAsync(userId, agentId, ct).ConfigureAwait(false);
+        // A run inherits local-only execution from its owner or delegating parent, so search stays local too.
         var results = await chatMemoryService.SearchAsync(userId, agentId, query, maxResults,
-            requireLocalEndpoint: privacySettings.IsLocalOnly || agent?.IsLocalOnly == true, ct: ct).ConfigureAwait(false);
+            requireLocalEndpoint: privacySettings.IsLocalOnly || agent?.IsLocalOnly == true || runContextAccessor.Current?.AirGapped == true,
+            ct: ct).ConfigureAwait(false);
         if (results.UnavailableReason is { } reason) { return reason; }
 
         if (results.Matches.Count == 0) { return "No relevant indexed conversation excerpts found."; }

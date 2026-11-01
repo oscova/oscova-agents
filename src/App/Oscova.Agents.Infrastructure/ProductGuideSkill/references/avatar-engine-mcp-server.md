@@ -40,7 +40,7 @@ Every assistant connected to this MCP server acts through one installation ident
 
 ## Tools and effects
 
-The catalog contains 25 direct Engine controls plus `avatar_speak` for text synthesis through Assistant. MCP arguments use the names advertised in each tool's schema. The server translates them into the existing HTTP contracts.
+The catalog contains 27 direct Engine controls plus `avatar_speak` for text synthesis through Assistant. MCP arguments use the names advertised in each tool's schema. The server translates them into the existing HTTP contracts.
 
 | Tool | Engine operation after `/avatarbridge` |
 | --- | --- |
@@ -60,8 +60,10 @@ The catalog contains 25 direct Engine controls plus `avatar_speak` for text synt
 | `avatar_select` | `POST /avatar/select` |
 | `avatar_hair_list` | `GET /hair/list` |
 | `avatar_hair_select` | `POST /hair/select` |
-| `avatar_clothing_list` | `GET /clothing/list` |
-| `avatar_clothing_select` | `POST /clothing/select` |
+| `avatar_outfit_list` | `GET /outfit/list` |
+| `avatar_outfit_select` | `POST /outfit/select` |
+| `avatar_list_gestures` | `GET /gesture/list` |
+| `avatar_select_gesture` | `POST /gesture/select` |
 | `avatar_list_emotions` | `GET /emotion/list` |
 | `avatar_set_emotion` | `POST /emotion/select` |
 | `avatar_set_background_color` | `POST /background/color` |

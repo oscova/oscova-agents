@@ -417,12 +417,9 @@ public static class CommonTextKeys
     public const string DialogUsageInputTokens = "Dialog.UsageInputTokens";
     public const string DialogUsageOutputTokens = "Dialog.UsageOutputTokens";
     public const string DialogUsageTotalTokens = "Dialog.UsageTotalTokens";
-    public const string DialogLogsInvalidUserGuid = "Dialog.LogsInvalidUserGuid";
     public const string DialogLogsScopeMine = "Dialog.LogsScope.Mine";
     public const string DialogLogsScopeLabel = "Dialog.LogsScope.Label";
     public const string DialogLogsFileLabel = "Dialog.LogsFile.Label";
-    public const string DialogLogsScopeUser = "Dialog.LogsScope.User";
-    public const string DialogLogsUserIdPlaceholder = "Dialog.Logs.UserIdPlaceholder";
     public const string DialogNewPasswordLabel = "Dialog.NewPasswordLabel";
     public const string DialogNoChatMemoryEntries = "Dialog.NoChatMemoryEntries";
     public const string DialogNoLogEntriesMatch = "Dialog.NoLogEntriesMatch";

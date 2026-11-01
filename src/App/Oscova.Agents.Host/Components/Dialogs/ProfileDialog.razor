@@ -2,6 +2,8 @@
 @inject ManagementApiClient ManagementApiClient
 @inject ProfilePictureRefreshState ProfilePictureRefreshState
 @inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IStringLocalizer<CommonText> CommonLoc
 
 <AppDialogShell Title="@CommonLoc.GetOrDefault(CommonTextKeys.DialogYourProfileTitle, "Your Profile")"
@@ -147,6 +149,7 @@
 	private readonly ProfileModel _model = new();
 	private string? _statusMessage;
 	private string? _errorMessage;
+	private string _savedEmail = string.Empty;
     private bool _isSaving;
 
 	// Append the version token so a successful upload forces the browser to fetch the new picture.
@@ -180,6 +183,15 @@
 				ConfirmNewPassword = _model.ConfirmNewPassword
 			});
 
+			// Password and email changes renew the sign-in stamp, which ends this tab's API access.
+			if (!string.IsNullOrWhiteSpace(_model.NewPassword) || !string.Equals(_model.NewEmail, _savedEmail, StringComparison.OrdinalIgnoreCase))
+			{
+				var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+				var userId = Uri.EscapeDataString(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty);
+				NavigationManager.NavigateTo($"/auth/logout-redirect?expectedUserId={userId}", forceLoad: true);
+				return;
+			}
+
 			_statusMessage = result.Message;
 			_model.CurrentPassword = string.Empty;
 			_model.NewPassword = string.Empty;
@@ -199,6 +211,7 @@
 		_model.NewFullName = profile.FullName;
 		_model.Nickname = profile.Nickname;
 		_model.NewEmail = profile.Email;
+		_savedEmail = profile.Email;
 	}
 
 	private async Task OpenVaultPasswordDialogAsync()

@@ -10,6 +10,8 @@ namespace Oscova.Agents.Infrastructure.Mcp;
 /// <summary>Creates the same native, HTTP or container MCP transport on its authorized execution device.</summary>
 internal static class McpTransportFactory
 {
+    internal const string LocalOnlyClientName = "mcp-local-only";
+
     /// <summary>Uses explicit launch values and mounts without inheriting another account's environment.</summary>
     public static async Task<IClientTransport> CreateAsync(McpServerConfig server,
         IReadOnlyList<AllowedDirectory> directories, IExecutionEnvironmentCatalog executionEnvironments,
@@ -17,13 +19,15 @@ internal static class McpTransportFactory
     {
         if (server.Transport == McpTransportType.Http)
         {
+            // The local-only check sees only the first URI, so local-only connections report redirects instead of following them.
+            var client = httpClients.CreateClient(new RunContextAccessor().Current?.AirGapped == true ? LocalOnlyClientName : string.Empty);
             return new HttpClientTransport(new HttpClientTransportOptions
             {
                 Name = server.Name,
                 Endpoint = new Uri(server.Endpoint!, UriKind.Absolute),
                 AdditionalHeaders = server.Headers is null ? null :
                     new Dictionary<string, string>(server.Headers, StringComparer.OrdinalIgnoreCase)
-            }, httpClients.CreateClient(), ownsHttpClient: false);
+            }, client, ownsHttpClient: false);
         }
 
         if (server.Transport != McpTransportType.Stdio)

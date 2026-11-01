@@ -5,6 +5,39 @@ namespace Oscova.Agents.Host.Services;
 
 public class AvatarBridgeClient(HttpClient http, ILogger<AvatarBridgeClient> logger) : IAvatarBridgeClient
 {
+    public async Task<IReadOnlyList<string>> GetGesturesAsync()
+    {
+        try
+        {
+            var result = await http.GetFromJsonAsync<AvatarGestureListResponse>(ApiRoutes.AvatarBridge.Gestures).ConfigureAwait(false);
+            return result?.Success == true ? result.Gestures : [];
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to load avatar gestures via avatar bridge.");
+            return [];
+        }
+    }
+
+    public async Task SelectGestureAsync(string gestureName)
+    {
+        try
+        {
+            using var response = await http.PostAsJsonAsync(ApiRoutes.AvatarBridge.GesturesSelect,
+                new AvatarGestureRequest { GestureName = gestureName }).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<AvatarGestureResponse>().ConfigureAwait(false);
+            if (result?.Success != true)
+            {
+                logger.LogWarning("Avatar bridge rejected gesture {GestureName}: {Description}", gestureName, result?.Description);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to select avatar gesture {GestureName}.", gestureName);
+        }
+    }
+
     /// <inheritdoc />
     public async Task<IReadOnlyList<string>> GetEmotionsAsync()
     {

@@ -6,7 +6,6 @@
 @inject ManagementApiClient ManagementApiClient
 @inject IDialogService DialogService
 @inject IToastService ToastService
-@inject IJSRuntime JS
 @inject IStringLocalizer<SettingsText> Loc
 @inject IStringLocalizer<CommonText> CommonLoc
 
@@ -53,10 +52,10 @@ else
                     @* A pending save must not replace a newer JSON draft. *@
                     <textarea disabled="@_isBusy" id="hooks-json-editor" class="textarea textarea-bordered min-h-80 w-full font-mono text-xs" @bind="_jsonDraft"></textarea>
                     <div class="mt-3 flex flex-wrap justify-end gap-2">
-                        <button type="button" class="btn btn-ghost btn-sm" @onclick="CopyJsonAsync">
-                            <span class="iconify lucide--copy size-4" aria-hidden="true"></span>
-                            @Loc.GetOrDefault(SettingsTextKeys.HooksCopyJsonButton, "Copy JSON")
-                        </button>
+                        <CopyActionButton Text="@_jsonDraft"
+                                          Label="@Loc.GetOrDefault(SettingsTextKeys.HooksCopyJsonButton, "Copy JSON")"
+                                          Class="btn btn-ghost btn-sm" />
+
                         <button type="button" class="btn btn-primary btn-sm" disabled="@_isBusy" @onclick="ApplyJson">
                             <span class="iconify lucide--clipboard-check size-4" aria-hidden="true"></span>
                             @Loc.GetOrDefault(SettingsTextKeys.HooksApplyJsonButton, "Apply JSON")
@@ -151,7 +150,7 @@ else
                             <div class="font-medium">@Loc.GetOrDefault(SettingsTextKeys.HooksCreatedTokenTitle, "Copy this token now")</div>
                             <div class="break-all font-mono text-xs">@_createdApiToken</div>
                         </div>
-                        <button type="button" class="btn btn-xs" @onclick="CopyCreatedTokenAsync">@Loc.GetOrDefault(SettingsTextKeys.HooksCopyTokenButton, "Copy")</button>
+                        <CopyActionButton Text="@_createdApiToken" Label="@Loc.GetOrDefault(SettingsTextKeys.HooksCopyTokenButton, "Copy")" Class="btn btn-xs" />
                     </div>
                 }
                 <div class="divider my-3"></div>
@@ -424,11 +423,6 @@ else
         _editorMode = HookEditorMode.Json;
     }
 
-    private async Task CopyJsonAsync()
-    {
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _jsonDraft);
-    }
-
     private void ApplyJson()
     {
         try
@@ -515,14 +509,6 @@ else
         finally
         {
             _isBusy = false;
-        }
-    }
-
-    private async Task CopyCreatedTokenAsync()
-    {
-        if (!string.IsNullOrWhiteSpace(_createdApiToken))
-        {
-            await JS.InvokeVoidAsync("navigator.clipboard.writeText", _createdApiToken);
         }
     }
 

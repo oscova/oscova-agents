@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Oscova.Agents.Core.ApiContracts.CliAuth;
 
 /// <summary>
@@ -5,7 +7,11 @@ namespace Oscova.Agents.Core.ApiContracts.CliAuth;
 /// </summary>
 public sealed class StartCliDeviceLoginRequest
 {
+    // Anonymous device-start metadata is display text kept for ten minutes, so it stays small.
+    [MaxLength(256)]
     public string Client { get; set; } = "oscova-cli";
+
+    [MaxLength(256)]
     public string Machine { get; set; } = string.Empty;
 }
 

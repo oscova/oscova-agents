@@ -22,10 +22,9 @@ public sealed class LogsController(
 {
     [HttpGet("files")]
     public ActionResult<IReadOnlyList<string>> GetFiles(
-        [FromQuery] string scope = "self",
-        [FromQuery] string? targetUserId = null)
+        [FromQuery] string scope = "self")
     {
-        if (!TryResolveRoot(scope, targetUserId, out var root, out var prefix))
+        if (!TryResolveRoot(scope, out var root, out var prefix))
         {
             return Forbid();
         }
@@ -36,14 +35,13 @@ public sealed class LogsController(
     [HttpGet]
     public async Task<ActionResult<LogPage>> GetPage(
         [FromQuery] string scope = "self",
-        [FromQuery] string? targetUserId = null,
         [FromQuery] string? fileName = null,
         [FromQuery] string? level = null,
         [FromQuery] string? searchTerm = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 100)
     {
-        if (!TryResolveRoot(scope, targetUserId, out var root, out var prefix))
+        if (!TryResolveRoot(scope, out var root, out var prefix))
         {
             return Forbid();
         }
@@ -65,15 +63,14 @@ public sealed class LogsController(
         [FromQuery] string? format = "jsonl",
         [FromQuery] string? level = null,
         [FromQuery] string? searchTerm = null,
-        [FromQuery] string scope = "self",
-        [FromQuery] string? targetUserId = null)
+        [FromQuery] string scope = "self")
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
             return BadRequest(new ErrorResult { Message = "A log file name is required." });
         }
 
-        if (!TryResolveRoot(scope, targetUserId, out var root, out var prefix))
+        if (!TryResolveRoot(scope, out var root, out var prefix))
         {
             return Forbid();
         }
@@ -114,15 +111,14 @@ public sealed class LogsController(
     [HttpDelete]
     public async Task<IActionResult> Clear(
         [FromQuery] string fileName,
-        [FromQuery] string scope = "self",
-        [FromQuery] string? targetUserId = null)
+        [FromQuery] string scope = "self")
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
             return BadRequest(new ErrorResult { Message = "A log file name is required." });
         }
 
-        if (!TryResolveRoot(scope, targetUserId, out var root, out var prefix))
+        if (!TryResolveRoot(scope, out var root, out var prefix))
         {
             return Forbid();
         }
@@ -221,7 +217,8 @@ public sealed class LogsController(
         return $"\"{text.Replace("\"", "\"\"")}\"";
     }
 
-    private bool TryResolveRoot(string scope, string? targetUserId, out string root, out string prefix)
+    // The operator reads system logs but never another user's; a user exports their own logs for support.
+    private bool TryResolveRoot(string scope, out string root, out string prefix)
     {
         var isAdmin = User.IsInRole("Admin");
         switch (scope)
@@ -234,11 +231,6 @@ public sealed class LogsController(
             case "system" when isAdmin:
                 root = PathUtil.SystemLogsPath;
                 prefix = "system";
-                return true;
-
-            case "user" when isAdmin && Guid.TryParse(targetUserId, out _):
-                root = userDirectories.GetLogsDirectoryPath(targetUserId);
-                prefix = "user";
                 return true;
 
             default:

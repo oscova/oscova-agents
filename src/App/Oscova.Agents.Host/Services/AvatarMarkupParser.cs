@@ -3,14 +3,16 @@ using System.Text.RegularExpressions;
 
 namespace Oscova.Agents.Host.Services;
 
-/// <summary>An emotion cue at a fraction of its clip's cue-free text.</summary>
-public sealed record AvatarMarkupCue(string Emotion, double Fraction);
+public enum AvatarCueKind { Emotion, Gesture }
+
+/// <summary>A performance cue at a fraction of its clip's cue-free text.</summary>
+public sealed record AvatarMarkupCue(string Name, double Fraction, AvatarCueKind Kind = AvatarCueKind.Emotion);
 
 /// <summary>A raw speech clip with its executed tags removed and its cues extracted.</summary>
 public sealed record AvatarMarkupClip(string Text, IReadOnlyList<AvatarMarkupCue> Cues);
 
-/// <summary>Extracts Oscova Avatar Markup emotion cues from the raw clips of one reply.</summary>
-public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
+/// <summary>Extracts emotion and gesture cues from the raw clips of one reply.</summary>
+public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions, IReadOnlyList<string>? gestures = null)
 {
     // Curated emoji, applied only when the Engine catalog has the target emotion.
     private static readonly (string Emoji, string Emotion)[] EmojiMap =
@@ -28,14 +30,14 @@ public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
     private int _codeTicks;
 
     /// <summary>Returns reply text as chat shows it, with executed tags and a trailing partial tag removed.</summary>
-    public static string StripForDisplay(string text, IReadOnlyList<string> emotions)
+    public static string StripForDisplay(string text, IReadOnlyList<string> emotions, IReadOnlyList<string>? gestures = null)
     {
-        if (emotions.Count == 0)
+        if (emotions.Count == 0 && (gestures is null || gestures.Count == 0))
         {
             return text;
         }
 
-        var clean = new AvatarMarkupParser(emotions).Parse(text).Text;
+        var clean = new AvatarMarkupParser(emotions, gestures).Parse(text).Text;
         // A tag still streaming in must not flash as text.
         return PartialTagPattern().Replace(clean, string.Empty);
     }
@@ -44,7 +46,7 @@ public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
     public AvatarMarkupClip Parse(string clip)
     {
         var output = new StringBuilder(clip.Length);
-        var cues = new List<(string Emotion, int Position, bool FromEmoji)>();
+        var cues = new List<(string Name, int Position, bool FromEmoji, AvatarCueKind Kind)>();
         var index = 0;
         while (index < clip.Length)
         {
@@ -98,9 +100,11 @@ public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
                 continue;
             }
             else if (_codeTicks == 0 && current == '[' && TagPattern().Match(clip, index) is { Success: true } tag &&
-                FindEmotion(tag.Groups["name"].Value) is { } name)
+                FindName(tag.Groups["name"].Value, tag.Groups["kind"].Value) is { } name)
             {
-                cues.Add((name, output.Length, false));
+                var kind = tag.Groups["kind"].Value.Equals("gesture", StringComparison.OrdinalIgnoreCase)
+                    ? AvatarCueKind.Gesture : AvatarCueKind.Emotion;
+                cues.Add((name, output.Length, false, kind));
                 index += tag.Length;
                 // Drop one following space so the offset matches the spoken text.
                 if (index < clip.Length && clip[index] == ' ' && (output.Length == 0 || output[^1] == ' '))
@@ -114,7 +118,7 @@ public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
             {
                 if (FindEmotion(emoji.Emotion) is { } emojiName)
                 {
-                    cues.Add((emojiName, output.Length, true));
+                    cues.Add((emojiName, output.Length, true, AvatarCueKind.Emotion));
                 }
 
                 output.Append(emoji.Emoji);
@@ -127,19 +131,24 @@ public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
         }
 
         // An explicit tag wins over emoji in the same clip.
-        if (cues.Exists(cue => !cue.FromEmoji))
+        if (cues.Exists(cue => !cue.FromEmoji && cue.Kind == AvatarCueKind.Emotion))
         {
             cues.RemoveAll(cue => cue.FromEmoji);
         }
 
         var length = output.Length;
-        var result = cues.ConvertAll(cue => new AvatarMarkupCue(cue.Emotion, length == 0 ? 0 : (double)cue.Position / length));
+        var result = cues.ConvertAll(cue => new AvatarMarkupCue(cue.Name, length == 0 ? 0 : (double)cue.Position / length, cue.Kind));
         return new AvatarMarkupClip(output.ToString(), result);
     }
 
     // Returns the catalog spelling so the Engine receives its own name.
     private string? FindEmotion(string name) =>
         emotions.FirstOrDefault(emotion => string.Equals(emotion, name, StringComparison.OrdinalIgnoreCase));
+
+    private string? FindName(string name, string kind) =>
+        kind.Equals("gesture", StringComparison.OrdinalIgnoreCase)
+            ? gestures?.FirstOrDefault(gesture => string.Equals(gesture, name, StringComparison.OrdinalIgnoreCase))
+            : FindEmotion(name);
 
     private static (string Emoji, string Emotion)? EmojiAt(string text, int index)
     {
@@ -154,9 +163,9 @@ public sealed partial class AvatarMarkupParser(IReadOnlyList<string> emotions)
         return null;
     }
 
-    [GeneratedRegex(@"\G\[emotion:(?<name>[A-Za-z][A-Za-z0-9_-]{0,31})\]", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, 1000)]
+    [GeneratedRegex(@"\G\[(?<kind>emotion|gesture):(?<name>[A-Za-z][A-Za-z0-9_-]{0,31})\]", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, 1000)]
     private static partial Regex TagPattern();
 
-    [GeneratedRegex(@"(?<!\\)\[(?:e(?:m(?:o(?:t(?:i(?:o(?:n(?::[A-Za-z0-9_-]{0,32})?)?)?)?)?)?)?)?\z", RegexOptions.IgnoreCase, 1000)]
+    [GeneratedRegex(@"(?<!\\)\[(?:e|em|emo|emot|emoti|emotio|emotion(?::[A-Za-z0-9_-]{0,32})?|g|ge|ges|gest|gestu|gestur|gesture(?::[A-Za-z0-9_-]{0,32})?)?\z", RegexOptions.IgnoreCase, 1000)]
     private static partial Regex PartialTagPattern();
 }

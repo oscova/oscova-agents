@@ -247,7 +247,7 @@ public sealed class ModelProvidersController(
         requested is null || requested == existing || available.Contains(requested.Value);
 
     [HttpPost("test")]
-    public async Task<ActionResult<ProviderTestResult>> Test([FromBody] ModelProviderConfig request, CancellationToken ct)
+    public async Task<ActionResult<ProviderTestResult>> Test([FromBody] ModelProviderConfig request, [FromQuery] bool passive, CancellationToken ct)
     {
         var userScope = await GetUserScopeAsync(ct);
         var canManage = (await permissions.GetGrantedAsync(userScope.UserId, ct)).Contains(UserPermissionKeys.ManagePersonalModelProviders);
@@ -267,7 +267,7 @@ public sealed class ModelProvidersController(
 
         if (!ModelState.IsValid) { return ValidationProblem(ModelState); }
 
-        var result = await userScope.AppService.TestProviderAsync(request, ct);
+        var result = await userScope.AppService.TestProviderAsync(request, passive, ct);
 
         return Ok(result);
     }

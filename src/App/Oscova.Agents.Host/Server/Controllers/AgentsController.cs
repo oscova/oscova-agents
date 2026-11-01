@@ -621,6 +621,16 @@ public sealed class AgentsController(
         var availableToolNames = userScope.CrewService.Tools
             .Select(tool => tool.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // A configured MCP server keeps its tool assignments while it is disabled, offline or on an idle node.
+        var serverPrefixes = userScope.McpToolSettings.GetAvailable()
+            .Select(server => ToolNaming.NormalizeQualifier(server.Name))
+            .Where(qualifier => qualifier.Length > 0)
+            .Select(qualifier => qualifier + ToolNaming.WireSeparator)
+            .ToList();
+        availableToolNames.UnionWith(agent.AllowedToolNames
+            .Where(name => name is not null && serverPrefixes.Any(prefix => IsMcpServerToolName(name, prefix))));
+
         var result = ToolReferenceSanitizer.RemoveUnavailableTools(
             agent.AllowedToolNames,
             agent.PinnedToolNames,
@@ -629,6 +639,14 @@ public sealed class AgentsController(
 
         LogToolReferenceSanitization("agent", agent.Id, result);
     }
+
+    // A hashed long wire name keeps only a trimmed prefix before "__" and 8 hex digits, so a server whose prefix it starts owns it.
+    private static bool IsMcpServerToolName(string toolName, string serverPrefix) =>
+        toolName.StartsWith(serverPrefix, StringComparison.OrdinalIgnoreCase) ||
+        (toolName.Length > 10 &&
+         toolName[^10..^8] == ToolNaming.WireSeparator &&
+         toolName[^8..].All(char.IsAsciiHexDigitLower) &&
+         serverPrefix.StartsWith(toolName[..^10], StringComparison.OrdinalIgnoreCase));
 
     private void LogToolReferenceSanitization(
         string ownerKind,

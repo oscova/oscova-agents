@@ -102,7 +102,7 @@ public sealed class PluginSettingsController(
                 {
                     _activationSettings.SetEnabledPluginIds(requestedIds);
                     saved = await _activationSettings.TrySaveAsync().ConfigureAwait(false);
-                }, confirmed: true, HttpContext.RequestAborted).ConfigureAwait(false);
+                }, request.ConfirmInterruptions, HttpContext.RequestAborted).ConfigureAwait(false);
             if (!saved)
             {
                 return Problem("Plugin settings could not be saved.");
@@ -110,6 +110,11 @@ public sealed class PluginSettingsController(
 
             nodePlugins.ActivationChanged();
             return Ok(BuildSummary());
+        }
+        // Disabling a plugin that admitted work depends on asks before stopping that work, like every governed save.
+        catch (ExecutionPermissionRegistry.ConfirmationRequiredException ex)
+        {
+            return Conflict(ex.Message);
         }
         catch (Exception ex)
         {

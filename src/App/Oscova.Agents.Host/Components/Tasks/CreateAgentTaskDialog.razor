@@ -13,7 +13,6 @@
 @inject IStringLocalizer<CommonText> CommonLoc
 @inject IStringLocalizer<SettingsText> SettingsLoc
 @inject IDialogService DialogService
-@inject IJSRuntime JS
 
 <AppDialogShell Title="@(_isEditing ? CommonLoc.GetOrDefault(CommonTextKeys.TaskDialogEditTitle, "Edit Task") : CommonLoc.GetOrDefault(CommonTextKeys.TaskDialogCreateTitle, "Create Task"))"
                 MaxWidthClass="max-w-lg"
@@ -230,9 +229,9 @@
                         <span class="iconify lucide--webhook text-base-content/60 size-4"></span>
                         <input type="text" dir="ltr" class="grow font-mono text-xs focus:outline-0" aria-label="@CommonLoc[CommonTextKeys.TaskExternalTriggerEndpointLabel]" value="@ExternalTriggerEndpoint" readonly />
                     </label>
-                    <button type="button" class="btn btn-square btn-sm" title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerCopyEndpointButton, "Copy endpoint")" @onclick="CopyExternalTriggerEndpointAsync">
-                        <iconify-icon icon="lucide:copy"></iconify-icon>
-                    </button>
+                    <CopyActionButton Text="@ExternalTriggerEndpoint"
+                                      Title="@CommonLoc.GetOrDefault(CommonTextKeys.TaskExternalTriggerCopyEndpointButton, "Copy endpoint")"
+                                      Class="btn btn-square btn-sm" />
                 </div>
             </fieldset>
 
@@ -778,11 +777,6 @@
     private void RemoveExternalParameter(TaskExternalParameter parameter)
     {
         _externalTriggerParameters.Remove(parameter);
-    }
-
-    private async Task CopyExternalTriggerEndpointAsync()
-    {
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ExternalTriggerEndpoint);
     }
 
     private string ResolveExternalTriggerSlug()

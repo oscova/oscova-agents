@@ -26,7 +26,7 @@ public class AvatarSettings : SettingsBase
     private AvatarAccessMode _preferredAccessMode = AvatarAccessMode.Shared;
     private string? _selectedAvatar;
     private string? _selectedHairId;
-    private string? _selectedTopClothingId;
+    private string? _selectedOutfitId;
     private string? _selectedEmotion;
     private float _emotionBlendSpeed = DefaultEmotionBlendSpeed;
     private float _emotionCueBlendInSeconds = DefaultEmotionCueBlendInSeconds;
@@ -72,10 +72,10 @@ public class AvatarSettings : SettingsBase
         set => SetProperty(ref _selectedHairId, value);
     }
 
-    public string? SelectedTopClothingId
+    public string? SelectedOutfitId
     {
-        get => _selectedTopClothingId;
-        set => SetProperty(ref _selectedTopClothingId, value);
+        get => _selectedOutfitId;
+        set => SetProperty(ref _selectedOutfitId, value);
     }
 
     public string? SelectedEmotion
@@ -174,7 +174,7 @@ public class AvatarSettings : SettingsBase
             PreferredAccessMode = PreferredAccessMode,
             SelectedAvatar = SelectedAvatar,
             SelectedHairId = SelectedHairId,
-            SelectedTopClothingId = SelectedTopClothingId,
+            SelectedOutfitId = SelectedOutfitId,
             SelectedEmotion = SelectedEmotion,
             EmotionBlendSpeed = EmotionBlendSpeed,
             EmotionCueBlendInSeconds = EmotionCueBlendInSeconds,
@@ -199,7 +199,7 @@ public class AvatarSettings : SettingsBase
         PreferredAccessMode = data.PreferredAccessMode;
         SelectedAvatar = data.SelectedAvatar;
         SelectedHairId = data.SelectedHairId;
-        SelectedTopClothingId = data.SelectedTopClothingId;
+        SelectedOutfitId = data.SelectedOutfitId;
         SelectedEmotion = data.SelectedEmotion;
         EmotionBlendSpeed = data.EmotionBlendSpeed;
         EmotionCueBlendInSeconds = data.EmotionCueBlendInSeconds;
@@ -250,7 +250,7 @@ public class AvatarSettings : SettingsBase
         public AvatarAccessMode PreferredAccessMode { get; set; } = AvatarAccessMode.Shared;
         public string? SelectedAvatar { get; set; }
         public string? SelectedHairId { get; set; }
-        public string? SelectedTopClothingId { get; set; }
+        public string? SelectedOutfitId { get; set; }
         public string? SelectedEmotion { get; set; }
         public float EmotionBlendSpeed { get; set; } = DefaultEmotionBlendSpeed;
         public float EmotionCueBlendInSeconds { get; set; } = DefaultEmotionCueBlendInSeconds;
@@ -274,7 +274,7 @@ public class AvatarSettings : SettingsBase
                 PreferredAccessMode = PreferredAccessMode,
                 SelectedAvatar = SelectedAvatar,
                 SelectedHairId = SelectedHairId,
-                SelectedTopClothingId = SelectedTopClothingId,
+                SelectedOutfitId = SelectedOutfitId,
                 SelectedEmotion = SelectedEmotion,
                 EmotionBlendSpeed = EmotionBlendSpeed,
                 EmotionCueBlendInSeconds = EmotionCueBlendInSeconds,

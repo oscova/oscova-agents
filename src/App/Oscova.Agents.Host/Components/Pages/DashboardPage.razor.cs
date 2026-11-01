@@ -754,7 +754,7 @@ public partial class DashboardPage : ComponentBase, IDisposable
         // HttpClient request causes the framework's System.Net.Http logger to emit a warning with
         // a full stack trace. The probe is cheap; let it finish and discard the result if the page
         // has been disposed.
-        var result = await ManagementApiClient.TestModelProviderAsync(selectedProvider);
+        var result = await ManagementApiClient.TestModelProviderAsync(selectedProvider, passive: true);
 
         // Opening chats in quick succession probes several providers, and only the latest one may report.
         if (_disposeCts.IsCancellationRequested || probeVersion != _serviceProbeVersion)

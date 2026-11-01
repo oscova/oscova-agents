@@ -78,7 +78,10 @@ public sealed partial class BotMessageView : ComponentBase, IDisposable
     [Parameter]
     public IReadOnlyList<string> AvatarEmotions { get; set; } = [];
 
-    private string DisplayText(string text) => AvatarMarkupParser.StripForDisplay(text, AvatarEmotions);
+    [Parameter]
+    public IReadOnlyList<string> AvatarGestures { get; set; } = [];
+
+    private string DisplayText(string text) => AvatarMarkupParser.StripForDisplay(text, AvatarEmotions, AvatarGestures);
 
     // Segment-edge whitespace can carry Markdown meaning, so clipboard text intentionally
     // bypasses transcript normalization.

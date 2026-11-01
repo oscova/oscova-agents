@@ -28,7 +28,7 @@ Queued clips play in order. The engine shows each clip's `Message` text while th
 
 Only the selected avatar processes speech. Switching avatars stops current playback and clears the outgoing avatar's queue. New clips play on the newly selected avatar. Reselecting the same avatar does not interrupt speech.
 
-With the two presentation layouts configured and Auto selected, the first speech sentence that exceeds the Subtitle box's available height moves the presentation to Side. Following sentences keep Side even when their text is short. The presentation returns to Subtitle when the message panel clears explicitly or its display timer expires. Each displayed sentence restarts that timer. This retains the existing timeout behavior between clips.
+With the two presentation layouts configured and Auto selected, the first speech sentence that exceeds the Subtitle box's available height moves the presentation to Side. Following sentences keep Side even when their text is short. Speech text remains visible during playback. When the audio queue finishes, the configured display delay begins. New speech cancels that countdown. When the delay expires, the panel clears, Auto returns to Subtitle, and gesture framing returns to the portrait camera. Explicit clear and forced stop reset the presentation immediately.
 
 Oscova no longer uses a byte-stream speech route for the avatar path. It synthesizes a complete WAV clip, exposes it as a `/tts/` URL, and queues that URL.
 
@@ -70,6 +70,8 @@ The built-in `avatar__speak(text)` and MCP `avatar_speak(text)` tools use one op
 The operation checks provider availability, applies saved Avatar settings, synthesizes one complete WAV clip in its own session, and queues a reachable audio URL on the captured Engine target. Its session cleanup leaves browser speech sessions alone. An unavailable provider, blocked local-only policy, or failed readiness check returns an actionable failure without switching providers.
 
 MCP calls `POST /api/avatarbridge/speech/speak` on the matching running Assistant host using the saved operator CLI login. It remains discoverable while the host is stopped. See [Avatar MCP server](references/avatar-engine-mcp-server.md) for setup.
+
+These tool speech requests do not parse emotion or gesture tags. MCP callers currently use `avatar_set_emotion` and `avatar_select_gesture` separately. Audio queue tools also treat their message as display text. Automatic cue parsing belongs to the chat speech pipeline.
 
 A successful result means the Engine accepted the request. It does not prove completed playback or lip sync. Cancellation or a lost response can leave the outcome uncertain, so inspect the Engine before retrying.
 

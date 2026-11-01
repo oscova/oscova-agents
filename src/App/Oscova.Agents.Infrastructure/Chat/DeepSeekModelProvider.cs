@@ -43,8 +43,7 @@ public sealed class DeepSeekModelProvider(
                 options.AddPolicy(new DeepSeekReasoningChatClient.RequestPolicy(history, config.SupportsThinking), PipelinePosition.PerCall);
             }
 
-            return new SdkChatClient(model, credential, options).AsIChatClient().AsBuilder()
-                .ConfigureOptions(chatOptions => ApplyRequestDefaults(chatOptions, config)).Build();
+            return ConfigureChatClient(new SdkChatClient(model, credential, options).AsIChatClient(), config);
         }
 
         return ValueTask.FromResult<IChatClient>(new DeepSeekReasoningChatClient(CreateClient(), history => CreateClient(history)));

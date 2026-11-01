@@ -46,11 +46,11 @@ public sealed class ProfileController(
     [HttpGet("debug-unlock")]
     public async Task<IActionResult> DebugUnlock([FromServices] IConfiguration configuration, string? returnUrl = "/")
     {
-        if (!Security.DebugAutoLoginMiddleware.IsAllowed(HttpContext) ||
-            !string.Equals(User.Identity?.Name, configuration["DebugAutoLogin:Username"], StringComparison.OrdinalIgnoreCase))
-        {
-            return NotFound();
-        }
+        if (!Security.DebugAutoLoginMiddleware.IsAllowed(HttpContext)) { return NotFound(); }
+
+        // The name claim carries the editable display name, so the configured account is matched by ID.
+        var debugUser = await userManager.FindByNameAsync(configuration["DebugAutoLogin:Username"]!);
+        if (debugUser is null || userManager.GetUserId(User) != debugUser.Id) { return NotFound(); }
 
         var result = await UnlockVault(new UnlockVaultRequest { Password = configuration["DebugAutoLogin:VaultPassword"]! }, HttpContext.RequestAborted);
         if (result.Result is not OkObjectResult) { return result.Result!; }

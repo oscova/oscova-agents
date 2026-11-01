@@ -118,21 +118,23 @@ public sealed class BackgroundShellJobRegistry(ShellExecutorFactory shellExecuto
         Job[] removed;
         lock (_gate) { removed = _jobs.Values.Where(match).ToArray(); }
 
-        foreach (var job in removed)
+        // Every job is signalled before any wait, so one job whose output stays open cannot keep the others running.
+        await Task.WhenAll(removed.Select(job => RemoveJobAsync(job, ct))).ConfigureAwait(false);
+    }
+    private async Task RemoveJobAsync(Job job, CancellationToken ct)
+    {
+        try
         {
-            try
-            {
-                if (!job.Backend.HasExited) { await job.Backend.StopAsync(ct).ConfigureAwait(false); }
+            if (!job.Backend.HasExited) { await job.Backend.StopAsync(ct).ConfigureAwait(false); }
 
-                await job.Backend.DisposeAsync().ConfigureAwait(false);
-                lock (_gate) { _jobs.Remove(job.Id); }
+            await job.Backend.DisposeAsync().ConfigureAwait(false);
+            lock (_gate) { _jobs.Remove(job.Id); }
 
-                job.Configuration?.Dispose();
-                job.Permission.Dispose();
-            }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
-            catch (Exception ex) { logger.LogWarning(ex, "Background job {JobId} could not stop, its owner may retry cleanup.", job.Id); }
+            job.Configuration?.Dispose();
+            job.Permission.Dispose();
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+        catch (Exception ex) { logger.LogWarning(ex, "Background job {JobId} could not stop, its owner may retry cleanup.", job.Id); }
     }
     private Task PruneAsync()
     {

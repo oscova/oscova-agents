@@ -39,6 +39,7 @@ internal sealed class PendingTextReplies<TKey> where TKey : notnull
     {
         var waiter = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         var pending = new PendingReply(waiter, cancelRun);
+        // One gated run prompts a conversation at a time, so the newest prompt owns its reply.
         _waiters[key] = pending;
         try
         {

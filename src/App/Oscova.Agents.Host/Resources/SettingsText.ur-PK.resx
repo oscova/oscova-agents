@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>شامل کردہ لائسنس نوٹس لوڈ نہیں کیے جا سکے۔</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>بال</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>اوپری لباس</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>لباس</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>منتخب اواتار کے لیے بال منتخب کریں۔</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>منتخب اواتار کے لیے اوپری لباس منتخب کریں۔</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>منتخب اوتار کے لیے لباس منتخب کریں۔</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>ظاہری شکل کے کچھ اختیارات لوڈ نہیں ہو سکے۔ انجن کا کنکشن چیک کریں اور ریفریش کریں۔</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>{0} لاگو نہیں ہو سکا: {1}۔ دستیاب اختیار منتخب کریں اور دوبارہ کوشش کریں۔</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

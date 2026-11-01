@@ -254,7 +254,7 @@ oscova avatar mcp stop
 | `logout` | Revoke and remove this CLI login. |
 | `whoami` | Show CLI login and local control state. |
 
-`oscova login` shows a **Sign in** card with a browser approval link that already contains the approval code. If you are signed out in the browser, sign in and create or unlock your vault, then Oscova shows **Approve CLI access** for that link. Select **Approve** to authorize the terminal. If the code has expired, run `oscova login` again.
+`oscova login` shows a **Sign in** card with a browser approval link that already contains the approval code. If you are signed out in the browser, sign in and create or unlock your vault, then Oscova shows **Approve CLI access** for that link. Select **Approve** to authorize the terminal. If you signed out or changed your password in another tab, **Approve** signs that tab out instead, so sign in again and reopen the link. If the code has expired, run `oscova login` again.
 
 ### Chat
 
@@ -423,6 +423,8 @@ dotnet tool update Oscova.Agents.App --global --version <VERSION> --source https
 ```
 
 The next successful start records the version and reports the change once. It then checks for newer compatible releases of installed plugins, including third-party packages. Interactive startup asks before each plugin update, with **No** as the default. Unattended startup only reports them. Incompatible plugins are disabled before loading, with their files, settings and data kept. Oscova never asks to reset or erase data during an update, and uninstalling Oscova does not remove the shared .NET SDK.
+
+`oscova update` shows each step in its update console and, when the console accepts input, waits for you after a failure. `--no-interactive`, `--json`, `--quiet` and `--no-color` apply only to the preparation before the console takes over.
 
 ### Recover from a failed update
 

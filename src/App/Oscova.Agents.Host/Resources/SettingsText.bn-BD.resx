@@ -1424,9 +1424,9 @@ NODE_ENV=production</value></data>
     <value>অন্তর্ভুক্ত লাইসেন্স বিজ্ঞপ্তিগুলি লোড করা যায়নি।</value>
   </data>
   <data name="Settings.Avatar.HairLabel" xml:space="preserve"><value>চুল</value></data>
-  <data name="Settings.Avatar.TopClothingLabel" xml:space="preserve"><value>উপরের পোশাক</value></data>
+  <data name="Settings.Avatar.OutfitLabel" xml:space="preserve"><value>পোশাক</value></data>
   <data name="Settings.Avatar.ChooseHairDescription" xml:space="preserve"><value>নির্বাচিত অ্যাভাটারের জন্য চুল বেছে নিন।</value></data>
-  <data name="Settings.Avatar.ChooseTopClothingDescription" xml:space="preserve"><value>নির্বাচিত অ্যাভাটারের জন্য উপরের পোশাক বেছে নিন।</value></data>
+  <data name="Settings.Avatar.ChooseOutfitDescription" xml:space="preserve"><value>নির্বাচিত অবতারের জন্য একটি পোশাক বেছে নিন।</value></data>
   <data name="Settings.Avatar.AppearanceCatalogFailedToast" xml:space="preserve"><value>কিছু সাজসজ্জার বিকল্প লোড করা যায়নি। ইঞ্জিন সংযোগ পরীক্ষা করে রিফ্রেশ করুন।</value></data>
   <data name="Settings.Avatar.AppearanceApplyFailedToast" xml:space="preserve"><value>{0} প্রয়োগ করা যায়নি: {1}। উপলব্ধ বিকল্প বেছে আবার চেষ্টা করুন।</value></data>
   <data name="Settings.ApplicationUpdate.Check" xml:space="preserve">

@@ -314,7 +314,8 @@ public class UserDirectoryService : IUserDirectoryService
         }
 
         // Protect reserved root directories, which exist only in a user's own folder
-        var relFromUser = Path.GetRelativePath(userDir, fullPath);
+        // Trailing separators never change which directory is protected.
+        var relFromUser = Path.GetRelativePath(userDir, normalizedFullPath);
         if (root == FileRoot.Home && ProtectedDirectories.Contains(relFromUser))
         {
             throw new InvalidOperationException($"The '{relFromUser}' directory is protected and cannot be deleted.");

@@ -45,6 +45,7 @@ using Oscova.Agents.Infrastructure.Net;
 using Oscova.Agents.Infrastructure.Speech;
 using Oscova.Agents.Infrastructure.Secrets;
 using Oscova.Agents.Infrastructure.Downloads;
+using Oscova.Agents.Infrastructure.Mcp;
 using Oscova.Agents.Infrastructure.Mcp.Registry;
 using Oscova.Agents.Infrastructure.Plugins;
 using Oscova.Agents.Infrastructure.Plugins.Registry;
@@ -101,7 +102,11 @@ public static class DependencyInjection
         serviceCollection.AddHttpClient();
         serviceCollection.AddHttpClient(GitHubSkillApiCache.ClientName)
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+        serviceCollection.AddHttpClient(HttpHookExecutor.LocalOnlyClientName)
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
         serviceCollection.ConfigureHttpClientDefaults(builder => builder.AddHttpMessageHandler<AirGapHttpHandler>());
+        serviceCollection.AddHttpClient(McpTransportFactory.LocalOnlyClientName)
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
         serviceCollection.AddSingleton<PluginContextFactory>();
         serviceCollection.AddHttpClient(PluginHostServices.GuardedClient)
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
