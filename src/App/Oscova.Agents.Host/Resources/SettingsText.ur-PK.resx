@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>غیر فعال</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>لوڈ ناکام ہو گیا</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>غلط مینی فیسٹ</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>اس پلیٹ فارم پر دستیاب نہیں</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>پلگ ان کی تفصیلات</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>فعال کردہ پلگ انز Oscova Agents کے اندر قابل اعتماد کوڈ چلاتے ہیں۔ صرف ان پلگ انز کو فعال کریں جن پر آپ کو بھروسا ہو۔</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>نام</value></data>

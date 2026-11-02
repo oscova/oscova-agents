@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>निष्क्रिय</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>लोड विफल</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>अमान्य मेनिफेस्ट</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>इस प्लेटफ़ॉर्म पर उपलब्ध नहीं</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>प्लगइन विवरण</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>सक्षम प्लगइन्स Oscova Agents के अंदर विश्वसनीय कोड चलाते हैं। केवल उन प्लगइन्स को सक्षम करें जिन पर आप भरोसा करते हैं।</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>नाम</value></data>

@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>未激活</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>加载失败</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>清单无效</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>此平台不可用</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>插件详情</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>已启用的插件在 Oscova Agents 内部运行受信任代码。请仅启用你信任的插件。</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>名称</value></data>

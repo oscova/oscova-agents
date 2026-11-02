@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>غير نشط</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>فشل التحميل</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>بيان غير صالح</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>غير متاح على هذا النظام الأساسي</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>تفاصيل المكون الإضافي</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>تقوم المكونات الإضافية الممكنة بتشغيل تعليمات برمجية موثوقة داخل Oscova Agents. لا تقم بتمكين سوى المكونات الإضافية التي تثق بها.</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>الاسم</value></data>

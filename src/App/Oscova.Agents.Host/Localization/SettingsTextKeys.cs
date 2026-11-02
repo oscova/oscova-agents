@@ -1160,6 +1160,7 @@ public static class SettingsTextKeys
     public const string PluginsStatusInactive = "Settings.Plugins.StatusInactive";
     public const string PluginsStatusLoadFailed = "Settings.Plugins.StatusLoadFailed";
     public const string PluginsStatusInvalidManifest = "Settings.Plugins.StatusInvalidManifest";
+    public const string PluginsStatusUnavailableOnPlatform = "Settings.Plugins.StatusUnavailableOnPlatform";
     public const string PluginsDetailsTitle = "Settings.Plugins.DetailsTitle";
     public const string PluginsDetailsTrustNotice = "Settings.Plugins.DetailsTrustNotice";
     public const string PluginsNameLabel = "Settings.Plugins.NameLabel";

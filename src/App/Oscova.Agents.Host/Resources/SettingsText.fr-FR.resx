@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>Inactif</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>Échec du chargement</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>Manifeste non valide</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>Non disponible sur cette plateforme</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>Détails du plugin</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>Les plugins activés exécutent du code approuvé au sein d'Oscova Agents. N'activez que les plugins auxquels vous faites confiance.</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>Nom</value></data>

@@ -101,6 +101,7 @@ Each capability's CPU and CUDA editions share one plugin ID, so activation, mode
 - **Active**: loaded when the current host process started. This confirms loading, not that native GPU inference is ready.
 - **Load failed**: enabled at startup but could not load.
 - **Invalid manifest**: the `oscova-plugin.json` or referenced assembly failed validation.
+- **Not available on this platform**: the plugin has no package for this operating system, for example after you import an environment from another machine. Updates skip it. To remove it, turn it off, save and restart if it is still enabled, then select **Uninstall**.
 
 The restart warning appears when the saved allowlist differs from startup or a validated replacement is pending. The information button shows the name, plugin ID, version, assembly, entry type, current status, next-start setting and any diagnostic message. Diagnostics explain failures and are not a security review.
 

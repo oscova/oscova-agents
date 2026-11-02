@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>নিষ্ক্রিয়</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>লোড ব্যর্থ হয়েছে</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>অবৈধ ম্যানিফেস্ট</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>এই প্ল্যাটফর্মে উপলব্ধ নয়</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>প্লাগইনের বিবরণ</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>সক্ষম প্লাগইনগুলি Oscova Agents-এর ভিতরে বিশ্বস্ত কোড চালায়। কেবল আপনার বিশ্বস্ত প্লাগইনগুলি সক্রিয় করুন৷</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>নাম</value></data>

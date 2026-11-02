@@ -165,7 +165,7 @@ else
                                                         @onclick="() => OpenDetailsAsync(plugin)">
                                                     <iconify-icon icon="lucide:info" width="16" height="16"></iconify-icon>
                                                 </button>
-                                                @if (UserScope.IsInRole("Admin") && (plugin.CanConfigure || plugin.Status == PluginRuntimeStatus.Inactive) && !string.IsNullOrWhiteSpace(plugin.Id))
+                                                @if (UserScope.IsInRole("Admin") && IsRemovable(plugin) && !string.IsNullOrWhiteSpace(plugin.Id))
                                                 {
                                                     var uninstallDisabled = !CanUninstall(plugin);
                                                     var uninstallLabel = FormatPluginText(
@@ -354,8 +354,11 @@ else
         return !string.IsNullOrWhiteSpace(plugin.Id) && _draftEnabledPluginIds.Contains(plugin.Id);
     }
 
+    private static bool IsRemovable(PluginSettingsEntry plugin) =>
+        plugin.CanConfigure || plugin.Status is PluginRuntimeStatus.Inactive or PluginRuntimeStatus.UnavailableOnPlatform;
+
     private bool CanUninstall(PluginSettingsEntry plugin) =>
-        (plugin.CanConfigure || plugin.Status == PluginRuntimeStatus.Inactive) &&
+        IsRemovable(plugin) &&
         !string.IsNullOrWhiteSpace(plugin.Id) &&
         !plugin.EnabledAtStartup &&
         !plugin.LoadOnNextRestart &&
@@ -415,6 +418,7 @@ else
             PluginRuntimeStatus.Active => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusActive, "Active"),
             PluginRuntimeStatus.LoadFailed => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusLoadFailed, "Load failed"),
             PluginRuntimeStatus.InvalidManifest => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusInvalidManifest, "Invalid manifest"),
+            PluginRuntimeStatus.UnavailableOnPlatform => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusUnavailableOnPlatform, "Not available on this platform"),
             _ => Loc.GetOrDefault(SettingsTextKeys.PluginsStatusInactive, "Inactive")
         };
     }

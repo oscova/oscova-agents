@@ -929,6 +929,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>Inactivo</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>Error al cargar</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>Manifiesto no válido</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>No disponible en esta plataforma</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>Detalles del plugin</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>Los plugins activados ejecutan código de confianza dentro de Oscova Agents. Activa solo plugins de confianza.</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>Nombre</value></data>

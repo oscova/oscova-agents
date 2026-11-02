@@ -937,6 +937,7 @@
 	<data name="Settings.Plugins.StatusInactive"><value>Tidak aktif</value></data>
 	<data name="Settings.Plugins.StatusLoadFailed"><value>Gagal memuat</value></data>
 	<data name="Settings.Plugins.StatusInvalidManifest"><value>Manifes tidak valid</value></data>
+	<data name="Settings.Plugins.StatusUnavailableOnPlatform"><value>Tidak tersedia di platform ini</value></data>
 	<data name="Settings.Plugins.DetailsTitle"><value>Detail Plugin</value></data>
 	<data name="Settings.Plugins.DetailsTrustNotice"><value>Plugin yang diaktifkan menjalankan kode tepercaya di dalam Oscova Agents. Aktifkan hanya plugin yang Anda percayai.</value></data>
 	<data name="Settings.Plugins.NameLabel"><value>Nama</value></data>

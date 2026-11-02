@@ -2,6 +2,7 @@ using System.Reflection;
 using NuGet.Frameworks;
 using NuGet.Packaging;
 using NuGet.Versioning;
+using Oscova.Agents.Core.Plugins.Registry;
 using Oscova.Agents.Core.Settings;
 using Oscova.Agents.Plugins;
 
@@ -43,6 +44,14 @@ public static class PluginFrameworkCompatibility
         return declarations.Length == 1 ? declarations[0] : null;
     }
 
+    /// <summary>
+    /// Returns true when the loader rejected a valid manifest only because it excludes this platform.
+    /// A manifest that failed validation never qualifies, so its unchecked id is never trusted.
+    /// </summary>
+    public static bool IsUnavailableOnPlatform(AgentPluginInspection inspection) =>
+        inspection.Manifest is { } manifest &&
+        inspection.Diagnostic?.Message == new PluginPlatformNotSupportedException(manifest.Id, AgentPluginLoader.SupportedRuntimeIdentifier).Message;
+
     /// <summary>Disables incompatible installations without removing their files or selection records.</summary>
     public static async Task AdmitAsync(string pluginsRoot, PluginActivationSettings settings, CancellationToken cancellationToken)
     {
@@ -57,7 +66,9 @@ public static class PluginFrameworkCompatibility
             if (reason is null) { continue; }
 
             enabled.Remove(manifest.Id);
-            reasons[manifest.Id] = reason;
+
+            // No release can ever load on a platform the plugin does not support, so that reason wins.
+            reasons[manifest.Id] = IsUnavailableOnPlatform(inspection) ? inspection.Diagnostic!.Message : reason;
         }
 
         var reasonsChanged = reasons.Count != settings.CompatibilityDisabledReasons.Count ||

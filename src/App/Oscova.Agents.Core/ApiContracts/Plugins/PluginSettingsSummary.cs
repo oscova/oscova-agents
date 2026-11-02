@@ -11,7 +11,8 @@ public enum PluginRuntimeStatus
     Active,
     Inactive,
     LoadFailed,
-    InvalidManifest
+    InvalidManifest,
+    UnavailableOnPlatform
 }
 
 /// <summary>

@@ -247,8 +247,9 @@ public sealed class NuGetPluginRegistryService(
     public static async Task<IReadOnlyList<InstalledPluginUpdate>> FindInstalledUpdatesAsync(
         IPluginRegistryService registry, string pluginsRoot, string frameworkVersion, CancellationToken cancellationToken)
     {
+        // A plugin without a package for this platform cannot be restored, so it is never offered.
         var checks = AgentPluginLoader.InspectDirectory(pluginsRoot)
-            .Where(inspection => inspection.Manifest is not null)
+            .Where(inspection => inspection.Manifest?.SupportsRuntimeIdentifier(AgentPluginLoader.SupportedRuntimeIdentifier) == true)
             .Select(async inspection =>
             {
                 var package = InstalledPluginPackage.Read(inspection);

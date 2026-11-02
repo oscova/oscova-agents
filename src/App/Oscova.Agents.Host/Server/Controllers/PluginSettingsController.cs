@@ -139,7 +139,7 @@ public sealed class PluginSettingsController(
             await _activationSettings.LoadAsync();
             var inspection = AgentPluginLoader.InspectDirectory(PathUtil.PluginsPath)
                 .FirstOrDefault(inspection =>
-                    inspection.Diagnostic is null &&
+                    (inspection.Diagnostic is null || PluginFrameworkCompatibility.IsUnavailableOnPlatform(inspection)) &&
                     string.Equals(inspection.Manifest?.Id, pluginId, StringComparison.OrdinalIgnoreCase));
             var installedPluginId = inspection?.Manifest?.Id;
             var pluginDirectory = installedPluginId is null
@@ -285,7 +285,7 @@ public sealed class PluginSettingsController(
                 HardwareRequirement = GetHardwareRequirement(manifest),
                 Assembly = manifest?.Assembly,
                 EntryType = manifest?.EntryType,
-                Status = PluginRuntimeStatus.InvalidManifest,
+                Status = PluginFrameworkCompatibility.IsUnavailableOnPlatform(inspection) ? PluginRuntimeStatus.UnavailableOnPlatform : PluginRuntimeStatus.InvalidManifest,
                 CanConfigure = isEnabled,
                 EnabledAtStartup = manifest is not null && _startupState.WasEnabled(manifest.Id),
                 LoadOnNextRestart = isEnabled,
