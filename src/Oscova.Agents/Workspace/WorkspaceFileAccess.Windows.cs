@@ -12,6 +12,9 @@ namespace Oscova.Agents.Workspace;
 public sealed partial class WorkspaceFileAccess
 {
     private const uint WindowsDelete = 0x00010000;
+    private const uint WindowsReadControl = 0x00020000;
+    private const uint WindowsDaclSecurityInformation = 0x00000004;
+    private const int WindowsFileObject = 1;
     private const uint WindowsSynchronize = 0x00100000;
     private const uint WindowsReadData = 0x00000001;
     private const uint WindowsWriteData = 0x00000002;
@@ -90,8 +93,10 @@ public sealed partial class WorkspaceFileAccess
         }
 
         string temporaryName = Path.GetFileName(FileUtil.CreateSiblingTempPath(parent.TargetName));
+        IntPtr securityDescriptor = ReadReplacementSecurityWindows(parent, path.FullPath);
         try
         {
+            // Replacement content starts with the target's access restrictions.
             using SafeFileHandle handle = OpenRelativeWindows(
                 parent.DirectoryHandle,
                 temporaryName,
@@ -99,18 +104,69 @@ public sealed partial class WorkspaceFileAccess
                 WindowsCreate,
                 WindowsNonDirectoryFile | WindowsOpenReparsePoint | WindowsSynchronousIo,
                 WindowsShareRead | WindowsShareDelete,
-                path.FullPath);
+                path.FullPath,
+                securityDescriptor);
             using (var stream = new FileStream(handle, FileAccess.Write))
             {
-                write(stream);
-                stream.Flush();
-                ReplaceRelativeWindows(handle, parent.DirectoryHandle, parent.TargetName, path.FullPath);
+                try
+                {
+                    write(stream);
+                    stream.Flush();
+                    ReplaceRelativeWindows(handle, parent.DirectoryHandle, parent.TargetName, path.FullPath);
+                }
+                catch
+                {
+                    try
+                    {
+                        // The copied ACL may deny reopening staging, so delete through its existing handle.
+                        SetDeleteDisposition(handle, path.FullPath);
+                    }
+                    catch
+                    {
+                        // Preserve the write failure and leave the outer cleanup as a fallback.
+                    }
+
+                    throw;
+                }
             }
         }
         catch
         {
             TryDeleteRelativeWindows(parent.DirectoryHandle, temporaryName);
             throw;
+        }
+        finally
+        {
+            if (securityDescriptor != IntPtr.Zero) { LocalFree(securityDescriptor); }
+        }
+    }
+
+    /// <summary>Reads the target DACL through the held directory before creating its replacement.</summary>
+    private static IntPtr ReadReplacementSecurityWindows(WindowsOpenedParent parent, string displayPath)
+    {
+        if (!TryOpenRelativeWindows(parent.DirectoryHandle, parent.TargetName,
+                WindowsReadControl | WindowsReadAttributes | WindowsSynchronize, WindowsOpen,
+                WindowsNonDirectoryFile | WindowsOpenReparsePoint | WindowsSynchronousIo,
+                WindowsShareRead | WindowsShareWrite | WindowsShareDelete, out SafeFileHandle? handle, out int status))
+        {
+            if (IsWindowsMissing(status)) { return IntPtr.Zero; }
+
+            throw CreateWindowsException("Read permissions", displayPath, status);
+        }
+
+        using (handle)
+        {
+            RejectReparsePoint(handle!, displayPath);
+            int error = GetSecurityInfo(handle!, WindowsFileObject, WindowsDaclSecurityInformation,
+                IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, out IntPtr descriptor);
+            if (error != 0)
+            {
+                if (descriptor != IntPtr.Zero) { LocalFree(descriptor); }
+
+                throw CreateWindowsExceptionFromError("Read permissions", displayPath, error);
+            }
+
+            return descriptor;
         }
     }
 
@@ -352,9 +408,10 @@ public sealed partial class WorkspaceFileAccess
         uint disposition,
         uint options,
         uint share,
-        string displayPath)
+        string displayPath,
+        IntPtr securityDescriptor = default)
     {
-        if (TryOpenRelativeWindows(parent, name, access, disposition, options, share, out SafeFileHandle? handle, out int status))
+        if (TryOpenRelativeWindows(parent, name, access, disposition, options, share, out SafeFileHandle? handle, out int status, securityDescriptor))
         {
             return handle!;
         }
@@ -370,7 +427,8 @@ public sealed partial class WorkspaceFileAccess
         uint options,
         uint share,
         out SafeFileHandle? handle,
-        out int status)
+        out int status,
+        IntPtr securityDescriptor = default)
     {
         IntPtr nameBuffer = Marshal.StringToHGlobalUni(name);
         IntPtr unicodeStringPointer = IntPtr.Zero;
@@ -389,7 +447,8 @@ public sealed partial class WorkspaceFileAccess
                 Length = Marshal.SizeOf<ObjectAttributes>(),
                 RootDirectory = parent.DangerousGetHandle(),
                 ObjectName = unicodeStringPointer,
-                Attributes = WindowsObjectCaseInsensitive
+                Attributes = WindowsObjectCaseInsensitive,
+                SecurityDescriptor = securityDescriptor
             };
             var ioStatus = new IoStatusBlock();
             status = NtCreateFile(
@@ -669,6 +728,13 @@ public sealed partial class WorkspaceFileAccess
         int informationClass,
         out FileStandardInformation information,
         int bufferSize);
+
+    [DllImport("advapi32.dll")]
+    private static extern int GetSecurityInfo(SafeFileHandle handle, int objectType, uint securityInfo,
+        IntPtr owner, IntPtr group, IntPtr dacl, IntPtr sacl, out IntPtr securityDescriptor);
+
+    [DllImport("kernel32.dll")]
+    private static extern IntPtr LocalFree(IntPtr memory);
 
     [DllImport("ntdll.dll")]
     private static extern int NtCreateFile(

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Oscova.Agents.Collections;
 using Oscova.Agents.Harness;
 using Oscova.Agents.Toolsets;
@@ -32,6 +33,45 @@ public sealed class CodingToolsetTests : IDisposable
 
         Assert.Equal(["file__apply_patch", "file__edit", "file__glob", "file__grep", "file__read", "file__write"],
             tools.Select(tool => tool.Name).Order(StringComparer.Ordinal));
+    }
+
+    /// <summary>Named pipes fail file reads and appends without blocking the agent or writing pipe content.</summary>
+    [SkippableFact]
+    [Trait("Category", "Slow")]
+    public async Task ReadFile_WithoutNamedPipeWriter_ReturnsToolFailure()
+    {
+        Skip.IfNot(OperatingSystem.IsLinux(), "Requires Linux FIFO semantics.");
+        var text = WriteWorkspaceFile("notes.txt", "ordinary content\n");
+        Assert.Contains("ordinary content", _toolset.ReadFile(text), StringComparison.Ordinal);
+        _toolset.WriteFile(text, "appended", append: true);
+        Assert.Contains("appended", _toolset.ReadFile(text), StringComparison.Ordinal);
+
+        var pipe = GetWorkspaceFile("events.txt");
+        using var mkfifo = Process.Start(new ProcessStartInfo("mkfifo") { ArgumentList = { pipe } });
+        Assert.NotNull(mkfifo);
+        await mkfifo.WaitForExitAsync();
+        Assert.Equal(0, mkfifo.ExitCode);
+
+        var read = Task.Run(() =>
+        {
+            Assert.Throws<ToolFailureException>(() => _toolset.ReadFile(pipe));
+            Assert.Throws<ToolFailureException>(() => _toolset.WriteFile(pipe, "must not write", append: true));
+        });
+        try
+        {
+            await read.WaitAsync(TimeSpan.FromSeconds(3));
+        }
+        catch (TimeoutException)
+        {
+            // Linux opens a read/write FIFO handle without waiting for a peer. Release the blocked read.
+            using var release = File.OpenHandle(pipe, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+            await read.WaitAsync(TimeSpan.FromSeconds(3));
+            Assert.Fail("The file operation timed out and returned only after a peer opened the named pipe.");
+        }
+
+        // A connected pipe must also fail before appending any bytes.
+        using var connectedPipe = File.OpenHandle(pipe, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+        Assert.Throws<ToolFailureException>(() => _toolset.WriteFile(pipe, "must not write", append: true));
     }
 
     /// <summary>A successful case-only move must preserve destination content on Windows.</summary>

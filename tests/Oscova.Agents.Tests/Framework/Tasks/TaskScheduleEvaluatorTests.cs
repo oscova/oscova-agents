@@ -144,6 +144,7 @@ namespace Oscova.Agents.Tests.Framework.Tasks
         {
             var task = OneShotTask(Now.AddMinutes(-5));
             var run = RunWithStatus(AgentTaskStatus.Completed);
+            run.TriggerSource = TaskTriggerSource.Manual;
             Assert.False(TaskScheduleEvaluator.IsDue(task, run, Now));
         }
 
@@ -152,6 +153,7 @@ namespace Oscova.Agents.Tests.Framework.Tasks
         {
             var task = OneShotTask(Now.AddMinutes(-5));
             var run = RunWithStatus(AgentTaskStatus.Failed);
+            run.TriggerSource = TaskTriggerSource.Manual;
             Assert.False(TaskScheduleEvaluator.IsDue(task, run, Now));
         }
 
@@ -161,6 +163,36 @@ namespace Oscova.Agents.Tests.Framework.Tasks
             var task = OneShotTask(Now.AddMinutes(-5));
             var run = RunWithStatus(AgentTaskStatus.Running);
             Assert.False(TaskScheduleEvaluator.IsDue(task, run, Now));
+        }
+
+        /// <summary>A completed occurrence does not consume a later schedule saved by the user.</summary>
+        [Fact]
+        public void OneShot_RescheduledAfterCompletion_IsDue()
+        {
+            var task = OneShotTask(Now.AddDays(-1));
+            var run = new AgentTaskRun
+            {
+                Status = AgentTaskStatus.Completed,
+                StartedAt = Now.AddDays(-1),
+                CompletedAt = Now.AddDays(-1).AddMinutes(1)
+            };
+
+            task.Schedule.RunAt = Now;
+
+            Assert.True(TaskScheduleEvaluator.IsDue(task, run, Now));
+        }
+
+        /// <summary>A scheduled run at Run At consumes the occurrence even when it fails or is skipped.</summary>
+        [Theory]
+        [InlineData(AgentTaskStatus.Completed)]
+        [InlineData(AgentTaskStatus.Failed)]
+        [InlineData(AgentTaskStatus.Skipped)]
+        public void OneShot_ScheduledOccurrenceConsumed_IsNotDue(AgentTaskStatus status)
+        {
+            var task = OneShotTask(Now);
+            var run = new AgentTaskRun { Status = status, StartedAt = Now, TriggerSource = TaskTriggerSource.Schedule };
+
+            Assert.False(TaskScheduleEvaluator.IsDue(task, run, Now.AddMinutes(1)));
         }
 
         [Fact]

@@ -60,7 +60,7 @@ public sealed class DurableVectorIndex : IDisposable
         _logger = logger;
     }
 
-    /// <summary>Reads durable publication state without opening or creating the vector database.</summary>
+    /// <summary>Reads durable publication state without creating the vector database.</summary>
     public async Task<DurableVectorIndexSnapshot> GetSnapshotAsync(
         CancellationToken cancellationToken = default)
     {
@@ -237,8 +237,9 @@ public sealed class DurableVectorIndex : IDisposable
             };
             await _manifestStore.SaveAsync(manifest, cancellationToken).ConfigureAwait(false);
             publicationStarted = true;
+            // Remove interrupted append rows without discarding any earlier committed batch.
             await DeleteRecordsAsync(
-                record => record.SourceId == sourceId && record.GenerationId == generationId,
+                record => record.SourceId == sourceId && record.EndPosition > committedPosition,
                 space.VectorDimensions,
                 cancellationToken).ConfigureAwait(false);
             var records = CreateRecords(
@@ -530,17 +531,18 @@ public sealed class DurableVectorIndex : IDisposable
         _mutationGate.Dispose();
     }
 
-    /// <summary>Detects lost physical rows even when another collection recreated the database.</summary>
+    /// <summary>Detects missing or incompatible backing tables after interrupted storage changes.</summary>
     private async Task<bool> HasBackingCollectionAsync(
         DurableVectorIndexManifestLoadResult load,
         CancellationToken cancellationToken)
     {
         bool expectsRecords = load.Manifest.Sources.Values.Any(static source =>
             source.State is DurableVectorSourceState.Pending or DurableVectorSourceState.Committed);
-        if (!expectsRecords) { return true; }
-        if (!File.Exists(_vectorDatabasePath)) { return false; }
+        if (!File.Exists(_vectorDatabasePath)) { return !expectsRecords; }
+
         await using var store = _createStore();
-        return await store.CollectionExistsAsync(_collectionName, cancellationToken).ConfigureAwait(false);
+        return await store.IsCollectionCompatibleAsync(_collectionName, load.Manifest.VectorDimensions,
+            allowMissing: !expectsRecords, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<DurableVectorIndexManifest> EnsureSpaceAsync(
