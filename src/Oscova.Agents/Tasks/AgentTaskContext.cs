@@ -32,8 +32,8 @@ public class AgentTaskContext
     public JsonElement? SessionElement { get; set; }
 
     /// <summary>
-    /// Gets or sets a callback that serializes the live session at handoff or persistence time.
+    /// Gets or sets a callback that snapshots the session with supplied handoff text, or persists it when text is null.
     /// </summary>
     [JsonIgnore]
-    public Func<CancellationToken, ValueTask<JsonElement?>>? SerializeLiveSessionAsync { get; set; }
+    public Func<string?, CancellationToken, ValueTask<JsonElement?>>? SerializeLiveSessionAsync { get; set; }
 }

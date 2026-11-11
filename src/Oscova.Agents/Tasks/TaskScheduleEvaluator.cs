@@ -56,7 +56,9 @@ namespace Oscova.Agents.Tasks
                         return false;
                     }
 
-                    return latestRun is null;
+                    // A scheduled start cannot precede its Run At, so a later Run At is a new occurrence.
+                    return latestRun is null || latestRun.Status != AgentTaskStatus.Running &&
+                        latestRun.TriggerSource == TaskTriggerSource.Schedule && latestRun.StartedAt < schedule.RunAt.Value;
                 case TaskScheduleKind.Cron when !string.IsNullOrWhiteSpace(schedule.CronExpression):
                     if (latestRun?.Status == AgentTaskStatus.Running)
                     {

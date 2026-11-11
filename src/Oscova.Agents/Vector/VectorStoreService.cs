@@ -1,9 +1,11 @@
 using Microsoft.Extensions.AI;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.VectorData;
 using CommunityToolkit.VectorData.SqliteVec;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -17,6 +19,7 @@ namespace Oscova.Agents.Vector
     public sealed class VectorStoreService : IAsyncDisposable
     {
         private readonly SqliteVectorStore _vectorStore;
+        private readonly string _connectionString;
 
         /// <summary>Creates a vector store using the connection policy supplied by its owner.</summary>
         /// <param name="vectorDbPath">The database path whose parent directory must exist.</param>
@@ -24,6 +27,7 @@ namespace Oscova.Agents.Vector
         public VectorStoreService(string vectorDbPath, string connectionString)
         {
             _vectorStore = new SqliteVectorStore(connectionString);
+            _connectionString = connectionString;
             var directoryPath = Path.GetDirectoryName(vectorDbPath);
             if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
             {
@@ -34,6 +38,34 @@ namespace Oscova.Agents.Vector
         /// <summary>Checks for a backing collection without creating it.</summary>
         public Task<bool> CollectionExistsAsync(string collectionName, CancellationToken cancellationToken = default) =>
             _vectorStore.CollectionExistsAsync(collectionName, cancellationToken);
+
+        /// <summary>Checks both backing tables and their vector width without creating a collection.</summary>
+        internal async Task<bool> IsCollectionCompatibleAsync(string collectionName, int dimensions,
+            bool allowMissing, CancellationToken cancellationToken)
+        {
+            await using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await using var command = connection.CreateCommand();
+            command.CommandText = "SELECT name, sql FROM sqlite_schema WHERE type = 'table' AND name IN ($data, $vector)";
+            command.Parameters.AddWithValue("$data", collectionName);
+            command.Parameters.AddWithValue("$vector", "vec_" + collectionName);
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            bool dataExists = false, vectorExists = false, widthMatches = false;
+
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                if (reader.GetString(0) == collectionName) { dataExists = true; }
+                else
+                {
+                    vectorExists = true;
+                    // The connector's vec0 declaration records the physical width across interrupted resets.
+                    widthMatches = reader.GetString(1).Contains(
+                        "Vector FLOAT[" + dimensions.ToString(CultureInfo.InvariantCulture) + "]", StringComparison.Ordinal);
+                }
+            }
+
+            return dataExists && vectorExists && widthMatches || allowMissing && !dataExists && !vectorExists;
+        }
 
         /// <summary>
         /// Gets or creates a typed vector collection.

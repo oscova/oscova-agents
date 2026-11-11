@@ -11,7 +11,7 @@
 		<Version>$(OscovaAgentsVersion)</Version>
 		<AssemblyVersion>3.0.0.0</AssemblyVersion>
 		<Description>Oscova Agents is a reusable .NET agent framework for building local-first AI agents and tools on top of the Microsoft Agent Framework.</Description>
-		<PackageTags>oscova;oscova-agents;ai;agents;agent-framework;llm;local-first;dotnet</PackageTags>
+		<PackageTags>oscova;oscova-agents;ai;agents;agent-framework;llm;local-first;dotnet;mcp;microsoft-agent-framework;self-hosted;ollama</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/oscova/oscova-agents</RepositoryUrl>

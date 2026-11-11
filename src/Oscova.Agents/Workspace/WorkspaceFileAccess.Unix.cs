@@ -18,6 +18,8 @@ public sealed partial class WorkspaceFileAccess
     private const int UnixExclusiveDarwin = 0x800;
     private const int UnixAppendLinux = 0x400;
     private const int UnixAppendDarwin = 0x8;
+    private const int UnixNonBlockingLinux = 0x800;
+    private const int UnixNonBlockingDarwin = 0x4;
     private const int UnixDirectoryLinux = 0x10000;
     private const int UnixDirectoryDarwin = 0x100000;
     private const int UnixNoFollowLinux = 0x20000;
@@ -44,7 +46,8 @@ public sealed partial class WorkspaceFileAccess
     private static Stream OpenReadUnix(ResolvedWorkspacePath path)
     {
         using UnixOpenedParent parent = OpenParentUnix(path, createParents: false);
-        int descriptor = OpenAt(parent.DirectoryDescriptor, parent.TargetName, UnixReadOnly | UnixNoFollow | UnixCloseOnExec);
+        // Special files must reach the seekability guard without waiting for another process.
+        int descriptor = OpenAt(parent.DirectoryDescriptor, parent.TargetName, UnixReadOnly | UnixNoFollow | UnixCloseOnExec | UnixNonBlocking);
         if (descriptor < 0) throw CreateUnixException("Open", path.FullPath, Marshal.GetLastPInvokeError());
 
         var handle = new SafeFileHandle((IntPtr)descriptor, ownsHandle: true);
@@ -67,12 +70,15 @@ public sealed partial class WorkspaceFileAccess
             int descriptor = OpenAt(
                 parent.DirectoryDescriptor,
                 parent.TargetName,
-                UnixWriteOnly | UnixCreate | (createNew ? UnixExclusive : UnixAppend) | UnixNoFollow | UnixCloseOnExec,
+                UnixWriteOnly | UnixCreate | (createNew ? UnixExclusive : UnixAppend) | UnixNoFollow | UnixCloseOnExec | UnixNonBlocking,
                 DefaultCreateMode);
             if (descriptor < 0) throw CreateUnixException("Open", path.FullPath, Marshal.GetLastPInvokeError());
 
             using var handle = new SafeFileHandle((IntPtr)descriptor, ownsHandle: true);
             using var stream = new FileStream(handle, FileAccess.Write);
+            // Appends reject special files just as workspace reads do.
+            if (!stream.CanSeek) { throw new IOException($"Workspace file is not seekable: {path.FullPath}"); }
+
             // Positioned writes do not honor O_APPEND on macOS.
             if (append) { stream.Seek(0, SeekOrigin.End); }
             write(stream);
@@ -387,6 +393,7 @@ public sealed partial class WorkspaceFileAccess
     private static int UnixCreate => OperatingSystem.IsMacOS() ? UnixCreateDarwin : UnixCreateLinux;
     private static int UnixExclusive => OperatingSystem.IsMacOS() ? UnixExclusiveDarwin : UnixExclusiveLinux;
     private static int UnixAppend => OperatingSystem.IsMacOS() ? UnixAppendDarwin : UnixAppendLinux;
+    private static int UnixNonBlocking => OperatingSystem.IsMacOS() ? UnixNonBlockingDarwin : UnixNonBlockingLinux;
     private static int UnixDirectory => OperatingSystem.IsMacOS() ? UnixDirectoryDarwin : UnixDirectoryLinux;
     private static int UnixNoFollow => OperatingSystem.IsMacOS() ? UnixNoFollowDarwin : UnixNoFollowLinux;
     private static int UnixCloseOnExec => OperatingSystem.IsMacOS() ? UnixCloseOnExecDarwin : UnixCloseOnExecLinux;
