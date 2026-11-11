@@ -227,7 +227,8 @@ public sealed class GatewayCommand(
             return null;
         }
 
-        var host = await resolver.ResolveAsync(target.Settings, requireToken: false, cancellationToken).ConfigureAwait(false);
+        // Recover the host named in the prompt even after its saved login is removed.
+        var host = await resolver.ResolveAsync(WithHost(target.Settings, target.Report.TargetHostUrl), requireToken: false, cancellationToken).ConfigureAwait(false);
         var result = await loginFlow.LoginAsync(host, jsonOutput: false, quiet: false, cancellationToken).ConfigureAwait(false);
         CliOutput.Info($"Logged in to {result.HostUrl} as {result.Entry.IdentityUserName}.", quiet: false);
         var settings = WithHost(target.Settings, result.HostUrl);

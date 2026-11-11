@@ -196,11 +196,9 @@ public static class WebHostStartup
                 ];
             });
 
-            // Voice mode sends base64 WAV audio over the Blazor SignalR circuit.
-            // Default limit is 32KB — increase to allow audio payloads, accounting for base64 overhead.
+            // Audio uses bounded JS streams, while other circuit messages retain the existing receive limit.
             builder.Services.AddSignalR(options =>
             {
-                // Allow up to 4 MB per message so longer utterances (plus base64 overhead) do not break the circuit.
                 options.MaximumReceiveMessageSize = 4 * ByteSize.OneMegabyte; // 4 MB
             });
             builder.Services.AddDeviceNodes();

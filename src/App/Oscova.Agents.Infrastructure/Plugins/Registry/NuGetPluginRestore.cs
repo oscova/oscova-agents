@@ -357,6 +357,12 @@ internal static class NuGetPluginRestore
             throw new ArgumentException("Plugin manifest Id must not contain ':' because it separates credential namespaces.");
         }
 
+        // Discovery reserves dot-prefixed folders for staging and cannot manage an installed plugin there.
+        if (manifest.Id.StartsWith('.'))
+        {
+            throw new ArgumentException("Plugin manifest Id must not start with '.'.");
+        }
+
         if (manifest.Id.IndexOfAny([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]) >= 0 || Path.IsPathRooted(manifest.Id))
         {
             throw new ArgumentException("Plugin manifest Id must be a folder-safe identifier.");

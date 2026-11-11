@@ -31,6 +31,14 @@ public static class InterruptedHistory
         IEnumerable<ChatResponseUpdate> updates)
     {
         var messages = updates.ToChatResponse().Messages;
+        return [.. historyBeforeRun, .. inputMessages, .. RemoveUnfinishedToolExchanges(messages)];
+    }
+
+    /// <summary>Copies history while retaining only tool calls and results that have a matching counterpart.</summary>
+    [SuppressMessage("Design", "MA0016", Justification = "SetInMemoryChatHistory takes a List<ChatMessage>.")]
+    public static List<ChatMessage> RemoveUnfinishedToolExchanges(IEnumerable<ChatMessage> history)
+    {
+        var messages = history.Select(message => message.Clone()).ToList();
         var calls = messages.SelectMany(message => message.Contents)
             .OfType<FunctionCallContent>().Select(call => call.CallId).ToHashSet(StringComparer.Ordinal);
         var results = messages.SelectMany(message => message.Contents)
@@ -48,7 +56,6 @@ public static class InterruptedHistory
             }).ToList();
         }
 
-        return [.. historyBeforeRun, .. inputMessages,
-            .. messages.Where(message => message.Contents.Count > 0)];
+        return messages.Where(message => message.Contents.Count > 0).ToList();
     }
 }

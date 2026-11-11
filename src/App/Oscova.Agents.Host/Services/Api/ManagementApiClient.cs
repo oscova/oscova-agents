@@ -293,11 +293,12 @@ public sealed class ManagementApiClient(HttpClient httpClient) : ApiClientBase
 .ConfigureAwait(false) ?? throw new InvalidOperationException("MCP configuration response was empty.");
     }
 
-    public async Task<bool> SaveMcpConfigurationAsync(IEnumerable<McpServerConfig> servers, CancellationToken ct = default, bool confirmInterruption = false)
+    /// <summary>Saves one editor draft without replacing the account's MCP catalog.</summary>
+    public async Task<bool> UpdateMcpServerAsync(McpServerConfig server, CancellationToken ct = default, bool confirmInterruption = false)
     {
         using var response = await httpClient.PutAsJsonAsync(
-            ApiRoutes.Mcp.Configuration,
-            new SaveMcpConfigurationRequest { Servers = [.. servers.Select(server => server.Clone())], ConfirmInterruption = confirmInterruption },
+            ApiRoutes.Mcp.ServerById(server.Id) + "?confirmInterruption=" + confirmInterruption,
+            server,
             ct).ConfigureAwait(false);
         if (response.StatusCode == HttpStatusCode.Conflict) { return false; }
 

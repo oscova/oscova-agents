@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using System.Net;
 using Oscova.Agents.Infrastructure.Plugins;
@@ -315,16 +314,8 @@ public sealed class NodeCommand(CliHostResolver resolver, CliDeviceLoginFlow log
             () => LocalNodeControl.RequestAsync(paths, entry, stop, ct)).ConfigureAwait(false);
         if (stop && status is not null)
         {
-            try
-            {
-                using var process = Process.GetProcessById(status.Pid);
-                if (!process.HasExited && process.StartTime.ToUniversalTime() == status.StartedAtUtc)
-                {
-                    await CliRender.StatusAsync("Waiting for node cleanup...", settings,
-                        () => process.WaitForExitAsync(ct).WaitAsync(TimeSpan.FromSeconds(60), ct)).ConfigureAwait(false);
-                }
-            }
-            catch (ArgumentException) { }
+            await CliRender.StatusAsync("Waiting for node cleanup...", settings,
+                () => LocalNodeControl.WaitForExitAsync(status, ct)).ConfigureAwait(false);
 
             status = null;
         }

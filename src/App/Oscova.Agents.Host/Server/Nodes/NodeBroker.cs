@@ -89,6 +89,12 @@ public sealed class NodeBroker(
         connection.Identity.UserId == userId && !connection.Disconnected.IsCancellationRequested
             ? connection.Hello : null;
 
+    /// <summary>Identifies the device's current connection so work prepared on another connection is not trusted.</summary>
+    internal string? GetConnectionId(string userId, string nodeId) =>
+        _connections.TryGetValue(nodeId, out var connection) &&
+        connection.Identity.UserId == userId && !connection.Disconnected.IsCancellationRequested
+            ? connection.Id : null;
+
     /// <summary>Removes only the departing connection so it cannot detach a replacement.</summary>
     public void Disconnect(string nodeId, string connectionId)
     {

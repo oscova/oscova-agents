@@ -36,9 +36,53 @@ internal sealed class LocalNodeControl : IAsyncDisposable
     public void SetState(string state) => Volatile.Write(ref _state, state);
 
     /// <summary>Queries or stops only the same OS user's selected enrollment.</summary>
-    public static async Task<NodeProcessStatus?> RequestAsync(CliPaths paths, CliNodeEntry entry, bool stop, CancellationToken ct)
+    public static Task<NodeProcessStatus?> RequestAsync(CliPaths paths, CliNodeEntry entry, bool stop, CancellationToken ct) =>
+        RequestAsync(GetPipeName(paths, entry), stop, ct);
+
+    /// <summary>Stops existing nodes for this CLI root before their control identity is erased.</summary>
+    public static async Task StopAllAsync(CliPaths paths, CancellationToken ct)
     {
-        using var pipe = new NamedPipeClientStream(".", GetPipeName(paths, entry), PipeDirection.InOut,
+        foreach (var path in Directory.EnumerateFiles(LocalLifecycleLease.GetDirectory(paths.RootDirectory), "oscova-n-*.lock"))
+        {
+            using var released = AvatarFileLease.TryAcquire(path);
+            if (released is not null) { continue; }
+
+            var name = Path.GetFileNameWithoutExtension(path);
+            var status = await RequestAsync(name, stop: true, ct).ConfigureAwait(false);
+            if (status is null)
+            {
+                // Shutdown may finish after its pipe closes but before the connection timeout.
+                using var completed = AvatarFileLease.TryAcquire(path);
+                if (completed is not null) { continue; }
+
+                throw new CliExitException(1, $"Node '{name}' did not answer its stop request. Stop the node process and retry erasure. No data was erased.");
+            }
+
+            await WaitForExitAsync(status, ct).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Waits for the identified process to finish cleanup without targeting a reused PID.</summary>
+    public static async Task WaitForExitAsync(NodeProcessStatus status, CancellationToken ct)
+    {
+        try
+        {
+            using var process = Process.GetProcessById(status.Pid);
+            if (!process.HasExited && process.StartTime.ToUniversalTime() == status.StartedAtUtc)
+            {
+                await process.WaitForExitAsync(ct).WaitAsync(TimeSpan.FromSeconds(60), ct).ConfigureAwait(false);
+            }
+        }
+        catch (ArgumentException) { }
+        catch (TimeoutException)
+        {
+            throw new CliExitException(1, $"Node process {status.Pid} has not stopped. Wait for its cleanup or stop that process, then retry.");
+        }
+    }
+
+    private static async Task<NodeProcessStatus?> RequestAsync(string pipeName, bool stop, CancellationToken ct)
+    {
+        using var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut,
             PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
         timeout.CancelAfter(TimeSpan.FromSeconds(5));

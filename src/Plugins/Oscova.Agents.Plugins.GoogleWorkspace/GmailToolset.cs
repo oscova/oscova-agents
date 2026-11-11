@@ -155,7 +155,7 @@ public sealed class GmailToolset : IAgentToolset
             var subject = GetHeader(message, "Subject") ?? "(no subject)";
             var from = GetHeader(message, "From") ?? "(unknown sender)";
             var date = FormatHeaderDate(GetHeader(message, "Date"));
-            var body = ExtractBody(message.Payload);
+            var body = await ExtractBodyAsync(message.Payload, service, messageId, ct).ConfigureAwait(false);
 
             var builder = new StringBuilder();
             builder.AppendLine($"From: {from}")
@@ -331,7 +331,7 @@ public sealed class GmailToolset : IAgentToolset
 
     // Gmail messages can be nested multipart trees. Prefer plain text when available,
     // then HTML, then fall back to any decodable content so the tool returns something useful.
-    private static string ExtractBody(MessagePart? part)
+    private static async Task<string> ExtractBodyAsync(MessagePart? part, GmailService service, string messageId, CancellationToken ct)
     {
         if (part is null)
         {
@@ -340,7 +340,7 @@ public sealed class GmailToolset : IAgentToolset
 
         if (string.Equals(part.MimeType, "text/plain", StringComparison.OrdinalIgnoreCase))
         {
-            return DecodeBody(part.Body?.Data);
+            return await ReadBodyAsync(part, service, messageId, ct).ConfigureAwait(false);
         }
 
         if (part.Parts is { Count: > 0 })
@@ -349,7 +349,7 @@ public sealed class GmailToolset : IAgentToolset
             {
                 if (string.Equals(child.MimeType, "text/plain", StringComparison.OrdinalIgnoreCase))
                 {
-                    var text = DecodeBody(child.Body?.Data);
+                    var text = await ReadBodyAsync(child, service, messageId, ct).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(text))
                     {
                         return text;
@@ -361,7 +361,7 @@ public sealed class GmailToolset : IAgentToolset
             {
                 if (string.Equals(child.MimeType, "text/html", StringComparison.OrdinalIgnoreCase))
                 {
-                    var html = DecodeBody(child.Body?.Data);
+                    var html = await ReadBodyAsync(child, service, messageId, ct).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(html))
                     {
                         return html;
@@ -371,7 +371,7 @@ public sealed class GmailToolset : IAgentToolset
 
             foreach (var child in part.Parts)
             {
-                var nested = ExtractBody(child);
+                var nested = await ExtractBodyAsync(child, service, messageId, ct).ConfigureAwait(false);
                 if (!string.IsNullOrWhiteSpace(nested))
                 {
                     return nested;
@@ -379,7 +379,23 @@ public sealed class GmailToolset : IAgentToolset
             }
         }
 
-        return DecodeBody(part.Body?.Data);
+        return await ReadBodyAsync(part, service, messageId, ct).ConfigureAwait(false);
+    }
+
+    private static async Task<string> ReadBodyAsync(MessagePart part, GmailService service, string messageId, CancellationToken ct)
+    {
+        var data = part.Body?.Data;
+        // Gmail can store the message text separately, but named attachments are not the message body.
+        if (string.IsNullOrWhiteSpace(data) && string.IsNullOrEmpty(part.Filename) &&
+            (string.Equals(part.MimeType, "text/plain", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(part.MimeType, "text/html", StringComparison.OrdinalIgnoreCase)) &&
+            part.Body?.AttachmentId is { Length: > 0 } attachmentId)
+        {
+            var body = await service.Users.Messages.Attachments.Get("me", messageId, attachmentId).ExecuteAsync(ct).ConfigureAwait(false);
+            data = body.Data;
+        }
+
+        return DecodeBody(data);
     }
 
     // Gmail encodes message bodies using base64url rather than standard base64,

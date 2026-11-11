@@ -93,7 +93,15 @@ public class McpToolSettings : SettingsBase
         }) ?? []];
 
     /// <summary>Applies all managed MCP edits through one authorization and interruption boundary.</summary>
-    public async Task SaveDefinitionsAsync(IReadOnlyList<McpServerConfig> definitions, bool confirmed, CancellationToken ct)
+    public Task SaveDefinitionsAsync(IReadOnlyList<McpServerConfig> definitions, bool confirmed, CancellationToken ct) =>
+        SaveDefinitionsCoreAsync(definitions, confirmed, ct, updateOnly: false);
+
+    /// <summary>Updates one owned connection without replacing other saved definitions.</summary>
+    public Task UpdateDefinitionAsync(McpServerConfig definition, bool confirmed, CancellationToken ct) =>
+        SaveDefinitionsCoreAsync([definition], confirmed, ct, updateOnly: true);
+
+    private async Task SaveDefinitionsCoreAsync(IReadOnlyList<McpServerConfig> definitions, bool confirmed,
+        CancellationToken ct, bool updateOnly)
     {
         var permissions = _permissions ?? throw new InvalidOperationException("MCP governance is not initialized.");
         var executions = _executions!;
@@ -102,12 +110,6 @@ public class McpToolSettings : SettingsBase
         if (!isOperator) { await permissions.RequireAsync(ownerId, UserPermissionKeys.ManagePersonalMcp, ct).ConfigureAwait(false); }
 
         var replacements = definitions.Select(server => server.Clone()).ToArray();
-        if (replacements.Select(server => server.Id).Distinct().Count() != replacements.Length ||
-            replacements.Select(server => server.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != replacements.Length)
-        {
-            throw new ArgumentException("MCP connection IDs and names must be unique.");
-        }
-
         foreach (var server in replacements)
         {
             if (string.IsNullOrWhiteSpace(server.NodeId)) { server.NodeId = null; }
@@ -133,6 +135,24 @@ public class McpToolSettings : SettingsBase
 
         await executions.ChangeConfigurationAsync(() =>
         {
+            if (updateOnly)
+            {
+                var edited = replacements[0];
+                if (!_mcpServers.Any(server => server.Id == edited.Id))
+                {
+                    throw new ArgumentException("This MCP connection no longer exists. Reload the page.");
+                }
+
+                // Merge inside the configuration gate so stale editors preserve other connections.
+                replacements = _mcpServers.Select(server => server.Id == edited.Id ? edited : server).ToArray();
+            }
+
+            if (replacements.Select(server => server.Id).Distinct().Count() != replacements.Length ||
+                replacements.Select(server => server.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != replacements.Length)
+            {
+                throw new ArgumentException("MCP connection IDs and names must be unique.");
+            }
+
             return _mcpServers.Where(old =>
             {
                 var replacement = replacements.FirstOrDefault(candidate => candidate.Id == old.Id);

@@ -155,7 +155,7 @@ public sealed class McpServerHub : IMcpServerHub
 
     /// <summary>Builds one conversation's MCP view without replacing another project's tools.</summary>
     public async Task<AgentToolCollection?> GetRunToolsAsync(AgentToolCollection baseline, RunContext? run, CancellationToken ct,
-        IReadOnlyCollection<string>? requiredServerQualifiers = null)
+        IReadOnlyCollection<string>? requiredToolNames = null)
     {
         if (_settings is null || _settings.GetAvailable().Count == 0) { return null; }
 
@@ -166,6 +166,12 @@ public sealed class McpServerHub : IMcpServerHub
         await _connectionGate.WaitAsync(ct).ConfigureAwait(false);
         try
         {
+            // Discovery callbacks replace the baseline, so retain selected tools' supplying identities first.
+            var requiredTools = requiredToolNames?.Select(name => (
+                Name: name,
+                ServerId: baseline.GetExternalToolMetadata(name)?.ServerId,
+                Qualifier: ToolNaming.SplitQualifiedName(name).Qualifier)).ToArray();
+
             if (!_projectHubs.TryGetValue(key, out var hub))
             {
                 hub = new McpServerHub(_logger, _elicitationRouter, _runContextAccessor, _userId,
@@ -186,7 +192,12 @@ public sealed class McpServerHub : IMcpServerHub
                     var result = await hub.ConnectServerInternalAsync(server, ct).ConfigureAwait(false);
                     // Optional connections can fail without preventing an unrelated agent from starting.
                     var qualifier = ToolNaming.NormalizeQualifier(server.Name);
-                    if (!result.IsConnected && requiredServerQualifiers?.Contains(qualifier, StringComparer.OrdinalIgnoreCase) == true)
+                    if (!result.IsConnected && requiredTools?.Any(tool =>
+                        {
+                            var ownerId = tool.ServerId ?? hub.ToolMetadata.GetValueOrDefault(tool.Name)?.ServerId;
+                            return ownerId is not null ? ownerId == server.Id.ToString()
+                                : string.Equals(tool.Qualifier, qualifier, StringComparison.OrdinalIgnoreCase);
+                        }) == true)
                     {
                         throw new McpConnectionException(server.Id.ToString(), result.Error);
                     }
@@ -204,7 +215,7 @@ public sealed class McpServerHub : IMcpServerHub
             foreach (var tool in hub.Tools)
             {
                 var metadata = hub.ToolMetadata[tool.Name];
-                tools.Add(tool, metadata.ServerName, metadata.OriginalName, metadata.NetworkScope);
+                tools.Add(tool, metadata.ServerName, metadata.OriginalName, metadata.NetworkScope, metadata.ServerId);
             }
 
             ToolCollectionChanged?.Invoke();

@@ -1,6 +1,7 @@
 using Oscova.Agents.Conversations;
 using Oscova.Agents.Core.ApiContracts.Chat;
 using Oscova.Agents.Host.Services.Api;
+using Oscova.Agents.Infrastructure.Conversations;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using System.Text.Json;
@@ -27,43 +28,74 @@ public static class CliPromptResponder
 
         RenderCard("Agent needs input", new Text(request.Message, CliTheme.Value), CliTheme.Accent);
 
-        switch (request.SchemaType)
+        while (true)
         {
-            case ElicitationSchemaType.Boolean:
-                var booleanField = request.BooleanFields.FirstOrDefault();
-                var approved = AnsiConsole.Confirm(BuildPrompt(request.Message, booleanField?.Label));
-                await chatApi.SubmitBooleanElicitationAsync(request.RequestId, approved, isCancel: false, cancellationToken).ConfigureAwait(false);
-                break;
-            case ElicitationSchemaType.Number:
-                var numberValues = request.NumberFields.ToDictionary(
-                    field => field.Name,
-                    field => new NumberElicitationValue
+            cancellationToken.ThrowIfCancellationRequested();
+            switch (request.SchemaType)
+            {
+                case ElicitationSchemaType.Boolean:
+                    // One answer covers every condition, so show them all before asking for consent.
+                    foreach (var field in request.BooleanFields)
                     {
-                        // Serialize each numeric type before the conditional can widen integers to double.
-                        Value = field.IsInteger
-                            ? JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<long>(BuildPrompt(request.Message, field.Label)).DefaultValue(Convert.ToInt64(field.Default ?? 0))))
-                            : JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<double>(BuildPrompt(request.Message, field.Label)).DefaultValue(field.Default ?? 0)
-                                .Validate(double.IsFinite, "Enter a finite number."))),
-                        IsInteger = field.IsInteger
-                    },
-                    StringComparer.OrdinalIgnoreCase);
-                await chatApi.SubmitNumberElicitationAsync(request.RequestId, numberValues, isCancel: false, cancellationToken).ConfigureAwait(false);
-                break;
-            case ElicitationSchemaType.Enum:
-                var enumValues = request.EnumFields.ToDictionary(
-                    field => field.Name,
-                    field => AnsiConsole.Prompt(new SelectionPrompt<string>().Title(BuildPrompt(request.Message, field.Label))
-                        .UseConverter(Markup.Escape).AddChoices(field.Options.Select(option => option.Value))),
-                    StringComparer.OrdinalIgnoreCase);
-                await chatApi.SubmitEnumElicitationAsync(request.RequestId, enumValues, isCancel: false, cancellationToken).ConfigureAwait(false);
-                break;
-            default:
-                var stringValues = request.StringFields.ToDictionary(
-                    field => field.Name,
-                    field => AnsiConsole.Prompt(new TextPrompt<string>(BuildPrompt(request.Message, field.Label)).AllowEmpty()),
-                    StringComparer.OrdinalIgnoreCase);
-                await chatApi.SubmitStringElicitationAsync(request.RequestId, stringValues, isCancel: false, cancellationToken).ConfigureAwait(false);
-                break;
+                        AnsiConsole.Write(new Text(field.Label + "\n", CliTheme.Value));
+                        if (!string.IsNullOrWhiteSpace(field.Description)) { AnsiConsole.Write(new Text(field.Description + "\n", CliTheme.Value)); }
+                    }
+
+                    var approved = AnsiConsole.Confirm(BuildPrompt(request.Message, null));
+                    await chatApi.SubmitBooleanElicitationAsync(request.RequestId, approved, isCancel: false, cancellationToken).ConfigureAwait(false);
+                    break;
+                case ElicitationSchemaType.Number:
+                    var numberValues = request.NumberFields.ToDictionary(
+                        field => field.Name,
+                        field => new NumberElicitationValue
+                        {
+                            // Serialize each numeric type before the conditional can widen integers to double.
+                            Value = field.IsInteger
+                                ? JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<long>(BuildPrompt(request.Message, field.Label)).DefaultValue(Convert.ToInt64(field.Default ?? 0))))
+                                : JsonSerializer.SerializeToElement(AnsiConsole.Prompt(new TextPrompt<double>(BuildPrompt(request.Message, field.Label)).DefaultValue(field.Default ?? 0)
+                                    .Validate(double.IsFinite, "Enter a finite number."))),
+                            IsInteger = field.IsInteger
+                        },
+                        StringComparer.OrdinalIgnoreCase);
+                    if (!ValidateAnswer(request, numberValues.ToDictionary(pair => pair.Key, pair => pair.Value.Value, StringComparer.OrdinalIgnoreCase))) { continue; }
+
+                    await chatApi.SubmitNumberElicitationAsync(request.RequestId, numberValues, isCancel: false, cancellationToken).ConfigureAwait(false);
+                    break;
+                case ElicitationSchemaType.Enum:
+                    var enumValues = request.EnumFields.ToDictionary(
+                        field => field.Name,
+                        field => AnsiConsole.Prompt(new SelectionPrompt<string>().Title(BuildPrompt(request.Message, field.Label))
+                            .UseConverter(Markup.Escape).AddChoices(field.Options.Select(option => option.Value))),
+                        StringComparer.OrdinalIgnoreCase);
+                    await chatApi.SubmitEnumElicitationAsync(request.RequestId, enumValues, isCancel: false, cancellationToken).ConfigureAwait(false);
+                    break;
+                default:
+                    var stringValues = request.StringFields.ToDictionary(
+                        field => field.Name,
+                        field => AnsiConsole.Prompt(new TextPrompt<string>(BuildPrompt(request.Message, field.Label)).AllowEmpty()),
+                        StringComparer.OrdinalIgnoreCase);
+                    if (!ValidateAnswer(request, stringValues.ToDictionary(pair => pair.Key, pair => JsonSerializer.SerializeToElement(pair.Value), StringComparer.OrdinalIgnoreCase))) { continue; }
+
+                    await chatApi.SubmitStringElicitationAsync(request.RequestId, stringValues, isCancel: false, cancellationToken).ConfigureAwait(false);
+                    break;
+            }
+
+            return;
+        }
+    }
+
+    // Keep rejected answers in the terminal using the same constraints as the server.
+    private static bool ValidateAnswer(ElicitationRequest request, Dictionary<string, JsonElement> content)
+    {
+        try
+        {
+            ElicitationUtilities.ValidateResponse(request, content);
+            return true;
+        }
+        catch (ArgumentException ex)
+        {
+            AnsiConsole.Write(new Text(ex.Message + "\n", CliTheme.Warning));
+            return false;
         }
     }
 
@@ -112,6 +144,26 @@ public static class CliPromptResponder
         if (shellReview)
         {
             body.AddRow(new Text("review", CliTheme.Label), new Text(request.Message, CliTheme.Value));
+        }
+
+        // Show the resolved release before approving its installation.
+        if (request.Review is { Kind: "registry-install" } review)
+        {
+            body.AddRow(new Text(review.Operation == "skill" ? "skill" : "server", CliTheme.Label),
+                    new Text((review.Operation == "skill" ? review.SkillName : review.ServerName) ?? "-", CliTheme.Value))
+                .AddRow(new Text("publisher", CliTheme.Label), new Text(review.Publisher ?? "-", CliTheme.Value))
+                .AddRow(new Text("source", CliTheme.Label), new Text(review.SourceRepository ?? "-", CliTheme.Value));
+
+            if (review.Version is { } version) { body.AddRow(new Text("version", CliTheme.Label), new Text(version, CliTheme.Value)); }
+
+            if (review.Transport is { } transport) { body.AddRow(new Text("transport", CliTheme.Label), new Text(transport, CliTheme.Value)); }
+
+            if (review.Command is { } command)
+            {
+                body.AddRow(new Text(review.Transport == "Stdio" ? "runs" : "connects to", CliTheme.Label), new Text(command, CliTheme.Value));
+            }
+
+            if (review.NetworkScope is { } scope) { body.AddRow(new Text("network", CliTheme.Label), new Text(scope, CliTheme.Value)); }
         }
 
         foreach (var (name, value) in ArgumentRows(request.Arguments, truncate: !shellReview))

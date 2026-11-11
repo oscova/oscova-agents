@@ -2,6 +2,8 @@
 
 Let another assistant control your Avatar through Model Context Protocol (MCP), a standard way for assistants to discover and call tools. The existing `oscova` tool runs this server independently. Direct Engine controls work without the Oscova web host. Text speech through `avatar_speak` additionally requires the running Assistant host and its operator login.
 
+For step-by-step setup with OpenClaw, Hermes Agent or another MCP agent, see [Give any MCP agent a 3D avatar](references/avatar-engine-ai-agent-avatar.md).
+
 ## Start and connect
 
 1. Install the [Oscova command-line tool](references/user-guide-getting-started-command-line.md).
@@ -120,6 +122,7 @@ The Avatar Engine may be on another trusted LAN machine, but an assistant on ano
 
 ## Related articles
 
+- [Give OpenClaw, Hermes Agent or any MCP agent a 3D avatar](references/avatar-engine-ai-agent-avatar.md)
 - [Connect the Engine](references/avatar-engine-connecting.md)
 - [Troubleshooting](references/avatar-engine-troubleshooting.md)
 - [MCP Servers](references/user-guide-connections-mcp-servers.md)

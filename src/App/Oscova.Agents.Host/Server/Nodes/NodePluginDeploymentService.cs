@@ -103,8 +103,8 @@ public sealed class NodePluginDeploymentService(NodeBroker nodes, NodeCredential
             nodes.GetConnected(item.Key.User, item.Key.Node) is not null)
         .GroupBy(item => item.Key.Plugin, StringComparer.Ordinal)
         .Select(group => new NodePluginStatus(group.Key,
-            group.Where(item => item.Value.State == "ready").Select(item => item.Value.DeviceName).ToArray(),
-            group.Where(item => item.Value.State == "preparing").Select(item => item.Value.DeviceName).ToArray(),
+            group.Where(item => CurrentState(item.Key, item.Value) == "ready").Select(item => item.Value.DeviceName).ToArray(),
+            group.Where(item => CurrentState(item.Key, item.Value) == "preparing").Select(item => item.Value.DeviceName).ToArray(),
             group.Where(item => item.Value.State == "unavailable").Select(item => item.Value.DeviceName).ToArray()))
         .ToArray();
 
@@ -160,7 +160,8 @@ public sealed class NodePluginDeploymentService(NodeBroker nodes, NodeCredential
         {
             var key = (identity.UserId, identity.NodeId, plugin.Manifest.Id);
             var previous = _states.GetValueOrDefault(key);
-            if (previous?.State == "ready") { continue; }
+            var connectionId = nodes.GetConnectionId(identity.UserId, identity.NodeId);
+            if (previous?.State == "ready" && previous.ConnectionId == connectionId) { continue; }
 
             _states[key] = new(null, "preparing", [], previous?.Failure, device.Name);
             await PublishStatusAsync(identity.UserId, plugin.Manifest.Id, ct).ConfigureAwait(false);
@@ -187,7 +188,7 @@ public sealed class NodePluginDeploymentService(NodeBroker nodes, NodeCredential
                 if (tools.Length == 0 || expectedRoles.Any(role => !tools.Contains(role, StringComparer.OrdinalIgnoreCase)))
                 { throw new InvalidOperationException("The package did not expose its declared node-compatible tools or execution contributions."); }
 
-                _states[key] = new(package, "ready", tools, null, device.Name);
+                _states[key] = new(package, "ready", tools, null, device.Name, connectionId);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
             catch (Exception ex)
@@ -236,7 +237,7 @@ public sealed class NodePluginDeploymentService(NodeBroker nodes, NodeCredential
             ?? throw new ToolFailureException("This plugin is disabled. Select an available tool.");
         var package = ReadPackage(plugin);
         if (!_states.TryGetValue((run.UserId, project.NodeId!, pluginId), out var status) ||
-            status.State != "ready" || status.Package != package || !status.Tools.Contains(tool.Name, StringComparer.Ordinal))
+            CurrentState((run.UserId, project.NodeId!, pluginId), status) != "ready" || status.Package != package || !status.Tools.Contains(tool.Name, StringComparer.Ordinal))
         {
             throw new ToolFailureException("This plugin is temporarily unavailable on the project device.",
                 "Check its setup status in Plugins. Setup failures are reported to the operator.");
@@ -258,7 +259,7 @@ public sealed class NodePluginDeploymentService(NodeBroker nodes, NodeCredential
         var plugin = plugins.Plugins.FirstOrDefault(plugin => activation.IsEnabled(plugin.Manifest.Id) &&
             plugin.ExecutionProviders.Any(item => string.Equals(item.Definition.Id, providerId, StringComparison.OrdinalIgnoreCase)));
         if (plugin is null || !_states.TryGetValue((userId, nodeId, plugin.Manifest.Id), out var state) ||
-            state.State != "ready" || state.Package != ReadPackage(plugin) ||
+            CurrentState((userId, nodeId, plugin.Manifest.Id), state) != "ready" || state.Package != ReadPackage(plugin) ||
             !state.Tools.Contains("execution:" + providerId, StringComparer.OrdinalIgnoreCase))
         {
             throw new ToolFailureException("The execution environment is unavailable on the project device.",
@@ -274,7 +275,12 @@ public sealed class NodePluginDeploymentService(NodeBroker nodes, NodeCredential
         return new(plugin.Manifest.Id, package.PackageId, package.Version);
     }
 
-    private sealed record Deployment(NodePluginPackage? Package, string State, IReadOnlyList<string> Tools, string? Failure, string DeviceName);
+    /// <summary>Reports readiness only for the connection that prepared it; a reconnected device prepares again.</summary>
+    private string CurrentState((string User, string Node, string Plugin) key, Deployment state) =>
+        state.State == "ready" && state.ConnectionId != nodes.GetConnectionId(key.User, key.Node) ? "preparing" : state.State;
+
+    private sealed record Deployment(NodePluginPackage? Package, string State, IReadOnlyList<string> Tools, string? Failure, string DeviceName,
+        string? ConnectionId = null);
 
     private string Localize(string userId, string key, string fallback, params object[] args) =>
         text.Localize(users.TryGetExistingScope(userId, out var scope) ? scope.UiSettings.CultureName : UiCultureCatalog.DefaultCultureName,

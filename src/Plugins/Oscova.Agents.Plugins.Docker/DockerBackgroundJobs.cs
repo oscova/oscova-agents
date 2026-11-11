@@ -22,23 +22,19 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
             ?? throw new InvalidOperationException("Docker shell execution target did not provide a container name.");
         string jobId = CreateJobId();
         string outputPath = $"/tmp/oscova-bg-{jobId}.out";
-        string outputCountPath = $"/tmp/oscova-bg-{jobId}.count";
         string exitPath = $"/tmp/oscova-bg-{jobId}.exit";
-        // Keep Docker background output available after the host docker-exec carrier exits,
-        // but cap the container-side file so a noisy watcher cannot fill /tmp.
+        // Capture partial bytes and publish the count with its bounded payload in one atomic snapshot.
         string wrapper =
             $"LIMIT={BoundedOutputBuffer.DefaultCapacityBytes}; TOTAL=0; STATUS_FILE={QuotePosix(exitPath + ".status")}; " +
-            $"rm -f {outputPath} {outputPath}.tmp {outputCountPath} {exitPath} \"$STATUS_FILE\"; " +
+            $"rm -f {outputPath} {outputPath}.tmp {outputPath}.chunk {exitPath} \"$STATUS_FILE\"; " +
             "echo \"PGID:$$\"; " +
             $"{{ bash -lc {QuotePosix(command)}; printf '%s' \"$?\" > \"$STATUS_FILE\"; }} 2>&1 | " +
-            "while IFS= read -r LINE || [ -n \"$LINE\" ]; do " +
-            $"printf '%s\\n' \"$LINE\" >> {outputPath}; " +
-            "BYTES=$(printf '%s\\n' \"$LINE\" | wc -c); " +
+            $"while dd bs=65536 count=1 of={outputPath}.chunk status=none && [ -s {outputPath}.chunk ]; do " +
+            $"BYTES=$(wc -c < {outputPath}.chunk); " +
             "TOTAL=$((TOTAL + BYTES)); " +
-            $"printf '%s' \"$TOTAL\" > {outputCountPath}; " +
-            $"SIZE=$(wc -c < {outputPath} 2>/dev/null || printf '0'); " +
-            $"if [ \"$SIZE\" -gt \"$LIMIT\" ]; then tail -c \"$LIMIT\" {outputPath} > {outputPath}.tmp && mv {outputPath}.tmp {outputPath}; fi; " +
+            $"{{ printf '%s\\n' \"$TOTAL\"; {{ tail -n +2 {outputPath} 2>/dev/null; cat {outputPath}.chunk; }} | tail -c \"$LIMIT\"; }} > {outputPath}.tmp && mv {outputPath}.tmp {outputPath}; " +
             "done; " +
+            $"rm -f {outputPath}.chunk; " +
             $"if [ -f \"$STATUS_FILE\" ]; then cat \"$STATUS_FILE\" > {exitPath}; rm -f \"$STATUS_FILE\"; else printf '%s' \"1\" > {exitPath}; fi";
         var startInfo = new ProcessStartInfo
         {
@@ -61,7 +57,6 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
         var job = new BackgroundJob(jobId, process, containerName, executor.DockerBinary ?? "docker")
         {
             DockerOutputPath = outputPath,
-            DockerOutputCountPath = outputCountPath,
             DockerExitPath = exitPath
         };
         job.Buffer = buffer;
@@ -81,6 +76,7 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
         {
             await StopDockerJobAsync(job, CancellationToken.None).ConfigureAwait(false);
             job.DisposeProcess();
+            await CleanupAsync(job).ConfigureAwait(false);
             throw;
         }
         catch (Exception ex) when (!cancellationToken.IsCancellationRequested && (ex is OperationCanceledException or TimeoutException))
@@ -94,10 +90,11 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
 
             await StopDockerJobAsync(job, CancellationToken.None).ConfigureAwait(false);
             job.DisposeProcess();
+            await CleanupAsync(job).ConfigureAwait(false);
             throw new ToolFailureException("The Docker background command could not be confirmed.", "Check the sandbox and try again.");
         }
 
-        return new Handle(job);
+        return new Handle(job, this);
     }
 
     private async Task CompleteDockerJobAsync(BackgroundJob job)
@@ -177,6 +174,19 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
 
     private static async Task RefreshDockerJobAsync(BackgroundJob job, CancellationToken cancellationToken)
     {
+        // Observing exit first ensures the subsequent snapshot includes the command's final bytes.
+        int? completedExitCode = null;
+        if (job.DockerExitPath is { } exitPath)
+        {
+            byte[] exitBytes = await RunDockerExecCaptureBytesAsync(
+                job.DockerBinary!, job.ContainerName!, $"cat {exitPath} 2>/dev/null || true",
+                cancellationToken).ConfigureAwait(false);
+            if (int.TryParse(Encoding.UTF8.GetString(exitBytes).Trim(), out int exitCode))
+            {
+                completedExitCode = exitCode;
+            }
+        }
+
         if (job.DockerOutputPath is { } outputPath)
         {
             byte[] output = await RunDockerExecCaptureBytesAsync(
@@ -184,39 +194,20 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
                 job.ContainerName!,
                 $"cat {outputPath} 2>/dev/null || true",
                 cancellationToken).ConfigureAwait(false);
-            long totalBytes = output.LongLength;
-            if (job.DockerOutputCountPath is { } outputCountPath)
+            int headerEnd = Array.IndexOf(output, (byte)'\n');
+            if (headerEnd >= 0 && long.TryParse(Encoding.ASCII.GetString(output, 0, headerEnd), out long totalBytes))
             {
-                byte[] countBytes = await RunDockerExecCaptureBytesAsync(
-                    job.DockerBinary!,
-                    job.ContainerName!,
-                    $"cat {outputCountPath} 2>/dev/null || true",
-                    cancellationToken).ConfigureAwait(false);
-                if (long.TryParse(Encoding.UTF8.GetString(countBytes).Trim(), out long parsedBytes))
-                {
-                    totalBytes = Math.Max(totalBytes, parsedBytes);
-                }
+                job.AppendDockerOutputSnapshot(output[(headerEnd + 1)..], totalBytes);
             }
-
-            job.AppendDockerOutputSnapshot(output, totalBytes);
         }
 
-        if (job.DockerExitPath is { } exitPath)
+        if (completedExitCode is { } completed)
         {
-            byte[] exitBytes = await RunDockerExecCaptureBytesAsync(
-                job.DockerBinary!,
-                job.ContainerName!,
-                $"cat {exitPath} 2>/dev/null || true",
-                cancellationToken).ConfigureAwait(false);
-            string exitText = Encoding.UTF8.GetString(exitBytes).Trim();
-            if (int.TryParse(exitText, out int exitCode))
-            {
-                job.MarkExited(exitCode);
-            }
+            job.MarkExited(completed);
         }
     }
 
-    private static async Task RunDockerExecShellAsync(string dockerBinary, string containerName, string script, CancellationToken cancellationToken)
+    private static async Task<(int ExitCode, string Error)> RunDockerExecShellAsync(string dockerBinary, string containerName, string script, CancellationToken cancellationToken)
     {
         var startInfo = new ProcessStartInfo
         {
@@ -237,9 +228,10 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
         {
             _ = process.Start();
             Task copyOutput = process.StandardOutput.BaseStream.CopyToAsync(Stream.Null, cancellationToken);
-            Task copyError = process.StandardError.BaseStream.CopyToAsync(Stream.Null, cancellationToken);
+            Task<string> error = process.StandardError.ReadToEndAsync(cancellationToken);
             await process.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
-            await Task.WhenAll(copyOutput, copyError).ConfigureAwait(false);
+            await copyOutput.ConfigureAwait(false);
+            return (process.ExitCode, await error.ConfigureAwait(false));
         }
         catch (OperationCanceledException)
         {
@@ -321,7 +313,6 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
         public string? DockerBinary { get; } = dockerBinary;
         public BoundedOutputBuffer Buffer { get; set; } = new();
         public string? DockerOutputPath { get; init; }
-        public string? DockerOutputCountPath { get; init; }
         public string? DockerExitPath { get; init; }
 
         private long _dockerOutputBytesRead;
@@ -470,7 +461,31 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
         }
     }
 
-    private sealed class Handle(BackgroundJob job) : IExecutionBackgroundJob
+    /// <summary>Releases output only when its owning handle is discarded.</summary>
+    private async Task CleanupAsync(BackgroundJob job)
+    {
+        try
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            string output = job.DockerOutputPath!, exit = job.DockerExitPath!;
+            var result = await RunDockerExecShellAsync(job.DockerBinary!, job.ContainerName!,
+                $"rm -f -- {QuotePosix(output)} {QuotePosix(output + ".tmp")} {QuotePosix(output + ".chunk")} " +
+                $"{QuotePosix(exit)} {QuotePosix(exit + ".status")}", timeout.Token).ConfigureAwait(false);
+            // Session eviction may remove the container before its handles are discarded.
+            if (result.ExitCode != 0)
+            {
+                logger.LogDebug("Could not remove output for background job {JobId} in container {ContainerName}: {Error}",
+                    job.JobId, job.ContainerName, result.Error);
+            }
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or Win32Exception or InvalidOperationException or IOException)
+        {
+            logger.LogWarning(ex, "Could not remove output for background job {JobId} in container {ContainerName}.",
+                job.JobId, job.ContainerName);
+        }
+    }
+
+    private sealed class Handle(BackgroundJob job, DockerBackgroundJobs owner) : IExecutionBackgroundJob
     {
         public Task Completion => job.Completion.Task;
         public bool HasExited => job.HasExited;
@@ -483,6 +498,7 @@ internal sealed class DockerBackgroundJobs(ILogger logger)
             job.KillHostProcess();
             job.DisposeProcess();
             job.MarkExited(null);
+            await owner.CleanupAsync(job).ConfigureAwait(false);
         }
     }
 }

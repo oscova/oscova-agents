@@ -1,4 +1,8 @@
 using System.Text;
+using System.Security.AccessControl;
+using System.Security.Principal;
+using System.Runtime.Versioning;
+using Oscova.Agents.Toolsets;
 using Oscova.Agents.Workspace;
 
 namespace Oscova.Agents.Tests.Framework.Workspace;
@@ -126,6 +130,138 @@ public sealed class WorkspaceFileAccessTests : IDisposable
         Assert.Equal(executable, File.GetUnixFileMode(script));
         Assert.Equal(ownerOnly, File.GetUnixFileMode(secret));
         Assert.Equal("echo two", File.ReadAllText(script));
+    }
+
+    /// <summary>Editing a private Windows file preserves its protected ACL while new files inherit directory permissions.</summary>
+    [SkippableFact]
+    public void Write_OnWindows_ReplacementKeepsExistingAccessRules()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Skip.If(true, "Requires Windows file permissions.");
+            return;
+        }
+
+        // Arrange: the workspace is shared, but one file is explicitly private.
+        var everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+        var directory = new DirectoryInfo(_workspace);
+        var directoryAcl = directory.GetAccessControl();
+        directoryAcl.AddAccessRule(new FileSystemAccessRule(everyone, FileSystemRights.ReadAndExecute,
+            InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+        directory.SetAccessControl(directoryAcl);
+        string target = Path.Combine(_workspace, "private.txt");
+        File.WriteAllText(target, "secret one");
+        using var identity = WindowsIdentity.GetCurrent();
+        var privateAcl = new FileSecurity();
+        privateAcl.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+        privateAcl.AddAccessRule(new FileSystemAccessRule(identity.User!, FileSystemRights.FullControl, AccessControlType.Allow));
+        new FileInfo(target).SetAccessControl(privateAcl);
+        var expectedAcl = new FileInfo(target).GetAccessControl();
+        var tool = new CodingToolset(() => [new(_workspace, "default", DirectorySourceKind.LocalPath, WorkspaceAccessMode.ReadWrite)], _files);
+
+        // Act: use the same public edit tool an agent invokes.
+        tool.EditFile(target, "one", "two");
+
+        // Assert: content changes without granting the directory's readers access.
+        Assert.Equal("secret two", File.ReadAllText(target));
+        AssertAccessRules(expectedAcl, target);
+        WriteText(target, " appended", append: true);
+        AssertAccessRules(expectedAcl, target);
+
+        Assert.Throws<InvalidOperationException>(() => _files.Write(target, stream =>
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                string staging = Assert.Single(Directory.GetFiles(_workspace), path => path != target);
+                AssertAccessRules(expectedAcl, staging);
+            }
+
+            stream.Write("partial replacement"u8);
+            throw new InvalidOperationException("Write failed.");
+        }));
+        Assert.Equal("secret two appended", File.ReadAllText(target));
+        AssertAccessRules(expectedAcl, target);
+        Assert.Equal([target], Directory.GetFiles(_workspace));
+
+        string created = Path.Combine(_workspace, "new.txt");
+        WriteText(created, "public");
+        Assert.Contains(new FileInfo(created).GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier))
+            .Cast<FileSystemAccessRule>(), rule => OperatingSystem.IsWindows() && rule.IdentityReference.Equals(everyone) && rule.IsInherited);
+
+        var inheritedAcl = new FileInfo(created).GetAccessControl();
+        inheritedAcl.AddAccessRule(new FileSystemAccessRule(identity.User!, FileSystemRights.Read, AccessControlType.Allow));
+        new FileInfo(created).SetAccessControl(inheritedAcl);
+        var expectedInheritedAcl = new FileInfo(created).GetAccessControl();
+        tool.EditFile(created, "public", "edited");
+        Assert.Equal("edited", File.ReadAllText(created));
+        AssertAccessRules(expectedInheritedAcl, created);
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static void AssertAccessRules(FileSecurity expected, string path)
+    {
+        var actual = new FileInfo(path).GetAccessControl();
+        Assert.Equal(expected.AreAccessRulesProtected, actual.AreAccessRulesProtected);
+        // Creation may reset the inheritance-history flag, but must retain every access rule.
+        Assert.Equal(expected.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>()
+            .Select(rule => (rule.IdentityReference, rule.FileSystemRights, rule.AccessControlType, rule.IsInherited, rule.InheritanceFlags, rule.PropagationFlags)),
+            actual.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>()
+            .Select(rule => (rule.IdentityReference, rule.FileSystemRights, rule.AccessControlType, rule.IsInherited, rule.InheritanceFlags, rule.PropagationFlags)));
+    }
+
+    /// <summary>A denied replacement removes staging even when its copied ACL prevents reopening it for deletion.</summary>
+    [SkippableFact]
+    public void Write_OnWindows_WhenReplaceIsDenied_RemovesRestrictedStagingFile()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            Skip.If(true, "Requires Windows file permissions.");
+            return;
+        }
+
+        // Arrange: writing is allowed, but deleting the target is not.
+        string target = Path.Combine(_workspace, "original.txt");
+        File.WriteAllText(target, "original");
+        using var identity = WindowsIdentity.GetCurrent();
+        var targetAcl = new FileSecurity();
+        targetAcl.SetAccessRuleProtection(true, false);
+        targetAcl.AddAccessRule(new FileSystemAccessRule(identity.User!,
+            FileSystemRights.ReadAndExecute | FileSystemRights.Write | FileSystemRights.ReadPermissions, AccessControlType.Allow));
+        new FileInfo(target).SetAccessControl(targetAcl);
+        var directory = new DirectoryInfo(_workspace);
+        var originalDirectoryAcl = directory.GetAccessControl();
+        var limitedDirectoryAcl = new DirectorySecurity();
+        limitedDirectoryAcl.SetAccessRuleProtection(true, false);
+        limitedDirectoryAcl.AddAccessRule(new FileSystemAccessRule(identity.User!,
+            FileSystemRights.FullControl & ~FileSystemRights.DeleteSubdirectoriesAndFiles, AccessControlType.Allow));
+        directory.SetAccessControl(limitedDirectoryAcl);
+
+        try
+        {
+            // Act: promotion fails after the replacement content has been staged.
+            bool wrote = false;
+            Assert.Throws<UnauthorizedAccessException>(() => _files.Write(target, stream =>
+            {
+                stream.Write("replacement"u8);
+                wrote = true;
+            }));
+
+            // Assert: preserve the target without leaving a restricted sibling behind.
+            Assert.True(wrote);
+            Assert.Equal("original", File.ReadAllText(target));
+            Assert.Equal([target], Directory.GetFiles(_workspace));
+        }
+        finally
+        {
+            originalDirectoryAcl.AddAccessRule(new FileSystemAccessRule(identity.User!, FileSystemRights.FullControl, AccessControlType.Allow));
+            directory.SetAccessControl(originalDirectoryAcl);
+            foreach (string path in Directory.GetFiles(_workspace))
+            {
+                var cleanupAcl = new FileInfo(path).GetAccessControl();
+                cleanupAcl.AddAccessRule(new FileSystemAccessRule(identity.User!, FileSystemRights.FullControl, AccessControlType.Allow));
+                new FileInfo(path).SetAccessControl(cleanupAcl);
+            }
+        }
     }
 
     [Fact]

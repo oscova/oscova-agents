@@ -65,13 +65,20 @@ public sealed class VectorIndexingTaskHandler(
 
             var requireLocalEndpoint = userScope.PrivacySettings.IsLocalOnly || agentDefinition.IsLocalOnly;
 
-            await userScope.ConversationIndexingService.IndexUnflushedMessagesAsync(
-                userId,
-                agentId,
-                thread,
-                agentDefinition.IsMemoryEnabled,
-                requireLocalEndpoint: requireLocalEndpoint,
-                ct: ct).ConfigureAwait(false);
+            try
+            {
+                await userScope.ConversationIndexingService.IndexUnflushedMessagesAsync(
+                    userId,
+                    agentId,
+                    thread,
+                    agentDefinition.IsMemoryEnabled,
+                    requireLocalEndpoint: requireLocalEndpoint,
+                    ct: ct).ConfigureAwait(false);
+            }
+            catch (LocalOnlyEmbeddingProviderBlockedException) when (!userScope.PrivacySettings.IsLocalOnly)
+            {
+                // One agent's local-only restriction must not block other eligible conversations.
+            }
         }
     }
 }

@@ -664,8 +664,9 @@ public sealed class ChatSessionService(
             child.LastSummarizedMessageOffset = 0;
             child.LastReflectedMessageCount = 0;
             child.LastReflectedMessageOffset = 0;
-            var userMessageId = child.DisplayMessages.Last(message =>
-                message.From == MessageOwner.User && !message.IsInteractionResponse).MessageId;
+            // A goal-only reply anchors its own branch divider when there is no visible user turn.
+            var userMessageId = child.DisplayMessages.LastOrDefault(message =>
+                message.From == MessageOwner.User && !message.IsInteractionResponse)?.MessageId ?? messageId;
             child.BranchOrigin = new ChatBranchOrigin(source.Id, messageId, userMessageId, rootId, rootTitle, number);
             child.SourceThreadAvailable = true;
 

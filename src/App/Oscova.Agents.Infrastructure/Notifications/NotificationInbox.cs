@@ -61,16 +61,18 @@ public sealed class NotificationInbox : INotificationInbox, IDisposable
         return !await ShouldDropNotificationAsync(userId, kind, forLiveDelivery: true).ConfigureAwait(false);
     }
 
-    public Task MarkAllReadAsync(string userId, bool includeSystem, CancellationToken ct = default)
+    public async Task MarkAllReadAsync(string userId, bool includeSystem, CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         Mutate(UserPath(userId), isSystem: false, entries => entries.Select(entry => entry with { IsRead = true }).ToList());
         if (includeSystem)
         {
-            Mutate(SystemPath(), isSystem: true, entries => entries.Select(entry => entry with { IsRead = true }).ToList());
+            var settings = await LoadPreferencesAsync(userId).ConfigureAwait(false);
+            // Bulk actions affect only system notices visible to this user.
+            Mutate(SystemPath(), isSystem: true, entries => entries.Select(entry =>
+                settings is not null && ShouldDropNotification(settings, entry.Kind)
+                    ? entry : entry with { IsRead = true }).ToList());
         }
-
-        return Task.CompletedTask;
     }
 
     public Task MarkReadAsync(string userId, string entryId, bool isSystemEntry, CancellationToken ct = default)
@@ -87,16 +89,17 @@ public sealed class NotificationInbox : INotificationInbox, IDisposable
         return Task.CompletedTask;
     }
 
-    public Task ClearAsync(string userId, bool includeSystem, CancellationToken ct = default)
+    public async Task ClearAsync(string userId, bool includeSystem, CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         Mutate(UserPath(userId), isSystem: false, _ => []);
         if (includeSystem)
         {
-            Mutate(SystemPath(), isSystem: true, _ => []);
+            var settings = await LoadPreferencesAsync(userId).ConfigureAwait(false);
+            // Hidden notices remain available when their category is shown again.
+            Mutate(SystemPath(), isSystem: true, entries => entries.Where(entry =>
+                settings is not null && ShouldDropNotification(settings, entry.Kind)).ToList());
         }
-
-        return Task.CompletedTask;
     }
 
     public Task RemoveSystemAsync(NotificationKind kind, CancellationToken ct = default)

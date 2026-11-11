@@ -355,8 +355,7 @@ else
 
     private async Task OnEmbeddingProviderChangedAsync(string? value)
     {
-        _configuration.EmbeddingModelProviderId = Guid.TryParse(value, out var id) ? id : null;
-        await SaveConfigurationAsync();
+        await SaveConfigurationAsync(() => _configuration.EmbeddingModelProviderId = Guid.TryParse(value, out var id) ? id : null);
     }
 
     private string GetDefaultProviderPlaceholder() => _configuration.CanManageCatalog
@@ -372,14 +371,12 @@ else
 
     private async Task OnSelectedProviderChangedAsync(string? value)
     {
-        SelectedProviderIdString = value;
-        await SaveConfigurationAsync();
+        await SaveConfigurationAsync(() => SelectedProviderIdString = value);
     }
 
     private async Task OnFallbackProviderChangedAsync(string? value)
     {
-        FallbackProviderIdString = value;
-        await SaveConfigurationAsync();
+        await SaveConfigurationAsync(() => FallbackProviderIdString = value);
     }
 
     private async Task OpenFormAsync(ModelProviderConfig? provider)
@@ -429,37 +426,39 @@ else
     {
         config.ChatOptions ??= new ChatOptions();
 
-        if (isEditing)
+        await SaveConfigurationAsync(() =>
         {
-            var existing = _configuration.ModelProviders.FirstOrDefault(p => p.Id == config.Id);
-            if (existing is not null)
+            if (isEditing)
             {
-                existing.Name = config.Name;
-                existing.Type = config.Type;
-                existing.BaseUrl = config.BaseUrl;
-                existing.ModelId = config.ModelId;
-                existing.CredentialKey = config.CredentialKey;
-                existing.IsLocalEndpoint = config.IsLocalEndpoint;
-                existing.SupportsImages = config.SupportsImages;
-                existing.ContextWindowSize = config.ContextWindowSize;
-                existing.InputCostPerMillionTokens = config.InputCostPerMillionTokens;
-                existing.OutputCostPerMillionTokens = config.OutputCostPerMillionTokens;
-                existing.SupportsThinking = config.SupportsThinking;
-                // Existing providers retain edited durations, including clearing the override.
-                existing.OllamaKeepAlive = config.OllamaKeepAlive;
-                existing.ChatOptions = config.ChatOptions.Clone();
-                existing.Options = config.Clone().Options;
-                _testStates.Remove(existing.Id);
+                var existing = _configuration.ModelProviders.FirstOrDefault(p => p.Id == config.Id);
+                if (existing is not null)
+                {
+                    existing.Name = config.Name;
+                    existing.Type = config.Type;
+                    existing.BaseUrl = config.BaseUrl;
+                    existing.ModelId = config.ModelId;
+                    existing.CredentialKey = config.CredentialKey;
+                    existing.IsLocalEndpoint = config.IsLocalEndpoint;
+                    existing.SupportsImages = config.SupportsImages;
+                    existing.ContextWindowSize = config.ContextWindowSize;
+                    existing.InputCostPerMillionTokens = config.InputCostPerMillionTokens;
+                    existing.OutputCostPerMillionTokens = config.OutputCostPerMillionTokens;
+                    existing.SupportsThinking = config.SupportsThinking;
+                    // Existing providers retain edited durations, including clearing the override.
+                    existing.OllamaKeepAlive = config.OllamaKeepAlive;
+                    existing.ChatOptions = config.ChatOptions.Clone();
+                    existing.Options = config.Clone().Options;
+                    _testStates.Remove(existing.Id);
+                }
             }
-        }
-        else
-        {
-            config.ChatOptions = config.ChatOptions.Clone();
-            _configuration.ModelProviders.Add(config);
-            _configuration.SelectedChatModelProviderId ??= config.Id;
-        }
+            else
+            {
+                config.ChatOptions = config.ChatOptions.Clone();
+                _configuration.ModelProviders.Add(config);
+                _configuration.SelectedChatModelProviderId ??= config.Id;
+            }
+        });
 
-        await SaveConfigurationAsync();
         await LoadCredentialStatesAsync();
     }
 
@@ -587,21 +586,20 @@ else
             ? CommonLoc.GetOrDefault(CommonTextKeys.CopyName, "Copy")
             : FormatSettingsText(SettingsTextKeys.ModelProvidersCopyNameSuffix, "{0} (Copy)", provider.Name);
 
-        _configuration.ModelProviders.Add(providerClone);
-        await SaveConfigurationAsync();
+        await SaveConfigurationAsync(() => _configuration.ModelProviders.Add(providerClone));
         await LoadCredentialStatesAsync();
     }
 
     private async Task RemoveProviderAsync(ModelProviderConfig provider)
     {
-        _configuration.ModelProviders.Remove(provider);
-
-
-
         _testStates.Remove(provider.Id);
         _credentialStates.Remove(provider.Id);
 
-        await SaveConfigurationAsync();
+        await SaveConfigurationAsync(() =>
+        {
+            var existing = _configuration.ModelProviders.FirstOrDefault(item => item.Id == provider.Id);
+            if (existing is not null) { _configuration.ModelProviders.Remove(existing); }
+        });
     }
 
     private async Task RunHealthCheck(ModelProviderConfig provider)
@@ -669,10 +667,13 @@ else
         {
             var config = result.Data;
             config.ChatOptions ??= new ChatOptions();
-            _configuration.ModelProviders.Add(config);
-            _configuration.EmbeddingProviderIds = [.. _configuration.EmbeddingProviderIds, config.Id];
-            _configuration.EmbeddingModelProviderId = config.Id;
-            await SaveConfigurationAsync();
+            await SaveConfigurationAsync(() =>
+            {
+                _configuration.ModelProviders.Add(config);
+                _configuration.EmbeddingProviderIds = [.. _configuration.EmbeddingProviderIds, config.Id];
+                _configuration.EmbeddingModelProviderId = config.Id;
+            });
+
             await LoadCredentialStatesAsync();
         }
     }
@@ -697,21 +698,23 @@ else
         if (result.IsOk && result.Data is not null)
         {
             var updated = result.Data;
-            var existing = _configuration.ModelProviders.FirstOrDefault(p => p.Id == updated.Id);
-            if (existing is not null)
+            await SaveConfigurationAsync(() =>
             {
-                existing.Name = updated.Name;
-                existing.Type = updated.Type;
-                existing.BaseUrl = updated.BaseUrl;
-                existing.ModelId = updated.ModelId;
-                existing.CredentialKey = updated.CredentialKey;
-                existing.IsLocalEndpoint = updated.IsLocalEndpoint;
-                existing.InputCostPerMillionTokens = updated.InputCostPerMillionTokens;
-                existing.OutputCostPerMillionTokens = updated.OutputCostPerMillionTokens;
-                existing.VectorDimensions = updated.VectorDimensions;
-            }
+                var existing = _configuration.ModelProviders.FirstOrDefault(p => p.Id == updated.Id);
+                if (existing is not null)
+                {
+                    existing.Name = updated.Name;
+                    existing.Type = updated.Type;
+                    existing.BaseUrl = updated.BaseUrl;
+                    existing.ModelId = updated.ModelId;
+                    existing.CredentialKey = updated.CredentialKey;
+                    existing.IsLocalEndpoint = updated.IsLocalEndpoint;
+                    existing.InputCostPerMillionTokens = updated.InputCostPerMillionTokens;
+                    existing.OutputCostPerMillionTokens = updated.OutputCostPerMillionTokens;
+                    existing.VectorDimensions = updated.VectorDimensions;
+                }
+            });
 
-            await SaveConfigurationAsync();
             await LoadCredentialStatesAsync();
         }
     }
@@ -731,11 +734,14 @@ else
         if (result == DialogResult.Ok)
         {
             var config = EmbeddingConfig;
-            _configuration.EmbeddingProviderIds = _configuration.EmbeddingProviderIds.Where(id => id != config.Id).ToArray();
-            _configuration.ModelProviders.Remove(config);
             _credentialStates.Remove(config.Id);
 
-            await SaveConfigurationAsync();
+            await SaveConfigurationAsync(() =>
+            {
+                _configuration.EmbeddingProviderIds = _configuration.EmbeddingProviderIds.Where(id => id != config.Id).ToArray();
+                var existing = _configuration.ModelProviders.FirstOrDefault(item => item.Id == config.Id);
+                if (existing is not null) { _configuration.ModelProviders.Remove(existing); }
+            });
         }
     }
 
@@ -762,31 +768,35 @@ else
         });
         if (result.IsOk && result.Data is not null)
         {
-            _configuration.Budgets = new Dictionary<Guid, ModelBudgetPolicy>(_configuration.Budgets) { [provider.Id] = result.Data };
-            await SaveConfigurationAsync();
+            await SaveConfigurationAsync(() =>
+                _configuration.Budgets = new Dictionary<Guid, ModelBudgetPolicy>(_configuration.Budgets) { [provider.Id] = result.Data });
         }
     }
 
-    private async Task SaveConfigurationAsync()
+    private async Task SaveConfigurationAsync(Action edit)
     {
         if (_saving) { return; }
         _saving = true;
         try
         {
-            // Only owned definitions cross the editing boundary, shared entries remain selector metadata.
-            var request = new ModelProviderConfiguration
+            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
             {
-                ModelProviders = _configuration.CanManageCatalog ? _configuration.ModelProviders.Where(IsOwned).ToList() : [],
-                Budgets = _configuration.CanManageCatalog ? _configuration.Budgets.Where(pair => _configuration.ModelProviders.Any(provider => provider.Id == pair.Key && IsOwned(provider))).ToDictionary() : new Dictionary<Guid, ModelBudgetPolicy>(),
-                EmbeddingProviderIds = _configuration.CanManageCatalog ? _configuration.EmbeddingProviderIds.Except(_configuration.SharedProviderIds).ToArray() : [],
-                SelectedChatModelProviderId = _configuration.SelectedChatModelProviderId,
-                EmbeddingModelProviderId = _configuration.EmbeddingModelProviderId,
-                FallbackChatModelProviderId = _configuration.FallbackChatModelProviderId
-            };
-            if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, confirmed =>
-            {
+                // Each attempt applies this edit to the latest catalog so other tabs' changes survive.
+                _configuration = await ManagementApiClient.GetModelProviderConfigurationAsync();
+                edit();
+
+                // Only owned definitions cross the editing boundary, shared entries remain selector metadata.
+                var request = new ModelProviderConfiguration
+                {
+                    ModelProviders = _configuration.CanManageCatalog ? _configuration.ModelProviders.Where(IsOwned).ToList() : [],
+                    Budgets = _configuration.CanManageCatalog ? _configuration.Budgets.Where(pair => _configuration.ModelProviders.Any(provider => provider.Id == pair.Key && IsOwned(provider))).ToDictionary() : new Dictionary<Guid, ModelBudgetPolicy>(),
+                    EmbeddingProviderIds = _configuration.CanManageCatalog ? _configuration.EmbeddingProviderIds.Except(_configuration.SharedProviderIds).ToArray() : [],
+                    SelectedChatModelProviderId = _configuration.SelectedChatModelProviderId,
+                    EmbeddingModelProviderId = _configuration.EmbeddingModelProviderId,
+                    FallbackChatModelProviderId = _configuration.FallbackChatModelProviderId
+                };
                 request.ConfirmInterruptions = confirmed;
-                return ManagementApiClient.SaveModelProviderConfigurationAsync(request);
+                return await ManagementApiClient.SaveModelProviderConfigurationAsync(request);
             })) { return; }
             ToastService.Show(CommonLoc.GetOrDefault(CommonTextKeys.GovernanceChangesSaved, "Changes saved."), ToastType.Success);
         }

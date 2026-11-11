@@ -23,6 +23,66 @@ namespace Oscova.Agents.Plugins.Tests.GoogleWorkspace;
 /// <summary>Proves Google registration, disconnected failures and package ownership.</summary>
 public sealed class GoogleWorkspaceTests
 {
+    /// <summary>Reads an HTML body while leaving a named text attachment unfetched.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ReadEmail_SelectsBodyInsteadOfNamedAttachment(bool mixed)
+    {
+        const string Body = "<p>The meeting is at noon.</p>";
+        var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(Body));
+        var calls = 0;
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"), () => new StubHttpMessageHandler(request =>
+            {
+                calls++;
+                var payload = mixed
+                    ? $$$"""{"payload":{"mimeType":"multipart/mixed","parts":[{"mimeType":"multipart/alternative","parts":[{"mimeType":"text/html","body":{"data":"{{{encoded}}}"}}]},{"mimeType":"text/plain","filename":"notes.txt","body":{"attachmentId":"file-1"}}]}}"""
+                    : request.RequestUri!.AbsolutePath.EndsWith("/attachments/body-1", StringComparison.Ordinal)
+                        ? JsonSerializer.Serialize(new { data = encoded })
+                        : """{"payload":{"mimeType":"text/html","body":{"attachmentId":"body-1"}}}""";
+                Assert.DoesNotContain("file-1", request.RequestUri!.AbsolutePath, StringComparison.Ordinal);
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(payload, Encoding.UTF8, "application/json") };
+            }));
+
+        var result = await new GmailToolset(context).ReadEmailAsync("message-1");
+
+        Assert.Contains(Body, result, StringComparison.Ordinal);
+        Assert.Equal(mixed ? 1 : 2, calls);
+    }
+
+    /// <summary>Reads inline and separately stored text bodies through the same Gmail tool.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ReadEmail_ResolvesBodyAttachment(bool separateBody)
+    {
+        const string Body = "The meeting is at noon.";
+        var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(Body)).TrimEnd('=');
+        var paths = new List<string>();
+        var context = PluginTestContext.Create(new MissingCredentials(), Path.GetTempPath(), Path.GetTempPath(),
+            (_, _) => Task.FromResult<string?>("access-token"), () => new StubHttpMessageHandler(request =>
+            {
+                var path = request.RequestUri!.AbsolutePath;
+                paths.Add(path);
+                var payload = path.EndsWith("/attachments/body-1", StringComparison.Ordinal)
+                    ? JsonSerializer.Serialize(new { data = encoded })
+                    : JsonSerializer.Serialize(new { payload = new { mimeType = "multipart/alternative", parts = new[]
+                    {
+                        new { mimeType = "text/plain", body = new { data = separateBody ? null : encoded, attachmentId = separateBody ? "body-1" : null } }
+                    } } });
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(payload, Encoding.UTF8, "application/json") };
+            }));
+        var gmail = new GmailToolset(context);
+        var function = AIFunctionFactory.Create(typeof(GmailToolset).GetMethod(nameof(GmailToolset.ReadEmailAsync))!, gmail);
+
+        var result = await function.InvokeAsync(new AIFunctionArguments { ["messageId"] = "message-1" });
+
+        Assert.Contains(Body, result!.ToString(), StringComparison.Ordinal);
+        Assert.Equal(separateBody ? 2 : 1, paths.Count);
+        if (separateBody) { Assert.EndsWith("/users/me/messages/message-1/attachments/body-1", paths[1], StringComparison.Ordinal); }
+    }
+
     /// <summary>Every Google operation releases its per-call transport on success and provider failure.</summary>
     [Theory]
     [InlineData(0)]

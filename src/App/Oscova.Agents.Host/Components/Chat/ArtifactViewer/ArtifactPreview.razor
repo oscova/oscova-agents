@@ -1,6 +1,7 @@
 @implements IDisposable
 @inject ArtifactApiClient ArtifactApiClient
 @inject IStringLocalizer<ChatText> Loc
+@inject NavigationManager Navigation
 
 <section class="artifact-preview" aria-label="@Artifact.FileName">
     <header class="artifact-preview-header">
@@ -53,7 +54,7 @@
                     @if (_textResult?.IsAvailable == true)
                     {
                         <div class="artifact-markdown markdown-content">
-                            @((MarkupString)MarkdownRenderer.ToHtml(_textResult.Content ?? string.Empty))
+                            @((MarkupString)MarkdownRenderer.ToFilePreviewHtml(_textResult.Content ?? string.Empty, new Uri(Navigation.Uri)))
                         </div>
                     }
                     else

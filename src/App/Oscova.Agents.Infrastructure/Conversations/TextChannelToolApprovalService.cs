@@ -42,10 +42,16 @@ public sealed class TextChannelToolApprovalService : ITextChannelToolApprovalSer
         var prompt = BuildPrompt(displayRequest);
 
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(DefaultTimeout);
+        var gate = _transport.GetPromptGate(origin);
+        var entered = false;
 
         try
         {
+            // A worker's question must finish before this approval can own the conversation's reply.
+            await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            entered = true;
+            timeoutCts.CancelAfter(DefaultTimeout);
+
             for (var attempt = 1; attempt <= MaxAttempts; attempt++)
             {
                 var reply = await _transport.SendPromptAndAwaitReplyAsync(origin, prompt, timeoutCts.Token).ConfigureAwait(false);
@@ -92,6 +98,10 @@ public sealed class TextChannelToolApprovalService : ITextChannelToolApprovalSer
         {
             _logger.LogError(ex, "Text tool approval on channel {Channel} failed.", origin.Key.ChannelId);
             return Cancelled(request);
+        }
+        finally
+        {
+            if (entered) { gate.Release(); }
         }
     }
 

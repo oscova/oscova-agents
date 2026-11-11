@@ -123,6 +123,7 @@ Use this when the user is new, wants to get to know Oscova, or asks what you or 
 - [Privacy](references/user-guide-settings-and-admin-privacy.md): Private AI agent settings. Keep agent runs offline with local models on your own hardware, sign out idle browsers automatically and see what an agent run can send out.
 - [Profile](references/user-guide-settings-and-admin-profile.md): Update your Oscova Agents account, including name, email and password, the Vault Password that encrypts your data, duress credentials and your profile picture.
 - [Users, roles and PIN](references/user-guide-settings-and-admin-users-roles-pin.md): Create users, choose Standard or Home sign-in, set PINs, manage OAuth providers and the GitHub token, and delete accounts in Oscova Agents.
+- [Verify that nothing leaves your machine](references/user-guide-settings-and-admin-verify-nothing-leaves.md): Check for yourself which connections Oscova Agents makes and what it stores encrypted. A short capture with pktmon, Wireshark and Process Monitor shows every host the Host process talks to, and this page lists the connections to expect.
 
 ### Developer Guide
 
@@ -170,6 +171,7 @@ Use this when the user is new, wants to get to know Oscova, or asks what you or 
 
 #### Overview
 
+- [Give OpenClaw, Hermes Agent or any MCP agent a 3D avatar](references/avatar-engine-ai-agent-avatar.md): Connect OpenClaw, Hermes Agent or another MCP agent to the free Oscova Avatar Engine, so your agent speaks through a realistic 3D avatar on your own PC.
 - [Bridge Service](references/avatar-engine-bridge-service.md): Understand the HTTP bridge between Oscova Agents and the Avatar Engine.
 - [Connect the Engine](references/avatar-engine-connecting.md): Connect Oscova Agents to the separate Avatar Engine runtime.
 - [Engine HTTP API](references/avatar-engine-http-api.md): Reference the standardized HTTP API exposed by the Oscova Avatar Engine.

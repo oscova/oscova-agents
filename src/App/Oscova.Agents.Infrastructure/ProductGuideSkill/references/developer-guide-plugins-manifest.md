@@ -117,7 +117,7 @@ The online installer selects the newest compatible stable NuGet package release 
 - The declared assembly is a file name, not a path.
 - The declared assembly is selected as a `net10.0` runtime asset.
 - Ordinary managed, native, and resource dependencies are available for the current supported RID.
-- The manifest ID is a folder-safe identifier contained beneath the plugin root.
+- The manifest ID is a folder-safe identifier that does not start with `.`, contained beneath the plugin root.
 
 A minimal project file follows the same shape as the shipped plugins:
 

@@ -47,10 +47,16 @@ public sealed class TextChannelElicitationService : ITextChannelElicitationServi
         // Linked CTS gives us a single token for the prompt and every re-prompt that
         // expires after DefaultTimeout regardless of how many parse attempts ran.
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(DefaultTimeout);
+        var gate = _transport.GetPromptGate(origin);
+        var entered = false;
 
         try
         {
+            // Only the visible interaction consumes reply time, including its retries and acknowledgement.
+            await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            entered = true;
+            timeoutCts.CancelAfter(DefaultTimeout);
+
             var prompt = BuildPrompt(request);
 
             for (var attempt = 1; attempt <= MaxAttempts; attempt++)
@@ -102,6 +108,10 @@ public sealed class TextChannelElicitationService : ITextChannelElicitationServi
         {
             _logger.LogError(ex, "Text elicitation on channel {Channel} failed.", origin.Key.ChannelId);
             return Cancel();
+        }
+        finally
+        {
+            if (entered) { gate.Release(); }
         }
     }
 

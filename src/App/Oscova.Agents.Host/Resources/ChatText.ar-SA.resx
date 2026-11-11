@@ -1200,4 +1200,5 @@
   <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>في انتظار إجابتك والوكلاء الفرعيين</value></data>
   <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>بانتظار الموافقة</value></data>
   <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>متوقف</value></data>
+  <data name="Chat.Browser.TextInput" xml:space="preserve"><value>إدخال نص صفحة المتصفح</value></data>
 </root>

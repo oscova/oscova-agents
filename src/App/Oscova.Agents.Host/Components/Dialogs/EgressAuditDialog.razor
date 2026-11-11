@@ -43,6 +43,8 @@
     private const int PageSize = 50;
     private static readonly EgressAuditSummary EmptySummary = new(0, 0, 0, 0);
 
+    [CascadingParameter] public DialogInstance DialogInstance { get; set; } = default!;
+
     [Parameter]
     public string InitialScope { get; set; } = "self";
 
@@ -65,6 +67,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Service-opened dialogs receive their scope through the dialog instance.
+        InitialScope = DialogInstance.Get<string>(nameof(InitialScope)) ?? InitialScope;
         await LoadAsync();
     }
 

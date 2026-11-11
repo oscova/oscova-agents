@@ -2,6 +2,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.VectorData;
 using System.Text.Json;
+using System.Diagnostics;
 using Oscova.Agents.Secrets;
 using Oscova.Agents.Vector;
 
@@ -13,7 +14,7 @@ public sealed class DurableVectorIndexTests : IDisposable
     private sealed class NoopAccess : IDisposable { public void Dispose() { } }
 
     private static readonly DurableVectorSpace Space = new("provider:model", 3);
-    private readonly string _root = Path.Combine(
+    private readonly string _root = Environment.GetEnvironmentVariable("OSCOVA_VECTOR_RECOVERY_TEST_ROOT") ?? Path.Combine(
         Path.GetTempPath(),
         "oscova-durable-vector-index-tests",
         Guid.NewGuid().ToString("N"));
@@ -94,6 +95,89 @@ public sealed class DurableVectorIndexTests : IDisposable
         Assert.Equal(2, overlap.CommittedPosition);
         Assert.Single(records);
         Assert.Equal("first", records[0].Content);
+    }
+
+    /// <summary>A process interruption cannot publish abandoned excerpts beside a larger replacement batch.</summary>
+    [Fact]
+    [Trait("Category", "Slow")]
+    public async Task AppendAsync_ProcessInterruptedBeforeManifestCommit_ReplaysWithoutDuplicates()
+    {
+        var marker = Path.Combine(_root, "publication-reached");
+        if (Environment.GetEnvironmentVariable("OSCOVA_VECTOR_RECOVERY_TEST_ROOT") is not null)
+        {
+            var protector = new CallbackProtector(_protector, plaintext =>
+            {
+                using var json = JsonDocument.Parse(plaintext);
+                if (json.RootElement.GetProperty("sources").TryGetProperty("thread", out var source) &&
+                    source.GetProperty("committedPosition").GetInt32() == 2)
+                {
+                    // Stop this disposable test process after actual vector writes, before manifest publication.
+                    File.WriteAllText(marker, "rows written");
+                    Process.GetCurrentProcess().Kill();
+                }
+            });
+            using var interrupted = CreateIndex(protector);
+            await interrupted.AppendAsync(Space, "thread", "agent", "interrupted", 1, 2,
+                [CreateChunk("interrupted excerpt", new float[] { 1, 0, 0 })]);
+            return;
+        }
+
+        using (var initial = CreateIndex())
+        {
+            await initial.AppendAsync(Space, "thread", "agent", "earlier", 0, 1,
+                [CreateChunk("earlier committed excerpt", new float[] { 1, 0, 0 })]);
+        }
+
+        await RunInterruptedChildAsync(nameof(AppendAsync_ProcessInterruptedBeforeManifestCommit_ReplaysWithoutDuplicates), marker);
+        using var recovered = CreateIndex();
+        Assert.Equal("earlier committed excerpt", Assert.Single(await recovered.BrowseAsync(Space, null, "thread")).Content);
+        await recovered.AppendAsync(Space, "thread", "agent", "replacement", 1, 3,
+            [CreateChunk("replacement excerpt", new float[] { 1, 0, 0 })]);
+
+        var records = await recovered.BrowseAsync(Space, null, "thread");
+        Assert.Equal(2, records.Count);
+        Assert.Contains(records, record => record.Content == "earlier committed excerpt");
+        Assert.Contains(records, record => record.Content == "replacement excerpt");
+        Assert.DoesNotContain(records, record => record.Content == "interrupted excerpt");
+    }
+
+    /// <summary>Replays retained sources after an interrupted embedding-dimension reset.</summary>
+    [Fact]
+    [Trait("Category", "Slow")]
+    public async Task ResetAsync_InterruptedBeforeCollectionDeletion_ReplaysInNewSpace()
+    {
+        var replacementSpace = new DurableVectorSpace("provider:replacement", 4);
+        var marker = Path.Combine(_root, "collection-deletion-reached");
+        if (Environment.GetEnvironmentVariable("OSCOVA_VECTOR_RECOVERY_TEST_ROOT") is not null)
+        {
+            using var interrupted = CreateIndex(createStore: () =>
+            {
+                File.WriteAllText(marker, "collection deletion reached");
+                Process.GetCurrentProcess().Kill();
+                throw new InvalidOperationException("The disposable test process did not terminate.");
+            });
+            await interrupted.ResetAsync(replacementSpace);
+            return;
+        }
+
+        using (var initial = CreateIndex())
+        {
+            await initial.AppendAsync(Space, "thread", "agent", "old", 0, 1,
+                [CreateChunk("old excerpt", new float[] { 1, 0, 0 })]);
+        }
+        await SeedSiblingCollectionAsync();
+        await RunInterruptedChildAsync(nameof(ResetAsync_InterruptedBeforeCollectionDeletion_ReplaysInNewSpace), marker);
+
+        using var recovered = CreateIndex();
+        var snapshot = await recovered.GetSnapshotAsync();
+        Assert.False(snapshot.IsTrusted);
+
+        await recovered.AppendAsync(replacementSpace, "thread", "agent", "new", 0, 1,
+            [CreateChunk("replayed excerpt", new float[] { 1, 0, 0, 0 })]);
+        Assert.Equal("replayed excerpt", Assert.Single(await recovered.BrowseAsync(replacementSpace, null, "thread")).Content);
+        await using var store = CreateStore();
+        var sibling = await store.GetCollectionAsync<string, SiblingRecord>("sibling", SiblingDefinition());
+        Assert.Equal("keep", Assert.Single(await sibling.GetAsync(record => true, 10).ToListAsync()).Key);
     }
 
     [Fact]
@@ -331,9 +415,36 @@ public sealed class DurableVectorIndexTests : IDisposable
 
     private string ManifestPath => Path.Combine(_root, "index.json.enc");
 
-    private DurableVectorIndex CreateIndex(IContentProtector? protector = null) =>
+    private DurableVectorIndex CreateIndex(IContentProtector? protector = null, Func<VectorStoreService>? createStore = null) =>
         new(DatabasePath, ManifestPath, "durable", NullLogger.Instance, protector ?? _protector, "vector-test",
-            () => new VectorStoreService(DatabasePath, new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString()), _ => Task.FromResult<IDisposable>(new NoopAccess()));
+            createStore ?? CreateStore, _ => Task.FromResult<IDisposable>(new NoopAccess()));
+
+    private VectorStoreService CreateStore() => new(DatabasePath,
+        new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = DatabasePath, Pooling = false }.ToString());
+
+    private async Task RunInterruptedChildAsync(string testName, string marker)
+    {
+        var start = new ProcessStartInfo("dotnet") { UseShellExecute = false, RedirectStandardOutput = true,
+            RedirectStandardError = true, CreateNoWindow = true };
+        start.ArgumentList.Add("vstest");
+        start.ArgumentList.Add(typeof(DurableVectorIndexTests).Assembly.Location);
+        start.ArgumentList.Add($"--TestCaseFilter:FullyQualifiedName={typeof(DurableVectorIndexTests).FullName}.{testName}");
+        start.Environment["OSCOVA_VECTOR_RECOVERY_TEST_ROOT"] = _root;
+        using var child = Process.Start(start)!;
+        var stdout = child.StandardOutput.ReadToEndAsync();
+        var stderr = child.StandardError.ReadToEndAsync();
+        try
+        {
+            await child.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(60));
+        }
+        finally
+        {
+            if (!child.HasExited) { child.Kill(entireProcessTree: true); await child.WaitForExitAsync(); }
+        }
+
+        Assert.True(File.Exists(marker), (await stdout) + (await stderr));
+        Assert.NotEqual(0, child.ExitCode);
+    }
 
     private static DurableVectorChunk CreateChunk(string content, ReadOnlyMemory<float> vector) =>
         new(content, vector, 0, Metadata: "opaque", Timestamp: DateTimeOffset.UnixEpoch);

@@ -82,7 +82,7 @@ public sealed class ChatRunHost(
     {
         lock (_executionLifetimeGate)
         {
-            if (TryStart(userId, item.Context, admissionCancellation, createViewer: false, requiresExistingThread: true, out _))
+            if (TryStart(userId, item.Context, admissionCancellation, createViewer: false, requiresExistingThread: true, out _, followUp: item))
             {
                 return true;
             }
@@ -148,7 +148,13 @@ public sealed class ChatRunHost(
     {
         lock (_executionLifetimeGate)
         {
-            var items = _followUps[(userId, item.Context.Input.ThreadId)];
+            var key = (userId, item.Context.Input.ThreadId);
+            if (!_followUps.TryGetValue(key, out var items))
+            {
+                items = [];
+                _followUps[key] = items;
+            }
+
             items.Insert(Math.Min(index, items.Count), item);
         }
     }
@@ -160,7 +166,7 @@ public sealed class ChatRunHost(
         {
             if (_followUps.TryGetValue((userId, threadId), out var items) &&
                 items.Count > 0 &&
-                TryStart(userId, items[0].Context, CancellationToken.None, createViewer: false, requiresExistingThread: true, out _))
+                TryStart(userId, items[0].Context, CancellationToken.None, createViewer: false, requiresExistingThread: true, out _, followUp: items[0]))
             {
                 items.RemoveAt(0);
                 return true;
@@ -246,7 +252,8 @@ public sealed class ChatRunHost(
         ThreadRunGuard.RunLease? admittedLease = null,
         UserQuestionAnswer? answer = null,
         bool budgetAdmitted = false,
-        ChatGoal? goal = null)
+        ChatGoal? goal = null,
+        QueuedFollowUp? followUp = null)
     {
         lock (_executionLifetimeGate)
         {
@@ -277,7 +284,7 @@ public sealed class ChatRunHost(
                 // Until task tracking completes, a disconnected initiator still cancels this exact admission.
                 admissionRegistration = admissionCancellation.Register(
                     () => threadRunGuard.CancelExact(userId, threadId, runId));
-                var run = new ChatRunExecution(userId, context, guard, projection, stream, requiresExistingThread, answer, budgetAdmitted, goal);
+                var run = new ChatRunExecution(userId, context, guard, projection, stream, requiresExistingThread, answer, budgetAdmitted, goal, followUp);
                 executionTask = Task.Run(() => RunAsync(run), CancellationToken.None);
             }
             catch (Exception ex)
@@ -364,14 +371,14 @@ public sealed class ChatRunHost(
         var continueSession = forwarded.ValueKind == JsonValueKind.Object &&
             forwarded.TryGetProperty("continueSession", out var continueProperty) &&
             continueProperty.ValueKind == JsonValueKind.True;
+        var requestedAgent = forwarded.ValueKind == JsonValueKind.Object && forwarded.TryGetProperty("agentId", out var agentProperty)
+            && agentProperty.ValueKind == JsonValueKind.String ? agentProperty.GetString() : null;
         try
         {
             if (!run.BudgetAdmitted)
             {
                 var scope = await userServiceManager.GetOrCreateScopeAsync(run.UserId, runToken).ConfigureAwait(false);
                 var thread = await scope.ChatThreadRepository.GetThreadAsync(run.UserId, run.Context.Input.ThreadId, runToken).ConfigureAwait(false);
-                var requestedAgent = forwarded.ValueKind == JsonValueKind.Object && forwarded.TryGetProperty("agentId", out var agentProperty)
-                    && agentProperty.ValueKind == JsonValueKind.String ? agentProperty.GetString() : null;
                 var definition = scope.AppService.ResolveAgentDefinition(AgentSelectionResolver.ResolveAgentId(requestedAgent,
                     thread?.AgentId, thread?.DisplayMessages.Count > 0));
                 var recipientId = forwarded.ValueKind == JsonValueKind.Object && forwarded.TryGetProperty("recipientAgentId", out var recipientValue)
@@ -387,10 +394,14 @@ public sealed class ChatRunHost(
                 var resolution = await scope.AppService.GetChatClientResolutionAsync(definition, selected, ownerRequiresLocalOnly).ConfigureAwait(false);
                 if (!await budgets.AdmitAsync(run.UserId, resolution.EffectiveProvider.Id, ct: runToken).ConfigureAwait(false))
                 {
-                    if (run.Goal is { } deniedGoal && thread is not null)
+                    // Budget denial keeps accepted follow-up input available for retry.
+                    if (run.FollowUp is { } followUp) { RestoreFollowUp(run.UserId, followUp, 0); }
+
+                    if (thread is not null)
                     {
+                        // A waiting goal must not immediately re-admit the restored queue head.
                         await scope.ConversationGoals.UpdateAsync(run.UserId, thread, current =>
-                            current?.Id == deniedGoal.Id && current.RunId == run.Context.Input.RunId
+                            current?.Status == ChatGoalStatus.Active && (current.RunId is null || current.RunId == run.Context.Input.RunId)
                                 ? current.WithStatus(ChatGoalStatus.Paused, "Budget reached") : current,
                             CancellationToken.None).ConfigureAwait(false);
                     }
@@ -420,7 +431,8 @@ public sealed class ChatRunHost(
                 run.UserId,
                 run.Context.Input.ThreadId,
                 modelProviderId,
-                runToken).ConfigureAwait(false);
+                runToken,
+                requestedAgent).ConfigureAwait(false);
             previousOutcome = ChatThreadAgentSessionStore.GetRunOutcome(session);
             if (continueSession &&
                 (run.Stream is not null ||
@@ -698,7 +710,8 @@ public sealed class ChatRunHost(
         bool RequiresExistingThread,
         UserQuestionAnswer? QuestionAnswer,
         bool BudgetAdmitted,
-        ChatGoal? Goal);
+        ChatGoal? Goal,
+        QueuedFollowUp? FollowUp);
 
     /// <summary>A web follow-up waiting to run as its own turn.</summary>
     internal sealed record QueuedFollowUp(string MessageId, string Text, ChatRequestContext Context)

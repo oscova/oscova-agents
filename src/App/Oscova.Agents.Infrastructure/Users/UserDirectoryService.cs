@@ -393,13 +393,19 @@ public class UserDirectoryService : IUserDirectoryService
             buffered.Position = 0;
             using var reader = new StreamReader(buffered);
             var incoming = await reader.ReadToEndAsync().ConfigureAwait(false);
+            var protection = await _vault.GetProtectionAsync(userId, filePath).ConfigureAwait(false);
             var plaintext = _protector.Unprotect(userId, EncryptedFileContent.ProtectionPurpose, incoming);
+            // Downloaded shared ciphertext keeps its shared key and purpose when restored.
+            if (plaintext is null && isShared)
+            {
+                plaintext = _protector.Unprotect(protection.KeyOwner, protection.Purpose, incoming);
+            }
+
             if (plaintext is null && isShared)
             {
                 throw new InvalidOperationException("The encrypted file cannot be opened with your vault key, so it was not uploaded.");
             }
 
-            var protection = await _vault.GetProtectionAsync(userId, filePath).ConfigureAwait(false);
             await FileUtil.WriteAllTextAtomicAsync(filePath,
                 _protector.Protect(protection.KeyOwner, protection.Purpose, plaintext ?? incoming)).ConfigureAwait(false);
             return;

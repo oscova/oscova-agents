@@ -151,6 +151,15 @@ namespace Oscova.Agents.Infrastructure.Tasks
 
             try
             {
+                var previousSession = task.SessionMode == TaskSessionMode.Persistent
+                    ? await userScope.AgentTaskRepository.GetLatestSessionAsync(task.UserId, task.Id, ct).ConfigureAwait(false)
+                    : null;
+                if (previousSession is { } savedSession)
+                {
+                    // Skipped occurrences must retain persistent context when older runs expire.
+                    agentTaskRun.SessionElement = savedSession;
+                }
+
                 // Automatic starts consume a skipped occurrence, while explicit starts remain available.
                 if (agentTaskRun.TriggerSource is TaskTriggerSource.Schedule or TaskTriggerSource.AfterTask &&
                     userScope.UiSettings.IsLowBatteryTaskProtectionEnabled)
@@ -164,15 +173,6 @@ namespace Oscova.Agents.Infrastructure.Tasks
                             NotificationTextKeys.TaskSkippedLowBattery,
                             "This task was skipped because the computer is on battery power below your configured threshold. Run it manually when ready.");
                     }
-                }
-
-                var previousSession = task.SessionMode == TaskSessionMode.Persistent
-                    ? await userScope.AgentTaskRepository.GetLatestSessionAsync(task.UserId, task.Id, ct).ConfigureAwait(false)
-                    : null;
-                if (previousSession is { } savedSession)
-                {
-                    // Keep setup failures usable as persistent-session resume points.
-                    agentTaskRun.SessionElement = savedSession;
                 }
 
                 var startDecision = await DispatchTaskHookAsync(HookEventKind.TaskStart, task, agentTaskRun, isBlocking: true, ct).ConfigureAwait(false);
@@ -370,8 +370,22 @@ namespace Oscova.Agents.Infrastructure.Tasks
                             new Dictionary<string, JsonElement>(agentTaskRun.TriggerParameters, StringComparer.OrdinalIgnoreCase));
                     }
 
-                    taskContext.SerializeLiveSessionAsync = async cancellationToken =>
-                        await chatAgent.SerializeSessionAsync(agentSession, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    taskContext.SerializeLiveSessionAsync = async (handoffMessage, cancellationToken) =>
+                    {
+                        var serialized = await chatAgent.SerializeSessionAsync(agentSession, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        if (handoffMessage is null) { return serialized; }
+
+                        // Handoffs must be resumable before the notifying tool finishes, without changing its live session.
+                        var copy = await chatAgent.DeserializeSessionAsync(serialized, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        if (copy.TryGetInMemoryChatHistory(out var handoffHistory))
+                        {
+                            var completedHistory = InterruptedHistory.RemoveUnfinishedToolExchanges(handoffHistory);
+                            completedHistory.Add(new ChatMessage(ChatRole.Assistant, handoffMessage));
+                            InterruptedHistory.Restore(copy, completedHistory);
+                        }
+
+                        return await chatAgent.SerializeSessionAsync(copy, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    };
 
                     var approvalContext = new ToolApprovalContext
                     {
@@ -491,7 +505,7 @@ namespace Oscova.Agents.Infrastructure.Tasks
                     InterruptedHistory.Restore(agentSession, partialHistory);
                     try
                     {
-                        agentTaskRun.SessionElement = await serializeLiveSessionAsync(CancellationToken.None).ConfigureAwait(false);
+                        agentTaskRun.SessionElement = await serializeLiveSessionAsync(null, CancellationToken.None).ConfigureAwait(false);
                         taskContext.SessionElement = agentTaskRun.SessionElement;
                     }
                     catch (Exception ex)

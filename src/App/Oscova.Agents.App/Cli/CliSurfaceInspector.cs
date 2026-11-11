@@ -22,9 +22,10 @@ public sealed class CliSurfaceInspector(
     {
         var config = configStore.Read();
         var auth = await authStore.ReadAsync(cancellationToken).ConfigureAwait(false);
-        var targetHost = ResolveTargetHost(settings, config, auth);
-        var targetIsLoopback = CliHostUrlSelector.IsLoopback(targetHost);
         var descriptor = await collisionChecker.FindRunningHostAsync(cancellationToken).ConfigureAwait(false);
+        var targetHost = ResolveTargetHost(settings, config, auth, descriptor);
+        var targetIsLoopback = CliHostUrlSelector.IsLoopback(targetHost);
+
         if (!targetIsLoopback || descriptor is not null && !CliHostUrlSelector.PortMatchesAny(targetHost, descriptor.Urls))
         {
             descriptor = null;
@@ -49,13 +50,11 @@ public sealed class CliSurfaceInspector(
             bearer.LoggedIn ? "bearer" : "login-required");
     }
 
-    private static string ResolveTargetHost(OscovaCommandSettings settings, CliConfigFile config, CliAuthFile? auth)
+    private static string ResolveTargetHost(OscovaCommandSettings settings, CliConfigFile config, CliAuthFile? auth, RuntimeDescriptor? descriptor)
     {
-        var target = settings.Host
-            ?? Environment.GetEnvironmentVariable("OSCOVA_HOST")
-            ?? config.Host
-            ?? auth?.CurrentHost
-            ?? CliHostUrlSelector.DefaultLocalHost;
+        // Runtime discovery supplies only the implicit target; saved and explicit choices stay authoritative.
+        var target = CliHostResolver.GetSelectedHost(settings, config, auth)
+            ?? (descriptor is null ? CliHostUrlSelector.DefaultLocalHost : CliHostUrlSelector.SelectLocalHost(descriptor.Urls));
 
         try
         {

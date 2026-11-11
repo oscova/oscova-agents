@@ -129,6 +129,24 @@ function connect() {
         } finally { painting = false; }
     }
     if (matchMedia('(pointer: coarse)').matches) { return; }
+    // An editable target lets the operating system compose text for the remote page.
+    const textInput = root.querySelector('[data-text-input]');
+    canvas.addEventListener('focus', () => textInput.focus({ preventScroll: true }));
+    function send(kind, text) {
+        lastInput = performance.now();
+        flushMove();
+        command({ kind, text });
+    }
+    textInput.addEventListener('compositionend', event => {
+        if (event.data) { send('text', event.data); }
+        textInput.value = '';
+    });
+    textInput.addEventListener('input', event => {
+        if (event.isComposing) { return; }
+        // Text inserted without a handled key, such as an IME commit terminator or an Alt code, still reaches the page.
+        if (event.inputType === 'insertText' && event.data) { send('text', event.data); }
+        textInput.value = '';
+    });
     let pressed = false, clickCount = 0, lastDown = 0, lastPoint = { x: -100, y: -100 };
     function point(event) {
         const rect = canvas.getBoundingClientRect();
@@ -205,11 +223,14 @@ function connect() {
             edit(button.dataset.edit);
         };
     });
-    canvas.addEventListener('keydown', event => {
-        if (event.isComposing) { return; }
+    panel.addEventListener('keydown', event => {
+        if (event.isComposing || event.keyCode === 229) { return; }
         let text = event.key;
         const keys = ['Backspace', 'Delete', 'Enter', 'Tab', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-        const control = event.ctrlKey || event.metaKey;
+        // AltGr and Option can produce printable text rather than editor shortcuts.
+        const layoutText = !event.metaKey && text.length === 1 &&
+            (event.getModifierState('AltGraph') || (event.altKey && !event.ctrlKey && /Mac/.test(navigator.platform)));
+        const control = (event.ctrlKey || event.metaKey) && !layoutText;
         // Native paste events can supply text even where the Clipboard API is unavailable.
         if (control && !event.altKey && text.toLowerCase() === 'v') { return; }
         if (control && !event.altKey && ['c', 'x'].includes(text.toLowerCase())) {
@@ -217,17 +238,15 @@ function connect() {
             edit({ c: 'copy', x: 'cut' }[text.toLowerCase()]);
             return;
         }
-        if (event.altKey || (control && !['a', 'z', 'y', 'arrowleft', 'arrowright', 'backspace', 'delete', 'home', 'end'].includes(text.toLowerCase()))) { return; }
+        if ((event.altKey && !layoutText) || (control && !['a', 'z', 'y', 'arrowleft', 'arrowright', 'backspace', 'delete', 'home', 'end'].includes(text.toLowerCase()))) { return; }
         if (control && text.length === 1) { text = 'Control+' + (event.shiftKey && text.toLowerCase() === 'z' ? 'Y' : text.toUpperCase()); }
         else if (control) { text = 'Control+' + (event.shiftKey ? 'Shift+' : '') + text; }
         else if (event.shiftKey && ['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(text)) { text = 'Shift+' + text; }
         else if (text.length !== 1 && !keys.includes(text)) { return; }
         event.preventDefault();
-        lastInput = performance.now();
-        flushMove();
-        command({ kind: text.length === 1 ? 'text' : 'key', text });
+        send(text.length === 1 ? 'text' : 'key', text);
     });
-    canvas.addEventListener('paste', event => {
+    panel.addEventListener('paste', event => {
         event.preventDefault();
         command({ kind: 'text', text: event.clipboardData.getData('text/plain') });
     });

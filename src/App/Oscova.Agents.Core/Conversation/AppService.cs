@@ -939,7 +939,8 @@ public class AppService(
             .Except(newAllowedUserIds, StringComparer.OrdinalIgnoreCase)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        if (droppedUserIds.Count > 0)
+        // An empty shared audience grants everyone access, including existing consumers.
+        if (droppedUserIds.Count > 0 && (!agent.IsShared || newAllowedUserIds.Count > 0))
         {
             var reaped = await referenceCleanupService.ClearDroppedShareConsumersAsync(agent, droppedUserIds, CancellationToken.None).ConfigureAwait(false);
             if (reaped > 0)

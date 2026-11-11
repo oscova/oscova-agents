@@ -185,10 +185,6 @@
 
 	/// <summary>Saves the account preference for automatic starts on low battery.</summary>
 	private Task OnLowBatteryProtectionChangedAsync(bool enabled) => SaveUiSettingsAsync(
-	    _uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-	    _uiSettings?.TimeZoneId ?? string.Empty,
-	    _uiSettings?.HideUserNameBadge ?? false,
-	    _uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
 	    isLowBatteryTaskProtectionEnabled: enabled);
 
 	/// <summary>Validates the whole-number battery threshold before saving it.</summary>
@@ -203,10 +199,6 @@
 	    }
 	    _lowBatteryThresholdError = null;
 	    await SaveUiSettingsAsync(
-	        _uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-	        _uiSettings?.TimeZoneId ?? string.Empty,
-	        _uiSettings?.HideUserNameBadge ?? false,
-	        _uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
 	        lowBatteryTaskThresholdPercentage: percentage);
 	}
 
@@ -225,11 +217,7 @@
 		{
 			if (!string.Equals(SelectedCultureName, value, StringComparison.Ordinal))
 			{
-				_ = SaveUiSettingsAsync(
-					_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-					_uiSettings?.TimeZoneId ?? string.Empty,
-					_uiSettings?.HideUserNameBadge ?? false,
-					value);
+				_ = SaveUiSettingsAsync(cultureName: value);
 			}
 		}
 	}
@@ -252,29 +240,18 @@
 	private async Task SelectTimeZoneAsync(string? tzId)
 	{
 		await SaveUiSettingsAsync(
-			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-			tzId ?? string.Empty,
-			_uiSettings?.HideUserNameBadge ?? false,
-			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName);
+			timeZoneId: tzId ?? string.Empty);
 	}
 
 	private async Task OnGamificationChangedAsync(ChangeEventArgs e)
 	{
 		await SaveUiSettingsAsync(
-			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-			_uiSettings?.TimeZoneId ?? string.Empty,
-			_uiSettings?.HideUserNameBadge ?? false,
-			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
 			isGamificationEnabled: e.Value is true);
 	}
 
 	private async Task OnChatTitleGenerationChangedAsync(ChangeEventArgs e)
 	{
 		await SaveUiSettingsAsync(
-			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-			_uiSettings?.TimeZoneId ?? string.Empty,
-			_uiSettings?.HideUserNameBadge ?? false,
-			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
 			isChatTitleGenerationEnabled: e.Value is true);
 	}
 
@@ -292,19 +269,11 @@
 
 		_chatResumeWindowError = null;
 		await SaveUiSettingsAsync(
-			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-			_uiSettings?.TimeZoneId ?? string.Empty,
-			_uiSettings?.HideUserNameBadge ?? false,
-			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
 			chatResumeWindowMinutes: minutes);
 	}
 
 	private Task OnChatFollowUpModeChangedAsync(ChangeEventArgs e) =>
 		SaveUiSettingsAsync(
-			_uiSettings?.Theme ?? AssistantUiSettings.DefaultTheme,
-			_uiSettings?.TimeZoneId ?? string.Empty,
-			_uiSettings?.HideUserNameBadge ?? false,
-			_uiSettings?.CultureName ?? UiCultureCatalog.DefaultCultureName,
 			chatFollowUpMode: Enum.TryParse<ChatFollowUpMode>(e.Value?.ToString(), out var mode) ? mode : ChatFollowUpMode.Queue);
 
 	private async Task DeleteAllConversationsAsync()
@@ -337,10 +306,8 @@
 	}
 
 	private async Task SaveUiSettingsAsync(
-		string theme,
-		string timeZoneId,
-		bool hideUserNameBadge,
-		string cultureName,
+		string? timeZoneId = null,
+		string? cultureName = null,
 		bool? isChatTitleGenerationEnabled = null,
 		bool? isGamificationEnabled = null,
 		int? chatResumeWindowMinutes = null,
@@ -355,8 +322,6 @@
 
 		await RunAsync(v => _isSaving = v, async () =>
 		{
-			// Built from the live shared settings, not the load-time snapshot, so a mute toggled
-			// from the notification bell since this section rendered is not reverted here.
 			if (isLowBatteryTaskProtectionEnabled is true && !UiSettings.IsLowBatteryTaskProtectionEnabled)
 			{
 				// Refresh availability before activation, with SettingsController checking again at save time.
@@ -366,11 +331,10 @@
 					throw new InvalidOperationException(BatteryAvailabilityDescription);
 				}
 			}
+			// Apply only the edited preference so another tab's saved choices survive.
 			var request = SaveUiSettingsRequest.From(UiSettings);
-			request.Theme = string.IsNullOrWhiteSpace(theme) ? AssistantUiSettings.DefaultTheme : theme.Trim();
-			request.TimeZoneId = timeZoneId;
-			request.HideUserNameBadge = hideUserNameBadge;
-			request.CultureName = UiCultureCatalog.NormalizeOrDefault(cultureName);
+			request.TimeZoneId = timeZoneId ?? request.TimeZoneId;
+			request.CultureName = cultureName is null ? request.CultureName : UiCultureCatalog.NormalizeOrDefault(cultureName);
 			request.IsChatTitleGenerationEnabled = isChatTitleGenerationEnabled ?? request.IsChatTitleGenerationEnabled;
 			request.IsGamificationEnabled = isGamificationEnabled ?? request.IsGamificationEnabled;
 			request.ChatResumeWindowMinutes = AssistantUiSettings.NormalizeChatResumeWindowMinutes(

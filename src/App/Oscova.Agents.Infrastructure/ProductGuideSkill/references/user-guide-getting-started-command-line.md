@@ -130,7 +130,7 @@ Every command accepts these options.
 | `-h`, `--help` | Print help for the CLI, a branch or a command. |
 | `-v`, `--version` | Print the CLI version. |
 
-The host URL is resolved in this order: `--host`, the `OSCOVA_HOST` environment variable, the `host` value in `~/.oscova/cli-config.yaml`, the host you last logged in to, then the default local host.
+The host URL is resolved in this order: `--host`, the `OSCOVA_HOST` environment variable, the `host` value in `~/.oscova/cli-config.yaml`, the host you last logged in to, a discovered running local host, then the default local host. Discovery uses the running host's actual port. For host URL resolution, a saved or explicit target takes precedence over discovery.
 
 Reading the output:
 
@@ -244,7 +244,7 @@ oscova avatar mcp stop
 - Connect a local MCP client to `http://127.0.0.1:11319/mcp`. `start --port <PORT>` changes the port.
 - `start --avatar-url <URL>` saves the downstream Avatar URL after startup succeeds and keeps other Avatar preferences. A running service needs a stop and start to change these options.
 - The service shares Avatar settings and pairing with the same app-data root, and can control a LAN Engine while its own listener stays on localhost. `oscova avatar mcp stop` stops only MCP.
-- See [Avatar MCP server](references/avatar-engine-mcp-server.md) for pairing, all 30 tools, confirmation limits and the trust boundary.
+- See [Avatar MCP server](references/avatar-engine-mcp-server.md) for pairing, all 28 tools, confirmation limits and the trust boundary.
 
 ### Identity
 

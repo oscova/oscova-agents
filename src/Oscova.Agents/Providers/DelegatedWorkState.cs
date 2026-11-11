@@ -300,7 +300,7 @@ public sealed class DelegatedWorkState : IAsyncDisposable
                 break;
             }
 
-            if (workers.Find(item => item.Status == DelegatedWorkerStatus.AwaitingApproval) is { } approving)
+            if (workers.Find(item => item.TryTakeApproval()) is { } approving)
             {
                 reason = $"Subagent '{approving.Handle}' needs approval.";
                 break;
@@ -455,6 +455,7 @@ public sealed class DelegatedWorker
     private readonly List<Func<Task>> _cleanup = [];
     private readonly Func<ChatMessage, CancellationToken, Task> _deliver;
     private bool _resultTaken;
+    private bool _approvalReported;
 
     internal DelegatedWorker(
         DelegatedWorkState owner,
@@ -537,6 +538,7 @@ public sealed class DelegatedWorker
             if (IsActive && status != Status)
             {
                 Status = status;
+                _approvalReported = false;
                 changed = true;
             }
         }
@@ -544,6 +546,18 @@ public sealed class DelegatedWorker
         if (changed)
         {
             _owner.Pulse();
+        }
+    }
+
+    /// <summary>Reports an approval once so repeated waits can block until the worker progresses.</summary>
+    internal bool TryTakeApproval()
+    {
+        lock (_gate)
+        {
+            if (!IsActive || Status != DelegatedWorkerStatus.AwaitingApproval || _approvalReported) { return false; }
+
+            _approvalReported = true;
+            return true;
         }
     }
 

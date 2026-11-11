@@ -171,7 +171,13 @@ public sealed class ChatMemoryService : IChatMemoryService, IDisposable
     public async Task ResetIndexAsync(string userId, CancellationToken ct = default)
     {
         EnsureUser(userId);
-        await _index.ResetAsync(GetVectorSpaceOrUnconfigured(), ct).ConfigureAwait(false);
+        // Settings changes and returning-user reconciliation share publication ownership.
+        await _publicationGate.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            await _index.ResetAsync(GetVectorSpaceOrUnconfigured(), ct).ConfigureAwait(false);
+        }
+        finally { _publicationGate.Release(); }
 
         var threads = await _chatThreadRepository.GetThreadsAsync(userId, ct: ct).ConfigureAwait(false);
         foreach (var thread in threads)
@@ -186,17 +192,28 @@ public sealed class ChatMemoryService : IChatMemoryService, IDisposable
     }
 
     /// <inheritdoc />
-    public Task<int> GetCommittedPositionAsync(
+    public async Task<int> GetCommittedPositionAsync(
         string userId,
         string threadId,
         CancellationToken ct = default)
     {
         EnsureUser(userId);
-        ct.ThrowIfCancellationRequested();
-        DurableVectorSpace? space = GetVectorSpace();
-        return space is null
-            ? Task.FromResult(0)
-            : _index.GetCommittedPositionAsync(space, threadId, ct);
+        await _publicationGate.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            DurableVectorSpace? space = GetVectorSpace();
+            if (space is null) { return 0; }
+
+            var snapshot = await _index.GetSnapshotAsync(ct).ConfigureAwait(false);
+            // Users absent during a shared model change rebuild from their durable conversations.
+            if (snapshot.IsTrusted && !IsCurrent(snapshot, space))
+            {
+                await _index.ResetAsync(space, ct).ConfigureAwait(false);
+            }
+
+            return await _index.GetCommittedPositionAsync(space, threadId, ct).ConfigureAwait(false);
+        }
+        finally { _publicationGate.Release(); }
     }
 
     /// <summary>

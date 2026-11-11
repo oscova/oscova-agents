@@ -239,8 +239,8 @@ public sealed class ProfileController(
                 var succeeded = await duressActions.ExecuteAsync(user, actions);
                 if (!succeeded)
                 {
+                    // Keep the pending deletion for the next unlock attempt.
                     vaultDataProtector.Forget(user.Id);
-                    pendingDuress.Remove(user.Id);
                     return BadRequest(new ErrorResult { Message = "The vault could not be unlocked." });
                 }
 

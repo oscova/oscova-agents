@@ -2709,11 +2709,6 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
         _restoreScrollTop = Drafts.GetScrollPosition(threadId);
         _waitingForThreadView = IsConversationLoading;
         _speechCaptureGeneration++;
-        if (_voiceModeState == VoiceModeState.Transcribing)
-        {
-            await ResumeVoiceModeListeningAsync();
-        }
-
         CancelPendingRunStart();
         RollbackOptimisticRun();
         RollbackRegeneration();
@@ -2756,6 +2751,12 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
         _selectedAgentConversationKey = null;
         _followLatest = _restoreScrollTop is null;
         ResetActiveRun();
+        // The abandoned voice turn cannot complete through the destination's projection.
+        if (_voiceModeState is VoiceModeState.Transcribing or VoiceModeState.Processing)
+        {
+            await ResumeVoiceModeListeningAsync();
+        }
+
         if (IsConversationLoading) { return; }
 
         await ApplyLatestProjectionAsync(threadId, hydration: true);
@@ -2981,11 +2982,14 @@ public partial class ChatPanel : ComponentBase, IAsyncDisposable
         }
         else if (snapshot.Phase == ChatRunProjectionPhase.Terminal &&
                  snapshot.Outcome is ChatRunOutcome.Stopped or ChatRunOutcome.Failed &&
+                 _optimisticRunRollback is { } rollback &&
                  string.Equals(
-                     _optimisticRunRollback?.UserMessage.MessageId,
+                     rollback.UserMessage.MessageId,
                      snapshot.UserMessageId,
                      StringComparison.Ordinal))
         {
+            // A terminal run without prepared messages never saved the submitted input.
+            _optimisticRunRollback = rollback with { IsAdmitted = false };
             RollbackOptimisticRun();
         }
 

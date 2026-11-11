@@ -42,6 +42,22 @@ public static class MarkdownRenderer
     public static string ToHtml(string markdown, MarkdownPipeline? pipeline = null) =>
         string.IsNullOrEmpty(markdown) ? string.Empty : Markdown.ToHtml(markdown, pipeline ?? Pipeline);
 
+    /// <summary>Renders file Markdown without automatically fetching images from another origin.</summary>
+    internal static string ToFilePreviewHtml(string markdown, Uri pageUri)
+    {
+        var document = Markdown.Parse(markdown, Pipeline);
+        foreach (var image in document.Descendants<LinkInline>().Where(link => link.IsImage))
+        {
+            if (Uri.TryCreate(pageUri, image.Url ?? string.Empty, out var target) && target.Scheme == pageUri.Scheme &&
+                string.Equals(target.Authority, pageUri.Authority, StringComparison.OrdinalIgnoreCase)) { continue; }
+
+            // Outside images require a click because browser fetches bypass the server's egress audit.
+            RenderImageAsLink(image);
+        }
+
+        return Markdown.ToHtml(document, Pipeline);
+    }
+
     /// <summary>Routes assistant file links and images through the owning chat's authorized file endpoints.</summary>
     public static string ToChatHtml(string markdown, ChatThread? thread, string? agentId,
         IReadOnlyList<ThreadArtifact> artifacts, bool isRunActive, int? tableIndex = null)

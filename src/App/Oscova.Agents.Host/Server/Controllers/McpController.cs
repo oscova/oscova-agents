@@ -127,6 +127,31 @@ public sealed class McpController(UserServiceManager userServiceManager, ILogger
         });
     }
 
+    /// <summary>Updates only the selected connection through the governed configuration boundary.</summary>
+    [HttpPut("servers/{serverId:guid}")]
+    public async Task<IActionResult> UpdateServer(Guid serverId, [FromBody] McpServerConfig request,
+        CancellationToken ct, [FromQuery] bool confirmInterruption = false)
+    {
+        var (server, normalizationError) = NormalizeServerConfig(request);
+        if (normalizationError is not null || server is null)
+        {
+            return BadRequest(normalizationError ?? "MCP server request is required.");
+        }
+
+        server.Id = serverId;
+        var validationError = ValidateServerConfig(server);
+        if (validationError is not null)
+        {
+            return BadRequest(validationError);
+        }
+
+        var userScope = await GetUserScopeAsync(ct);
+        await userScope.McpToolSettings.UpdateDefinitionAsync(server, confirmInterruption, ct);
+        SyncMcpTools(userScope);
+
+        return NoContent();
+    }
+
     [HttpDelete("servers/{serverId:guid}")]
     public async Task<IActionResult> DeleteServer(Guid serverId, CancellationToken ct,
         [FromQuery] bool confirmInterruption = false)

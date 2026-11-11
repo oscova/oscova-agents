@@ -4,6 +4,7 @@ using OpenAI.Responses;
 using Oscova.Agents.Credentials;
 using Oscova.Agents.Llm;
 using System.ClientModel;
+using System.Runtime.CompilerServices;
 
 namespace Oscova.Agents.Infrastructure.Chat;
 
@@ -29,7 +30,7 @@ public sealed class OpenAiModelProvider(
     {
         var model = ResolveModelId(config);
         var credential = new ApiKeyCredential(ResolveApiKeyOrThrow(apiKey));
-        var inner = BuildResponsesClient(model, credential, config);
+        var inner = new ResponsesFailureChatClient(BuildResponsesClient(model, credential, config));
         var configured = inner.AsBuilder()
             .ConfigureOptions(options => ApplyResponsesRequestDefaults(options, config))
             .Build();
@@ -49,6 +50,29 @@ public sealed class OpenAiModelProvider(
         }
 
         return new ResponsesClient(credential, options).AsIChatClient(model);
+    }
+
+    /// <summary>Propagates failed Responses events through the shared fallback and run-failure paths.</summary>
+    private sealed class ResponsesFailureChatClient(IChatClient inner) : DelegatingChatClient(inner)
+    {
+        public override async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+            IEnumerable<ChatMessage> messages, ChatOptions? options = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken).ConfigureAwait(false))
+            {
+                // Refusals and incomplete responses have distinct event types and retain their existing behavior.
+                if (update.RawRepresentation is StreamingResponseFailedUpdate or StreamingResponseErrorUpdate)
+                {
+                    var message = update.RawRepresentation is StreamingResponseFailedUpdate failed
+                        ? failed.Response.Error?.Message
+                        : update.Contents.OfType<ErrorContent>().FirstOrDefault()?.Message;
+                    throw new ClientResultException(message ?? "The model provider reported an error in its response stream.");
+                }
+
+                yield return update;
+            }
+        }
     }
 
     private void ApplyResponsesRequestDefaults(ChatOptions options, ModelProviderConfig config)

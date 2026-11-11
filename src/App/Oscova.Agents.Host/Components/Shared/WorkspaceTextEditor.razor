@@ -2,6 +2,7 @@
 @inject IDialogService Dialogs
 @inject IStringLocalizer<ChatText> Loc
 @inject IStringLocalizer<CommonText> CommonLoc
+@inject NavigationManager Navigation
 
 <div class="flex min-h-0 flex-1 flex-col">
     @if (File.Snapshot is { State: ProjectReadState.Ready } snapshot)
@@ -29,7 +30,7 @@
         @if (IsMarkdown && !File.ShowSource)
         {
             <div class="artifact-markdown markdown-content custom-scrollbar p-4">
-                @((MarkupString)MarkdownRenderer.ToHtml(File.Text))
+                @((MarkupString)MarkdownRenderer.ToFilePreviewHtml(File.Text, new Uri(Navigation.Uri)))
             </div>
         }
         else

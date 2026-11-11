@@ -322,8 +322,17 @@ else
         {
             var saved = await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
             {
-                _draft.ConfirmInterruptions = confirmed;
-                using var response = await Http.PutAsJsonAsync(ApiRoutes.NetworkSettings.Configuration, _draft);
+                // Reapply this draft's edits to current settings on every confirmation attempt.
+                var request = CreateRequest(await Http.GetFromJsonAsync<NetworkSettingsSummary>(ApiRoutes.NetworkSettings.Configuration));
+                if (_draft.EnableNetworkAccess != _saved.EnableNetworkAccess) { request.EnableNetworkAccess = _draft.EnableNetworkAccess; }
+                if (_draft.AllowPrivateNetworkFetch != _saved.AllowPrivateNetworkFetch) { request.AllowPrivateNetworkFetch = _draft.AllowPrivateNetworkFetch; }
+                if (_draft.AllowSandboxNetworkAccess != _saved.AllowSandboxNetworkAccess) { request.AllowSandboxNetworkAccess = _draft.AllowSandboxNetworkAccess; }
+                if (_draft.Port != _saved.Port) { request.Port = _draft.Port; }
+                if (_draft.PublicAppUrlMode != _saved.PublicAppUrlMode) { request.PublicAppUrlMode = _draft.PublicAppUrlMode; }
+                if (!string.Equals(_draft.CustomPublicAppUrl, _saved.CustomPublicAppUrl, StringComparison.Ordinal)) { request.CustomPublicAppUrl = _draft.CustomPublicAppUrl; }
+
+                request.ConfirmInterruptions = confirmed;
+                using var response = await Http.PutAsJsonAsync(ApiRoutes.NetworkSettings.Configuration, request);
                 if (response.StatusCode == HttpStatusCode.Conflict) { return false; }
                 if (!response.IsSuccessStatusCode)
                 {

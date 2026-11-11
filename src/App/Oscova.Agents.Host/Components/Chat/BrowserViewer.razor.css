@@ -15,6 +15,8 @@
 .browser-download > a { justify-self: end; }
 .browser-page { flex: 1; min-height: 240px; overflow: auto; background: #fff; position: relative; }
 .browser-page canvas { display: block; width: 100%; height: auto; outline-offset: -2px; }
+.browser-text-input { position: absolute; top: 0; left: 0; width: 1px; height: 1em; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+.browser-page:has(.browser-text-input:focus-visible) canvas { outline: 2px solid Highlight; }
 .browser-pointer-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .browser-agent-pointer { display: none; position: absolute; width: 26px; height: 26px; overflow: visible; transform-origin: 2px 2px; fill: #5b2a8c; stroke: #faf8ff; stroke-width: 2.2; stroke-linejoin: round; filter: drop-shadow(0 1px 2px #2d124e80) drop-shadow(0 0 6px #5b2a8cb3); }
 .browser-error:empty { display: none; }

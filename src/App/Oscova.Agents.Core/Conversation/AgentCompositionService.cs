@@ -215,12 +215,12 @@ public class AgentCompositionService(
             }
         }
 
-        var requiredServers = requiredAgents.SelectMany(agent => agent.AllowedToolNames.Concat(agent.PinnedToolNames))
-            .Select(name => ToolNaming.SplitQualifiedName(name).Qualifier).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var requiredTools = requiredAgents.SelectMany(agent => agent.AllowedToolNames.Concat(agent.PinnedToolNames))
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         var runtimeTools = ResolveRuntimeToolsAsync is null ? null :
             await ResolveRuntimeToolsAsync(agentOrchestrator.Tools, runContextAccessor.Current,
                 runContextAccessor.Current?.ConfigurationScope?.Token ?? CancellationToken.None,
-                requiredServers).ConfigureAwait(false);
+                requiredTools).ConfigureAwait(false);
         if (runtimeTools is not null && _toolGovernance is not null) { ApplyToolGovernance(_toolGovernance, runtimeTools); }
 
         Func<CancellationToken, Task<ChatClientAgent>>? createSelfWorker = null;

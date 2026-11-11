@@ -91,3 +91,4 @@ Keep these boundaries in mind when reading the ledger:
 - [Session inspector](references/user-guide-monitoring-session-inspector.md)
 - [Monitoring runs](references/user-guide-automation-monitoring-runs.md)
 - [Logs](references/user-guide-settings-and-admin-logs.md)
+- [Verify that nothing leaves your machine](references/user-guide-settings-and-admin-verify-nothing-leaves.md)

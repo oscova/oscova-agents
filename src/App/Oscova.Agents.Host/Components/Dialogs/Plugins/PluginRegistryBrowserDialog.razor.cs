@@ -22,6 +22,7 @@ public partial class PluginRegistryBrowserDialog : ComponentBase
     private readonly HashSet<string> _metadataErrors = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, InstallState> _installs = new(StringComparer.OrdinalIgnoreCase);
     private bool _installedAny;
+    private bool CanClose => !_installs.Values.Any(state => state.InProgress);
 
     private async Task SearchAsync()
     {
@@ -184,6 +185,9 @@ public partial class PluginRegistryBrowserDialog : ComponentBase
 
     private Task Close()
     {
+        // Keep accepted installs open so their result refreshes the parent's plugin list.
+        if (!CanClose) { return Task.CompletedTask; }
+
         DialogInstance.Close(_installedAny ? DialogResult.Ok : DialogResult.Cancel);
         return Task.CompletedTask;
     }

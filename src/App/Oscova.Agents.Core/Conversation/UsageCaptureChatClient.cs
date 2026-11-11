@@ -31,22 +31,32 @@ public sealed class UsageCaptureChatClient(
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var reportedUsage = false;
-        await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken).ConfigureAwait(false))
+        var receivedResponse = false;
+        try
         {
-            foreach (var content in update.Contents)
+            await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken).ConfigureAwait(false))
             {
-                if (content is UsageContent usageContent)
+                receivedResponse = true;
+                foreach (var content in update.Contents)
                 {
-                    reportedUsage = true;
-                    var details = usageContent.Details;
-                    Record(details.InputTokenCount, details.OutputTokenCount, details.TotalTokenCount);
+                    if (content is UsageContent usageContent)
+                    {
+                        reportedUsage = true;
+                        var details = usageContent.Details;
+                        Record(details.InputTokenCount, details.OutputTokenCount, details.TotalTokenCount);
+                    }
                 }
+
+                yield return update;
             }
 
-            yield return update;
+            receivedResponse = true;
         }
-
-        if (!reportedUsage) { Record(null, null, null); }
+        finally
+        {
+            // Interrupted responses still carry uncertainty when no usage report arrived.
+            if (receivedResponse && !reportedUsage) { Record(null, null, null); }
+        }
     }
 
     private void Record(long? inputTokens, long? outputTokens, long? totalTokens)

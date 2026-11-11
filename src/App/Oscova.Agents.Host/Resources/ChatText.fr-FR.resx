@@ -1200,4 +1200,5 @@
   <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>En attente de votre réponse et des sous-agents</value></data>
   <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>En attente d’approbation</value></data>
   <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>Interrompu</value></data>
+  <data name="Chat.Browser.TextInput" xml:space="preserve"><value>Saisie de texte de la page du navigateur</value></data>
 </root>

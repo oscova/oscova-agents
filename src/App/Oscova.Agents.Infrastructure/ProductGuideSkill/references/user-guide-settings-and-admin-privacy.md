@@ -87,7 +87,17 @@ Encryption protects stored conversations, task runs, memory and private notes fo
 
 ## Protect your files on disk
 
-Your Vault Password encrypts what Oscova stores about you, such as conversations, memory, notes, agents and settings. Files you work with stay as normal files so the shell, your editor and other tools can open them. This covers workspace files, project folders, Library folders and chat attachments.
+Your Vault Password encrypts what Oscova stores about you. Files you work with stay as normal files so the shell, your editor and other tools can open them.
+
+| Stored encrypted with your Vault Password | Stored as plain files, and why |
+| --- | --- |
+| Conversations and their index | Your account record and the wrapped vault key: needed to sign you in before the vault is unlocked |
+| Agent definitions, tasks and task runs | Workspace files, project folders, Library folders and chat attachments: the shell, your editor and other tools read them |
+| Memory, notes and the to-do list | Logs, metrics, notifications and the egress audit: operational records that hold no conversation text |
+| Prompt customizations and your settings | Help, built-in skills, plugin files, downloaded models and seed images: shipped content, the same for every user |
+| Session state | Profile pictures, including ones you upload, and wallpapers: image files served to the browser |
+
+The [Verify that nothing leaves your machine](references/user-guide-settings-and-admin-verify-nothing-leaves.md) article shows how to confirm on your own disk that a phrase you typed in chat is not readable without the vault.
 
 To protect those files if your computer is lost or stolen, turn on your operating system's disk encryption: BitLocker or Device Encryption on Windows, FileVault on macOS, or LUKS on Linux. To encrypt a single text file instead, create it in **Files** with an `.enc` extension, such as `notes.md.enc`.
 
@@ -126,4 +136,5 @@ Tool network classification is managed separately under **Settings > Tools**. A 
 - [Model providers](references/user-guide-concepts-model-providers.md)
 - [Network](references/user-guide-settings-and-admin-network.md)
 - [Egress Audit](references/user-guide-monitoring-egress-audit.md)
+- [Verify that nothing leaves your machine](references/user-guide-settings-and-admin-verify-nothing-leaves.md)
 - [Connected accounts](references/user-guide-connections-connected-accounts.md)

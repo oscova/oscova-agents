@@ -73,6 +73,9 @@ public sealed class EnvironmentEraseOperation(CliPaths paths, LocalHostControl l
         }
 
         var descriptor = ResolveSelectedHost();
+        // Stop node authority before removing its local enrollment.
+        await LocalNodeControl.StopAllAsync(paths, ct).ConfigureAwait(false);
+
         using var updateLease = ApplicationUpdateFiles.AcquireUpdateLease();
         await localControl.StopLocalServicesAsync(descriptor, ct).ConfigureAwait(false);
         if (OperatingSystem.IsWindows()) { await avatarEngine.StopAsync(ct).ConfigureAwait(false); }

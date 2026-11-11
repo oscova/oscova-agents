@@ -348,6 +348,7 @@ public sealed class LlamaSharpModelProvider : IModelProvider, IModelProviderConf
         : DelegatingChatClient(inner)
     {
         private readonly SemaphoreSlim _gate = new(1, 1);
+        private IChatClient _requestClient = inner;
         private volatile bool _retired;
         private bool _destroyed;
 
@@ -358,7 +359,8 @@ public sealed class LlamaSharpModelProvider : IModelProvider, IModelProviderConf
             try
             {
                 ObjectDisposedException.ThrowIf(_retired, this);
-                return await base.GetResponseAsync(messages, options, cancellationToken).ConfigureAwait(false);
+                ResetConversation();
+                return await _requestClient.GetResponseAsync(messages, options, cancellationToken).ConfigureAwait(false);
             }
             finally { FinishCall(); }
         }
@@ -370,9 +372,20 @@ public sealed class LlamaSharpModelProvider : IModelProvider, IModelProviderConf
             try
             {
                 ObjectDisposedException.ThrowIf(_retired, this);
-                await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken).ConfigureAwait(false)) { yield return update; }
+                ResetConversation();
+                await foreach (var update in _requestClient.GetStreamingResponseAsync(messages, options, cancellationToken).ConfigureAwait(false)) { yield return update; }
             }
             finally { FinishCall(); }
+        }
+
+        public override object? GetService(Type serviceType, object? serviceKey = null) =>
+            serviceKey is null && serviceType.IsInstanceOfType(this) ? this : _requestClient.GetService(serviceType, serviceKey);
+
+        private void ResetConversation()
+        {
+            // Cached clients serve independent histories, while the native context keeps its existing owner.
+            context.NativeHandle.MemoryClear();
+            _requestClient = new OutputBudgetExecutor(context).AsChatClient();
         }
 
         protected override void Dispose(bool disposing)

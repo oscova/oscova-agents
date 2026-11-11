@@ -6,6 +6,7 @@ using System.Text.Json;
 using Oscova.Agents.Toolsets;
 using Oscova.Agents.Utils;
 using Oscova.Agents.Core.Projects;
+using Oscova.Agents.Infrastructure.Chat;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -94,7 +95,9 @@ public static class ThreadArtifactProjector
         path = NormalizeAgentPath(path);
         if (path.Length == 0) { return null; }
 
-        var environment = projectSelected && !path.StartsWith("/workspace/", StringComparison.Ordinal) &&
+        // Uploaded originals stay on the server even when the chat uses a device project.
+        var environment = projectSelected && !path.StartsWith(PathHelper.ToExtraMountAgentPath(ChatRunAccess.AttachmentDirectoryLabel) + "/", StringComparison.Ordinal) &&
+            !path.StartsWith("/workspace/", StringComparison.Ordinal) &&
             !path.StartsWith(PathHelper.SelfAgentPath + "/", StringComparison.Ordinal) &&
             !path.StartsWith("/private/", StringComparison.Ordinal)
             ? "project" : "workspace";

@@ -138,6 +138,8 @@ public static class DependencyInjection
             AllowAutoRedirect = false,
             // Pooled fetch clients must not carry one user's website cookies into another user's request.
             UseCookies = false,
+            // Recheck private-network permission when each request connects.
+            PooledConnectionLifetime = TimeSpan.Zero,
             ConnectCallback = async (context, ct) =>
             {
                 var host = context.DnsEndPoint.Host;

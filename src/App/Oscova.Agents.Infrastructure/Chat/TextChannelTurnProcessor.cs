@@ -128,9 +128,16 @@ public sealed class TextChannelTurnProcessor(
             : await scope.ChatThreadRepository.GetThreadAsync(input.OwnerUserId, boundId, ct).ConfigureAwait(false);
         if (bound is not null)
         {
-            if (bound.ProjectId is not null) { await scope.ProjectAccess.AuthorizeAsync(bound.ProjectId, ct).ConfigureAwait(false); }
+            var agent = scope.AppService.ResolveAgentDefinition(bound.AgentId);
+            // An unavailable shared agent cannot lend its conversation to the fallback agent.
+            if (string.IsNullOrWhiteSpace(bound.AgentId) || string.Equals(agent.Id, bound.AgentId, StringComparison.Ordinal))
+            {
+                if (bound.ProjectId is not null) { await scope.ProjectAccess.AuthorizeAsync(bound.ProjectId, ct).ConfigureAwait(false); }
 
-            return (scope.AppService.ResolveAgentDefinition(bound.AgentId), bound);
+                return (agent, bound);
+            }
+
+            bindings.Clear(input.OwnerUserId, input.Route.ChannelId);
         }
 
         var thread = create
@@ -288,6 +295,7 @@ public sealed class TextChannelTurnProcessor(
                 thread.Id,
                 runCancellation.Token).ConfigureAwait(false);
             var session = sessionResult.Session;
+            var historyBeforeRun = session.TryGetInMemoryChatHistory(out var history) ? history.ToList() : [];
             if (sessionResult.IsNew)
             {
                 await runtimeHookService.DispatchSessionStartAsync(new SessionHookContext
@@ -363,6 +371,24 @@ public sealed class TextChannelTurnProcessor(
                 }
 
                 return string.Empty;
+            }
+            catch
+            {
+                // Keep delivered corrections resumable, without carrying queued or unfinished tool input forward.
+                steering.Dispose();
+                try
+                {
+                    InterruptedHistory.Restore(session, [.. historyBeforeRun, new(ChatRole.User, runtimeUserText),
+                        .. steering.AppliedTexts.Select(text => new ChatMessage(ChatRole.User, text))]);
+                    thread.SessionElement = await agent.SerializeSessionAsync(session, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+                    await chatThreadRepository.SaveThreadAsync(ownerUserId, thread).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Failed to preserve the partial session for channel thread {ThreadId}.", thread.Id);
+                }
+
+                throw;
             }
             finally
             {

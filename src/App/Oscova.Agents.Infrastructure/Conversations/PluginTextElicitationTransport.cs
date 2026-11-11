@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Oscova.Agents.Core.Conversation;
+using System.Runtime.CompilerServices;
 
 namespace Oscova.Agents.Infrastructure.Conversations;
 
@@ -7,6 +8,11 @@ namespace Oscova.Agents.Infrastructure.Conversations;
 public sealed class PluginTextElicitationTransport(ILogger<PluginTextElicitationTransport> logger)
 {
     private readonly PendingTextReplies<PluginReplyKey> _replies = new();
+    private readonly ConditionalWeakTable<PluginElicitationOrigin, SemaphoreSlim> _promptGates = new();
+
+    // Workers share their run's origin, so questions and approvals share its interaction gate.
+    internal SemaphoreSlim GetPromptGate(PluginElicitationOrigin origin) =>
+        _promptGates.GetValue(origin, static _ => new SemaphoreSlim(1, 1));
 
     /// <summary>Registers the reply waiter before sending through the originating connection.</summary>
     public Task<string?> SendPromptAndAwaitReplyAsync(PluginElicitationOrigin origin, string prompt, CancellationToken cancellationToken)

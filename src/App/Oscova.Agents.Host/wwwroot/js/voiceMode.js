@@ -1,5 +1,5 @@
 // Voice Mode — continuous voice conversation using @ricky0123/vad-web (ES module)
-// VAD detects speech segments, encodes to WAV, and sends base64 to .NET for transcription.
+// VAD detects speech segments and streams WAV audio to .NET for transcription.
 // Usage from Blazor: const mod = await import('/js/voiceMode.js'); await mod.start(dotNetRef); mod.pause(); mod.resume(); await mod.stop();
 import { encodeWav } from '/js/audioRecorder.js';
 
@@ -35,23 +35,7 @@ function loadScript(src) {
     });
 }
 
-// Converts Float32Array audio samples to a base64-encoded WAV string.
-function audioToBase64Wav(float32Audio, sampleRate) {
-    const wavBuffer = encodeWav(float32Audio, sampleRate, 1);
-    const bytes = new Uint8Array(wavBuffer);
-    const chunkSize = 0x8000;
-    const chunks = [];
-
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const subarray = bytes.subarray(i, i + chunkSize);
-        chunks.push(String.fromCharCode.apply(null, subarray));
-    }
-
-    const binary = chunks.join('');
-    return btoa(binary);
-}
-
-// Creates and starts the MicVAD instance. Calls dotNetRef.OnVadSpeechEnd with base64 WAV on each utterance.
+// Creates and starts the MicVAD instance. Calls dotNetRef.OnVadSpeechEnd with a WAV stream on each utterance.
 // Returns false when a stop or a newer start superseded this one while it waited for the microphone.
 export async function start(ref) {
     if (micVad) return true;
@@ -71,9 +55,11 @@ export async function start(ref) {
         },
 
         onSpeechEnd: (audio) => {
-            // audio is Float32Array at 16kHz mono
-            const base64 = audioToBase64Wav(audio, 16000);
-            dotNetRef?.invokeMethodAsync('OnVadSpeechEnd', base64);
+            // Stream 16kHz mono audio so long utterances do not exceed the circuit's message limit.
+            if (dotNetRef) {
+                const stream = DotNet.createJSStreamReference(new Blob([encodeWav(audio, 16000, 1)], { type: 'audio/wav' }));
+                dotNetRef.invokeMethodAsync('OnVadSpeechEnd', stream);
+            }
         }
     });
 

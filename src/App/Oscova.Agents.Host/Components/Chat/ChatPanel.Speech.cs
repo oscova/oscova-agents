@@ -791,10 +791,7 @@ public partial class ChatPanel
             await using var jsStream = await _audioRecorderModule.InvokeAsync<IJSStreamReference>("stop");
             if (jsStream is not null)
             {
-                await using var stream = await jsStream.OpenReadStreamAsync(20 * ByteSize.OneMegabyte);
-                using var ms = new MemoryStream();
-                await stream.CopyToAsync(ms);
-                var base64 = Convert.ToBase64String(ms.ToArray());
+                var base64 = await ReadVoiceRecordingAsync(jsStream);
                 if (IsInputLocked || _isDisposed || captureGeneration != _speechCaptureGeneration)
                 {
                     return;
@@ -824,6 +821,15 @@ public partial class ChatPanel
             _isTranscribing = false;
             InputPlaceholder = GetDefaultInputPlaceholder();
         }
+    }
+
+    /// <summary>Applies the same bounded audio transfer to push-to-talk and continuous voice capture.</summary>
+    private static async Task<string> ReadVoiceRecordingAsync(IJSStreamReference recording)
+    {
+        await using var stream = await recording.OpenReadStreamAsync(20 * ByteSize.OneMegabyte).ConfigureAwait(false);
+        using var buffer = new MemoryStream();
+        await stream.CopyToAsync(buffer).ConfigureAwait(false);
+        return Convert.ToBase64String(buffer.ToArray());
     }
 
     // Voice mode — continuous conversation
@@ -939,8 +945,10 @@ public partial class ChatPanel
 
     // Called from JS when VAD captures a complete utterance
     [JSInvokable]
-    public async Task OnVadSpeechEnd(string base64Audio)
+    public async Task OnVadSpeechEnd(IJSStreamReference recording)
     {
+        // Even a superseded callback owns and releases its browser-side audio stream.
+        await using var ownedRecording = recording;
         await InvokeAsync(async () =>
         {
             // Only process if we are actively listening (prevents duplicate callbacks from race conditions)
@@ -954,6 +962,9 @@ public partial class ChatPanel
 
             try
             {
+                var base64Audio = await ReadVoiceRecordingAsync(recording);
+                if (!IsVoiceModeActive || _isDisposed || captureGeneration != _speechCaptureGeneration) { return; }
+
                 var transcription = await SpeechService.TranscribeAsync(base64Audio, "auto");
                 // Recognition belongs to the chat and capture session that recorded it.
                 if (!IsVoiceModeActive || _isDisposed || captureGeneration != _speechCaptureGeneration) { return; }

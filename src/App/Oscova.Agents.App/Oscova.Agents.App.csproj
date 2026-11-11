@@ -11,7 +11,7 @@
     <PackageId>Oscova.Agents.App</PackageId>
     <Title>Oscova Agents</Title>
     <Description>The oscova command that installs, starts and manages Oscova, a self-hosted AI agent OS. Run `oscova start` after installing.</Description>
-    <PackageTags>oscova;oscova-agents;ai;assistant;agent;cli;dotnet-tool;oscova-framework-version-$(OscovaAgentsVersion)</PackageTags>
+    <PackageTags>oscova;oscova-agents;ai;assistant;agent;cli;dotnet-tool;self-hosted;local-llm;ollama;mcp;avatar;privacy;encrypted;blazor;oscova-framework-version-$(OscovaAgentsVersion)</PackageTags>
     <Version>$(OscovaAppVersion)</Version>
     <PackageLicenseFile>EULA.txt</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>

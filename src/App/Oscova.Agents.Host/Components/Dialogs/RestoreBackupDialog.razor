@@ -157,8 +157,10 @@
         try
         {
             await using var utilsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/utils.js");
+            // Let large browser uploads finish without the default interop timeout.
             var result = await utilsModule.InvokeAsync<JsonElement>(
                 "restoreEnvironmentBackup",
+                CancellationToken.None,
                 NavigationManager.ToAbsoluteUri(ApiRoutes.Environment.Restore).ToString(),
                 RestoreFileInputId,
                 new { passphrase = _passphrase },

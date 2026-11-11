@@ -13,6 +13,7 @@ namespace Oscova.Agents.App.Cli;
 /// </summary>
 public sealed class LocalHostControl(
     CliConfigStore configStore,
+    CliAuthFileStore authStore,
     HostApiClient apiClient,
     StartCollisionChecker collisionChecker,
     AvatarMcpManager avatarMcpManager)
@@ -22,18 +23,12 @@ public sealed class LocalHostControl(
     /// </summary>
     public async Task<RuntimeDescriptor?> TryResolveLocalAsync(OscovaCommandSettings settings, CancellationToken ct, bool allowUnresponsive = false)
     {
-        var explicitHost = settings.Host ?? Environment.GetEnvironmentVariable("OSCOVA_HOST");
-        var normalizedExplicitHost = NormalizeOrNull(explicitHost);
-        if (!string.IsNullOrWhiteSpace(explicitHost) &&
-            (normalizedExplicitHost is null || !CliHostUrlSelector.IsLoopback(normalizedExplicitHost)))
-        {
-            return null;
-        }
-
-        var configuredHost = explicitHost is null ? configStore.Read().Host : null;
-        var normalizedConfiguredHost = NormalizeOrNull(configuredHost);
-        if (!string.IsNullOrWhiteSpace(configuredHost) &&
-            (normalizedConfiguredHost is null || !CliHostUrlSelector.IsLoopback(normalizedConfiguredHost)))
+        // Local control must honor the same saved-login target as bearer commands.
+        var explicitHost = CliHostResolver.GetSelectedHost(settings, configStore.Read(), null);
+        var selectedHost = explicitHost ?? (await authStore.ReadAsync(ct).ConfigureAwait(false))?.CurrentHost;
+        var normalizedHost = NormalizeOrNull(selectedHost);
+        if (!string.IsNullOrWhiteSpace(selectedHost) &&
+            (normalizedHost is null || !CliHostUrlSelector.IsLoopback(normalizedHost)))
         {
             return null;
         }
@@ -45,14 +40,8 @@ public sealed class LocalHostControl(
             return null;
         }
 
-        // A loopback target only controls the live host when its port matches. A different port means
-        // the user meant another local instance or a port-forward to a remote, so defer to the bearer path.
-        if (normalizedExplicitHost is not null && !CliHostUrlSelector.PortMatchesAny(normalizedExplicitHost, descriptor.Urls))
-        {
-            return null;
-        }
-
-        if (normalizedConfiguredHost is not null && !CliHostUrlSelector.PortMatchesAny(normalizedConfiguredHost, descriptor.Urls))
+        // Explicit ports may be port-forwards; an old loopback login must not pin local lifecycle control.
+        if (explicitHost is not null && normalizedHost is not null && !CliHostUrlSelector.PortMatchesAny(normalizedHost, descriptor.Urls))
         {
             return null;
         }

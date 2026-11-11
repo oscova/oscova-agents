@@ -1200,4 +1200,5 @@
   <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>正在等待你的回答和子代理</value></data>
   <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>等待批准</value></data>
   <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>已中断</value></data>
+  <data name="Chat.Browser.TextInput" xml:space="preserve"><value>浏览器页面文本输入</value></data>
 </root>

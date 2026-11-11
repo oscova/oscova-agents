@@ -64,7 +64,7 @@ public sealed class NotificationToolset(
         JsonElement? sessionElement = null;
         if (task.SerializeLiveSessionAsync is not null)
         {
-            sessionElement = await task.SerializeLiveSessionAsync(ct).ConfigureAwait(false);
+            sessionElement = await task.SerializeLiveSessionAsync(message, ct).ConfigureAwait(false);
         }
 
         if (!sessionElement.HasValue)

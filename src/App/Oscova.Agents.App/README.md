@@ -9,6 +9,8 @@ oscova start
 
 Update with `dotnet tool update --global Oscova.Agents.App`. Install the Windows Avatar Engine with `oscova avatar install`.
 
+Avatar MCP server: see [the docs](https://oscova.ai/docs/articles/avatar-engine/mcp-server.html).
+
 Oscova is free and open source. Each version is distributed under its license agreement until its source is published on the `app` branch on GitHub. From then on, AGPL-3.0 applies to that version. The agent framework and official plugins are open source under Apache-2.0.
 
 [Website](https://oscova.ai) · [Documentation](https://oscova.ai/docs/) · [Framework and plugins](https://github.com/oscova/oscova-agents)

@@ -263,8 +263,15 @@ else
     {
         await RunAsync(value => _isSaving = value, async () =>
         {
+            var (savedIds, draftIds) = (_savedEnabledPluginIds, _draftEnabledPluginIds);
             var saved = await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, async confirmed =>
             {
+                // Each attempt reapplies the original toggles to the latest plugin settings.
+                (_savedEnabledPluginIds, _draftEnabledPluginIds) = (savedIds, draftIds);
+                _summary = await Http.GetFromJsonAsync<PluginSettingsSummary>(ApiRoutes.PluginSettings.Configuration)
+                    ?? throw new InvalidOperationException(Loc.GetOrDefault(SettingsTextKeys.PluginsLoadErrorToast, "Plugin settings response was empty."));
+                SetDraftFromSummary(preserveDraft: true);
+
                 using var response = await Http.PutAsJsonAsync(
                     ApiRoutes.PluginSettings.Configuration,
                     new UpdatePluginSettingsRequest { EnabledPluginIds = [.. _draftEnabledPluginIds], ConfirmInterruptions = confirmed });

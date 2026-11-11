@@ -72,6 +72,42 @@ public sealed class WaitToolsetTests
         Assert.StartsWith("Subagent 'helper' needs approval.\nhelper: awaiting approval", observed, StringComparison.Ordinal);
     }
 
+    /// <summary>Repeated waits block after reporting an approval and wake for completion.</summary>
+    [Fact]
+    public async Task WaitAsync_AfterReportingApproval_WaitsForNewProgress()
+    {
+        // Arrange: one worker remains paused at its approval boundary.
+        var agent = new ChatClientAgent(new UnusedChatClient(), new ChatClientAgentOptions { Id = "main" });
+        var session = await agent.CreateSessionAsync();
+        await using var work = new DelegatedWorkState(CancellationToken.None);
+        var recorded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var hold = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var worker = work.Start(session, "helper", agent.Id, null, [], (_, _) => Task.CompletedTask, (item, ct) =>
+        {
+            item.Record(new AgentResponseUpdate(ChatRole.Assistant,
+                [new ToolApprovalRequestContent("approval-1", new FunctionCallContent("call-1", "tool"))]));
+            recorded.SetResult();
+            return hold.Task.WaitAsync(ct);
+        });
+        await recorded.Task;
+        Assert.Contains("needs approval", await work.WaitAsync(agent, session, [worker.Handle], TimeSpan.FromSeconds(5), CancellationToken.None));
+
+        // Act: the parent waits again while the same approval is still pending.
+        var waiting = work.WaitAsync(agent, session, [worker.Handle], TimeSpan.FromSeconds(5), CancellationToken.None);
+
+        // Assert: unchanged approval cannot spin model calls, and completion still wakes the parent.
+        Assert.False(waiting.IsCompleted);
+        worker.Record(new AgentResponseUpdate(ChatRole.Assistant, [new FunctionResultContent("call-1", "approved")]));
+        worker.Record(new AgentResponseUpdate(ChatRole.Assistant,
+            [new ToolApprovalRequestContent("approval-2", new FunctionCallContent("call-2", "tool"))]));
+        Assert.Contains("needs approval", await waiting);
+        waiting = work.WaitAsync(agent, session, [worker.Handle], TimeSpan.FromSeconds(5), CancellationToken.None);
+        Assert.False(waiting.IsCompleted);
+
+        hold.SetResult("finished");
+        Assert.Contains("completed", await waiting);
+    }
+
     [Fact]
     public async Task ReflectedWait_WhenCancelled_StopsTheDelay()
     {

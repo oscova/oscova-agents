@@ -1200,4 +1200,5 @@
   <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>Menunggu jawaban Anda dan subagen</value></data>
   <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>Menunggu persetujuan</value></data>
   <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>Terputus</value></data>
+  <data name="Chat.Browser.TextInput" xml:space="preserve"><value>Input teks halaman browser</value></data>
 </root>

@@ -35,7 +35,7 @@ public sealed class FallbackChatClient(
         {
             return await base.GetResponseAsync(messages, options, cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (Exception ex) when (IsProviderFailure(ex, cancellationToken))
         {
             if (fallbackFactory is null)
             {
@@ -53,7 +53,7 @@ public sealed class FallbackChatClient(
                 MarkFallbackActivated();
                 return response;
             }
-            catch (Exception fallbackEx) when (fallbackEx is not OperationCanceledException)
+            catch (Exception fallbackEx) when (IsProviderFailure(fallbackEx, cancellationToken))
             {
                 await LogBothFailedAsync(ex, fallbackEx).ConfigureAwait(false);
                 ExceptionDispatchInfo.Capture(ex).Throw();
@@ -85,13 +85,15 @@ public sealed class FallbackChatClient(
 
                     update = enumerator.Current;
                 }
-                catch (Exception ex) when (!yieldedContent && ex is not OperationCanceledException)
+                catch (Exception ex) when (!yieldedContent && IsProviderFailure(ex, cancellationToken))
                 {
                     preChunkFailure = ex;
                     break;
                 }
 
-                yieldedContent |= update.Contents.Count > 0;
+                // An empty text or thinking block opener has not started an answer.
+                yieldedContent |= update.Contents.Any(content =>
+                    content is not (TextContent { Text.Length: 0 } or TextReasoningContent { Text.Length: 0, ProtectedData: null or "" }));
                 yield return update;
             }
         }
@@ -117,7 +119,7 @@ public sealed class FallbackChatClient(
         {
             fallback = await GetFallbackAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception fallbackEx) when (fallbackEx is not OperationCanceledException)
+        catch (Exception fallbackEx) when (IsProviderFailure(fallbackEx, cancellationToken))
         {
             await LogBothFailedAsync(preChunkFailure, fallbackEx).ConfigureAwait(false);
             ExceptionDispatchInfo.Capture(preChunkFailure).Throw();
@@ -151,7 +153,7 @@ public sealed class FallbackChatClient(
                 {
                     hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
                 }
-                catch (Exception fallbackEx) when (fallbackEx is not OperationCanceledException)
+                catch (Exception fallbackEx) when (IsProviderFailure(fallbackEx, cancellationToken))
                 {
                     await LogBothFailedAsync(primaryFailure, fallbackEx).ConfigureAwait(false);
                     ExceptionDispatchInfo.Capture(primaryFailure).Throw();
@@ -178,6 +180,14 @@ public sealed class FallbackChatClient(
         {
             await enumerator.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    private static bool IsProviderFailure(Exception exception, CancellationToken cancellationToken)
+    {
+        // HTTP timeouts may recover, while Stop and configuration cancellation must propagate.
+        return !cancellationToken.IsCancellationRequested
+            && (exception is not OperationCanceledException
+                || exception is TaskCanceledException { InnerException: TimeoutException });
     }
 
     private async ValueTask<IChatClient> GetFallbackAsync(CancellationToken cancellationToken)

@@ -1126,4 +1126,5 @@
   <data name="Chat.WaitingForAnswerAndSubagentsStatus" xml:space="preserve"><value>Esperando tu respuesta y a los subagentes</value></data>
   <data name="Chat.AgentConversation.Status.AwaitingApproval" xml:space="preserve"><value>Esperando aprobación</value></data>
   <data name="Chat.AgentConversation.Status.Interrupted" xml:space="preserve"><value>Interrumpido</value></data>
+  <data name="Chat.Browser.TextInput" xml:space="preserve"><value>Entrada de texto de la página del navegador</value></data>
 </root>

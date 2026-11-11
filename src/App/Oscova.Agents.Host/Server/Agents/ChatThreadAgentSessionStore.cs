@@ -5,6 +5,7 @@ using Oscova.Agents.Infrastructure.Chat;
 using Oscova.Agents.Conversations;
 using Microsoft.Agents.AI;
 using Oscova.Agents.Host.Server.Chat;
+using Oscova.Agents.Host.Services;
 using Oscova.Agents.Core.Conversation;
 using Oscova.Agents.Core.Hooks;
 using Oscova.Agents.Core.ToolGovernance;
@@ -80,19 +81,20 @@ public sealed class ChatThreadAgentSessionStore(
             string userId,
             string threadId,
             string? modelProviderId,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default,
+            string? requestedAgentId = null)
     {
         var scope = await userServiceManager.GetOrCreateScopeAsync(userId, cancellationToken).ConfigureAwait(false);
         var thread = await scope.ChatThreadRepository.GetThreadAsync(userId, threadId, cancellationToken).ConfigureAwait(false);
 
-        // Resolve the agent that originally produced the session bytes (recorded as
-        // thread.AgentId) instead of trusting the dispatch agent's main-agent fallback.
-        // For ChatClientAgent the format is identical, but a future workflow-backed agent
-        // would have a divergent shape and silently corrupt without this.
+        // New sessions honor the requested agent; saved bytes retain their original owner.
+        var ownerId = thread?.SessionElement is null
+            ? AgentSelectionResolver.ResolveAgentId(requestedAgentId, thread?.AgentId, thread?.DisplayMessages.Count > 0)
+            : thread.AgentId;
         var ownerAgent = await ResolveOwnerAgentAsync(
             scope,
             userId,
-            thread?.AgentId,
+            ownerId,
             modelProviderId,
             cancellationToken).ConfigureAwait(false);
 

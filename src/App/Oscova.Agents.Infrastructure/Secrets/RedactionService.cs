@@ -229,6 +229,11 @@ public sealed class RedactionService(
         return content switch
         {
             TextContent text => CopyMetadata(text, new TextContent(RedactText(text.Text, knownSecrets))),
+            // Reasoning is exported alongside ordinary message text.
+            TextReasoningContent reasoning => CopyMetadata(reasoning, new TextReasoningContent(RedactText(reasoning.Text, knownSecrets))
+            {
+                ProtectedData = reasoning.ProtectedData
+            }),
             FunctionCallContent call => CopyMetadata(call, new FunctionCallContent(
                     call.CallId,
                     call.Name,

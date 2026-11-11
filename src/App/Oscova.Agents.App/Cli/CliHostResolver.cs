@@ -9,10 +9,11 @@ public sealed class CliHostResolver(CliConfigStore configStore, CliAuthFileStore
         var config = configStore.Read();
         var auth = await authStore.ReadAsync(cancellationToken).ConfigureAwait(false);
         var explicitHost = settings.Host ?? Environment.GetEnvironmentVariable("OSCOVA_HOST");
-        var host = explicitHost
-            ?? config.Host
-            ?? auth?.CurrentHost
-            ?? CliHostUrlSelector.DefaultLocalHost;
+        var selectedHost = GetSelectedHost(settings, config, auth);
+
+        // With no selected target, attach to the running host on its actual interface and port.
+        var descriptor = selectedHost is null ? await collisionChecker.FindRunningHostAsync(cancellationToken).ConfigureAwait(false) : null;
+        var host = selectedHost ?? (descriptor is null ? CliHostUrlSelector.DefaultLocalHost : CliHostUrlSelector.SelectLocalHost(descriptor.Urls));
 
         host = NormalizeHostUrl(host);
         var entry = FindAuthEntry(auth, host);
@@ -30,6 +31,10 @@ public sealed class CliHostResolver(CliConfigStore configStore, CliAuthFileStore
 
         return new ResolvedHost(host, entry?.Token, entry);
     }
+
+    /// <summary>Shares command, environment, configuration and saved-login target precedence across CLI surfaces.</summary>
+    internal static string? GetSelectedHost(OscovaCommandSettings settings, CliConfigFile config, CliAuthFile? auth) =>
+        settings.Host ?? Environment.GetEnvironmentVariable("OSCOVA_HOST") ?? config.Host ?? auth?.CurrentHost;
 
     private async Task<ResolvedHost?> TryResolveLiveAuthenticatedLocalHostAsync(
         string? explicitHost,

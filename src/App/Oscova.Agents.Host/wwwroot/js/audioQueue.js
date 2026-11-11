@@ -7,11 +7,19 @@ let dotnetRef = null;
 let playbackGeneration = 0;
 
 export function init(audioElementId) {
-    audioEl = document.getElementById(audioElementId);
-    if (!audioEl) {
+    const nextAudio = document.getElementById(audioElementId);
+    if (!nextAudio) {
         console.error("[audioQueue] Audio element not found:", audioElementId);
         return;
     }
+    // A new page owns a fresh queue and must not inherit the old player's callbacks.
+    if (audioEl && audioEl !== nextAudio) {
+        clear();
+        audioEl.onended = null;
+        audioEl.onerror = null;
+        dotnetRef = null;
+    }
+    audioEl = nextAudio;
     audioEl.onerror = (e) => {
         console.warn("[audioQueue] Audio error:", audioEl?.error?.code || e);
         isPlaying = false;

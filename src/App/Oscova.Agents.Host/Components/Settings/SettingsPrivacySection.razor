@@ -200,7 +200,12 @@ else
         _isSaving = true;
         try
         {
-            await SettingsApiClient.SavePrivacySettingsAsync(_draft);
+            // Apply only this draft's edits so another tab's privacy choices survive.
+            var request = CreateRequest(await SettingsApiClient.GetPrivacySettingsAsync());
+            if (_draft.IsLocalOnly != _saved.IsLocalOnly) { request.IsLocalOnly = _draft.IsLocalOnly; }
+            if (_draft.IdleLogoutMinutes != _saved.IdleLogoutMinutes) { request.IdleLogoutMinutes = _draft.IdleLogoutMinutes; }
+
+            await SettingsApiClient.SavePrivacySettingsAsync(request);
             ToastService.Show(Loc.GetOrDefault(SettingsTextKeys.PrivacySaveSuccessToast, "Privacy settings saved"), ToastType.Success);
             await LoadSettingsAsync();
         }

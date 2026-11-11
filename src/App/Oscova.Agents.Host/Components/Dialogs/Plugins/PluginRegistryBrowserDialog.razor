@@ -14,6 +14,7 @@
                 HelpTopic="@HelpTopics.PluginRegistryBrowser"
                 TitleClass="truncate text-lg font-bold"
                 OnClose="@Close"
+                CanClose="@CanClose"
                 ShowBackdropClose="true">
     <ChildContent>
         <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -221,6 +222,6 @@
         }
     </ChildContent>
     <FooterContent>
-        <button type="button" class="btn btn-sm" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
+        <button type="button" class="btn btn-sm" disabled="@(!CanClose)" @onclick="Close">@CommonLoc.GetOrDefault(CommonTextKeys.Close, "Close")</button>
     </FooterContent>
 </AppDialogShell>

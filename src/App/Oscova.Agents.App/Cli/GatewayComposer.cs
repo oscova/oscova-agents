@@ -59,7 +59,9 @@ public sealed class GatewayComposer(IReadOnlyList<SlashCommand> commands)
             }
 
             var key = pressed.Value;
-            var control = key.Modifiers.HasFlag(ConsoleModifiers.Control);
+            // Printable AltGr input is text, including characters on Ctrl shortcut keys.
+            var control = key.Modifiers.HasFlag(ConsoleModifiers.Control) &&
+                !(key.Modifiers.HasFlag(ConsoleModifiers.Alt) && !char.IsControl(key.KeyChar));
 
             if (key.Key == ConsoleKey.Enter)
             {

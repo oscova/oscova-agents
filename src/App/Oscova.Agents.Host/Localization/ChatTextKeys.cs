@@ -75,6 +75,7 @@ public static class ChatTextKeys
     public const string BrowserNewTab = "Chat.Browser.NewTab";
     public const string BrowserAddress = "Chat.Browser.Address";
     public const string BrowserViewport = "Chat.Browser.Viewport";
+    public const string BrowserTextInput = "Chat.Browser.TextInput";
     public const string BrowserPhoneView = "Chat.Browser.PhoneView";
     public const string BrowserFailed = "Chat.Browser.Failed";
     public const string BrowserDisconnected = "Chat.Browser.Disconnected";

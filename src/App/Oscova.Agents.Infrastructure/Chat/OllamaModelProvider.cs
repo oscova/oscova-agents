@@ -1,8 +1,11 @@
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using OllamaSharp;
 using OllamaSharp.Models;
+using OllamaSharp.Models.Chat;
+using OllamaSharp.Models.Exceptions;
 using Oscova.Agents.Llm;
 
 namespace Oscova.Agents.Infrastructure.Chat;
@@ -38,8 +41,23 @@ public sealed class OllamaModelProvider(ILogger<OllamaModelProvider> logger) : I
         CancellationToken cancellationToken = default)
     {
         // Apply Ollama request defaults at the provider-created client so every run path uses them.
-        IChatClient client = BuildClient(config);
-        var configured = client.AsBuilder()
+        var client = BuildClient(config, chat: true);
+        client.IncomingJsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { typeInfo =>
+            {
+                if (typeInfo.Type != typeof(ChatResponseStream)) { return; }
+
+                var error = typeInfo.CreateJsonPropertyInfo(typeof(string), "error");
+                // Fail error lines before the SDK turns their missing message into an empty update.
+                error.Set = (_, value) =>
+                {
+                    if (value is string message) { throw new ResponseError(message); }
+                };
+                typeInfo.Properties.Add(error);
+            } }
+        };
+        var configured = ((IChatClient)client).AsBuilder()
             .ConfigureOptions(options => ApplyRequestDefaults(options, config))
             .Build();
         return ValueTask.FromResult(configured);
@@ -345,13 +363,80 @@ public sealed class OllamaModelProvider(ILogger<OllamaModelProvider> logger) : I
         }
     }
 
-    private static OllamaApiClient BuildClient(ModelProviderConfig config, HttpClient? httpClient = null)
+    /// <summary>Keeps cancellation attached to each chat response after HTTP headers arrive.</summary>
+    private sealed class OllamaChatApiClient : OllamaApiClient, IDisposable
+    {
+        private readonly HttpClient _httpClient;
+
+        public OllamaChatApiClient(HttpClient httpClient, string model) : base(httpClient, model)
+        {
+            _httpClient = httpClient;
+        }
+
+        protected override async Task<HttpResponseMessage> SendToOllamaAsync(HttpRequestMessage requestMessage,
+            OllamaRequest? ollamaRequest, HttpCompletionOption completionOption, CancellationToken cancellationToken)
+        {
+            var response = await base.SendToOllamaAsync(requestMessage, ollamaRequest, completionOption, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                var content = response.Content;
+                var stream = await content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+                var wrapped = new StreamContent(new ChatResponseStreamWithCancellation(stream, content, cancellationToken));
+                foreach (var header in content.Headers) { wrapped.Headers.TryAddWithoutValidation(header.Key, header.Value); }
+
+                response.Content = wrapped;
+                return response;
+            }
+            catch
+            {
+                response.Dispose();
+                throw;
+            }
+        }
+
+        void IDisposable.Dispose()
+        {
+            base.Dispose();
+            _httpClient.Dispose();
+        }
+    }
+
+    /// <summary>Forwards the original request token into body reads that omit cancellation.</summary>
+    private sealed class ChatResponseStreamWithCancellation(Stream inner, HttpContent content, CancellationToken cancellationToken) : Stream
+    {
+        public override bool CanRead => inner.CanRead;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override int Read(byte[] buffer, int offset, int count) => inner.Read(buffer, offset, count);
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token) =>
+            ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
+
+        // The SDK's parameterless line read must still observe Stop or provider revocation.
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default) =>
+            inner.ReadAsync(buffer, cancellationToken);
+
+        public override void Flush() => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) { content.Dispose(); }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    private static OllamaApiClient BuildClient(ModelProviderConfig config, HttpClient? httpClient = null, bool chat = false)
     {
         var uri = TryCreateUri(config.BaseUrl) ?? DefaultEndpointUri;
         var model = string.IsNullOrWhiteSpace(config.ModelId) ? DefaultModelId : config.ModelId!;
         httpClient ??= new HttpClient(SharedHandler, disposeHandler: false);
         httpClient.BaseAddress = uri;
-        return new OllamaApiClient(httpClient, model);
+        return chat ? new OllamaChatApiClient(httpClient, model) : new OllamaApiClient(httpClient, model);
     }
 
     private static Uri? TryCreateUri(string? baseUrl)

@@ -356,11 +356,9 @@
     {
         await RunBusyAsync(async () =>
         {
-            // The page keeps committed definitions until the server accepts this editor draft.
-            var candidates = _servers.Where(candidate => !_managedIds.Contains(candidate.Id))
-                .Select(candidate => candidate.Id == server.Id ? server : candidate).ToArray();
+            // Save this draft by identity against the server's current catalog.
             if (!await ConfigurationChangeDialog.ApplyAsync(DialogService, CommonLoc, confirmed =>
-                ManagementApiClient.SaveMcpConfigurationAsync(candidates,
+                ManagementApiClient.UpdateMcpServerAsync(server,
                     confirmInterruption: confirmed))) { return; }
             await LoadConfigurationAsync();
 
