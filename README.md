@@ -26,6 +26,12 @@
 > - **Framework changes** that plugin builders need to know about
 > - **Regular updates** to the agent OS itself
 
+https://github.com/user-attachments/assets/aa69fee6-bbf9-42dd-b272-fce347194f89
+
+<p align="center">
+  <a href="https://youtu.be/K1Q4p3Ner5M">Watch the intro on YouTube</a>
+</p>
+
 ![An Oscova Avatar Engine avatar beside the Oscova chat workspace](assets/screenshots/oscova-avatar-and-chat.webp)
 
 ## What is Oscova Agents?
