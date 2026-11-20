@@ -40,6 +40,7 @@ Oscova Agents is a private AI agent OS: your agents' chats, memory, instructions
 
 Agents run as durable services. They keep working on scheduled tasks while you sleep and answer from any browser on your network.
 
+- **A realistic 3D face for any agent.** The Oscova Avatar Engine is a free Windows app that renders the avatar on your own PC and speaks your agent's replies with lip sync. [Give OpenClaw, Hermes Agent or any MCP agent a 3D avatar](https://oscova.ai/docs/articles/avatar-engine/ai-agent-avatar.html).
 - **Confidential by design.** Every agent's chats, tool calls, task runs and memory are encrypted on disk under your Vault Password. Incognito chats never touch disk.
 - **Local by default.** Run local models such as Ollama, LLamaSharp and Foundry Local. Cloud providers are opt-in, and the Egress Audit lists every moment data left the machine.
 - **No telemetry.** Oscova sends no usage statistics and no crash reports.
